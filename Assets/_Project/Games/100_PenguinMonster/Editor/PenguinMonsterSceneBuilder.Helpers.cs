@@ -1,4 +1,5 @@
 using PenguinMonster.Common.Editor;
+using PenguinMonster.Common.UI;
 using PenguinMonster.View;
 using UnityEditor;
 using UnityEngine;
@@ -33,6 +34,18 @@ namespace PenguinMonster.Editor
             rect.anchorMax = new Vector2(1f, max);
             rect.offsetMin = new Vector2(padding, 0f);
             rect.offsetMax = new Vector2(-padding, 0f);
+        }
+
+        /// <summary>
+        /// 画面いっぱいの背景の上に、Screen.safeArea に合わせた中身の置き場を作る。
+        /// 背景色は端まで塗りつつ、文字やボタンはスマホのカメラ・角丸に被らないようにするため
+        /// </summary>
+        private static Transform CreateSafeContent(Transform back)
+        {
+            var content = UIDialogBuilder.CreateUIObject("SafeContent", back);
+            UIDialogBuilder.SetStretchAll(content.GetComponent<RectTransform>());
+            content.AddComponent<SafeAreaFitter>();
+            return content.transform;
         }
 
         /// <summary>濃い色の縁の内側に、指定の色の面を重ねた枠（ダイパ風の窓）。中身は inner に置く</summary>

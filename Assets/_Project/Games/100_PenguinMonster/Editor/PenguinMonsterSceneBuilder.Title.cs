@@ -83,18 +83,20 @@ namespace PenguinMonster.Editor
             UIDialogBuilder.SetStretchAll(back.rectTransform);
 
             // 後ろから順に重なる: 雪原 → 雪 → 歩くペンモン → ロゴ・メニュー
+            // 雪景色は飾りなので画面の端まで、ロゴとメニューはセーフエリアの内側に置く
             CreateSnowField(back.transform);
             CreateTitleSnow(back.transform);
             CreateTitleWalkers(back.transform);
-            CreateTitleLogo(back.transform);
-            var mascots = CreateTitleMascots(back.transform);
+            var content = CreateSafeContent(back.transform);
+            CreateTitleLogo(content);
+            var mascots = CreateTitleMascots(content);
 
-            var mainRow = CreateCenteredRow(back.transform, "MainMenu", Center, TitleMainMenuPosition, TitleMainButtonSize.y, TitleMainSpacing);
+            var mainRow = CreateCenteredRow(content, "MainMenu", Center, TitleMainMenuPosition, TitleMainButtonSize.y, TitleMainSpacing);
             var survival = CreateTitleMenuButton(mainRow, SurvivalMenu, SurvivalColor, TitleMainButtonSize, TitleMainFontSize);
             var online = CreateTitleMenuButton(mainRow, OnlineMenu, OnlineColor, TitleMainButtonSize, TitleMainFontSize);
-            var best = CreateTitleBest(back.transform);
+            var best = CreateTitleBest(content);
 
-            var subRow = CreateCenteredRow(back.transform, "SubMenu", new Vector2(0.5f, 0f), TitleSubMenuPosition, TitleSubButtonSize.y, TitleSubSpacing);
+            var subRow = CreateCenteredRow(content, "SubMenu", new Vector2(0.5f, 0f), TitleSubMenuPosition, TitleSubButtonSize.y, TitleSubSpacing);
             var subMenuButtons = new Button[SubMenuLabels.Length];
             for (int i = 0; i < subMenuButtons.Length; i++)
             {
