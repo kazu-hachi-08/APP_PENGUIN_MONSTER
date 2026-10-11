@@ -17,6 +17,7 @@ namespace PenguinMonster.View
     {
         /// <summary>最高連勝数の保存キー（共通基盤の BestScore）</summary>
         private const string BestWinsKey = "PenguinMonster.SurvivalWins";
+        private const string SurvivalQuitMessage = "勝ち抜き戦は ここで 終わります\n（最高記録は 残ります）";
 
         [SerializeField] private TitlePanel _titlePanel;
         [SerializeField] private DraftPanel _draftPanel;
@@ -24,6 +25,7 @@ namespace PenguinMonster.View
         [SerializeField] private SelectPanel _selectPanel;
         [SerializeField] private BattleController _battle;
         [SerializeField] private ResultDialog _resultDialog;
+        [SerializeField] private QuitButton _quitButton;
 
         private void Start()
         {
@@ -44,6 +46,8 @@ namespace PenguinMonster.View
         private IEnumerator RunSurvival(int bestAtStart)
         {
             var random = new System.Random();
+            // 最高連勝数は勝つたびに保存済みなので、やめるときはそのままタイトルへ戻すだけでよい
+            _quitButton.Show(SurvivalQuitMessage, BackToTitle);
             IReadOnlyList<MonsterDefinition> playerSix = null;
             _draftPanel.Show(new Draft(MonsterTable.All, random), six => playerSix = six);
             yield return new WaitUntil(() => playerSix != null);

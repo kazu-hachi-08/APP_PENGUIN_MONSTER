@@ -42,7 +42,7 @@ namespace PenguinMonster.Editor
         private const int DraftTraitsFontSize = 26;
         private const int DraftCaptionFontSize = 36;
 
-        private static readonly Vector2 PanelCountdownPosition = new Vector2(-220f, -55f);
+        private static readonly Vector2 PanelCountdownPosition = new Vector2(-480f, -55f);
         private static readonly Vector2 TopRight = new Vector2(1f, 1f);
 
         private static readonly Color DraftBackColor = new Color(0.16f, 0.24f, 0.36f);

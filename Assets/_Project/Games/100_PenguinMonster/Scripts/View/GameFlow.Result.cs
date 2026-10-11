@@ -21,13 +21,16 @@ namespace PenguinMonster.View
         private IEnumerator ShowWin(SurvivalRun run, SurvivalOpponent opponent)
         {
             bool next = false;
+            _quitButton.Hide();
             _resultDialog.Show(WinTitle, $"{run.Wins} 連勝", opponent.IsBoss ? BossWinDetail : WinDetail,
                 onRetry: () => next = true, onTitle: BackToTitle);
             yield return new WaitUntil(() => next);
+            _quitButton.Show(SurvivalQuitMessage, BackToTitle);
         }
 
         private void ShowLose(SurvivalRun run, int bestAtStart)
         {
+            _quitButton.Hide();
             string record = run.Wins > bestAtStart ? NewRecordText : $"最高記録: {Mathf.Max(run.Wins, bestAtStart)} 連勝";
             _resultDialog.Show(LoseTitle, $"{run.Wins} 連勝", $"{LoseDetail}\n{record}", onTitle: BackToTitle);
         }

@@ -15,6 +15,7 @@ namespace PenguinMonster.View
     public partial class GameFlow
     {
         private const string DisconnectedDetail = "相手が 切断しました";
+        private const string OnlineQuitMessage = "相手の 勝ちに なります";
 
         [SerializeField] private OnlineSession _session;
         [SerializeField] private ModeSelectPanel _modeSelect;
@@ -31,6 +32,8 @@ namespace PenguinMonster.View
                 isHost = host;
             }, onTitle: BackToTitle);
             yield return new WaitUntil(() => isHost.HasValue);
+            // シーンを読み直せば OnlineSession が部屋を抜けるので、相手には切断（相手の勝ち）として伝わる
+            _quitButton.Show(OnlineQuitMessage, BackToTitle);
 
             var random = new System.Random();
             System.Random draftRandom = null;
@@ -104,11 +107,13 @@ namespace PenguinMonster.View
             _draftPanel.Hide();
             _selectPanel.Hide();
             _battle.Abort();
+            _quitButton.Hide();
             _resultDialog.Show(WinTitle, "", DisconnectedDetail, onTitle: BackToTitle);
         }
 
         private void ShowOnlineResult(bool won)
         {
+            _quitButton.Hide();
             _resultDialog.Show(won ? WinTitle : LoseTitle, "", won ? WinDetail : LoseDetail, onTitle: BackToTitle);
         }
 
