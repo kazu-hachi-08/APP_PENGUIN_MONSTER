@@ -56,6 +56,23 @@ namespace PenguinMonster.View.Art
             }
         }
 
+        /// <summary>角を半径 radius で丸めた四角。ドットの中心で判定する（FillEllipse と同じ考え方）</summary>
+        public void FillRoundedRect(int left, int bottom, int width, int height, float radius, Color32 color)
+        {
+            for (int y = bottom; y < bottom + height; y++)
+            {
+                for (int x = left; x < left + width; x++)
+                {
+                    // 一番近い「角の円の中心」からの距離で判定する。角以外では中心が自分と重なるので必ず塗られる
+                    float centerX = Mathf.Clamp(x + 0.5f, left + radius, left + width - radius);
+                    float centerY = Mathf.Clamp(y + 0.5f, bottom + radius, bottom + height - radius);
+                    float dx = x + 0.5f - centerX;
+                    float dy = y + 0.5f - centerY;
+                    if (dx * dx + dy * dy <= radius * radius) Set(x, y, color);
+                }
+            }
+        }
+
         public void FillTriangle(Vector2 a, Vector2 b, Vector2 c, Color32 color)
         {
             int minX = Mathf.FloorToInt(Mathf.Min(a.x, Mathf.Min(b.x, c.x)));
@@ -114,7 +131,8 @@ namespace PenguinMonster.View.Art
             }
         }
 
-        public Sprite ToSprite(string name, Vector2 pivot)
+        /// <param name="border">9スライスの縁（左・下・右・上のドット数）。伸ばしても角を崩したくない絵だけ指定する</param>
+        public Sprite ToSprite(string name, Vector2 pivot, Vector4 border = default)
         {
             var texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false)
             {
@@ -125,7 +143,7 @@ namespace PenguinMonster.View.Art
             texture.SetPixels32(Pixels);
             texture.Apply(false, true); // CPU 側のコピーは要らないので捨ててメモリを減らす
 
-            var sprite = Sprite.Create(texture, new Rect(0, 0, Width, Height), pivot, Width, 0, SpriteMeshType.FullRect);
+            var sprite = Sprite.Create(texture, new Rect(0, 0, Width, Height), pivot, Width, 0, SpriteMeshType.FullRect, border);
             sprite.name = name;
             return sprite;
         }
