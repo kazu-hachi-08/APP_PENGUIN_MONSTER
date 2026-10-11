@@ -50,5 +50,18 @@ namespace PenguinMonster.Battle.Tests
             Assert.AreEqual("じぶんの こうげきを 2だん あげる", MoveTable.FlapDance.Effects());
             Assert.AreEqual("あいての すばやさを 1だん さげる", MoveTable.ColdBreath.Effects());
         }
+
+        [Test]
+        public void 技ボタンの相性は相手の2タイプを掛け合わせる()
+        {
+            Assert.AreEqual(4f, TestMonsters.FireStrike.Effectiveness(new[] { MonsterType.Moss, MonsterType.Ice }));
+            Assert.AreEqual(0f, MoveTable.Tackle.Effectiveness(new[] { MonsterType.Aurora }));
+        }
+
+        [Test]
+        public void 変化技の相性はいつも等倍()
+        {
+            Assert.AreEqual(1f, MoveTable.FlapDance.Effectiveness(new[] { MonsterType.Aurora }));
+        }
     }
 }

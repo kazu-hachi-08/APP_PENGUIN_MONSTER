@@ -26,6 +26,10 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 MoveButtonSpacing = new Vector2(20f, 16f);
         private const float MoveBackWidth = 260f;
         private static readonly Vector2 MoveBackSize = new Vector2(220f, 220f);
+        private static readonly Vector2 MoveHintSize = new Vector2(1100f, 200f);
+        private const float MoveHintGap = 12f;
+        private const float MoveHintPadding = 28f;
+        private const int MoveHintFontSize = 34;
 
         private static readonly Vector2 PartyBoxSize = new Vector2(900f, 680f);
         private static readonly Vector2 PartySlotSize = new Vector2(760f, 130f);
@@ -139,6 +143,7 @@ namespace PenguinMonster.Editor
                 buttons[i] = buttonObj.GetComponent<Button>();
                 labels[i] = buttonObj.GetComponentInChildren<Text>();
                 labels[i].color = BoxTextColor;
+                buttonObj.AddComponent<MoveHoldHint>();
             }
 
             var back = CreateButton(inner, "Btn_Back", "もどる", MoveBackSize, BackColor);
@@ -147,13 +152,35 @@ namespace PenguinMonster.Editor
             backRect.pivot = new Vector2(1f, 0.5f);
             backRect.anchoredPosition = new Vector2(-(MoveBackWidth - MoveBackSize.x) / 2f, 0f);
 
+            var hintBox = CreateMoveHintBox(frame.transform, out var hintText);
+
             var panel = frame.gameObject.AddComponent<MovePanel>();
             var so = new SerializedObject(panel);
             SetArray(so.FindProperty("_moveButtons"), buttons);
             SetArray(so.FindProperty("_moveLabels"), labels);
             so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
+            so.FindProperty("_hintBox").objectReferenceValue = hintBox;
+            so.FindProperty("_hintText").objectReferenceValue = hintText;
             so.ApplyModifiedProperties();
             return panel;
+        }
+
+        /// <summary>技の説明（長押しで出す）。指で隠れないよう、技選択の窓のすぐ上の左に置く</summary>
+        private static GameObject CreateMoveHintBox(Transform panel, out Text text)
+        {
+            var frame = CreateFramedBox(panel, "MoveHint", MessageBoxColor, out var inner);
+            frame.raycastTarget = false;
+            var rect = frame.rectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 0f);
+            rect.anchoredPosition = new Vector2(0f, MoveHintGap);
+            rect.sizeDelta = MoveHintSize;
+
+            text = CreateText(inner, "Text", "", MoveHintFontSize, BoxTextColor, TextAnchor.MiddleLeft);
+            text.rectTransform.offsetMin = new Vector2(MoveHintPadding, 0f);
+            text.rectTransform.offsetMax = new Vector2(-MoveHintPadding, 0f);
+            frame.gameObject.SetActive(false);
+            return frame.gameObject;
         }
 
         private static PartyPanel CreatePartyPanel(Transform parent)

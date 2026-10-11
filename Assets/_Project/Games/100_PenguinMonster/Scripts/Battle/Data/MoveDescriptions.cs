@@ -37,6 +37,15 @@ namespace PenguinMonster.Battle
             return string.Join(EffectSeparator, parts);
         }
 
+        /// <summary>
+        /// 相手のタイプに対する相性の倍率（バトルの技ボタンに出す）。
+        /// 変化技は相性でダメージが変わらないので、いつも等倍として扱う
+        /// </summary>
+        public static float Effectiveness(this MoveDefinition move, IReadOnlyList<MonsterType> defenseTypes)
+        {
+            return move.IsStatus ? 1f : TypeChart.GetMultiplier(move.Type, defenseTypes);
+        }
+
         /// <summary>例: 「30%で あいてを まひに する」「じぶんの こうげきを 2だん あげる」</summary>
         public static string Describe(MoveEffect effect)
         {

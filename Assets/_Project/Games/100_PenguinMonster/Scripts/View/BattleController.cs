@@ -115,7 +115,7 @@ namespace PenguinMonster.View
 
         private void ShowMoveSelect()
         {
-            _movePanel.Show(Player.Active,
+            _movePanel.Show(Player.Active, Opponent.Active,
                 onMove: index => _playerAction = BattleAction.UseMove(index),
                 onBack: ShowCommands);
         }
