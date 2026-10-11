@@ -62,6 +62,7 @@ namespace PenguinMonster.Editor
             var footer = CreateFooter(back.transform, SelectFooterHeight, SelectButtonSpacing);
             var random = CreateButton(footer, "Btn_Random", "おまかせ", SelectButtonSize, SelectRandomColor);
             var decide = CreateButton(footer, "Btn_Decide", "けってい", SelectButtonSize, SelectDecideColor);
+            var timer = CreateCountdown(back.transform, TopRight, PanelCountdownPosition);
 
             var panel = back.gameObject.AddComponent<SelectPanel>();
             var so = new SerializedObject(panel);
@@ -74,6 +75,7 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_opponentLabels"), opponentLabels);
             so.FindProperty("_randomButton").objectReferenceValue = random.GetComponent<Button>();
             so.FindProperty("_decideButton").objectReferenceValue = decide.GetComponent<Button>();
+            so.FindProperty("_timer").objectReferenceValue = timer;
             so.ApplyModifiedProperties();
 
             back.gameObject.SetActive(false);

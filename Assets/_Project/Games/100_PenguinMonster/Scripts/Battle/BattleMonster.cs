@@ -111,6 +111,13 @@ namespace PenguinMonster.Battle
             return ConfusionTurns > 0;
         }
 
+        /// <summary>オンラインのゲストが持つ写しに、ホストから届いた HP・状態異常をそのまま入れる</summary>
+        internal void Restore(int hp, StatusCondition status)
+        {
+            CurrentHp = hp;
+            Status = status;
+        }
+
         /// <summary>交代でひっこめたとき、場にいる間だけの変化を戻す</summary>
         internal void OnWithdrawn()
         {

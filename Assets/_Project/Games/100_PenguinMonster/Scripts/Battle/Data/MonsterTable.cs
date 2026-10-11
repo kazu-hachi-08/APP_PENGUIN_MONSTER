@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using static PenguinMonster.Battle.BodyColor;
 using static PenguinMonster.Battle.BodyShape;
@@ -87,6 +88,19 @@ namespace PenguinMonster.Battle
                 new[] { SparkleLaser, AuroraWave, QuietPrayer, ColdBreath },
                 Look(BodyShape.Normal, Purple, HeadPart.Crown, NeckPart.None)),
         };
+
+        /// <summary>No から引く。オンラインでは相手のチームを No の列で受け取るため</summary>
+        public static MonsterDefinition ByNo(int no)
+        {
+            foreach (var monster in All)
+            {
+                if (monster.No == no)
+                {
+                    return monster;
+                }
+            }
+            throw new ArgumentException($"No.{no} のペンモンはいない", nameof(no));
+        }
 
         // 1行を短くするための別名。並びは MonsterDefinition / MonsterLook のコンストラクタと同じ
         private static MonsterDefinition Monster(int no, string name, MonsterType[] types, Stats stats, MoveDefinition[] moves, MonsterLook look)

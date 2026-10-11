@@ -27,6 +27,11 @@ namespace PenguinMonster.Battle
         public const int CpuStrongPickPercentPerWin = 10;
         public const int PercentMax = 100;
 
+        // オンラインの制限時間（秒。仕様書 §2.1 / §2.2 / §4.7）。過ぎたら自動で決める
+        public const int OnlineDraftSeconds = 15;
+        public const int OnlineSelectSeconds = 60;
+        public const int OnlineTurnSeconds = 30;
+
         /// <summary>1陣営あたりの場の数。シングルは1、ダブルスは2</summary>
         public const int SingleActiveCount = 1;
 

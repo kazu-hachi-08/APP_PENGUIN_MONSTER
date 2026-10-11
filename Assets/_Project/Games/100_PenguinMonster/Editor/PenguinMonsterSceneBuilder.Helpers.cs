@@ -1,4 +1,5 @@
 using PenguinMonster.Common.Editor;
+using PenguinMonster.View;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,6 +12,10 @@ namespace PenguinMonster.Editor
         private const float FrameThickness = 6f;
         private const float DefaultBandPadding = 20f;
         private const float IconTopMargin = 8f;
+        private static readonly Vector2 CountdownSize = new Vector2(360f, 70f);
+        private const int CountdownFontSize = 44;
+        private static readonly Color CountdownColor = new Color(1f, 0.95f, 0.75f);
+        private static readonly Vector2 CountdownOutline = new Vector2(2f, -2f);
 
         private static void Place(RectTransform rect, Vector2 anchor, Vector2 position, Vector2 size)
         {
@@ -102,6 +107,23 @@ namespace PenguinMonster.Editor
             layout.childControlWidth = false;
             layout.childControlHeight = false;
             return footer.transform;
+        }
+
+        /// <summary>オンラインの制限時間の表示。止めている間は隠れるので、オフラインでは見えない</summary>
+        private static CountdownTimer CreateCountdown(Transform parent, Vector2 anchor, Vector2 position)
+        {
+            var text = CreateText(parent, "Countdown", "", CountdownFontSize, CountdownColor, TextAnchor.MiddleCenter);
+            text.fontStyle = FontStyle.Bold;
+            // 空や白い窓の上にも出るので、縁取りで読めるようにする
+            text.gameObject.AddComponent<Outline>().effectDistance = CountdownOutline;
+            Place(text.rectTransform, anchor, position, CountdownSize);
+
+            var timer = text.gameObject.AddComponent<CountdownTimer>();
+            var so = new SerializedObject(timer);
+            so.FindProperty("_text").objectReferenceValue = text;
+            so.ApplyModifiedProperties();
+            text.gameObject.SetActive(false);
+            return timer;
         }
 
         private static void SetArray(SerializedProperty property, Object[] values)

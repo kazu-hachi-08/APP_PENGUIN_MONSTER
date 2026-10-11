@@ -1,5 +1,6 @@
 using System.Linq;
 using PenguinMonster.Common.Editor;
+using PenguinMonster.Common.Online;
 using PenguinMonster.Common.Scene;
 using PenguinMonster.View;
 using UnityEditor;
@@ -25,6 +26,10 @@ namespace PenguinMonster.Editor
         private const float MatchWidthOrHeight = 0.5f;
         private static readonly Color BackgroundColor = new Color(0.80f, 0.90f, 0.95f);
         private const string NextBattleLabel = "つぎの たたかいへ";
+        private const string OfflineLabel = "CPUと対戦";
+        private static readonly Vector2 BattleCountdownPosition = new Vector2(0f, -50f);
+        private static readonly Vector2 TopCenter = new Vector2(0.5f, 1f);
+        private static readonly Vector2 HostButtonPosition = new Vector2(0f, 80f);
 
         [MenuItem("Tools/PenguinMonster/Rebuild")]
         public static void Rebuild()
@@ -87,6 +92,8 @@ namespace PenguinMonster.Editor
             var commandPanel = CreateCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
+            // 交代の画面の上にも見えるよう、最後に重ねる
+            var turnTimer = CreateCountdown(root.transform, TopCenter, BattleCountdownPosition);
 
             var controller = root.AddComponent<BattleController>();
             var so = new SerializedObject(controller);
@@ -98,6 +105,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
+            so.FindProperty("_turnTimer").objectReferenceValue = turnTimer;
             so.ApplyModifiedProperties();
             return controller;
         }
@@ -117,6 +125,7 @@ namespace PenguinMonster.Editor
             var introPanel = CreateIntroPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
             var titlePanel = CreateTitlePanel(root.transform);
+            CreateOnline(canvas, out var session, out var modeSelect);
 
             var flow = root.AddComponent<GameFlow>();
             var so = new SerializedObject(flow);
@@ -126,7 +135,22 @@ namespace PenguinMonster.Editor
             so.FindProperty("_selectPanel").objectReferenceValue = selectPanel;
             so.FindProperty("_battle").objectReferenceValue = battle;
             so.FindProperty("_resultDialog").objectReferenceValue = resultDialog;
+            so.FindProperty("_session").objectReferenceValue = session;
+            so.FindProperty("_modeSelect").objectReferenceValue = modeSelect;
             so.ApplyModifiedProperties();
+        }
+
+        /// <summary>
+        /// 接続（共通基盤の OnlineSession）と、部屋を作る / コードで参加の画面（ModeSelectPanel）。
+        /// CPU 戦はタイトルの「勝ち抜き戦」から入るので、ModeSelectPanel の CPU 戦ボタンは隠し、部屋を作るを中央に寄せる
+        /// </summary>
+        private static void CreateOnline(Transform canvas, out OnlineSession session, out ModeSelectPanel modeSelect)
+        {
+            session = new GameObject("OnlineSession").AddComponent<OnlineSession>();
+            modeSelect = ModeSelectPanelBuilder.Create(canvas, session, OfflineLabel);
+            var menu = modeSelect.transform.Find("Panel/Menu");
+            menu.Find("Btn_Npc").gameObject.SetActive(false);
+            ((RectTransform)menu.Find("Btn_Host")).anchoredPosition = HostButtonPosition;
         }
 
         private static void AddToBuildSettings()

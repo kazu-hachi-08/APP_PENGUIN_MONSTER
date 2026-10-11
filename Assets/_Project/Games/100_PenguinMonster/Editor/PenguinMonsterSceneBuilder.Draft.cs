@@ -38,6 +38,9 @@ namespace PenguinMonster.Editor
         private const int DraftStatsFontSize = 30;
         private const int DraftCaptionFontSize = 36;
 
+        private static readonly Vector2 PanelCountdownPosition = new Vector2(-220f, -55f);
+        private static readonly Vector2 TopRight = new Vector2(1f, 1f);
+
         private static readonly Color DraftBackColor = new Color(0.16f, 0.24f, 0.36f);
         private static readonly Color DraftCardColor = new Color(0.97f, 0.97f, 0.9f);
         private static readonly Color DraftSlotColor = new Color(0.1f, 0.14f, 0.22f);
@@ -65,6 +68,7 @@ namespace PenguinMonster.Editor
             }
 
             var picked = CreatePickedSlots(back.transform);
+            var timer = CreateCountdown(back.transform, TopRight, PanelCountdownPosition);
 
             var panel = back.gameObject.AddComponent<DraftPanel>();
             var so = new SerializedObject(panel);
@@ -76,6 +80,7 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_typeBadges"), badges);
             SetArray(so.FindProperty("_typeLabels"), badgeLabels);
             SetArray(so.FindProperty("_pickedIcons"), picked);
+            so.FindProperty("_timer").objectReferenceValue = timer;
             so.ApplyModifiedProperties();
 
             back.gameObject.SetActive(false);

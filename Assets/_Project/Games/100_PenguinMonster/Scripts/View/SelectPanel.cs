@@ -23,6 +23,8 @@ namespace PenguinMonster.View
         [SerializeField] private Text[] _opponentLabels;
         [SerializeField] private Button _randomButton;
         [SerializeField] private Button _decideButton;
+        [Tooltip("オンラインの制限時間。オフラインでは隠れたまま")]
+        [SerializeField] private CountdownTimer _timer;
         [SerializeField] private Color _cellColor = new Color(0.3f, 0.5f, 0.8f);
         [SerializeField] private Color _pickedColor = new Color(0.95f, 0.6f, 0.2f);
 
@@ -43,8 +45,9 @@ namespace PenguinMonster.View
             _decideButton.onClick.AddListener(Decide);
         }
 
+        /// <param name="timeLimit">制限時間。0 なら制限なし（オフライン）</param>
         public void Show(IReadOnlyList<MonsterDefinition> own, IReadOnlyList<MonsterDefinition> opponent,
-            Action<List<MonsterDefinition>> onDecide)
+            Action<List<MonsterDefinition>> onDecide, float timeLimit = 0f)
         {
             _monsters = own;
             _onDecide = onDecide;
@@ -62,6 +65,27 @@ namespace PenguinMonster.View
             }
             Refresh();
             gameObject.SetActive(true);
+            _timer.Begin(timeLimit, DecideByTimeout);
+        }
+
+        /// <summary>途中で相手が抜けたときなど、外から閉じる</summary>
+        public void Hide()
+        {
+            _timer.Stop();
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>時間切れ。選びかけのぶんは残し、足りないぶんを上から埋めて決める（仕様書 §2.2）</summary>
+        private void DecideByTimeout()
+        {
+            for (int i = 0; i < _monsters.Count && _picked.Count < BattleBalance.PartySize; i++)
+            {
+                if (!_picked.Contains(i))
+                {
+                    _picked.Add(i);
+                }
+            }
+            Decide();
         }
 
         private void Toggle(int index)
@@ -90,7 +114,7 @@ namespace PenguinMonster.View
                 return;
             }
             BattleSounds.Play(BattleSound.Cursor);
-            gameObject.SetActive(false);
+            Hide();
             _onDecide?.Invoke(_picked.Select(i => _monsters[i]).ToList());
         }
 

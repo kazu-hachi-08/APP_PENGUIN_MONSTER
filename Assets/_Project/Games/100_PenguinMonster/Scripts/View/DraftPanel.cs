@@ -22,6 +22,8 @@ namespace PenguinMonster.View
         [SerializeField] private Image[] _typeBadges;
         [SerializeField] private Text[] _typeLabels;
         [SerializeField] private Image[] _pickedIcons;
+        [Tooltip("オンラインの1回ごとの制限時間。オフラインでは隠れたまま")]
+        [SerializeField] private CountdownTimer _timer;
         [SerializeField] private Color _darkLabelColor = new Color(0.2f, 0.2f, 0.25f);
         [SerializeField] private Color _lightLabelColor = Color.white;
 
@@ -32,6 +34,7 @@ namespace PenguinMonster.View
 
         private Draft _draft;
         private Action<IReadOnlyList<MonsterDefinition>> _onDone;
+        private float _secondsPerPick;
 
         private void Awake()
         {
@@ -42,10 +45,12 @@ namespace PenguinMonster.View
             }
         }
 
-        public void Show(Draft draft, Action<IReadOnlyList<MonsterDefinition>> onDone)
+        /// <param name="secondsPerPick">1回の制限時間。0 なら制限なし（オフライン）</param>
+        public void Show(Draft draft, Action<IReadOnlyList<MonsterDefinition>> onDone, float secondsPerPick = 0f)
         {
             _draft = draft;
             _onDone = onDone;
+            _secondsPerPick = secondsPerPick;
             Refresh();
             gameObject.SetActive(true);
         }
@@ -56,7 +61,7 @@ namespace PenguinMonster.View
             _draft.Pick(index);
             if (_draft.IsDone)
             {
-                gameObject.SetActive(false);
+                Hide();
                 _onDone?.Invoke(_draft.Picked);
                 return;
             }
@@ -76,6 +81,20 @@ namespace PenguinMonster.View
                 _pickedIcons[i].enabled = picked;
                 _pickedIcons[i].sprite = picked ? MonsterSprites.Front(_draft.Picked[i]) : null;
             }
+            _timer.Begin(_secondsPerPick, PickRandom);
+        }
+
+        /// <summary>時間切れは3体からランダム（仕様書 §2.1）</summary>
+        private void PickRandom()
+        {
+            Pick(UnityEngine.Random.Range(0, _draft.Offer.Count));
+        }
+
+        /// <summary>途中で相手が抜けたときなど、外から閉じる</summary>
+        public void Hide()
+        {
+            _timer.Stop();
+            gameObject.SetActive(false);
         }
 
         private void ShowCard(int card, MonsterDefinition monster)

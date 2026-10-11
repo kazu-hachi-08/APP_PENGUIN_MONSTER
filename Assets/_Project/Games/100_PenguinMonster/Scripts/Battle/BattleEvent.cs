@@ -51,13 +51,19 @@ namespace PenguinMonster.Battle
 
         private BattleEvent(BattleEventKind kind, int side, BattleMonster monster, string moveName = null,
             StatKind stat = default, int amount = 0)
+            : this(kind, side, monster, moveName, monster?.CurrentHp ?? 0, monster?.Status ?? StatusCondition.None, stat, amount)
+        {
+        }
+
+        private BattleEvent(BattleEventKind kind, int side, BattleMonster monster, string moveName, int hp,
+            StatusCondition status, StatKind stat, int amount)
         {
             Kind = kind;
             Side = side;
             Monster = monster;
             MoveName = moveName;
-            Hp = monster?.CurrentHp ?? 0;
-            Status = monster?.Status ?? StatusCondition.None;
+            Hp = hp;
+            Status = status;
             Stat = stat;
             Amount = amount;
         }
@@ -73,5 +79,10 @@ namespace PenguinMonster.Battle
 
         public static BattleEvent BattleEnd(int winner)
             => new BattleEvent(BattleEventKind.BattleEnd, winner, null);
+
+        /// <summary>オンラインで受け取った値から作り直す。HP・状態異常は送られてきた時点の値を使う</summary>
+        internal static BattleEvent Restore(BattleEventKind kind, int side, BattleMonster monster, string moveName,
+            int hp, StatusCondition status, StatKind stat, int amount)
+            => new BattleEvent(kind, side, monster, moveName, hp, status, stat, amount);
     }
 }
