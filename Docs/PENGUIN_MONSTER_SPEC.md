@@ -45,12 +45,16 @@
 - 提示はプレイヤーごとに別々。相手と同じペンギンを取ってもよい。自分がすでに取ったペンギンは出ない
 - 候補は全ペンモンから純ランダム（タイプの偏りの補正はしない）
 - オンラインは1回15秒。過ぎたら3体からランダム
-- 提示数（3）・回数（6）・制限時間（15秒）はバランス定義クラスに置く
+- 提示数（3）・回数（6）・制限時間（15秒）はバランス定義クラスに置く（制限時間はオンラインの Phase 6 で足す）
+- 提示の3枚には絵・名前・タイプ・種族値（と合計）を出す。押したらすぐ決定
+- CPU のドラフトはランダム（プレイヤーとは別に提示を引く）
 
 ### 2.2 見せ合い・選出
 
 - お互いの6体を見せ合い、バトルに出す3体と先頭を選ぶ
 - オンラインは60秒。過ぎたら上から3体
+- 押した順が出す順（1番目が先頭）。もう一度押すと外せる。「おまかせ」で残りをランダムに埋める
+- CPU の選出はランダム
 
 ### 2.3 勝ち抜き戦
 
@@ -277,25 +281,27 @@
 ```text
 Scripts/
 ├── Battle/                 # バトルのルール・計算（純C#、PenguinMonster.Battle.asmdef、noEngineReferences）
+│   ├── Draft/Draft.cs      # ドラフトの抽選（3体提示×6回、取ったペンモンは出ない）
 │   ├── Data/               # タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect）／ペンモンの定義と見た目（MonsterLook）・定義表（MoveTable / MonsterTable）
 │   ├── BattleBalance.cs    # 調整値（Lv・ダメージ式の定数・選出数など）
 │   ├── BattleState / BattleSide / BattleMonster   # バトルの状態（場は配列で持ち、シングルは1）
 │   ├── BattleEngine(.Order/.Status/.Effects).cs   # ターンの解決（行動順 → 状態異常の判定 → 命中 → ダメージ → 追加効果 → ひんし → ターン終わり → 勝敗）
 │   ├── DamageCalculator.cs
 │   ├── BattleEvent.cs / BattleMessages.cs         # 起きたことの列と、その文面
-│   └── CpuPlayer.cs        # CPU（よわい）
+│   └── CpuPlayer.cs        # CPU（よわい）。ドラフト・選出もここ（ランダム）
 └── View/                   # 表示（MonoBehaviour、名前空間 PenguinMonster.View）
-    ├── BattleController(.Playback).cs  # 進行役。入力待ちと BattleEvent の再生
+    ├── GameFlow.cs         # 画面の流れ（タイトル → ドラフト → 選出 → バトル → 結果）
+    ├── TitlePanel / DraftPanel / SelectPanel  # タイトル・ドラフト・見せ合いと選出の画面。結果は共通基盤の ResultDialog
+    ├── BattleController(.Playback).cs  # バトルの進行役。入力待ちと BattleEvent の再生
     ├── MonsterView.cs      # 台座の上のペンモンの絵と演出（登場・踏み込み・点滅・ひんし）
     ├── MonsterInfoBox.cs   # 名前・Lv・HPバーの枠
     ├── MessageWindow / CommandPanel / MovePanel / PartyPanel
-    ├── PickPanel.cs        # 仮の選択画面（Phase 3。Phase 4 のドラフト・選出で置き換える）
     ├── BattleBackdrop.cs   # 背景の Image に生成した絵をはめる
     ├── BattleSounds(.Synth).cs  # 仮の効果音（コード生成）
     ├── TypeColors.cs / StatusColors.cs  # 技ボタンのタイプ色 / 状態異常の印・光る色
     └── Art/                # ドット絵の生成（PixelCanvas / PenguinPainter(.Parts) / PenguinPalette / MonsterSprites / BackdropArt）
 Editor/
-└── PenguinMonsterSceneBuilder(.Field/.Panels/.Pick/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
+└── PenguinMonsterSceneBuilder(.Field/.Panels/.Title/.Draft/.Select/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
 Scenes/
 └── PenguinMonsterScene.unity   # 生成物（手で編集しない）
 Tests/Editor/               # EditMode テスト（PenguinMonster.Battle.Tests.asmdef）

@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 下側の窓（メッセージ・コマンド・技選択）と、交代の画面・もういちどボタン
+    /// 下側の窓（メッセージ・コマンド・技選択）と、交代の画面
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -32,7 +32,6 @@ namespace PenguinMonster.Editor
         private const float PartySlotSpacing = 24f;
         private const float PartyIconSize = 112f;
         private static readonly Vector2 BackButtonSize = new Vector2(220f, 80f);
-        private static readonly Vector2 RetryButtonSize = new Vector2(360f, 110f);
 
         private const int MessageFontSize = 46;
         private const int ButtonFontSize = 36;
@@ -48,7 +47,6 @@ namespace PenguinMonster.Editor
         private static readonly Color OverlayColor = new Color(0f, 0f, 0f, 0.6f);
         private static readonly Color SlotColor = new Color(0.3f, 0.5f, 0.8f);
         private static readonly Color BackColor = new Color(0.45f, 0.45f, 0.5f);
-        private static readonly Color RetryColor = new Color(0.85f, 0.45f, 0.2f);
 
         /// <summary>
         /// 画面全体に透明なボタンを敷く。一番奥に置くので、窓やボタンのない所をタップしたときだけ反応する
@@ -206,13 +204,6 @@ namespace PenguinMonster.Editor
             rect.anchoredPosition = new Vector2(16f, 0f);
             rect.sizeDelta = new Vector2(PartyIconSize, PartyIconSize);
             return icon;
-        }
-
-        private static Button CreateRetryButton(Transform parent)
-        {
-            var obj = CreateButton(parent, "Btn_Retry", "もういちど", RetryButtonSize, RetryColor);
-            Place(obj.GetComponent<RectTransform>(), Center, new Vector2(0f, 120f), RetryButtonSize);
-            return obj.GetComponent<Button>();
         }
 
         /// <summary>画面下の帯（高さ BottomAreaHeight）の横 [min, max] に置く</summary>

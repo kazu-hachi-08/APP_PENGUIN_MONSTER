@@ -1,24 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using PenguinMonster.Battle;
-using PenguinMonster.Common.Scene;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 
 namespace PenguinMonster.View
 {
     /// <summary>
     /// CPU との 3vs3 の進行役。ターンの計算は BattleEngine に任せ、ここは入力待ちと表示の順番だけを持つ。
-    /// バトルの前に仮の選択画面（PickPanel）で両方のチームを選ぶ。
+    /// チームは GameFlow から渡される（ドラフト・選出・結果はバトルの外）。
     /// イベントの再生は BattleController.Playback.cs
     /// </summary>
     public partial class BattleController : MonoBehaviour
     {
         private const int PlayerSide = 0;
         private const int CpuSide = 1;
-        private const string PlayerPickTitle = "じぶんの ペンモンを えらんでください";
-        private const string CpuPickTitle = "あいての ペンモンを えらんでください";
 
         [SerializeField] private MonsterView _playerView;
         [SerializeField] private MonsterView _enemyView;
@@ -28,18 +23,17 @@ namespace PenguinMonster.View
         [SerializeField] private CommandPanel _commandPanel;
         [SerializeField] private MovePanel _movePanel;
         [SerializeField] private PartyPanel _partyPanel;
-        [SerializeField] private Button _retryButton;
-        [SerializeField] private PickPanel _pickPanel;
 
         private BattleEngine _engine;
         private CpuPlayer _cpu;
         private BattleAction _playerAction;
         private int _replacementIndex = -1;
-        private List<MonsterDefinition> _pickedParty;
 
         private BattleState State => _engine.State;
         private BattleSide Player => State.Sides[PlayerSide];
         private BattleSide Cpu => State.Sides[CpuSide];
+
+        public bool PlayerWon => State.Winner == PlayerSide;
 
         private void Start()
         {
@@ -49,18 +43,14 @@ namespace PenguinMonster.View
             _playerInfo.Hide();
             _enemyInfo.Hide();
             _messageWindow.SetText("");
-            _retryButton.gameObject.SetActive(false);
-            _retryButton.onClick.AddListener(() => SceneManager.LoadScene(SceneNames.PenguinMonster));
-
-            StartCoroutine(BattleLoop());
         }
 
-        private IEnumerator BattleLoop()
+        /// <summary>バトルを決着まで進める。勝敗は終わったあと PlayerWon で見る</summary>
+        public IEnumerator Run(List<MonsterDefinition> playerParty, List<MonsterDefinition> cpuParty,
+            System.Random random, CpuPlayer cpu)
         {
-            yield return PickParty(PlayerPickTitle);
-            var party0 = _pickedParty;
-            yield return PickParty(CpuPickTitle);
-            StartEngine(party0, _pickedParty);
+            _engine = new BattleEngine(new BattleState(playerParty, cpuParty), random);
+            _cpu = cpu;
 
             yield return Play(_engine.StartBattle());
             while (!State.IsOver)
@@ -72,21 +62,6 @@ namespace PenguinMonster.View
                     yield return ReplaceFainted();
                 }
             }
-            _retryButton.gameObject.SetActive(true);
-        }
-
-        private IEnumerator PickParty(string title)
-        {
-            _pickedParty = null;
-            _pickPanel.Show(MonsterTable.All, title, party => _pickedParty = party);
-            yield return new WaitUntil(() => _pickedParty != null);
-        }
-
-        private void StartEngine(List<MonsterDefinition> party0, List<MonsterDefinition> party1)
-        {
-            var random = new System.Random();
-            _engine = new BattleEngine(new BattleState(party0, party1), random);
-            _cpu = new CpuPlayer(random);
         }
 
         private IEnumerator WaitForPlayerAction()

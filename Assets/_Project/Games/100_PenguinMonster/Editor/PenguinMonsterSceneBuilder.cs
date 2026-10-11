@@ -13,7 +13,8 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
-    /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、仮の選択画面は .Pick.cs
+    /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、
+    /// タイトルは .Title.cs、ドラフトは .Draft.cs、見せ合い・選出は .Select.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -36,7 +37,8 @@ namespace PenguinMonster.Editor
             CreateCamera();
             CreateEventSystem();
             var canvas = CreateCanvas();
-            BuildBattleUI(canvas.transform);
+            var battle = BuildBattleUI(canvas.transform);
+            BuildFlow(canvas.transform, battle);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddToBuildSettings();
@@ -72,7 +74,7 @@ namespace PenguinMonster.Editor
             return canvas;
         }
 
-        private static void BuildBattleUI(Transform canvas)
+        private static BattleController BuildBattleUI(Transform canvas)
         {
             var root = UIDialogBuilder.CreateUIObject("Battle", canvas);
             UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
@@ -84,9 +86,6 @@ namespace PenguinMonster.Editor
             var commandPanel = CreateCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
-            var retryButton = CreateRetryButton(root.transform);
-            // 仮の選択画面はバトル開始前に全面を覆うので一番手前
-            var pickPanel = CreatePickPanel(root.transform);
 
             var controller = root.AddComponent<BattleController>();
             var so = new SerializedObject(controller);
@@ -98,8 +97,32 @@ namespace PenguinMonster.Editor
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
-            so.FindProperty("_retryButton").objectReferenceValue = retryButton;
-            so.FindProperty("_pickPanel").objectReferenceValue = pickPanel;
+            so.ApplyModifiedProperties();
+            return controller;
+        }
+
+        /// <summary>
+        /// バトルの上に重ねる画面（結果 → 選出 → ドラフト → タイトルの順に手前）と、流れの進行役。
+        /// 結果は共通基盤の ResultDialog を使う。もう一度遊ぶはまだ無いので、タイトルへだけ残す
+        /// </summary>
+        private static void BuildFlow(Transform canvas, BattleController battle)
+        {
+            var root = UIDialogBuilder.CreateUIObject("Flow", canvas);
+            UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
+
+            var resultDialog = UIDialogBuilder.CreateResultDialog(root.transform);
+            Object.DestroyImmediate(resultDialog.transform.Find("Panel/ButtonArea/Btn_Retry").gameObject);
+            var selectPanel = CreateSelectPanel(root.transform);
+            var draftPanel = CreateDraftPanel(root.transform);
+            var titlePanel = CreateTitlePanel(root.transform);
+
+            var flow = root.AddComponent<GameFlow>();
+            var so = new SerializedObject(flow);
+            so.FindProperty("_titlePanel").objectReferenceValue = titlePanel;
+            so.FindProperty("_draftPanel").objectReferenceValue = draftPanel;
+            so.FindProperty("_selectPanel").objectReferenceValue = selectPanel;
+            so.FindProperty("_battle").objectReferenceValue = battle;
+            so.FindProperty("_resultDialog").objectReferenceValue = resultDialog;
             so.ApplyModifiedProperties();
         }
 

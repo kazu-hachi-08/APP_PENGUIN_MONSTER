@@ -9,24 +9,27 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 仮の選択画面（Phase 3）。全ペンモンから3体を選び、選んだ順が選出の順（1番目が先頭）になる。
-    /// もう一度押すと外せる。Phase 4 でドラフト・選出の画面に置き換える
+    /// 見せ合い・選出の画面（仕様書 §2.2）。上に相手の6体を見せ、下の自分の6体から3体を選ぶ。
+    /// 選んだ順が出す順（1番目が先頭）。もう一度押すと外せる
     /// </summary>
-    public class PickPanel : MonoBehaviour
+    public class SelectPanel : MonoBehaviour
     {
         [SerializeField] private Text _titleText;
         [SerializeField] private Button[] _cellButtons;
         [SerializeField] private Image[] _cellIcons;
         [SerializeField] private Text[] _cellLabels;
         [SerializeField] private Text[] _cellOrders;
+        [SerializeField] private Image[] _opponentIcons;
+        [SerializeField] private Text[] _opponentLabels;
         [SerializeField] private Button _randomButton;
         [SerializeField] private Button _decideButton;
         [SerializeField] private Color _cellColor = new Color(0.3f, 0.5f, 0.8f);
         [SerializeField] private Color _pickedColor = new Color(0.95f, 0.6f, 0.2f);
 
+        private const string Title = "バトルに だす ペンモンを えらんでください";
+
         private readonly List<int> _picked = new List<int>();
         private IReadOnlyList<MonsterDefinition> _monsters;
-        private string _title;
         private Action<List<MonsterDefinition>> _onDecide;
 
         private void Awake()
@@ -40,22 +43,22 @@ namespace PenguinMonster.View
             _decideButton.onClick.AddListener(Decide);
         }
 
-        public void Show(IReadOnlyList<MonsterDefinition> monsters, string title, Action<List<MonsterDefinition>> onDecide)
+        public void Show(IReadOnlyList<MonsterDefinition> own, IReadOnlyList<MonsterDefinition> opponent,
+            Action<List<MonsterDefinition>> onDecide)
         {
-            _monsters = monsters;
-            _title = title;
+            _monsters = own;
             _onDecide = onDecide;
             _picked.Clear();
 
             for (int i = 0; i < _cellButtons.Length; i++)
             {
-                bool exists = i < monsters.Count;
-                _cellButtons[i].gameObject.SetActive(exists);
-                if (exists)
-                {
-                    _cellIcons[i].sprite = MonsterSprites.Front(monsters[i]);
-                    _cellLabels[i].text = $"{monsters[i].Name}\n<size=22>{TypeLabel(monsters[i])}</size>";
-                }
+                _cellIcons[i].sprite = MonsterSprites.Front(own[i]);
+                _cellLabels[i].text = Label(own[i]);
+            }
+            for (int i = 0; i < _opponentIcons.Length; i++)
+            {
+                _opponentIcons[i].sprite = MonsterSprites.Front(opponent[i]);
+                _opponentLabels[i].text = Label(opponent[i]);
             }
             Refresh();
             gameObject.SetActive(true);
@@ -71,7 +74,7 @@ namespace PenguinMonster.View
             Refresh();
         }
 
-        /// <summary>足りないぶんをランダムで埋める。CPU のチームを決めるときに使う想定</summary>
+        /// <summary>足りないぶんをランダムで埋める（迷ったとき用）</summary>
         private void PickRandom()
         {
             BattleSounds.Play(BattleSound.Cursor);
@@ -93,7 +96,7 @@ namespace PenguinMonster.View
 
         private void Refresh()
         {
-            _titleText.text = $"{_title}（{_picked.Count}/{BattleBalance.PartySize}）";
+            _titleText.text = $"{Title}（{_picked.Count}/{BattleBalance.PartySize}）";
             for (int i = 0; i < _cellButtons.Length; i++)
             {
                 int order = _picked.IndexOf(i);
@@ -103,9 +106,10 @@ namespace PenguinMonster.View
             _decideButton.interactable = _picked.Count == BattleBalance.PartySize;
         }
 
-        private static string TypeLabel(MonsterDefinition monster)
+        private static string Label(MonsterDefinition monster)
         {
-            return string.Join("/", monster.Types.Select(t => t.ToJapanese()));
+            string types = string.Join("/", monster.Types.Select(t => t.ToJapanese()));
+            return $"{monster.Name}\n<size=22>{types}</size>";
         }
     }
 }

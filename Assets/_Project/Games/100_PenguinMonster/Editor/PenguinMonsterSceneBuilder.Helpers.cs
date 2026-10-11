@@ -10,6 +10,7 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 Center = new Vector2(0.5f, 0.5f);
         private const float FrameThickness = 6f;
         private const float DefaultBandPadding = 20f;
+        private const float IconTopMargin = 8f;
 
         private static void Place(RectTransform rect, Vector2 anchor, Vector2 position, Vector2 size)
         {
@@ -71,6 +72,36 @@ namespace PenguinMonster.Editor
             text.fontSize = ButtonFontSize;
             text.raycastTarget = false;
             return obj;
+        }
+
+        /// <summary>親の上端の中央に、ペンモンの絵を置く枠（絵は実行時にはめる）</summary>
+        private static Image CreateTopIcon(Transform parent, float size, float top = IconTopMargin)
+        {
+            var icon = CreateImage(parent, "Icon", Color.white);
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+            var rect = icon.rectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 1f);
+            rect.pivot = new Vector2(0.5f, 1f);
+            rect.anchoredPosition = new Vector2(0f, -top);
+            rect.sizeDelta = new Vector2(size, size);
+            return icon;
+        }
+
+        /// <summary>画面の下に高さ height の帯を作り、中身を横に並べる</summary>
+        private static Transform CreateFooter(Transform parent, float height, float spacing)
+        {
+            var footer = UIDialogBuilder.CreateUIObject("Footer", parent);
+            var rect = footer.GetComponent<RectTransform>();
+            UIDialogBuilder.SetStretchAll(rect);
+            rect.anchorMax = new Vector2(1f, 0f);
+            rect.offsetMax = new Vector2(0f, height);
+            var layout = footer.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = spacing;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            return footer.transform;
         }
 
         private static void SetArray(SerializedProperty property, Object[] values)

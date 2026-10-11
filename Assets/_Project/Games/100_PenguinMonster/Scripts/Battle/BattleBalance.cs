@@ -14,6 +14,10 @@ namespace PenguinMonster.Battle
         /// <summary>選出する数（3vs3）</summary>
         public const int PartySize = 3;
 
+        // ドラフト（仕様書 §2.1）。3体の提示から1体取る × 6回
+        public const int DraftOfferCount = 3;
+        public const int DraftRounds = 6;
+
         /// <summary>1陣営あたりの場の数。シングルは1、ダブルスは2</summary>
         public const int SingleActiveCount = 1;
 
