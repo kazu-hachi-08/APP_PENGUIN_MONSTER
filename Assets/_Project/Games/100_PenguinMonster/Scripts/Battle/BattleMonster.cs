@@ -3,7 +3,7 @@ using System;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// バトル中のペンモン1体（定義＋現在のHP・状態異常・ランク）。
+    /// バトル中のペンモン1体（定義＋現在のHP・状態異常・ランク・持ち物を使ったか）。
     /// 状態異常は交代しても残り、ランク・こんらん・もうどくの段階は交代で戻る（仕様書 §4.4 / §4.5）
     /// </summary>
     public sealed class BattleMonster
@@ -20,19 +20,26 @@ namespace PenguinMonster.Battle
         public int BadPoisonCount { get; private set; }
         /// <summary>こんらんの残り回数。0 ならこんらんしていない</summary>
         public int ConfusionTurns { get; private set; }
+        /// <summary>1回だけの持ち物を使った。交代しても戻らない</summary>
+        public bool ItemUsed { get; private set; }
 
         public string Name => Definition.Name;
         public int MaxHp => Stats.Hp;
         public bool IsFainted => CurrentHp <= 0;
         public bool IsConfused => ConfusionTurns > 0;
+        public bool IsFullHp => CurrentHp == MaxHp;
 
-        /// <summary>行動順に使うすばやさ。ランクを掛け、まひなら半分</summary>
+        /// <summary>行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍</summary>
         public int EffectiveSpeed
         {
             get
             {
                 int speed = StageMultiplier.ApplyStat(Stats.Speed, GetStage(StatKind.Speed));
-                return Status == StatusCondition.Paralysis ? speed / BattleBalance.ParalysisSpeedDivisor : speed;
+                if (Status == StatusCondition.Paralysis)
+                {
+                    speed /= BattleBalance.ParalysisSpeedDivisor;
+                }
+                return HasItem(HeldItem.LightFeather) ? (int)(speed * BattleBalance.LightFeatherSpeedMultiplier) : speed;
             }
         }
 
@@ -44,6 +51,11 @@ namespace PenguinMonster.Battle
         }
 
         public int GetStage(StatKind stat) => _stages[(int)stat];
+
+        public bool HasAbility(Ability ability) => Definition.Ability == ability;
+
+        /// <summary>その持ち物をまだ持っている（1回だけのものは使ったら false）</summary>
+        public bool HasItem(HeldItem item) => Definition.Item == item && !ItemUsed;
 
         /// <summary>攻撃側の能力。急所のときは下がったランクを無視する（仕様書 §4.3）</summary>
         public int AttackStat(bool isPhysical, bool isCritical)
@@ -70,6 +82,13 @@ namespace PenguinMonster.Battle
         {
             CurrentHp = Math.Max(0, CurrentHp - damage);
         }
+
+        internal void Heal(int amount)
+        {
+            CurrentHp = Math.Min(MaxHp, CurrentHp + amount);
+        }
+
+        internal void UseItem() => ItemUsed = true;
 
         /// <summary>ランクを変える。-6〜+6 に収め、実際に変わった量を返す（0 なら もう変わらない）</summary>
         internal int ChangeStage(StatKind stat, int delta)

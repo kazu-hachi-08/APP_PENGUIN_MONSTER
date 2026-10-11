@@ -30,7 +30,8 @@ namespace PenguinMonster.Battle
                 return new DamageResult(0, false, 0f);
             }
 
-            bool isCritical = random.Next(BattleBalance.CriticalChanceDenominator) == 0;
+            // かたいはね でも急所の乱数は引く（特性で乱数の消費が変わらないようにする）
+            bool isCritical = random.Next(BattleBalance.CriticalChanceDenominator) == 0 && !defender.HasAbility(Ability.HardFeathers);
             int randomPercent = RollRandomPercent(random);
             bool isPhysical = move.Category == MoveCategory.Physical;
             int attack = attacker.AttackStat(isPhysical, isCritical);
@@ -38,7 +39,7 @@ namespace PenguinMonster.Battle
             bool isStab = attacker.Definition.HasType(move.Type);
 
             int damage = Compute(move.Power, attack, defense, isCritical, randomPercent, isStab, effectiveness,
-                IsBurnHalved(attacker, isPhysical));
+                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness));
             return new DamageResult(damage, isCritical, effectiveness);
         }
 
@@ -57,7 +58,7 @@ namespace PenguinMonster.Battle
             bool isPhysical = move.Category == MoveCategory.Physical;
             int damage = Compute(move.Power, attacker.AttackStat(isPhysical, false), defender.DefenseStat(isPhysical, false),
                 false, BattleBalance.DamageRandomMaxPercent, attacker.Definition.HasType(move.Type), effectiveness,
-                IsBurnHalved(attacker, isPhysical));
+                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness));
             return damage * move.Accuracy / (float)BattleBalance.AccuracyPercentMax;
         }
 
@@ -80,12 +81,57 @@ namespace PenguinMonster.Battle
             return isPhysical && attacker.Status == StatusCondition.Burn;
         }
 
+        /// <summary>特性・持ち物によるダメージの倍率をまとめたもの（仕様書 §4.6）。1 なら変化なし</summary>
+        private static float Modifier(BattleMonster attacker, BattleMonster defender, MoveDefinition move, float effectiveness)
+        {
+            return AttackerModifier(attacker, move, effectiveness) * DefenderModifier(defender, move, effectiveness);
+        }
+
+        private static float AttackerModifier(BattleMonster attacker, MoveDefinition move, float effectiveness)
+        {
+            float modifier = 1f;
+            if (attacker.HasAbility(Ability.LastStand) && attacker.Definition.HasType(move.Type)
+                && attacker.CurrentHp <= attacker.MaxHp / BattleBalance.LastStandHpDenominator)
+            {
+                modifier *= BattleBalance.LastStandMultiplier;
+            }
+            bool isPhysical = move.Category == MoveCategory.Physical;
+            if ((isPhysical && attacker.HasItem(HeldItem.BraveFeather)) || (!isPhysical && attacker.HasItem(HeldItem.WiseFeather)))
+            {
+                modifier *= BattleBalance.FeatherMultiplier;
+            }
+            if (attacker.HasItem(HeldItem.LifeIcicle))
+            {
+                modifier *= BattleBalance.LifeIcicleMultiplier;
+            }
+            if (effectiveness > 1f && attacker.HasItem(HeldItem.SharpGlasses))
+            {
+                modifier *= BattleBalance.SharpGlassesMultiplier;
+            }
+            return modifier;
+        }
+
+        private static float DefenderModifier(BattleMonster defender, MoveDefinition move, float effectiveness)
+        {
+            float modifier = 1f;
+            if (defender.HasAbility(Ability.ThickFat) && (move.Type == MonsterType.Ice || move.Type == MonsterType.Fire))
+            {
+                modifier *= BattleBalance.ThickFatMultiplier;
+            }
+            if (effectiveness > 1f && defender.HasItem(HeldItem.SnowCoat))
+            {
+                modifier *= BattleBalance.SnowCoatMultiplier;
+            }
+            return modifier;
+        }
+
         /// <summary>
         /// 乱数を引き終えた値からダメージを出す。テストで期待値と突き合わせられるよう分けてある。
-        /// 本家と同じく段階ごとに切り捨てる（掛ける順で1ずれることがあるため順番を変えないこと）
+        /// 本家と同じく段階ごとに切り捨てる（掛ける順で1ずれることがあるため順番を変えないこと）。
+        /// 特性・持ち物の倍率（modifier）は本家の「その他の補正」と同じく最後に掛ける
         /// </summary>
         public static int Compute(int power, int attack, int defense, bool isCritical, int randomPercent, bool isStab, float effectiveness,
-            bool isBurned = false)
+            bool isBurned = false, float modifier = 1f)
         {
             if (effectiveness == 0f)
             {
@@ -107,6 +153,7 @@ namespace PenguinMonster.Battle
             {
                 damage = (int)(damage * BattleBalance.BurnPhysicalMultiplier);
             }
+            damage = (int)(damage * modifier);
 
             // 効果がある技は最低1ダメージ入る
             return Math.Max(1, damage);

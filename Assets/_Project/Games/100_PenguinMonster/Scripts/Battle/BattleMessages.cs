@@ -59,10 +59,24 @@ namespace PenguinMonster.Battle
                     return $"{subject}の {e.Stat.ToJapanese()}が {StatChanged(e.Amount)}";
                 case BattleEventKind.StatUnchanged:
                     return $"{subject}の {e.Stat.ToJapanese()}は もう {(e.Amount > 0 ? "あがらない！" : "さがらない！")}";
+                case BattleEventKind.AbilityActivated:
+                    return $"{subject}の {e.Monster.Definition.Ability.ToJapanese()}！";
+                case BattleEventKind.AbilityDamage:
+                    return $"{subject}は きずついた！";
+                case BattleEventKind.ItemHealed:
+                    return $"{subject}は {ItemName(e)}で HPを かいふくした！";
+                case BattleEventKind.ItemCured:
+                    return $"{subject}は {ItemName(e)}で げんきに なった！";
+                case BattleEventKind.ItemEndured:
+                    return $"{subject}は {ItemName(e)}で もちこたえた！";
+                case BattleEventKind.ItemRecoil:
+                    return $"{subject}は {ItemName(e)}で すこし HPが へった！";
                 default:
                     return null;
             }
         }
+
+        private static string ItemName(BattleEvent e) => e.Monster.Definition.Item.ToJapanese();
 
         private static string Inflicted(StatusCondition status)
         {

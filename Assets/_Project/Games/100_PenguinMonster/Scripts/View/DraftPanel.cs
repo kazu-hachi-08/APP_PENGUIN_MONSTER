@@ -18,6 +18,8 @@ namespace PenguinMonster.View
         [SerializeField] private Image[] _cardIcons;
         [SerializeField] private Text[] _cardNames;
         [SerializeField] private Text[] _cardStats;
+        [Tooltip("特性と持ち物（名前と説明を1行ずつ）")]
+        [SerializeField] private Text[] _cardTraits;
         /// <summary>1枚につき2つ（2タイプ目が無ければ隠す）。カード i のタイプ k は [i * 2 + k]</summary>
         [SerializeField] private Image[] _typeBadges;
         [SerializeField] private Text[] _typeLabels;
@@ -30,6 +32,7 @@ namespace PenguinMonster.View
         private const int BadgesPerCard = 2;
         /// <summary>タイプの色がこれより明るければ、文字を暗い色にして読めるようにする</summary>
         private const float BrightBadgeThreshold = 0.6f;
+        private const int TraitDescriptionSize = 20;
         private const string TitleFormat = "ドラフト {0}/{1}　ほしい ペンモンを えらんでください";
 
         private Draft _draft;
@@ -102,6 +105,7 @@ namespace PenguinMonster.View
             _cardIcons[card].sprite = MonsterSprites.Front(monster);
             _cardNames[card].text = monster.Name;
             _cardStats[card].text = StatValues(monster.BaseStats);
+            _cardTraits[card].text = Traits(monster);
             for (int k = 0; k < BadgesPerCard; k++)
             {
                 int badge = card * BadgesPerCard + k;
@@ -115,6 +119,13 @@ namespace PenguinMonster.View
                     _typeLabels[badge].text = monster.Types[k].ToJapanese();
                 }
             }
+        }
+
+        /// <summary>特性・持ち物の名前と説明。説明は小さめの文字にして名前を目立たせる</summary>
+        private static string Traits(MonsterDefinition monster)
+        {
+            return $"とくせい <b>{monster.Ability.ToJapanese()}</b>\n<size={TraitDescriptionSize}>{monster.Ability.Description()}</size>\n"
+                + $"もちもの <b>{monster.Item.ToJapanese()}</b>\n<size={TraitDescriptionSize}>{monster.Item.Description()}</size>";
         }
 
         /// <summary>種族値を1行ずつ。見出し（HP・こうげき…）はシーン側の別の Text に並べてある</summary>

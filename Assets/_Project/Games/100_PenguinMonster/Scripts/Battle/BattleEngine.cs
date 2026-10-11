@@ -5,7 +5,7 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// ターンを進める（仕様書 §4.1）。状態を書き換え、起きたことを BattleEvent の列で返す。
-    /// 行動順は .Order.cs、状態異常・こんらん・ターン終わりは .Status.cs、技の効果は .Effects.cs
+    /// 行動順は .Order.cs、状態異常・こんらん・ターン終わりは .Status.cs、技の効果は .Effects.cs、特性・持ち物は .Abilities.cs / .Items.cs
     /// </summary>
     public sealed partial class BattleEngine
     {
@@ -20,13 +20,17 @@ namespace PenguinMonster.Battle
             _random = random;
         }
 
-        /// <summary>バトル開始時、先頭のペンモンを場に出す</summary>
+        /// <summary>バトル開始時、先頭のペンモンを場に出す。両方出てから、すばやさの高い側から場に出たときの特性</summary>
         public List<BattleEvent> StartBattle()
         {
             var events = new List<BattleEvent>();
             foreach (var side in _state.Sides)
             {
                 events.Add(BattleEvent.Of(BattleEventKind.SentOut, side.Index, side.Active));
+            }
+            foreach (var side in SidesBySpeed())
+            {
+                OnSentOut(side.Index, events);
             }
             return events;
         }
@@ -64,7 +68,9 @@ namespace PenguinMonster.Battle
             }
 
             battleSide.SetActive(partyIndex);
-            return new List<BattleEvent> { BattleEvent.Of(BattleEventKind.SentOut, side, battleSide.Active) };
+            var events = new List<BattleEvent> { BattleEvent.Of(BattleEventKind.SentOut, side, battleSide.Active) };
+            OnSentOut(side, events);
+            return events;
         }
 
         private void Execute(int side, BattleAction action, List<BattleEvent> events)
@@ -123,6 +129,7 @@ namespace PenguinMonster.Battle
             }
             ThawByFire(1 - side, target, move, events);
             ApplySecondaryEffects(side, move, events);
+            AfterAttack(side, user, target, move, events);
         }
 
         /// <summary>命中 × 命中ランク ÷ 回避ランク（仕様書 §4.3）。ランクは差を -6〜+6 に収めて1つの倍率にする</summary>
@@ -141,7 +148,9 @@ namespace PenguinMonster.Battle
                 return;
             }
 
-            target.TakeDamage(result.Damage);
+            int damage = result.Damage;
+            bool endured = TryEndure(target, ref damage);
+            target.TakeDamage(damage);
             events.Add(BattleEvent.Of(BattleEventKind.Damaged, targetSide, target));
             if (result.IsCritical)
             {
@@ -155,15 +164,21 @@ namespace PenguinMonster.Battle
             {
                 events.Add(BattleEvent.Of(BattleEventKind.NotVeryEffective, targetSide, target));
             }
+            if (endured)
+            {
+                events.Add(BattleEvent.Of(BattleEventKind.ItemEndured, targetSide, target));
+            }
             CheckFainted(targetSide, target, events);
+            CheckHpItem(targetSide, target, events);
         }
 
-        /// <summary>技以外のダメージ（こんらんの自傷・どく・やけど）。HPの変化と文を1つのイベントで表す</summary>
+        /// <summary>技以外のダメージ（こんらんの自傷・どく・やけど・特性・持ち物の反動）。HPの変化と文を1つのイベントで表す</summary>
         private void ApplyDirectDamage(int side, BattleMonster monster, int damage, BattleEventKind kind, List<BattleEvent> events)
         {
             monster.TakeDamage(damage);
             events.Add(BattleEvent.Of(kind, side, monster));
             CheckFainted(side, monster, events);
+            CheckHpItem(side, monster, events);
         }
 
         private void CheckFainted(int side, BattleMonster monster, List<BattleEvent> events)

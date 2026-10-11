@@ -1,3 +1,5 @@
+using System.Linq;
+
 namespace PenguinMonster.Battle.Tests
 {
     /// <summary>
@@ -28,6 +30,13 @@ namespace PenguinMonster.Battle.Tests
             int attack = 50, int defense = 50)
         {
             return new MonsterDefinition(0, name, new[] { type }, new Stats(50, attack, defense, 50, 50, speed), moves);
+        }
+
+        /// <summary>特性・持ち物だけを変えた写し</summary>
+        public static MonsterDefinition With(MonsterDefinition monster, Ability ability = Ability.None, HeldItem item = HeldItem.None)
+        {
+            return new MonsterDefinition(monster.No, monster.Name, monster.Types.ToArray(), monster.BaseStats, monster.Moves.ToArray(),
+                monster.Look, ability, item);
         }
 
         public static MonsterDefinition[] Party(string prefix, int speed, MoveDefinition move, int attack = 50, int defense = 50)

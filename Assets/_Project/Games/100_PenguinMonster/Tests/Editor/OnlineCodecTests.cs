@@ -55,12 +55,18 @@ namespace PenguinMonster.Battle.Tests
             }
         }
 
-        [Test]
-        public void MirrorFollowsHostUntilTheEnd()
+        /// <summary>24体を6体ずつに分けて全員戦わせ、特性・持ち物で HP が増減しても写しがずれないかも見る</summary>
+        [TestCase(0)]
+        [TestCase(6)]
+        [TestCase(12)]
+        [TestCase(18)]
+        public void MirrorFollowsHostUntilTheEnd(int firstIndex)
         {
+            var hostTeam = MonsterTable.All.Skip(firstIndex).Take(3).ToList();
+            var guestTeam = MonsterTable.All.Skip(firstIndex + 3).Take(3).ToList();
             var random = new System.Random(7);
-            var host = new BattleEngine(new BattleState(HostTeam, GuestTeam), random);
-            var mirror = new BattleState(GuestTeam, HostTeam);
+            var host = new BattleEngine(new BattleState(hostTeam, guestTeam), random);
+            var mirror = new BattleState(guestTeam, hostTeam);
             var cpu = new CpuPlayer(new System.Random(3), CpuLevel.Normal);
 
             Send(host.StartBattle(), host, mirror);

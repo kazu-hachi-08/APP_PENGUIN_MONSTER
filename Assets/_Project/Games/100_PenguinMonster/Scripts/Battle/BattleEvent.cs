@@ -31,6 +31,18 @@ namespace PenguinMonster.Battle
         StatChanged,
         /// <summary>ランクがもう変わらない。Amount の符号が上げようとしたか下げようとしたか</summary>
         StatUnchanged,
+        /// <summary>特性が働いた（「〇〇の こわもて！」）。続くイベントがその効果</summary>
+        AbilityActivated,
+        /// <summary>特性 とげとげはだ で受けたダメージ</summary>
+        AbilityDamage,
+        /// <summary>持ち物で HP が回復した（ほしざかな・おやつのイカ）</summary>
+        ItemHealed,
+        /// <summary>持ち物で状態異常が治った（さっぱりこんぶ）</summary>
+        ItemCured,
+        /// <summary>持ち物で HP1 で残った（ふんばりマフラー）</summary>
+        ItemEndured,
+        /// <summary>持ち物の反動で HP が減った（いのちのつらら）</summary>
+        ItemRecoil,
     }
 
     /// <summary>

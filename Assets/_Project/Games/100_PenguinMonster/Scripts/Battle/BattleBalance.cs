@@ -72,5 +72,29 @@ namespace PenguinMonster.Battle
         public const int ConfusionMaxTurns = 5;
         public const int ConfusionSelfHitDenominator = 3;
         public const int ConfusionSelfHitPower = 40;
+
+        // 特性（仕様書 §4.6）
+        public const int IntimidateStages = -1;
+        public const int TailwindStages = 1;
+        public const int MomentumStages = 1;
+        /// <summary>せとぎわ: HPが最大HPのこの分の1以下で発動</summary>
+        public const int LastStandHpDenominator = 3;
+        public const float LastStandMultiplier = 1.5f;
+        public const float ThickFatMultiplier = 0.5f;
+        /// <summary>ビリビリボディ・どくぬめり が起きる確率（%）</summary>
+        public const int ContactAbilityPercent = 30;
+        public const int SpikySkinDamageDenominator = 8;
+
+        // 持ち物（仕様書 §4.6）。回復・反動は最大HPを割る数
+        public const int StarFishHealDenominator = 16;
+        public const int SquidSnackHealDenominator = 4;
+        /// <summary>おやつのイカ: HPが最大HPのこの分の1以下で使う</summary>
+        public const int SquidSnackHpDenominator = 2;
+        public const float FeatherMultiplier = 1.2f;
+        public const float LifeIcicleMultiplier = 1.3f;
+        public const int LifeIcicleRecoilDenominator = 10;
+        public const float SharpGlassesMultiplier = 1.2f;
+        public const float LightFeatherSpeedMultiplier = 1.2f;
+        public const float SnowCoatMultiplier = 0.75f;
     }
 }

@@ -83,7 +83,10 @@ namespace PenguinMonster.Battle
             events.Add(BattleEvent.Of(BattleEventKind.Thawed, targetSide, target));
         }
 
-        /// <summary>ターン終わりの どく・やけど のダメージ。すばやさの高い側から（同速は陣営0から）</summary>
+        /// <summary>
+        /// ターン終わりの どく・やけど のダメージ → 持ち物（ほしざかな）→ 特性（おいかぜのり）。
+        /// すばやさの高い側から（同速は陣営0から）1体ずつ全部済ませる
+        /// </summary>
         private void ApplyEndOfTurn(List<BattleEvent> events)
         {
             foreach (var side in SidesBySpeed())
@@ -93,11 +96,17 @@ namespace PenguinMonster.Battle
                     return;
                 }
                 var monster = side.Active;
-                int damage = monster.IsFainted ? 0 : StatusDamage(monster);
+                if (monster.IsFainted)
+                {
+                    continue;
+                }
+                int damage = StatusDamage(monster);
                 if (damage > 0)
                 {
                     ApplyDirectDamage(side.Index, monster, damage, BattleEventKind.StatusDamage, events);
                 }
+                ApplyEndOfTurnItem(side.Index, monster, events);
+                ApplyEndOfTurnAbility(side.Index, monster, events);
             }
         }
 

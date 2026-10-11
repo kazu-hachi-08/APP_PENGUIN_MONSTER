@@ -54,6 +54,8 @@ namespace PenguinMonster.View
                     break;
                 case BattleEventKind.StatusDamage:
                 case BattleEventKind.HurtItself:
+                case BattleEventKind.AbilityDamage:
+                case BattleEventKind.ItemRecoil:
                     // 技以外のダメージは、先に HP を減らしてから理由の文を出す
                     BattleSounds.Play(BattleSound.Hit);
                     yield return ViewOf(e.Side).Blink();
@@ -63,7 +65,14 @@ namespace PenguinMonster.View
                 case BattleEventKind.StatusInflicted:
                 case BattleEventKind.WokeUp:
                 case BattleEventKind.Thawed:
+                case BattleEventKind.ItemCured:
                     yield return PlayStatusChange(e, message);
+                    break;
+                case BattleEventKind.ItemHealed:
+                    // 回復は HP が増えてから理由の文を出す（減るときと同じ順）
+                    BattleSounds.Play(BattleSound.StatUp);
+                    yield return InfoOf(e.Side).AnimateHp(e.Hp);
+                    yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.Confused:
                     BattleSounds.Play(BattleSound.Status);

@@ -71,6 +71,7 @@ namespace PenguinMonster.Battle
                 : 0;
             receiver.SetStatus(status, sleepTurns);
             events.Add(BattleEvent.Of(BattleEventKind.StatusInflicted, side, receiver));
+            CureByItem(side, receiver, events);
         }
 
         private void TryConfuse(int side, BattleMonster receiver, bool reportFailure, List<BattleEvent> events)

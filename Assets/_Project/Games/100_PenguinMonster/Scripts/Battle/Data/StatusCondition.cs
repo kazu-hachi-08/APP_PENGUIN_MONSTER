@@ -27,7 +27,7 @@ namespace PenguinMonster.Battle
 
     public static class StatusImmunity
     {
-        /// <summary>原作と同じく、ひ はやけど・こおり はこおり・かみなり はまひにならない</summary>
+        /// <summary>原作と同じく、ひ はやけど・こおり はこおり・かみなり はまひにならない。特性 よふかし は ねむりにならない</summary>
         public static bool IsImmune(MonsterDefinition monster, StatusCondition status)
         {
             switch (status)
@@ -35,6 +35,7 @@ namespace PenguinMonster.Battle
                 case StatusCondition.Burn: return monster.HasType(MonsterType.Fire);
                 case StatusCondition.Freeze: return monster.HasType(MonsterType.Ice);
                 case StatusCondition.Paralysis: return monster.HasType(MonsterType.Thunder);
+                case StatusCondition.Sleep: return monster.Ability == Ability.NightOwl;
                 default: return false;
             }
         }
