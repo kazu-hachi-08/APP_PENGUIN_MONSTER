@@ -10,8 +10,6 @@ namespace PenguinMonster.View.Art
     {
         public const float CenterX = 32f;
 
-        private const float EyeRadiusX = 2.1f;
-        private const float EyeRadiusY = 2.6f;
         private const float SmileThickness = 0.6f;
         private const float BeakDrop = 3.5f;
         private const float CheekDrop = 3f;
@@ -143,33 +141,69 @@ namespace PenguinMonster.View.Art
             Ellipse(x - 1f, y + 1f, radiusX - LightInset, radiusY - LightInset, PenguinPalette.Belly);
         }
 
-        /// <summary>
-        /// 目・くちばし・ほっぺ。目は小さめの丸に縦2ドットの光を入れる（大きな黒目は見つめられているようで怖く見えたため）
-        /// </summary>
-        public void Face(float x, float eyeY, float eyeOffsetX, bool smile = false)
+        /// <summary>目・くちばし・ほっぺ。目の種類はデザインごとに選ぶ（全員同じ目だと同じ顔に見えたため）</summary>
+        public void Face(float x, float eyeY, float eyeOffsetX, EyeStyle eyes)
         {
             if (!Front) return;
-            if (smile)
+            if (eyes == EyeStyle.Smile)
             {
                 SmileEye(x - eyeOffsetX, eyeY);
                 SmileEye(x + eyeOffsetX, eyeY);
             }
             else
             {
-                Eye(x - eyeOffsetX, eyeY);
-                Eye(x + eyeOffsetX, eyeY);
+                PatternEyes(x, eyeY, eyeOffsetX, eyes);
             }
             Beak(x, eyeY - BeakDrop);
             Cheeks(x, eyeY - CheekDrop, eyeOffsetX);
         }
 
-        private void Eye(float x, float y)
+        // 左目の形（上の行から。'#' = 黒、'o' = 光）。数ドットの目は楕円で描くと形が崩れるので、ドットで直接持つ。
+        // どれも小さくしてある（大きな黒目は見つめられているようで怖く見えたため）
+        private static readonly string[] DotEye = { "##", "##" };
+        private static readonly string[] RoundEye = { "o#", "##", "##" };
+        private static readonly string[] SleepyEye = { "####", ".##." };
+        // 上の辺が顔の内側へ下がると、キリッとした目つきになる
+        private static readonly string[] SharpEye = { "##..", "####", ".##." };
+
+        private static string[] EyePattern(EyeStyle eyes)
         {
-            Ellipse(x, y - 0.5f, EyeRadiusX, EyeRadiusY, PenguinPalette.Eye);
-            int ix = Mathf.RoundToInt(x) - 1;
-            int iy = Mathf.RoundToInt(y);
-            Dot(ix, iy, PenguinPalette.EyeLight);
-            Dot(ix, iy - 1, PenguinPalette.EyeLight);
+            switch (eyes)
+            {
+                case EyeStyle.Round: return RoundEye;
+                case EyeStyle.Sleepy: return SleepyEye;
+                case EyeStyle.Sharp: return SharpEye;
+                default: return DotEye;
+            }
+        }
+
+        /// <summary>
+        /// 右目は左目を顔の中心で折り返した位置に置き、左右で同じ形にする。
+        /// キリッ目だけ形も反転する（内側が下がる向きを左右でそろえるため）。光は両目とも同じ側に入れたいので丸目は反転しない
+        /// </summary>
+        private void PatternEyes(float x, float y, float eyeOffsetX, EyeStyle eyes)
+        {
+            var pattern = EyePattern(eyes);
+            int width = pattern[0].Length;
+            int height = pattern.Length;
+            int left = Mathf.RoundToInt(x - eyeOffsetX - width / 2f);
+            int right = Mathf.RoundToInt(x * 2f) - left - width;
+            int top = Mathf.RoundToInt(y + height / 2f) - 1;
+            bool flipRight = eyes == EyeStyle.Sharp;
+            for (int row = 0; row < height; row++)
+            {
+                for (int col = 0; col < width; col++)
+                {
+                    EyeDot(left + col, top - row, pattern[row][col]);
+                    EyeDot(right + col, top - row, pattern[row][flipRight ? width - 1 - col : col]);
+                }
+            }
+        }
+
+        private void EyeDot(int x, int y, char c)
+        {
+            if (c == '#') Dot(x, y, PenguinPalette.Eye);
+            else if (c == 'o') Dot(x, y, PenguinPalette.EyeLight);
         }
 
         private void SmileEye(float x, float y)

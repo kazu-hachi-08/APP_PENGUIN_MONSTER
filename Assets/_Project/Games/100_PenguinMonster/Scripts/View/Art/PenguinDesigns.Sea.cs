@@ -27,7 +27,7 @@ namespace PenguinMonster.View.Art
             b.Belly(28f, 19f, 9f, 9f);
             b.Shaded(28f, 35f, 12f, 12f, body);
             b.White(28f, 34f, 9f, 7f);
-            b.Face(28f, 34f, 4.5f, smile: true);
+            b.Face(28f, 34f, 4.5f, EyeStyle.Smile);
             b.Shaded(CenterX, 7f, 28f, 7f, Water);
             b.Line(0.7f, DeepWater, V(8, 6), V(20, 8), V(32, 6), V(44, 8), V(56, 6));
             for (int x = 7; x <= 57; x += 7)
@@ -52,7 +52,7 @@ namespace PenguinMonster.View.Art
             b.Belly(CenterX, 17f, 8f, 10f);
             b.Shaded(CenterX, 35f, 12f, 12f, body);
             b.White(CenterX, 34f, 9f, 7f);
-            b.Face(CenterX, 34f, 4.5f);
+            b.Face(CenterX, 34f, 4.5f, EyeStyle.Dot);
             b.Line(2f, ring, ArcPoints(CenterX, RingY, RingRadiusX, RingRadiusY, Mathf.PI, Mathf.PI * 2f));
             b.Line(0.6f, PenguinPalette.Belly, ArcPoints(CenterX, RingY - 1f, RingRadiusX - 3f, RingRadiusY - 2f, Mathf.PI * 1.2f, Mathf.PI * 1.6f));
             b.Line(1f, PenguinPalette.Shade(body), V(32, 46), V(34, 50), V(31, 52), V(29, 49), V(31, 48));
@@ -75,7 +75,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse2(14f, 50f, 1.6f, 1.6f, coralTip);
             b.Ellipse2(16f, 59f, 1.6f, 1.6f, coralTip);
             b.Ellipse2(23f, 58f, 1.6f, 1.6f, coralTip);
-            b.Face(CenterX, 32f, 5f);
+            b.Face(CenterX, 32f, 5f, EyeStyle.Round);
         }
 
         /// <summary>楕円の弧を折れ線の点にする（角度はラジアン、0 が右）</summary>

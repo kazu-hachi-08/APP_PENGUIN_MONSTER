@@ -16,7 +16,7 @@ namespace PenguinMonster.View.Art
             b.Triangle2(V(21, 41), V(27, 45), V(17, 54), IceLight);
             b.Triangle(V(28, 45), V(36, 45), V(32, 60), IceLight);
             b.Triangle(V(32, 45), V(36, 45), V(32, 60), IceShade);
-            b.Face(CenterX, 32f, 5f);
+            b.Face(CenterX, 32f, 5f, EyeStyle.Round);
         }
 
         /// <summary>No.7 ヒョウガペン: 氷河のよろいで角ばった体。肩に氷のとげ</summary>
@@ -34,7 +34,7 @@ namespace PenguinMonster.View.Art
             b.Sparkle(24, 25, IceLight);
             b.Shaded(CenterX, 40f, 11f, 11f, Rgb(60, 80, 130));
             b.White(CenterX, 39f, 8f, 6.5f);
-            b.Face(CenterX, 39f, 4f);
+            b.Face(CenterX, 39f, 4f, EyeStyle.Sharp);
         }
 
         /// <summary>No.8 ホシペン: 頭に星をのせて ふわふわ浮く。足は無く、まわりにきらめき</summary>
@@ -49,7 +49,7 @@ namespace PenguinMonster.View.Art
             b.White(CenterX, 35f, 8f, 6.5f);
             b.Star(CenterX, 52f, 7f, 3f, PenguinPalette.Gold);
             b.Star(31f, 53f, 4f, 1.7f, sparkle);
-            b.Face(CenterX, 35f, 4f, smile: true);
+            b.Face(CenterX, 35f, 4f, EyeStyle.Smile);
             b.Sparkle(12, 40, sparkle);
             b.Sparkle(52, 28, sparkle);
             b.Sparkle(14, 20, sparkle);
@@ -80,7 +80,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(CenterX, 41f, 11f, 11f, navy);
             b.White(CenterX, 40f, 8f, 6.5f);
             b.Ellipse2(22.5f, 39f, 2.5f, 4f, Rgb(250, 190, 60));
-            b.Face(CenterX, 40f, 4f);
+            b.Face(CenterX, 40f, 4f, EyeStyle.Sharp);
             b.Rect(26, 50, 12, 3, PenguinPalette.Gold);
             b.Triangle2(V(26, 52), V(30, 52), V(27, 58), PenguinPalette.Gold);
             b.Triangle(V(30, 52), V(34, 52), V(32, 59), PenguinPalette.Gold);
@@ -102,7 +102,7 @@ namespace PenguinMonster.View.Art
             b.Belly(CenterX, 24f, 7f, 6.5f);
             b.Shaded(CenterX, 38f, 11f, 11f, body);
             b.White(CenterX, 37f, 8f, 6.5f);
-            b.Face(CenterX, 37f, 4f);
+            b.Face(CenterX, 37f, 4f, EyeStyle.Sleepy);
         }
     }
 }

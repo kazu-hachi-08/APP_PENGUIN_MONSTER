@@ -20,7 +20,7 @@ namespace PenguinMonster.View.Art
             b.Triangle(V(40, 6), V(44, 12), V(54, 12), FlameOuter);
             b.Triangle(V(42, 8), V(44, 11), V(50, 11), FlameInner);
             StandardBody(b, Rgb(215, 75, 55), 15f, 11f, 13f, 32f, 12f);
-            b.Face(CenterX, 31f, 4f);
+            b.Face(CenterX, 31f, 4f, EyeStyle.Sharp);
         }
 
         /// <summary>No.15 カザンペン: 体そのものが火山。てっぺんの火口から溶岩が噴き出す</summary>
@@ -43,7 +43,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(25f, 53f, 2.5f, 2.5f, FlameOuter);
             b.Ellipse(39f, 56f, 2f, 2f, FlameInner);
             b.White(CenterX, 19f, 11f, 8f);
-            b.Face(CenterX, 20f, 5f);
+            b.Face(CenterX, 20f, 5f, EyeStyle.Sharp);
         }
 
         /// <summary>No.16 タキビペン: たき火の炎そのものの体。足元に薪</summary>
@@ -62,7 +62,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(CenterX, 17f, 13f, 11f, FlameMiddle);
             b.Triangle(V(21, 22), V(43, 22), V(32, 50), FlameMiddle);
             b.Ellipse(CenterX, 16f, 10f, 8f, FlameInner);
-            b.Face(CenterX, 18f, 5f, smile: true);
+            b.Face(CenterX, 18f, 5f, EyeStyle.Smile);
         }
     }
 }

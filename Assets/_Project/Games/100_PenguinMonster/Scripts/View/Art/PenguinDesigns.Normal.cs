@@ -19,7 +19,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(CenterX, 32f, 14f, 14f, navy);
             b.White(CenterX, 31f, 11f, 9.5f);
             b.Line(0.8f, navyShade, V(32, 45), V(30, 50), V(33, 52));
-            b.Face(CenterX, 31f, 5f, smile: true);
+            b.Face(CenterX, 31f, 5f, EyeStyle.Smile);
         }
 
         /// <summary>No.12 モフペン: コウテイペンギンのひなの綿毛で まんまる。黒いぼうしと白いお面</summary>
@@ -53,7 +53,7 @@ namespace PenguinMonster.View.Art
                 b.Ellipse2(25f, 30f, 8f, 7f, PenguinPalette.Belly);
                 b.Ellipse(CenterX, 27f, 9f, 6f, PenguinPalette.Belly);
             }
-            b.Face(CenterX, 31f, 6f);
+            b.Face(CenterX, 31f, 6f, EyeStyle.Dot);
             b.Ellipse2(12f, 20f, 3.5f, 6f, fluffShade);
         }
     }

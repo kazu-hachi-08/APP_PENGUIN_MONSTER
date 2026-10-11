@@ -25,7 +25,7 @@ namespace PenguinMonster.View.Art
             b.White(17f, 26f, 10f, 7f);
             b.Ellipse(10.5f, 37f, 3.5f, 2f, white);
             b.Ellipse(23.5f, 37f, 3.5f, 2f, white);
-            b.Face(17f, 29f, 5f);
+            b.Face(17f, 29f, 5f, EyeStyle.Sharp);
         }
 
         /// <summary>No.23 ヨルペン: 星をちりばめた夜空のマントと、頭の三日月</summary>
@@ -45,7 +45,7 @@ namespace PenguinMonster.View.Art
             b.Belly(CenterX, 15f, 7f, 9f);
             b.Shaded(CenterX, 33f, 12f, 12f, body);
             b.White(CenterX, 32f, 9f, 7f);
-            b.Face(CenterX, 32f, 4.5f);
+            b.Face(CenterX, 32f, 4.5f, EyeStyle.Sleepy);
             b.Ellipse(CenterX, 51f, 6f, 6f, Rgb(255, 230, 120));
             b.Erase(35f, 53f, 5f, 5f);
         }
@@ -58,7 +58,7 @@ namespace PenguinMonster.View.Art
             Ribbon(b, Rgb(240, 140, 220), V(38, 32), V(46, 38), V(50, 46), V(56, 52), V(60, 58));
             StandardBody(b, Rgb(200, 190, 240), 15f, 12f, 12f, 31f, 12f);
             b.Ellipse(CenterX, 41f, 1.5f, 1.5f, Rgb(120, 200, 250));
-            b.Face(CenterX, 30f, 4.5f);
+            b.Face(CenterX, 30f, 4.5f, EyeStyle.Dot);
         }
 
         /// <summary>太い帯の中心に細い明るい線を通して、光っているように見せる</summary>

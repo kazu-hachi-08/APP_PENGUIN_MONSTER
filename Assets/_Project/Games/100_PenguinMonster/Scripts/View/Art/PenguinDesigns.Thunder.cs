@@ -19,7 +19,7 @@ namespace PenguinMonster.View.Art
             var tuft = new[] { V(34, 43), V(30, 49), V(34, 50), V(30, 57) };
             b.Line(1.3f, BoltShade, tuft);
             b.Line(0.7f, Bolt, tuft);
-            b.Face(CenterX, 31f, 4f);
+            b.Face(CenterX, 31f, 4f, EyeStyle.Round);
         }
 
         /// <summary>No.17 ライペン: 背中に雷さまの太鼓の輪を背負う</summary>
@@ -46,7 +46,7 @@ namespace PenguinMonster.View.Art
             b.Belly(CenterX, 15f, 9f, 9f);
             b.Shaded(CenterX, 32f, 13f, 13f, body);
             b.White(CenterX, 31f, 10f, 7.5f);
-            b.Face(CenterX, 31f, 5f);
+            b.Face(CenterX, 31f, 5f, EyeStyle.Round);
         }
 
         /// <summary>No.18 アラシペン: 体が嵐の雲。下に いなずまを垂らして浮かぶ</summary>
@@ -74,7 +74,7 @@ namespace PenguinMonster.View.Art
                 b.Ellipse(p.x - 1f, p.y + 1f, p.z - 1.5f, p.w - 1.5f, cloud);
             }
             b.White(CenterX, 27f, 10f, 7f);
-            b.Face(CenterX, 28f, 4.5f);
+            b.Face(CenterX, 28f, 4.5f, EyeStyle.Sleepy);
         }
     }
 }

@@ -30,7 +30,7 @@ namespace PenguinMonster.View.Art
             b.Belly(CenterX, 15f, 6.5f, 10f);
             b.Shaded(CenterX, 36f, 11f, 11f, sky);
             b.White(CenterX, 35f, 8.5f, 7.5f);
-            b.Face(CenterX, 36f, 4.5f);
+            b.Face(CenterX, 36f, 4.5f, EyeStyle.Round);
         }
 
         /// <summary>No.21 カゼペン: 小さな竜巻にのって浮かぶ。マフラーが風になびく</summary>
@@ -52,7 +52,7 @@ namespace PenguinMonster.View.Art
             b.Line(1.8f, scarf, V(36, 33), V(42, 35), V(48, 36), V(54, 35), V(59, 33));
             b.Shaded(CenterX, 42f, 11f, 11f, mint);
             b.White(CenterX, 41f, 8f, 6.5f);
-            b.Face(CenterX, 41f, 4f);
+            b.Face(CenterX, 41f, 4f, EyeStyle.Dot);
         }
     }
 }

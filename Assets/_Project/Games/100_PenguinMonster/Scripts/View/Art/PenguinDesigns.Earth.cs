@@ -30,7 +30,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(21f, 34f, 2.5f, 1.5f, Rgb(120, 200, 90));
             b.Ellipse(26f, 35f, 2.5f, 1.5f, Rgb(120, 200, 90));
             b.White(CenterX, 15f, 10f, 7.5f);
-            b.Face(CenterX, 16f, 5f, smile: true);
+            b.Face(CenterX, 16f, 5f, EyeStyle.Smile);
         }
 
         /// <summary>No.6 イワペン: 体より大きな岩を背負った ずんぐり</summary>
@@ -49,7 +49,7 @@ namespace PenguinMonster.View.Art
             b.Belly(CenterX, 12f, 9f, 8f);
             b.Shaded(CenterX, 27f, 11f, 9.5f, brown);
             b.White(CenterX, 26f, 8.5f, 6.5f);
-            b.Face(CenterX, 27f, 4.5f);
+            b.Face(CenterX, 27f, 4.5f, EyeStyle.Dot);
         }
 
         /// <summary>No.19 ノリペン: 長い海藻の髪が体の両わきまで垂れる</summary>
@@ -65,7 +65,7 @@ namespace PenguinMonster.View.Art
             StandardBody(b, Rgb(60, 110, 80), 15f, 13f, 13f, 32f, 12f);
             b.Ellipse(CenterX, 41f, 12.5f, 5f, kelp);
             b.Line2(1f, kelp, V(27, 40), V(26, 37));
-            b.Face(CenterX, 31f, 4.5f);
+            b.Face(CenterX, 31f, 4.5f, EyeStyle.Sleepy);
         }
 
         /// <summary>上から下へゆらゆら波打つ線。海藻が水にゆれているように見せる</summary>
