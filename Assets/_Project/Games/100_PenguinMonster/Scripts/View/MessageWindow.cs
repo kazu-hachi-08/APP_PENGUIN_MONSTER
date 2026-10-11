@@ -60,9 +60,11 @@ namespace PenguinMonster.View
             _nextIndicator.SetActive(false);
             _advanceRequested = false;
             float shown = 0f;
+            // 設定画面で変えた速さをすぐ反映するよう、1文ごとに読む
+            float charsPerSecond = _charsPerSecond * GameSettings.SpeedRate;
             while (shown < message.Length && !_advanceRequested)
             {
-                shown += _charsPerSecond * Time.deltaTime;
+                shown += charsPerSecond * Time.deltaTime;
                 _text.text = message.Substring(0, Mathf.Min(message.Length, Mathf.FloorToInt(shown)));
                 yield return null;
             }

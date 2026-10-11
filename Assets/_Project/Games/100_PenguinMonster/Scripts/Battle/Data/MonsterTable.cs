@@ -102,6 +102,24 @@ namespace PenguinMonster.Battle
             throw new ArgumentException($"No.{no} のペンモンはいない", nameof(no));
         }
 
+        /// <summary>ずかんの しぼりこみ。type が null なら全員。2タイプのペンモンはどちらのタイプでも出る</summary>
+        public static IReadOnlyList<MonsterDefinition> WithType(MonsterType? type)
+        {
+            if (type == null)
+            {
+                return All;
+            }
+            var result = new List<MonsterDefinition>();
+            foreach (var monster in All)
+            {
+                if (monster.HasType(type.Value))
+                {
+                    result.Add(monster);
+                }
+            }
+            return result;
+        }
+
         // 1行を短くするための別名。並びは MonsterDefinition / MonsterLook のコンストラクタと同じ
         private static MonsterDefinition Monster(int no, string name, MonsterType[] types, Stats stats, MoveDefinition[] moves, MonsterLook look,
             Ability ability, HeldItem item)

@@ -11,8 +11,7 @@ namespace PenguinMonster.Editor
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
-        // 仕様書 §2 のメニュー。勝ち抜き戦とオンライン対戦が押せる。他は作ったフェーズで押せるようにする
-        private static readonly string[] ComingSoonMenus = { "ずかん", "タイプ相性表", "あそびかた", "設定" };
+        // 仕様書 §2 のメニュー。勝ち抜き戦・オンライン対戦のあとに、SubMenuLabels（ずかん〜設定）を並べる
         private const string SurvivalMenu = "勝ち抜き戦";
         private const string OnlineMenu = "オンライン対戦";
         private const int PlayableMenuCount = 2;
@@ -44,7 +43,7 @@ namespace PenguinMonster.Editor
         private static readonly Color OnlineColor = new Color(0.2f, 0.55f, 0.4f);
         private static readonly Color MenuColor = new Color(0.35f, 0.45f, 0.65f);
 
-        private static TitlePanel CreateTitlePanel(Transform parent)
+        private static TitlePanel CreateTitlePanel(Transform parent, SubMenuPanel[] subMenus)
         {
             var back = CreateImage(parent, "TitlePanel", TitleBackColor);
             UIDialogBuilder.SetStretchAll(back.rectTransform);
@@ -72,17 +71,18 @@ namespace PenguinMonster.Editor
             var menu = CreateTitleMenu(back.transform);
             var survival = CreateTitleMenuButton(menu, SurvivalMenu, SurvivalColor);
             var online = CreateTitleMenuButton(menu, OnlineMenu, OnlineColor);
-            var comingSoon = new Button[ComingSoonMenus.Length];
-            for (int i = 0; i < comingSoon.Length; i++)
+            var subMenuButtons = new Button[SubMenuLabels.Length];
+            for (int i = 0; i < subMenuButtons.Length; i++)
             {
-                comingSoon[i] = CreateTitleMenuButton(menu, ComingSoonMenus[i], MenuColor);
+                subMenuButtons[i] = CreateTitleMenuButton(menu, SubMenuLabels[i], MenuColor);
             }
 
             var panel = back.gameObject.AddComponent<TitlePanel>();
             var so = new SerializedObject(panel);
             so.FindProperty("_survivalButton").objectReferenceValue = survival;
             so.FindProperty("_onlineButton").objectReferenceValue = online;
-            SetArray(so.FindProperty("_comingSoonButtons"), comingSoon);
+            SetArray(so.FindProperty("_subMenuButtons"), subMenuButtons);
+            SetArray(so.FindProperty("_subMenus"), subMenus);
             SetArray(so.FindProperty("_mascots"), mascots);
             so.FindProperty("_bestText").objectReferenceValue = best;
             so.ApplyModifiedProperties();
@@ -93,7 +93,7 @@ namespace PenguinMonster.Editor
 
         private static Transform CreateTitleMenu(Transform parent)
         {
-            int rows = (ComingSoonMenus.Length + PlayableMenuCount + TitleMenuColumns - 1) / TitleMenuColumns;
+            int rows = (SubMenuLabels.Length + PlayableMenuCount + TitleMenuColumns - 1) / TitleMenuColumns;
             var size = new Vector2(
                 TitleMenuColumns * TitleMenuButtonSize.x + (TitleMenuColumns - 1) * TitleMenuSpacing.x,
                 rows * TitleMenuButtonSize.y + (rows - 1) * TitleMenuSpacing.y);

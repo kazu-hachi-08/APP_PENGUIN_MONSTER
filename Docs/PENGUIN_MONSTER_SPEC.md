@@ -39,6 +39,15 @@
  └ 設定
 ```
 
+### 2.0 タイトルから開く画面
+
+どれも左上の「もどる」でタイトルへ戻る。
+
+- ずかん: 上の帯でタイプをしぼりこむ（すべて + 10タイプ。2タイプのペンモンはどちらでも出る）。左の一覧で押したペンモンの 絵・No・名前・タイプ・種族値・特性と持ち物（説明つき）・技4つ（タイプ・分類・威力・命中・先制・効果）を右に出す
+- タイプ相性表: §3.4 の表をそのまま出す（2 は赤・½ は青・0 は灰。等倍は空欄）
+- あそびかた: タブで ドラフト / せんしゅつ / バトル / かちぬきせん を切り替える。文面は `HowToPanel` が持つ（ルールを変えたら合わせて直す）
+- 設定: BGM・効果音の音量（スライダー）、メッセージの速さ（おそい 0.5倍 / ふつう / はやい 2倍）
+
 ### 2.1 ドラフト
 
 - ランダムな3体から1体を選ぶ×6回で6体そろえる
@@ -288,7 +297,7 @@
 
 ## 7. UI・演出・サウンド
 
-- メッセージは「こうかは ばつぐんだ！」のような一文ずつの送り表示。文字を1つずつ出し、送り中のタップで全文、読み終わったら▼を出してタップで次へ（窓の外の場をタップしてもよい）
+- メッセージは「こうかは ばつぐんだ！」のような一文ずつの送り表示（速さは設定で変えられる）。文字を1つずつ出し、送り中のタップで全文、読み終わったら▼を出してタップで次へ（窓の外の場をタップしてもよい）
 - 「ゆけっ！」「〇〇の △△！」「もどれ！」の文はタップを待たず、そのまま登場・攻撃の演出へつなげる
 - コマンドは「たたかう / ペンモン」の2つ（にげるは無い）。たたかう → 技4つ（タイプの色付き）＋もどる
 - 演出
@@ -337,6 +346,7 @@
 ## 9. セーブ
 
 - 勝ち抜き戦の最高連勝数、設定（音量・メッセージの速さ）
+- 音量は共通基盤の `AudioManager` が保存する（設定画面を閉じたとき）。メッセージの速さは `GameSettings`（PlayerPrefs）に、押したときに保存する
 - 最高連勝数は共通基盤の `BestScore`（PlayerPrefs）に保存する。勝つたびに更新するので、途中でやめても記録は残る
 - 勝ち抜き戦の途中経過は保存しない（案）。1回が短めなのと、6体と連勝数を復元する手間に見合わないため。アプリを閉じたらその回はおしまい
 
@@ -359,7 +369,7 @@ Scripts/
 │   ├── Draft/Draft.cs      # ドラフトの抽選（3体提示×6回、取ったペンモンは出ない）
 │   ├── Survival/           # 勝ち抜き戦（SurvivalRun: 連勝数・賢さの切り替え・次の相手 / SurvivalOpponent）
 │   ├── Online/             # オンラインで送る中身と int 列の変換（BattleEventCodec: イベント＋ゲストの写しの更新 / OnlineCodec: 行動・ペンモンの並び）
-│   ├── Data/               # タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect）・特性（Ability）・持ち物（HeldItem）／ペンモンの定義と見た目（MonsterLook）・定義表（MoveTable / MonsterTable）・ボス（BossDefinition / BossTable）
+│   ├── Data/               # タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect・ずかん用の説明 MoveDescriptions）・特性（Ability）・持ち物（HeldItem）／ペンモンの定義と見た目（MonsterLook）・定義表（MoveTable / MonsterTable）・ボス（BossDefinition / BossTable）
 │   ├── BattleBalance.cs    # 調整値（Lv・ダメージ式の定数・選出数など）
 │   ├── BattleState / BattleSide / BattleMonster   # バトルの状態（場は配列で持ち、シングルは1）
 │   ├── BattleEngine(.Order/.Status/.Effects/.Abilities/.Items).cs   # ターンの解決（行動順 → 状態異常の判定 → 命中 → ダメージ → 追加効果 → 特性・持ち物 → ひんし → ターン終わり → 勝敗）
@@ -371,6 +381,9 @@ Scripts/
 └── View/                   # 表示（MonoBehaviour、名前空間 PenguinMonster.View）
     ├── GameFlow(.Result/.Online).cs  # 画面の流れ（タイトル → ドラフト → [登場 → 選出 → バトル → 結果] をくり返す）と結果の文面、オンライン対戦の流れ
     ├── TitlePanel / DraftPanel / BattleIntroPanel / SelectPanel  # タイトル・ドラフト・試合前（Nせんめ・ボス登場）・見せ合いと選出の画面。結果は共通基盤の ResultDialog
+    ├── SubMenuPanel / DexPanel / HowToPanel / SettingsPanel  # タイトルから開く画面（相性表は SubMenuPanel のまま。中身は生成時に焼く）
+    ├── GameSettings.cs     # メッセージの速さの保存
+    ├── MonsterTexts / ButtonHighlight  # ドラフトとずかんで共通の文面 / 並んだボタンから1つ選んだときの見た目
     ├── BattleController(.Playback/.Online).cs  # バトルの進行役。入力待ちと BattleEvent の再生、オンラインのホスト / ゲスト
     ├── CountdownTimer.cs   # オンラインの制限時間（残り秒数の表示と時間切れ）
     ├── MonsterView.cs      # 台座の上のペンモンの絵と演出（登場・踏み込み・点滅・ひんし）
@@ -378,10 +391,10 @@ Scripts/
     ├── MessageWindow / CommandPanel / MovePanel / PartyPanel
     ├── BattleBackdrop.cs   # 背景の Image に生成した絵をはめる
     ├── BattleSounds(.Synth).cs  # 仮の効果音（コード生成）
-    ├── TypeColors.cs / StatusColors.cs  # 技ボタンのタイプ色 / 状態異常の印・光る色
+    ├── TypeColors.cs / StatusColors.cs  # 技ボタン・タイプの札の色 / 状態異常の印・光る色
     └── Art/                # ドット絵の生成（PixelCanvas / PenguinPainter(.Parts) / PenguinPalette / MonsterSprites / BackdropArt）
 Editor/
-└── PenguinMonsterSceneBuilder(.Field/.Panels/.Title/.Draft/.Intro/.Select/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
+└── PenguinMonsterSceneBuilder(.Field/.Panels/.Title/.Draft/.Intro/.Select/.Menus/.Dex/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
 Scenes/
 └── PenguinMonsterScene.unity   # 生成物（手で編集しない）
 Tests/Editor/               # EditMode テスト（PenguinMonster.Battle.Tests.asmdef）

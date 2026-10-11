@@ -15,7 +15,8 @@ namespace PenguinMonster.Editor
     /// <summary>
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
     /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、
-    /// タイトルは .Title.cs、ドラフトは .Draft.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs
+    /// タイトルは .Title.cs、ドラフトは .Draft.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
+    /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -111,7 +112,7 @@ namespace PenguinMonster.Editor
         }
 
         /// <summary>
-        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → タイトルの順に手前）と、流れの進行役。
+        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
         /// 結果は共通基盤の ResultDialog を使う。「もう一度遊ぶ」は勝ち抜き戦の「つぎの たたかいへ」に使う
         /// </summary>
         private static void BuildFlow(Transform canvas, BattleController battle)
@@ -124,7 +125,8 @@ namespace PenguinMonster.Editor
             var selectPanel = CreateSelectPanel(root.transform);
             var introPanel = CreateIntroPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
-            var titlePanel = CreateTitlePanel(root.transform);
+            var subMenus = CreateSubMenus(root.transform);
+            var titlePanel = CreateTitlePanel(root.transform, subMenus);
             CreateOnline(canvas, out var session, out var modeSelect);
 
             var flow = root.AddComponent<GameFlow>();

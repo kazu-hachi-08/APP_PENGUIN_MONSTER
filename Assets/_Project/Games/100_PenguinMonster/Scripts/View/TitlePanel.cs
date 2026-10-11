@@ -7,13 +7,16 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// タイトル画面（仕様書 §2）。メニューは全部並べておき、まだ作っていないものは押せなくしておく
+    /// タイトル画面（仕様書 §2）。勝ち抜き戦・オンライン対戦は GameFlow へ渡し、
+    /// ずかん・タイプ相性表・あそびかた・設定はその画面を開いて、閉じたらタイトルに戻る
     /// </summary>
     public class TitlePanel : MonoBehaviour
     {
         [SerializeField] private Button _survivalButton;
         [SerializeField] private Button _onlineButton;
-        [SerializeField] private Button[] _comingSoonButtons;
+        [Tooltip("_subMenus と同じ並び")]
+        [SerializeField] private Button[] _subMenuButtons;
+        [SerializeField] private SubMenuPanel[] _subMenus;
         [SerializeField] private Image[] _mascots;
         [SerializeField] private Text _bestText;
 
@@ -24,9 +27,10 @@ namespace PenguinMonster.View
         {
             _survivalButton.onClick.AddListener(() => Choose(_onSurvival));
             _onlineButton.onClick.AddListener(() => Choose(_onOnline));
-            foreach (var button in _comingSoonButtons)
+            for (int i = 0; i < _subMenuButtons.Length; i++)
             {
-                button.interactable = false;
+                var subMenu = _subMenus[i];
+                _subMenuButtons[i].onClick.AddListener(() => Choose(() => subMenu.Show(onClose: () => gameObject.SetActive(true))));
             }
         }
 

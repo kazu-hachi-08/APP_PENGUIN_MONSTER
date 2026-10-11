@@ -26,12 +26,8 @@ namespace PenguinMonster.View
         [SerializeField] private Image[] _pickedIcons;
         [Tooltip("オンラインの1回ごとの制限時間。オフラインでは隠れたまま")]
         [SerializeField] private CountdownTimer _timer;
-        [SerializeField] private Color _darkLabelColor = new Color(0.2f, 0.2f, 0.25f);
-        [SerializeField] private Color _lightLabelColor = Color.white;
 
-        private const int BadgesPerCard = 2;
-        /// <summary>タイプの色がこれより明るければ、文字を暗い色にして読めるようにする</summary>
-        private const float BrightBadgeThreshold = 0.6f;
+        private const int BadgesPerCard = TypeColors.BadgesPerMonster;
         private const int TraitDescriptionSize = 20;
         private const string TitleFormat = "ドラフト {0}/{1}　ほしい ペンモンを えらんでください";
 
@@ -104,34 +100,9 @@ namespace PenguinMonster.View
         {
             _cardIcons[card].sprite = MonsterSprites.Front(monster);
             _cardNames[card].text = monster.Name;
-            _cardStats[card].text = StatValues(monster.BaseStats);
-            _cardTraits[card].text = Traits(monster);
-            for (int k = 0; k < BadgesPerCard; k++)
-            {
-                int badge = card * BadgesPerCard + k;
-                bool exists = k < monster.Types.Count;
-                _typeBadges[badge].gameObject.SetActive(exists);
-                if (exists)
-                {
-                    var color = TypeColors.Get(monster.Types[k]);
-                    _typeBadges[badge].color = color;
-                    _typeLabels[badge].color = color.grayscale > BrightBadgeThreshold ? _darkLabelColor : _lightLabelColor;
-                    _typeLabels[badge].text = monster.Types[k].ToJapanese();
-                }
-            }
-        }
-
-        /// <summary>特性・持ち物の名前と説明。説明は小さめの文字にして名前を目立たせる</summary>
-        private static string Traits(MonsterDefinition monster)
-        {
-            return $"とくせい <b>{monster.Ability.ToJapanese()}</b>\n<size={TraitDescriptionSize}>{monster.Ability.Description()}</size>\n"
-                + $"もちもの <b>{monster.Item.ToJapanese()}</b>\n<size={TraitDescriptionSize}>{monster.Item.Description()}</size>";
-        }
-
-        /// <summary>種族値を1行ずつ。見出し（HP・こうげき…）はシーン側の別の Text に並べてある</summary>
-        private static string StatValues(Stats s)
-        {
-            return $"{s.Hp}\n{s.Attack}\n{s.Defense}\n{s.SpAttack}\n{s.SpDefense}\n{s.Speed}\n{s.Total}";
+            _cardStats[card].text = MonsterTexts.StatValues(monster.BaseStats);
+            _cardTraits[card].text = MonsterTexts.Traits(monster, TraitDescriptionSize);
+            TypeColors.PaintBadges(monster, _typeBadges, _typeLabels, card * BadgesPerCard);
         }
     }
 }
