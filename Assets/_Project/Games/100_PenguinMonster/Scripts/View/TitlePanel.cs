@@ -14,6 +14,7 @@ namespace PenguinMonster.View
         [SerializeField] private Button _survivalButton;
         [SerializeField] private Button[] _comingSoonButtons;
         [SerializeField] private Image[] _mascots;
+        [SerializeField] private Text _bestText;
 
         private Action _onSurvival;
 
@@ -26,9 +27,10 @@ namespace PenguinMonster.View
             }
         }
 
-        public void Show(Action onSurvival)
+        public void Show(int bestWins, Action onSurvival)
         {
             _onSurvival = onSurvival;
+            _bestText.text = $"勝ち抜き戦 さいこう きろく: {bestWins} れんしょう";
             // 飾りのペンモンは定義表の先頭から順に並べる（絵は実行時に作るのでシーンには焼かない）
             for (int i = 0; i < _mascots.Length; i++)
             {

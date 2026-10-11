@@ -43,6 +43,25 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
+        /// CPU が技を比べるための見込みダメージ。乱数は引かず（急所なし・乱数最大）、命中率を掛ける。
+        /// 変化技と効かない技は 0
+        /// </summary>
+        public static float Expected(BattleMonster attacker, BattleMonster defender, MoveDefinition move)
+        {
+            float effectiveness = TypeChart.GetMultiplier(move.Type, defender.Definition.Types);
+            if (move.IsStatus || effectiveness == 0f)
+            {
+                return 0f;
+            }
+
+            bool isPhysical = move.Category == MoveCategory.Physical;
+            int damage = Compute(move.Power, attacker.AttackStat(isPhysical, false), defender.DefenseStat(isPhysical, false),
+                false, BattleBalance.DamageRandomMaxPercent, attacker.Definition.HasType(move.Type), effectiveness,
+                IsBurnHalved(attacker, isPhysical));
+            return damage * move.Accuracy / (float)BattleBalance.AccuracyPercentMax;
+        }
+
+        /// <summary>
         /// こんらんで自分を攻撃したときのダメージ。原作と同じく威力40の物理で、タイプ・一致・急所は無し
         /// </summary>
         public static int SelfHit(BattleMonster monster, Random random)

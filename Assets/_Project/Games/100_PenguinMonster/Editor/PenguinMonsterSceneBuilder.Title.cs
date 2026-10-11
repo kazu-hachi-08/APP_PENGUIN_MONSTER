@@ -24,6 +24,8 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 TitleMenuPosition = new Vector2(0f, -190f);
         private static readonly Vector2 TitleMenuButtonSize = new Vector2(480f, 110f);
         private static readonly Vector2 TitleMenuSpacing = new Vector2(30f, 30f);
+        private static readonly Vector2 TitleBestPosition = new Vector2(0f, 80f);
+        private static readonly Vector2 TitleBestSize = new Vector2(1200f, 60f);
         private const float TitleMascotX = 720f;
         private const float TitleMascotY = -60f;
         private const float TitleMascotSize = 340f;
@@ -31,6 +33,7 @@ namespace PenguinMonster.Editor
         private const int TitleLogoFontSize = 180;
         private const int TitleSubFontSize = 40;
         private const int TitleMenuFontSize = 44;
+        private const int TitleBestFontSize = 40;
 
         private static readonly Color TitleBackColor = new Color(0.14f, 0.26f, 0.48f);
         private static readonly Color TitleLogoColor = new Color(1f, 0.95f, 0.75f);
@@ -49,6 +52,9 @@ namespace PenguinMonster.Editor
             Place(logo.rectTransform, top, TitleLogoPosition, TitleLogoSize);
             var sub = CreateText(back.transform, "Sub", "ペンギンだけの モンスターバトル", TitleSubFontSize, TitleSubColor, TextAnchor.MiddleCenter);
             Place(sub.rectTransform, top, TitleSubPosition, TitleSubSize);
+            // 最高連勝数はメニューの下。文面は実行時に入れる
+            var best = CreateText(back.transform, "Best", "", TitleSubFontSize, TitleLogoColor, TextAnchor.MiddleCenter);
+            Place(best.rectTransform, new Vector2(0.5f, 0f), TitleBestPosition, TitleBestSize);
 
             var mascots = new Image[TitleMascotCount];
             for (int i = 0; i < mascots.Length; i++)
@@ -73,6 +79,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_survivalButton").objectReferenceValue = survival;
             SetArray(so.FindProperty("_comingSoonButtons"), comingSoon);
             SetArray(so.FindProperty("_mascots"), mascots);
+            so.FindProperty("_bestText").objectReferenceValue = best;
             so.ApplyModifiedProperties();
 
             back.gameObject.SetActive(false);

@@ -18,6 +18,15 @@ namespace PenguinMonster.Battle
         public const int DraftOfferCount = 3;
         public const int DraftRounds = 6;
 
+        // 勝ち抜き戦（仕様書 §2.3 / §4.8）。連勝数がこの数に届いたら CPU の賢さが1段上がる
+        public const int NormalCpuFromWins = 3;
+        public const int StrongCpuFromWins = 6;
+        /// <summary>この戦数ごとにボス（7戦目・14戦目…）</summary>
+        public const int BossInterval = 7;
+        /// <summary>CPU がドラフトで「種族値の合計が一番高い」のを取る確率（%）。1連勝ごとにこれだけ上がる</summary>
+        public const int CpuStrongPickPercentPerWin = 10;
+        public const int PercentMax = 100;
+
         /// <summary>1陣営あたりの場の数。シングルは1、ダブルスは2</summary>
         public const int SingleActiveCount = 1;
 

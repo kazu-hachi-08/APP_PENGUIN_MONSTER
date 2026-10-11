@@ -12,6 +12,9 @@ namespace PenguinMonster.Battle
         public readonly int SpDefense;
         public readonly int Speed;
 
+        /// <summary>6つの合計。種族値の合計は強さの目安に使う（ドラフトのカード・CPU のドラフト）</summary>
+        public int Total => Hp + Attack + Defense + SpAttack + SpDefense + Speed;
+
         public Stats(int hp, int attack, int defense, int spAttack, int spDefense, int speed)
         {
             Hp = hp;

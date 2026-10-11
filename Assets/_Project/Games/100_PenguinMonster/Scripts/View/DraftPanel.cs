@@ -101,8 +101,7 @@ namespace PenguinMonster.View
         /// <summary>種族値を1行ずつ。見出し（HP・こうげき…）はシーン側の別の Text に並べてある</summary>
         private static string StatValues(Stats s)
         {
-            int total = s.Hp + s.Attack + s.Defense + s.SpAttack + s.SpDefense + s.Speed;
-            return $"{s.Hp}\n{s.Attack}\n{s.Defense}\n{s.SpAttack}\n{s.SpDefense}\n{s.Speed}\n{total}";
+            return $"{s.Hp}\n{s.Attack}\n{s.Defense}\n{s.SpAttack}\n{s.SpDefense}\n{s.Speed}\n{s.Total}";
         }
     }
 }

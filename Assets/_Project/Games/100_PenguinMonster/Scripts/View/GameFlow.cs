@@ -1,27 +1,25 @@
 using System.Collections;
 using System.Collections.Generic;
 using PenguinMonster.Battle;
-using PenguinMonster.Common.Scene;
+using PenguinMonster.Common.Profile;
 using PenguinMonster.Common.UI;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 画面の流れ（仕様書 §2）: タイトル → ドラフト → 見せ合い・選出 → バトル → 結果 → タイトル。
-    /// 各画面は自分の表示と入力だけを持ち、次へ進む順番はここで決める
+    /// 画面の流れ（仕様書 §2 / §2.3）: タイトル → ドラフト →
+    /// [何戦目か・ボス登場 → 見せ合い・選出 → バトル → 結果] を負けるまでくり返す → タイトル。
+    /// 各画面は自分の表示と入力だけを持ち、次へ進む順番はここで決める。結果の文面は GameFlow.Result.cs
     /// </summary>
-    public class GameFlow : MonoBehaviour
+    public partial class GameFlow : MonoBehaviour
     {
-        private const string ResultTitle = "けっか";
-        private const string WinText = "かち！";
-        private const string LoseText = "まけ…";
-        private const string WinDetail = "あいての ペンモンを ぜんぶ たおした！";
-        private const string LoseDetail = "じぶんの ペンモンが ぜんぶ たおれた…";
+        /// <summary>最高連勝数の保存キー（共通基盤の BestScore）</summary>
+        private const string BestWinsKey = "PenguinMonster.SurvivalWins";
 
         [SerializeField] private TitlePanel _titlePanel;
         [SerializeField] private DraftPanel _draftPanel;
+        [SerializeField] private BattleIntroPanel _introPanel;
         [SerializeField] private SelectPanel _selectPanel;
         [SerializeField] private BattleController _battle;
         [SerializeField] private ResultDialog _resultDialog;
@@ -33,31 +31,45 @@ namespace PenguinMonster.View
 
         private IEnumerator Run()
         {
+            int bestAtStart = BestScore.Get(BestWinsKey);
             bool started = false;
-            _titlePanel.Show(() => started = true);
+            _titlePanel.Show(bestAtStart, () => started = true);
             yield return new WaitUntil(() => started);
 
             var random = new System.Random();
-            var cpu = new CpuPlayer(random);
-
             IReadOnlyList<MonsterDefinition> playerSix = null;
             _draftPanel.Show(new Draft(MonsterTable.All, random), six => playerSix = six);
             yield return new WaitUntil(() => playerSix != null);
-            var cpuSix = cpu.RunDraft(new Draft(MonsterTable.All, random));
 
-            List<MonsterDefinition> playerTeam = null;
-            _selectPanel.Show(playerSix, cpuSix, team => playerTeam = team);
-            yield return new WaitUntil(() => playerTeam != null);
-
-            yield return _battle.Run(playerTeam, cpu.ChooseTeam(cpuSix), random, cpu);
-            ShowResult(_battle.PlayerWon);
+            // 途中経過は保存しない（仕様書 §9）。アプリを閉じたらその回はおしまい
+            var run = new SurvivalRun(playerSix, random);
+            while (true)
+            {
+                var opponent = run.NextOpponent();
+                yield return PlayOneBattle(run, opponent, random);
+                if (!_battle.PlayerWon)
+                {
+                    break;
+                }
+                run.RecordWin();
+                // 勝つたびに保存しておけば、途中でタイトルへ戻っても記録は残る
+                BestScore.Submit(BestWinsKey, run.Wins);
+                yield return ShowWin(run, opponent);
+            }
+            ShowLose(run, bestAtStart);
         }
 
-        private void ShowResult(bool won)
+        private IEnumerator PlayOneBattle(SurvivalRun run, SurvivalOpponent opponent, System.Random random)
         {
-            // タイトル専用のシーンは無いので、シーンを読み直して最初（タイトル）から始め直す
-            _resultDialog.Show(ResultTitle, won ? WinText : LoseText, won ? WinDetail : LoseDetail,
-                onTitle: () => SceneManager.LoadScene(SceneNames.Title));
+            bool introDone = false;
+            _introPanel.Show(run, opponent, () => introDone = true);
+            yield return new WaitUntil(() => introDone);
+
+            List<MonsterDefinition> playerTeam = null;
+            _selectPanel.Show(run.PlayerSix, opponent.Six, team => playerTeam = team);
+            yield return new WaitUntil(() => playerTeam != null);
+
+            yield return _battle.Run(playerTeam, opponent.Cpu.ChooseTeam(opponent.Six), random, opponent.Cpu);
         }
     }
 }

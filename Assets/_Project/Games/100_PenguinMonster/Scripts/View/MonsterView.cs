@@ -85,7 +85,7 @@ namespace PenguinMonster.View
             Hide();
         }
 
-        private void Hide()
+        public void Hide()
         {
             _image.enabled = false;
             Rect.anchoredPosition = Vector2.zero;

@@ -83,10 +83,10 @@ namespace PenguinMonster.Battle.Tests
             for (int turn = 0; turn < 3; turn++)
             {
                 Assert.IsFalse(engine.State.IsOver);
-                events.AddRange(engine.ResolveTurn(BattleAction.UseMove(0), cpu.ChooseAction(engine.State.Sides[1])));
+                events.AddRange(engine.ResolveTurn(BattleAction.UseMove(0), cpu.ChooseAction(engine.State.Sides[1], engine.State.Sides[0])));
                 if (engine.State.Sides[1].NeedsReplacement)
                 {
-                    engine.Replace(1, cpu.ChooseReplacement(engine.State.Sides[1]));
+                    engine.Replace(1, cpu.ChooseReplacement(engine.State.Sides[1], engine.State.Sides[0]));
                 }
             }
 

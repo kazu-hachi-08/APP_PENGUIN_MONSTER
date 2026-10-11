@@ -60,9 +60,23 @@
 
 - 最初のドラフトで決めた6体で、負けるまで戦い続ける（途中で入れ替えはしない）
 - 毎試合の前に見せ合い・選出をする。HP・状態異常は毎試合全回復
-- 7戦目・14戦目…はボス戦。ボスは固定の強いチームを持つ（ボスの人物・チームは未定）
+- 毎試合の前に「Nせんめ」と今の連勝数を出す画面をはさむ（タップで見せ合いへ）
+- 7戦目・14戦目…はボス戦。ボスは固定の6体を持ち、賢さはいつも つよい（選出はランダム）
 - CPU の賢さは3段階で、連勝数に応じて上がる。チームも強いペンギンが出やすくなる（§4.8）
-- 最高連勝数を記録する
+- 勝ったら結果に連勝数を出し「つぎの たたかいへ」で次の試合へ（「タイトルへ」でやめてもよい）。負けたら連勝数と最高記録を出してタイトルへ
+- 最高連勝数を記録する（勝つたびに保存。タイトルに表示）
+
+#### ボス（案）
+
+| 戦数 | 名前 | セリフ | チーム（No） |
+| --- | --- | --- | --- |
+| 7 | ひょうざんの ユキオ | この こおりの かべを こえられるかな？ | こおり中心（1, 7, 8, 9, 10, 12） |
+| 14 | あらしの ライカ | かみなりと かぜで ふきとばしてあげる！ | かみなり・とり中心（4, 17, 18, 20, 21, 3） |
+| 21 | きょくやの ヨミ | ながい よるの はじまりだ…… | やみ・オーロラ中心（22, 23, 24, 8, 15, 9） |
+
+- 28戦目からは ユキオ → ライカ → ヨミ をくり返す
+- 人物の絵はまだ無いので、登場画面は背景を赤くして、名前・セリフと先頭のペンモン（正面）を「ぽよん」と出す
+- チームの中身は定義表 `BossTable` が正。体数が増えたら（Phase 9）見直す
 
 ### 2.4 勝敗
 
@@ -205,11 +219,15 @@
 
 | 賢さ | 行動 |
 | --- | --- |
-| よわい | 技をランダムに選ぶ |
-| ふつう | 一番ダメージが出る技を選ぶ |
-| つよい | ふつう ＋ 不利なら交代する |
+| よわい | 技をランダムに選ぶ。ひんしの後は控えの先頭を出す |
+| ふつう | 一番ダメージが出る技を選ぶ（乱数なし・急所なしで計算し、命中率を掛けた見込み。変化技は 0 とみなし、全部 0 ならランダム） |
+| つよい | ふつう ＋ 不利なら交代する。ひんしの後は相性のいいペンモンを出す |
 
-- 連勝数ごとの賢さ・チームの強さの切り替えは未定（例: 1〜6戦目は よわい→ふつう、ボス以降は つよい）
+- 「不利」= 相手の攻撃技に ばつぐん を取られていて、こちらの攻撃技はどれも ばつぐん を取れないとき。タイプ相性だけで見る
+- 交代先は「こちらの通りやすさ − 相手の通りやすさ」（攻撃技の一番いい相性の倍率どうしの差）が今より大きく、自分も不利でないペンモン。いなければ交代しない
+- 勝ち抜き戦での切り替え（案）: 1〜3戦目 よわい / 4〜6戦目 ふつう / 7戦目から つよい。ボスはいつも つよい
+- チームの強さ（案）: CPU のドラフトで、連勝数 × 10%（最大 100%）の確率で提示のうち種族値の合計が一番高いのを取る（それ以外はランダム）。24 体は合計が 440〜475 にそろっているので差は小さい。体数が増えたら効いてくる
+- 数値は `BattleBalance`（`NormalCpuFromWins` / `StrongCpuFromWins` / `BossInterval` / `CpuStrongPickPercentPerWin`）
 
 ## 5. 成長・収集
 
@@ -263,7 +281,8 @@
 ## 9. セーブ
 
 - 勝ち抜き戦の最高連勝数、設定（音量・メッセージの速さ）
-- 勝ち抜き戦の途中経過を保存するかは未定
+- 最高連勝数は共通基盤の `BestScore`（PlayerPrefs）に保存する。勝つたびに更新するので、途中でやめても記録は残る
+- 勝ち抜き戦の途中経過は保存しない（案）。1回が短めなのと、6体と連勝数を復元する手間に見合わないため。アプリを閉じたらその回はおしまい
 
 ## 10. フォルダ・クラス構成
 
@@ -282,16 +301,18 @@
 Scripts/
 ├── Battle/                 # バトルのルール・計算（純C#、PenguinMonster.Battle.asmdef、noEngineReferences）
 │   ├── Draft/Draft.cs      # ドラフトの抽選（3体提示×6回、取ったペンモンは出ない）
-│   ├── Data/               # タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect）／ペンモンの定義と見た目（MonsterLook）・定義表（MoveTable / MonsterTable）
+│   ├── Survival/           # 勝ち抜き戦（SurvivalRun: 連勝数・賢さの切り替え・次の相手 / SurvivalOpponent）
+│   ├── Data/               # タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect）／ペンモンの定義と見た目（MonsterLook）・定義表（MoveTable / MonsterTable）・ボス（BossDefinition / BossTable）
 │   ├── BattleBalance.cs    # 調整値（Lv・ダメージ式の定数・選出数など）
 │   ├── BattleState / BattleSide / BattleMonster   # バトルの状態（場は配列で持ち、シングルは1）
 │   ├── BattleEngine(.Order/.Status/.Effects).cs   # ターンの解決（行動順 → 状態異常の判定 → 命中 → ダメージ → 追加効果 → ひんし → ターン終わり → 勝敗）
 │   ├── DamageCalculator.cs
 │   ├── BattleEvent.cs / BattleMessages.cs         # 起きたことの列と、その文面
-│   └── CpuPlayer.cs        # CPU（よわい）。ドラフト・選出もここ（ランダム）
+│   ├── CpuLevel.cs         # CPU の賢さ（よわい / ふつう / つよい）
+│   └── CpuPlayer(.Draft).cs  # CPU の技選び・交代。ドラフト・選出は .Draft.cs
 └── View/                   # 表示（MonoBehaviour、名前空間 PenguinMonster.View）
-    ├── GameFlow.cs         # 画面の流れ（タイトル → ドラフト → 選出 → バトル → 結果）
-    ├── TitlePanel / DraftPanel / SelectPanel  # タイトル・ドラフト・見せ合いと選出の画面。結果は共通基盤の ResultDialog
+    ├── GameFlow(.Result).cs  # 画面の流れ（タイトル → ドラフト → [登場 → 選出 → バトル → 結果] をくり返す）と結果の文面
+    ├── TitlePanel / DraftPanel / BattleIntroPanel / SelectPanel  # タイトル・ドラフト・試合前（Nせんめ・ボス登場）・見せ合いと選出の画面。結果は共通基盤の ResultDialog
     ├── BattleController(.Playback).cs  # バトルの進行役。入力待ちと BattleEvent の再生
     ├── MonsterView.cs      # 台座の上のペンモンの絵と演出（登場・踏み込み・点滅・ひんし）
     ├── MonsterInfoBox.cs   # 名前・Lv・HPバーの枠
@@ -301,7 +322,7 @@ Scripts/
     ├── TypeColors.cs / StatusColors.cs  # 技ボタンのタイプ色 / 状態異常の印・光る色
     └── Art/                # ドット絵の生成（PixelCanvas / PenguinPainter(.Parts) / PenguinPalette / MonsterSprites / BackdropArt）
 Editor/
-└── PenguinMonsterSceneBuilder(.Field/.Panels/.Title/.Draft/.Select/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
+└── PenguinMonsterSceneBuilder(.Field/.Panels/.Title/.Draft/.Intro/.Select/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
 Scenes/
 └── PenguinMonsterScene.unity   # 生成物（手で編集しない）
 Tests/Editor/               # EditMode テスト（PenguinMonster.Battle.Tests.asmdef）

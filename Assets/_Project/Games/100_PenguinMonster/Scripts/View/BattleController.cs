@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// CPU との 3vs3 の進行役。ターンの計算は BattleEngine に任せ、ここは入力待ちと表示の順番だけを持つ。
+    /// CPU との 3vs3 の進行役（1試合ぶん）。ターンの計算は BattleEngine に任せ、ここは入力待ちと表示の順番だけを持つ。
     /// チームは GameFlow から渡される（ドラフト・選出・結果はバトルの外）。
     /// イベントの再生は BattleController.Playback.cs
     /// </summary>
@@ -37,9 +37,19 @@ namespace PenguinMonster.View
 
         private void Start()
         {
+            ClearField();
+        }
+
+        /// <summary>
+        /// 場を空にする。勝ち抜き戦では同じ場で続けて戦うので、前の試合で残ったペンモンや窓を消してから始める
+        /// </summary>
+        private void ClearField()
+        {
             _commandPanel.Hide();
             _movePanel.gameObject.SetActive(false);
             _partyPanel.gameObject.SetActive(false);
+            _playerView.Hide();
+            _enemyView.Hide();
             _playerInfo.Hide();
             _enemyInfo.Hide();
             _messageWindow.SetText("");
@@ -49,6 +59,7 @@ namespace PenguinMonster.View
         public IEnumerator Run(List<MonsterDefinition> playerParty, List<MonsterDefinition> cpuParty,
             System.Random random, CpuPlayer cpu)
         {
+            ClearField();
             _engine = new BattleEngine(new BattleState(playerParty, cpuParty), random);
             _cpu = cpu;
 
@@ -56,7 +67,7 @@ namespace PenguinMonster.View
             while (!State.IsOver)
             {
                 yield return WaitForPlayerAction();
-                yield return Play(_engine.ResolveTurn(_playerAction, _cpu.ChooseAction(Cpu)));
+                yield return Play(_engine.ResolveTurn(_playerAction, _cpu.ChooseAction(Cpu, Player)));
                 if (!State.IsOver)
                 {
                     yield return ReplaceFainted();
@@ -103,7 +114,7 @@ namespace PenguinMonster.View
             }
             if (Cpu.NeedsReplacement)
             {
-                yield return Play(_engine.Replace(CpuSide, _cpu.ChooseReplacement(Cpu)));
+                yield return Play(_engine.Replace(CpuSide, _cpu.ChooseReplacement(Cpu, Player)));
             }
         }
     }

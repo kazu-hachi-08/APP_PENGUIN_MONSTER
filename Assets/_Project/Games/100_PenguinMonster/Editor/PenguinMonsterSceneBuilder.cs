@@ -14,7 +14,7 @@ namespace PenguinMonster.Editor
     /// <summary>
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
     /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、
-    /// タイトルは .Title.cs、ドラフトは .Draft.cs、見せ合い・選出は .Select.cs
+    /// タイトルは .Title.cs、ドラフトは .Draft.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -24,6 +24,7 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 ReferenceResolution = new Vector2(1920f, 1080f);
         private const float MatchWidthOrHeight = 0.5f;
         private static readonly Color BackgroundColor = new Color(0.80f, 0.90f, 0.95f);
+        private const string NextBattleLabel = "つぎの たたかいへ";
 
         [MenuItem("Tools/PenguinMonster/Rebuild")]
         public static void Rebuild()
@@ -102,8 +103,8 @@ namespace PenguinMonster.Editor
         }
 
         /// <summary>
-        /// バトルの上に重ねる画面（結果 → 選出 → ドラフト → タイトルの順に手前）と、流れの進行役。
-        /// 結果は共通基盤の ResultDialog を使う。もう一度遊ぶはまだ無いので、タイトルへだけ残す
+        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → タイトルの順に手前）と、流れの進行役。
+        /// 結果は共通基盤の ResultDialog を使う。「もう一度遊ぶ」は勝ち抜き戦の「つぎの たたかいへ」に使う
         /// </summary>
         private static void BuildFlow(Transform canvas, BattleController battle)
         {
@@ -111,8 +112,9 @@ namespace PenguinMonster.Editor
             UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
 
             var resultDialog = UIDialogBuilder.CreateResultDialog(root.transform);
-            Object.DestroyImmediate(resultDialog.transform.Find("Panel/ButtonArea/Btn_Retry").gameObject);
+            resultDialog.transform.Find("Panel/ButtonArea/Btn_Retry").GetComponentInChildren<Text>().text = NextBattleLabel;
             var selectPanel = CreateSelectPanel(root.transform);
+            var introPanel = CreateIntroPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
             var titlePanel = CreateTitlePanel(root.transform);
 
@@ -120,6 +122,7 @@ namespace PenguinMonster.Editor
             var so = new SerializedObject(flow);
             so.FindProperty("_titlePanel").objectReferenceValue = titlePanel;
             so.FindProperty("_draftPanel").objectReferenceValue = draftPanel;
+            so.FindProperty("_introPanel").objectReferenceValue = introPanel;
             so.FindProperty("_selectPanel").objectReferenceValue = selectPanel;
             so.FindProperty("_battle").objectReferenceValue = battle;
             so.FindProperty("_resultDialog").objectReferenceValue = resultDialog;
