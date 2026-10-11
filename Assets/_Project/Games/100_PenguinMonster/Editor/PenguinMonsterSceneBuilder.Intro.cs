@@ -60,7 +60,7 @@ namespace PenguinMonster.Editor
             var bossLine = CreateText(back.transform, "BossLine", "", IntroBossLineFontSize, Color.white, TextAnchor.UpperLeft);
             Place(bossLine.rectTransform, Center, IntroBossLinePosition, IntroBossLineSize);
 
-            var hint = CreateText(back.transform, "Hint", "タップで つぎへ", IntroHintFontSize, IntroHintColor, TextAnchor.MiddleCenter);
+            var hint = CreateText(back.transform, "Hint", "タップで 次へ", IntroHintFontSize, IntroHintColor, TextAnchor.MiddleCenter);
             Place(hint.rectTransform, new Vector2(0.5f, 0f), IntroHintPosition, IntroHintSize);
 
             var panel = back.gameObject.AddComponent<BattleIntroPanel>();

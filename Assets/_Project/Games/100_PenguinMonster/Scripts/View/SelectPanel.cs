@@ -28,7 +28,7 @@ namespace PenguinMonster.View
         [SerializeField] private Color _cellColor = new Color(0.3f, 0.5f, 0.8f);
         [SerializeField] private Color _pickedColor = new Color(0.95f, 0.6f, 0.2f);
 
-        private const string Title = "バトルに だす ペンモンを えらんでください";
+        private const string Title = "バトルに 出す ペンモンを 選んでください";
 
         private readonly List<int> _picked = new List<int>();
         private IReadOnlyList<MonsterDefinition> _monsters;

@@ -38,7 +38,7 @@ namespace PenguinMonster.View
             for (int i = 0; i < _slotButtons.Length; i++)
             {
                 var monster = side.Party[i];
-                string state = monster.IsFainted ? "ひんし" : side.IsActive(i) ? "せんとうちゅう" : $"HP {monster.CurrentHp}/{monster.MaxHp}";
+                string state = monster.IsFainted ? "瀕死" : side.IsActive(i) ? "戦闘中" : $"HP {monster.CurrentHp}/{monster.MaxHp}";
                 string status = monster.IsFainted ? "" : monster.Status.ToJapanese();
                 _slotLabels[i].text = $"{monster.Name}   {state}  {status}";
                 _slotIcons[i].sprite = MonsterSprites.Front(monster.Definition);

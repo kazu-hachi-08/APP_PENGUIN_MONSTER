@@ -10,11 +10,11 @@ namespace PenguinMonster.Battle
     {
         public static readonly IReadOnlyList<BossDefinition> All = new[]
         {
-            new BossDefinition("ひょうざんの ユキオ", "この こおりの かべを こえられるかな？",
+            new BossDefinition("氷山の ユキオ", "この 氷の 壁を 越えられるかな？",
                 Team(1, 7, 8, 9, 10, 12)),
-            new BossDefinition("あらしの ライカ", "かみなりと かぜで ふきとばしてあげる！",
+            new BossDefinition("嵐の ライカ", "雷と 風で 吹き飛ばしてあげる！",
                 Team(4, 17, 18, 20, 21, 3)),
-            new BossDefinition("きょくやの ヨミ", "ながい よるの はじまりだ……",
+            new BossDefinition("極夜の ヨミ", "長い 夜の 始まりだ……",
                 Team(22, 23, 24, 8, 15, 9)),
         };
 

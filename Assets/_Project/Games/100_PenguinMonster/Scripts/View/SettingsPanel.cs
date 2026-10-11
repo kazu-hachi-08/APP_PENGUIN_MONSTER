@@ -12,7 +12,7 @@ namespace PenguinMonster.View
     {
         [SerializeField] private Slider _bgmSlider;
         [SerializeField] private Slider _seSlider;
-        [Tooltip("MessageSpeed の並び順（おそい / ふつう / はやい）")]
+        [Tooltip("MessageSpeed の並び順（遅い / 普通 / 速い）")]
         [SerializeField] private Button[] _speedButtons;
 
         private Color[] _speedColors;

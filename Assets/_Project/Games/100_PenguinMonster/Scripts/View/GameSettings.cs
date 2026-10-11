@@ -16,7 +16,7 @@ namespace PenguinMonster.View
     {
         private const string MessageSpeedKey = "PenguinMonster.MessageSpeed";
 
-        public static readonly string[] SpeedLabels = { "おそい", "ふつう", "はやい" };
+        public static readonly string[] SpeedLabels = { "遅い", "普通", "速い" };
         /// <summary>MessageWindow の文字送りの速さに掛ける倍率</summary>
         private static readonly float[] SpeedRates = { 0.5f, 1f, 2f };
 

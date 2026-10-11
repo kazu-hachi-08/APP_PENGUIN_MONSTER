@@ -14,7 +14,7 @@ namespace PenguinMonster.Editor
     public static partial class PenguinMonsterSceneBuilder
     {
         // タイトルのメニューに並べる順。CreateSubMenus の戻り値もこの順にそろえる
-        private static readonly string[] SubMenuLabels = { "ずかん", "タイプ相性表", "あそびかた", "設定" };
+        private static readonly string[] SubMenuLabels = { "図鑑", "タイプ相性表", "遊び方", "設定" };
 
         private const float SubMenuTitleHeight = 110f;
         private static readonly Vector2 SubMenuBackPosition = new Vector2(170f, -55f);
@@ -30,7 +30,7 @@ namespace PenguinMonster.Editor
         private const int ChartCellFontSize = 40;
         private const int ChartHeaderFontSize = 28;
         private const int ChartCornerFontSize = 22;
-        private const string ChartCorner = "わざ＼うける";
+        private const string ChartCorner = "技＼受ける";
         /// <summary>マスの色がこれより暗ければ白い文字にする</summary>
         private const float ChartDarkThreshold = 0.5f;
         private static readonly Color ChartPlainColor = new Color(0.9f, 0.9f, 0.88f);
@@ -87,7 +87,7 @@ namespace PenguinMonster.Editor
             titleText.rectTransform.anchorMin = new Vector2(0f, 1f);
             titleText.rectTransform.offsetMin = new Vector2(0f, -SubMenuTitleHeight);
 
-            var backObj = CreateButton(content, "Btn_Back", "もどる", SubMenuBackSize, SubMenuButtonColor);
+            var backObj = CreateButton(content, "Btn_Back", "戻る", SubMenuBackSize, SubMenuButtonColor);
             Place(backObj.GetComponent<RectTransform>(), new Vector2(0f, 1f), SubMenuBackPosition, SubMenuBackSize);
             backButton = backObj.GetComponent<Button>();
             return back;
@@ -110,7 +110,7 @@ namespace PenguinMonster.Editor
         /// </summary>
         private static SubMenuPanel CreateTypeChartPanel(Transform parent)
         {
-            var back = CreateSubMenuFrame(parent, "TypeChartPanel", "タイプ相性表（たて: わざ　よこ: うける ペンモン）", out var content, out var backButton);
+            var back = CreateSubMenuFrame(parent, "TypeChartPanel", "タイプ相性表（縦: 技　横: 受ける ペンモン）", out var content, out var backButton);
 
             var types = (MonsterType[])Enum.GetValues(typeof(MonsterType));
             int side = types.Length + 1;
@@ -171,7 +171,7 @@ namespace PenguinMonster.Editor
         /// <summary>上にタブ、下に説明の枠。文面は HowToPanel が持つ</summary>
         private static HowToPanel CreateHowToPanel(Transform parent)
         {
-            var back = CreateSubMenuFrame(parent, "HowToPanel", "あそびかた", out var content, out var backButton);
+            var back = CreateSubMenuFrame(parent, "HowToPanel", "遊び方", out var content, out var backButton);
 
             var tabRow = CreateCenteredRow(content, "Tabs", new Vector2(0.5f, 1f), HowToTabPosition, HowToTabSize.y, HowToTabSpacing);
             var tabs = new Button[HowToPanel.PageTitles.Length];
@@ -201,10 +201,10 @@ namespace PenguinMonster.Editor
         {
             var back = CreateSubMenuFrame(parent, "SettingsPanel", "設定", out var content, out var backButton);
 
-            var bgm = CreateSettingsSlider(content, "BgmSlider", "BGM の おおきさ", SettingsBgmPosition);
-            var se = CreateSettingsSlider(content, "SeSlider", "こうかおん の おおきさ", SettingsSePosition);
+            var bgm = CreateSettingsSlider(content, "BgmSlider", "BGM の 大きさ", SettingsBgmPosition);
+            var se = CreateSettingsSlider(content, "SeSlider", "効果音の 大きさ", SettingsSePosition);
 
-            var caption = CreateText(content, "SpeedCaption", "メッセージの はやさ", SettingsLabelFontSize, Color.white, TextAnchor.MiddleLeft);
+            var caption = CreateText(content, "SpeedCaption", "メッセージの 速さ", SettingsLabelFontSize, Color.white, TextAnchor.MiddleLeft);
             Place(caption.rectTransform, Center, SettingsSpeedCaptionPosition, SettingsSpeedCaptionSize);
             var speedRow = CreateCenteredRow(content, "Speeds", Center, SettingsSpeedPosition, SettingsSpeedButtonSize.y, SettingsSpeedSpacing);
             var speeds = new Button[GameSettings.SpeedLabels.Length];

@@ -144,7 +144,7 @@ namespace PenguinMonster.View
         private IEnumerator ChooseReplacement()
         {
             _replacementIndex = -1;
-            _messageWindow.SetText("つぎの ペンモンを えらんでください");
+            _messageWindow.SetText("次の ペンモンを 選んでください");
             _partyPanel.Show(Player, onSelect: index => _replacementIndex = index, onBack: null);
             StartChoiceTimer(() => _replacementIndex = FirstReplaceable());
             yield return new WaitUntil(() => _replacementIndex >= 0);

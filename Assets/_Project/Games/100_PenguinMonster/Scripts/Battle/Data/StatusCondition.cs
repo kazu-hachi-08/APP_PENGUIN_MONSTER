@@ -19,7 +19,7 @@ namespace PenguinMonster.Battle
     {
         private static readonly string[] Names =
         {
-            "", "まひ", "どく", "もうどく", "やけど", "ねむり", "こおり",
+            "", "麻痺", "毒", "猛毒", "火傷", "眠り", "氷",
         };
 
         public static string ToJapanese(this StatusCondition status) => Names[(int)status];

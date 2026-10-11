@@ -13,11 +13,11 @@ namespace PenguinMonster.View
     public class MovePanel : MonoBehaviour
     {
         // タイプの明るい色の上でも読めるよう、濃い色にする
-        private const string SuperEffectiveTag = "<color=#C0182A>ばつぐん！</color>";
-        private const string NotVeryEffectiveTag = "<color=#555A66>いまひとつ</color>";
-        private const string NoEffectTag = "<color=#2A2A33>こうかなし</color>";
-        private const string HasEffectsMark = "　＋こうか";
-        private const string NoEffectsText = "とくべつな こうかは ない";
+        private const string SuperEffectiveTag = "<color=#C0182A>抜群！</color>";
+        private const string NotVeryEffectiveTag = "<color=#555A66>今ひとつ</color>";
+        private const string NoEffectTag = "<color=#2A2A33>効果なし</color>";
+        private const string HasEffectsMark = "　＋効果";
+        private const string NoEffectsText = "特別な 効果は ない";
 
         [SerializeField] private Button[] _moveButtons;
         [SerializeField] private Text[] _moveLabels;
@@ -78,7 +78,7 @@ namespace PenguinMonster.View
         /// <summary>変化技は威力が無いので「へんか」と出す。効果の中身はボタンに入り切らないので説明に回す</summary>
         private static string Detail(MoveDefinition move)
         {
-            string power = move.IsStatus ? "へんか" : $"いりょく {move.Power}";
+            string power = move.IsStatus ? "変化" : $"威力 {move.Power}";
             return move.Effects().Length > 0 ? power + HasEffectsMark : power;
         }
 

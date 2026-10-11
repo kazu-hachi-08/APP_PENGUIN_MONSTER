@@ -300,7 +300,7 @@ namespace PenguinMonster.Battle.Tests
             var engine = CreateEngine(Fast(Wait, Ability.Intimidate), Slow());
             var activated = engine.StartBattle().First(e => e.Kind == BattleEventKind.AbilityActivated);
 
-            Assert.AreEqual("速の こわもて！", BattleMessages.Format(activated, 0));
+            Assert.AreEqual("速の 強面！", BattleMessages.Format(activated, 0));
         }
 
         /// <summary>CPU 用の見込みダメージ（乱数なし）で、倍率が最後に掛かっているかを確かめる</summary>

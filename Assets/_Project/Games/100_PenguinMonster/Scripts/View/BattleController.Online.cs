@@ -12,7 +12,7 @@ namespace PenguinMonster.View
     /// </summary>
     public partial class BattleController
     {
-        private const string WaitingText = "あいてを まっています…";
+        private const string WaitingText = "相手を 待っています…";
 
         /// <summary>ドラフト・選出の後、相手がそろうまでの間に出しておく</summary>
         public void ShowWaiting()

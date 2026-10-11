@@ -11,7 +11,7 @@ namespace PenguinMonster.View
     public class CountdownTimer : MonoBehaviour
     {
         [SerializeField] private Text _text;
-        [SerializeField] private string _format = "のこり {0}びょう";
+        [SerializeField] private string _format = "残り {0}秒";
 
         private float _remaining;
         private Action _onTimeout;

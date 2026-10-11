@@ -14,7 +14,7 @@ namespace PenguinMonster.View
     /// </summary>
     public partial class GameFlow
     {
-        private const string DisconnectedDetail = "あいてが せつだんしました";
+        private const string DisconnectedDetail = "相手が 切断しました";
 
         [SerializeField] private OnlineSession _session;
         [SerializeField] private ModeSelectPanel _modeSelect;

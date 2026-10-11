@@ -12,7 +12,7 @@ namespace PenguinMonster.Editor
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
-        private const string StatCaptions = "HP\nこうげき\nぼうぎょ\nとくこう\nとくぼう\nすばやさ\nごうけい";
+        private const string StatCaptions = "HP\n攻撃\n防御\n特攻\n特防\n素早さ\n合計";
         private const int TypesPerMonster = 2;
 
         private const float DraftTitleHeight = 110f;
@@ -174,7 +174,7 @@ namespace PenguinMonster.Editor
         private static Image[] CreatePickedSlots(Transform parent)
         {
             var footer = CreateFooter(parent, DraftFooterHeight, DraftFooterSpacing);
-            var caption = CreateText(footer, "Caption", "とった ペンモン", DraftCaptionFontSize, Color.white, TextAnchor.MiddleCenter);
+            var caption = CreateText(footer, "Caption", "取った ペンモン", DraftCaptionFontSize, Color.white, TextAnchor.MiddleCenter);
             caption.rectTransform.sizeDelta = new Vector2(DraftFooterCaptionWidth, DraftPickedSlotSize);
 
             var icons = new Image[BattleBalance.DraftRounds];

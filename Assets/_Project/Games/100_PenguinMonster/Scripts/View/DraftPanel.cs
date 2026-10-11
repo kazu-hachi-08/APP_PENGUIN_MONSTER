@@ -29,7 +29,7 @@ namespace PenguinMonster.View
 
         private const int BadgesPerCard = TypeColors.BadgesPerMonster;
         private const int TraitDescriptionSize = 20;
-        private const string TitleFormat = "ドラフト {0}/{1}　ほしい ペンモンを えらんでください";
+        private const string TitleFormat = "ドラフト {0}/{1}　欲しい ペンモンを 選んでください";
 
         private Draft _draft;
         private Action<IReadOnlyList<MonsterDefinition>> _onDone;

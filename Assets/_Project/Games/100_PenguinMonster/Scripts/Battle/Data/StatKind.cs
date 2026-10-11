@@ -20,7 +20,7 @@ namespace PenguinMonster.Battle
 
         private static readonly string[] Names =
         {
-            "こうげき", "ぼうぎょ", "とくこう", "とくぼう", "すばやさ", "めいちゅうりつ", "かいひりつ",
+            "攻撃", "防御", "特攻", "特防", "素早さ", "命中率", "回避率",
         };
 
         public static string ToJapanese(this StatKind stat) => Names[(int)stat];

@@ -22,7 +22,7 @@ namespace PenguinMonster.Battle
     {
         private static readonly string[] Names =
         {
-            "ノーマル", "こおり", "うみ", "ひ", "かみなり", "こけ", "いわ", "とり", "やみ", "オーロラ",
+            "ノーマル", "氷", "海", "火", "雷", "苔", "岩", "鳥", "闇", "オーロラ",
         };
 
         public static string ToJapanese(this MonsterType type) => Names[(int)type];

@@ -58,7 +58,7 @@ namespace PenguinMonster.Editor
 
         private static DexPanel CreateDexPanel(Transform parent)
         {
-            var back = CreateSubMenuFrame(parent, "DexPanel", "ずかん", out var content, out var backButton);
+            var back = CreateSubMenuFrame(parent, "DexPanel", "図鑑", out var content, out var backButton);
             var filters = CreateDexFilters(content);
             var cells = CreateDexList(content, out var cellIcons);
             var detail = CreateDexDetail(content);

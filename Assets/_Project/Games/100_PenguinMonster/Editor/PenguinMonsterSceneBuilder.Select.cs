@@ -61,7 +61,7 @@ namespace PenguinMonster.Editor
 
             var footer = CreateFooter(back.transform, SelectFooterHeight, SelectButtonSpacing);
             var random = CreateButton(footer, "Btn_Random", "おまかせ", SelectButtonSize, SelectRandomColor);
-            var decide = CreateButton(footer, "Btn_Decide", "けってい", SelectButtonSize, SelectDecideColor);
+            var decide = CreateButton(footer, "Btn_Decide", "決定", SelectButtonSize, SelectDecideColor);
             var timer = CreateCountdown(back.transform, TopRight, PanelCountdownPosition);
 
             var panel = back.gameObject.AddComponent<SelectPanel>();
@@ -93,7 +93,7 @@ namespace PenguinMonster.Editor
             rect.anchoredPosition = new Vector2(0f, -SelectTitleHeight);
             rect.sizeDelta = new Vector2(0f, OpponentBandHeight);
 
-            var caption = CreateText(band.transform, "Caption", "あいての\nペンモン", OpponentCaptionFontSize, SelectTitleColor, TextAnchor.MiddleCenter);
+            var caption = CreateText(band.transform, "Caption", "相手の\nペンモン", OpponentCaptionFontSize, SelectTitleColor, TextAnchor.MiddleCenter);
             caption.rectTransform.anchorMax = new Vector2(0f, 1f);
             caption.rectTransform.offsetMax = new Vector2(OpponentCaptionWidth, 0f);
 

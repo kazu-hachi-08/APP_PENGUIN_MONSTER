@@ -106,7 +106,7 @@ namespace PenguinMonster.Editor
             layout.childControlWidth = false;
             layout.childControlHeight = false;
 
-            var fight = CreateButton(inner, "Btn_Fight", "たたかう", FightButtonSize, FightColor);
+            var fight = CreateButton(inner, "Btn_Fight", "戦う", FightButtonSize, FightColor);
             var party = CreateButton(inner, "Btn_Party", "ペンモン", PartyButtonSize, PartyColor);
             fight.GetComponentInChildren<Text>().fontSize = CommandFontSize;
 
@@ -146,7 +146,7 @@ namespace PenguinMonster.Editor
                 buttonObj.AddComponent<MoveHoldHint>();
             }
 
-            var back = CreateButton(inner, "Btn_Back", "もどる", MoveBackSize, BackColor);
+            var back = CreateButton(inner, "Btn_Back", "戻る", MoveBackSize, BackColor);
             var backRect = back.GetComponent<RectTransform>();
             backRect.anchorMin = backRect.anchorMax = new Vector2(1f, 0.5f);
             backRect.pivot = new Vector2(1f, 0.5f);
@@ -208,7 +208,7 @@ namespace PenguinMonster.Editor
                 labels[i].rectTransform.offsetMin = new Vector2(PartyIconSize + 16f, 0f);
                 icons[i] = CreatePartyIcon(slot.transform);
             }
-            var back = CreateButton(inner, "Btn_Back", "もどる", BackButtonSize, BackColor);
+            var back = CreateButton(inner, "Btn_Back", "戻る", BackButtonSize, BackColor);
 
             var panel = overlay.gameObject.AddComponent<PartyPanel>();
             var so = new SerializedObject(panel);

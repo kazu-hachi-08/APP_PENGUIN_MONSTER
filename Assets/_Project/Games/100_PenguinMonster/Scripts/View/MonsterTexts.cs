@@ -16,8 +16,8 @@ namespace PenguinMonster.View
         /// <summary>特性・持ち物の名前と説明。説明は小さめの文字にして名前を目立たせる</summary>
         public static string Traits(MonsterDefinition monster, int descriptionSize)
         {
-            return $"とくせい <b>{monster.Ability.ToJapanese()}</b>\n<size={descriptionSize}>{monster.Ability.Description()}</size>\n"
-                + $"もちもの <b>{monster.Item.ToJapanese()}</b>\n<size={descriptionSize}>{monster.Item.Description()}</size>";
+            return $"特性 <b>{monster.Ability.ToJapanese()}</b>\n<size={descriptionSize}>{monster.Ability.Description()}</size>\n"
+                + $"持ち物 <b>{monster.Item.ToJapanese()}</b>\n<size={descriptionSize}>{monster.Item.Description()}</size>";
         }
     }
 }

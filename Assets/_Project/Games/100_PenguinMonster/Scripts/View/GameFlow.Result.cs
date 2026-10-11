@@ -11,25 +11,25 @@ namespace PenguinMonster.View
     /// </summary>
     public partial class GameFlow
     {
-        private const string WinTitle = "かち！";
-        private const string LoseTitle = "まけ…";
-        private const string WinDetail = "あいての ペンモンを ぜんぶ たおした！";
-        private const string BossWinDetail = "ボスに かった！";
-        private const string LoseDetail = "じぶんの ペンモンが ぜんぶ たおれた…";
-        private const string NewRecordText = "しんきろく！";
+        private const string WinTitle = "勝ち！";
+        private const string LoseTitle = "負け…";
+        private const string WinDetail = "相手の ペンモンを 全部 倒した！";
+        private const string BossWinDetail = "ボスに 勝った！";
+        private const string LoseDetail = "自分の ペンモンが 全部 倒れた…";
+        private const string NewRecordText = "新記録！";
 
         private IEnumerator ShowWin(SurvivalRun run, SurvivalOpponent opponent)
         {
             bool next = false;
-            _resultDialog.Show(WinTitle, $"{run.Wins} れんしょう", opponent.IsBoss ? BossWinDetail : WinDetail,
+            _resultDialog.Show(WinTitle, $"{run.Wins} 連勝", opponent.IsBoss ? BossWinDetail : WinDetail,
                 onRetry: () => next = true, onTitle: BackToTitle);
             yield return new WaitUntil(() => next);
         }
 
         private void ShowLose(SurvivalRun run, int bestAtStart)
         {
-            string record = run.Wins > bestAtStart ? NewRecordText : $"さいこう きろく: {Mathf.Max(run.Wins, bestAtStart)} れんしょう";
-            _resultDialog.Show(LoseTitle, $"{run.Wins} れんしょう", $"{LoseDetail}\n{record}", onTitle: BackToTitle);
+            string record = run.Wins > bestAtStart ? NewRecordText : $"最高記録: {Mathf.Max(run.Wins, bestAtStart)} 連勝";
+            _resultDialog.Show(LoseTitle, $"{run.Wins} 連勝", $"{LoseDetail}\n{record}", onTitle: BackToTitle);
         }
 
         /// <summary>タイトル専用のシーンは無いので、シーンを読み直して最初（タイトル）から始め直す</summary>

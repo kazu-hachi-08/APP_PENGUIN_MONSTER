@@ -26,7 +26,7 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 ReferenceResolution = new Vector2(1920f, 1080f);
         private const float MatchWidthOrHeight = 0.5f;
         private static readonly Color BackgroundColor = new Color(0.80f, 0.90f, 0.95f);
-        private const string NextBattleLabel = "つぎの たたかいへ";
+        private const string NextBattleLabel = "次の 戦いへ";
         private const string OfflineLabel = "CPUと対戦";
         private static readonly Vector2 BattleCountdownPosition = new Vector2(0f, -50f);
         private static readonly Vector2 TopCenter = new Vector2(0.5f, 1f);
