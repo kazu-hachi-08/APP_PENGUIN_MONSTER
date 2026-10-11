@@ -6,46 +6,40 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 技4つ＋「交代」ボタン
+    /// 「たたかう / ペンモン」のコマンド。にげるは無い（対戦ゲームなので）
     /// </summary>
     public class CommandPanel : MonoBehaviour
     {
-        [SerializeField] private Button[] _moveButtons;
-        [SerializeField] private Text[] _moveLabels;
-        [SerializeField] private Button _switchButton;
+        [SerializeField] private Button _fightButton;
+        [SerializeField] private Button _partyButton;
 
-        private Action<int> _onMove;
-        private Action _onSwitch;
+        private Action _onFight;
+        private Action _onParty;
 
         private void Awake()
         {
-            for (int i = 0; i < _moveButtons.Length; i++)
-            {
-                int index = i;
-                _moveButtons[i].onClick.AddListener(() => _onMove?.Invoke(index));
-            }
-            _switchButton.onClick.AddListener(() => _onSwitch?.Invoke());
+            _fightButton.onClick.AddListener(() => Choose(_onFight));
+            _partyButton.onClick.AddListener(() => Choose(_onParty));
         }
 
-        public void Show(BattleSide side, Action<int> onMove, Action onSwitch)
+        public void Show(BattleSide side, Action onFight, Action onParty)
         {
-            _onMove = onMove;
-            _onSwitch = onSwitch;
-
-            var moves = side.Active.Definition.Moves;
-            for (int i = 0; i < _moveButtons.Length; i++)
-            {
-                var move = moves[i];
-                _moveLabels[i].text = $"{move.Name}\n<size=22>{move.Type.ToJapanese()}  威力{move.Power}</size>";
-                _moveButtons[i].image.color = TypeColors.Get(move.Type);
-            }
-            _switchButton.interactable = CanSwitchAny(side);
+            _onFight = onFight;
+            _onParty = onParty;
+            _partyButton.interactable = CanSwitchAny(side);
             gameObject.SetActive(true);
         }
 
         public void Hide()
         {
             gameObject.SetActive(false);
+        }
+
+        private void Choose(Action action)
+        {
+            BattleSounds.Play(BattleSound.Cursor);
+            Hide();
+            action?.Invoke();
         }
 
         private static bool CanSwitchAny(BattleSide side)

@@ -7,115 +7,125 @@ using UnityEngine.UI;
 
 namespace PenguinMonster.Editor
 {
+    /// <summary>
+    /// 下側の窓（メッセージ・コマンド・技選択）と、交代の画面・もういちどボタン
+    /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
-        // 配置（基準解像度 1920x1080、画面中央が原点）。奥右に相手、手前左に自分
-        private static readonly Vector2 EnemyPanelPosition = new Vector2(380f, 260f);
-        private static readonly Vector2 PlayerPanelPosition = new Vector2(-380f, -60f);
-        private static readonly Vector2 MonsterPanelSize = new Vector2(820f, 300f);
-        private const float BodySize = 260f;
-        private static readonly Vector2 InfoBoxSize = new Vector2(500f, 170f);
-        private const float HpBarHeight = 24f;
-
         private const float BottomAreaHeight = 300f;
-        private const float MessageAreaWidthRatio = 0.5f;
-        private static readonly Vector2 MoveButtonSize = new Vector2(440f, 110f);
-        private static readonly Vector2 MoveButtonSpacing = new Vector2(16f, 16f);
-        private static readonly Vector2 SwitchButtonSize = new Vector2(220f, 80f);
+        private const float MessagePaddingX = 56f;
+        private const float MessagePaddingY = 36f;
+        private static readonly Vector2 NextIndicatorSize = new Vector2(60f, 60f);
 
-        private static readonly Vector2 PartyBoxSize = new Vector2(900f, 640f);
-        private static readonly Vector2 PartySlotSize = new Vector2(760f, 120f);
+        private const float CommandPanelWidth = 760f;
+        private static readonly Vector2 FightButtonSize = new Vector2(400f, 220f);
+        private static readonly Vector2 PartyButtonSize = new Vector2(260f, 220f);
+        private const float CommandSpacing = 24f;
+
+        private static readonly Vector2 MoveButtonSize = new Vector2(660f, 118f);
+        private static readonly Vector2 MoveButtonSpacing = new Vector2(20f, 16f);
+        private const float MoveBackWidth = 260f;
+        private static readonly Vector2 MoveBackSize = new Vector2(220f, 220f);
+
+        private static readonly Vector2 PartyBoxSize = new Vector2(900f, 680f);
+        private static readonly Vector2 PartySlotSize = new Vector2(760f, 130f);
         private const float PartySlotSpacing = 24f;
+        private const float PartyIconSize = 112f;
+        private static readonly Vector2 BackButtonSize = new Vector2(220f, 80f);
         private static readonly Vector2 RetryButtonSize = new Vector2(360f, 110f);
 
-        private const int NameFontSize = 40;
-        private const int HpFontSize = 30;
-        private const int MessageFontSize = 44;
-        private const int ButtonFontSize = 34;
+        private const int MessageFontSize = 46;
+        private const int ButtonFontSize = 36;
+        private const int CommandFontSize = 52;
 
-        private static readonly Color BoxColor = new Color(0.97f, 0.97f, 0.92f);
-        private static readonly Color BoxTextColor = new Color(0.15f, 0.15f, 0.2f);
-        private static readonly Color HpBackColor = new Color(0.3f, 0.3f, 0.3f);
-        private static readonly Color MessageBoxColor = new Color(0.18f, 0.22f, 0.32f);
-        private static readonly Color CommandBoxColor = new Color(0.92f, 0.92f, 0.88f);
-        private static readonly Color SwitchColor = new Color(0.35f, 0.55f, 0.35f);
+        private static readonly Color FrameColor = new Color(0.2f, 0.24f, 0.36f);
+        private static readonly Color InfoBoxColor = new Color(0.97f, 0.97f, 0.9f);
+        private static readonly Color MessageBoxColor = new Color(0.98f, 0.98f, 0.98f);
+        private static readonly Color BoxTextColor = new Color(0.2f, 0.2f, 0.25f);
+        private static readonly Color NextIndicatorColor = new Color(0.85f, 0.3f, 0.25f);
+        private static readonly Color FightColor = new Color(0.88f, 0.32f, 0.3f);
+        private static readonly Color PartyColor = new Color(0.35f, 0.65f, 0.4f);
         private static readonly Color OverlayColor = new Color(0f, 0f, 0f, 0.6f);
-        private static readonly Color SlotColor = new Color(0.25f, 0.45f, 0.75f);
+        private static readonly Color SlotColor = new Color(0.3f, 0.5f, 0.8f);
         private static readonly Color BackColor = new Color(0.45f, 0.45f, 0.5f);
         private static readonly Color RetryColor = new Color(0.85f, 0.45f, 0.2f);
 
-        private static MonsterPanel CreateMonsterPanel(Transform parent, string name, Vector2 position, bool isPlayer)
+        /// <summary>
+        /// 画面全体に透明なボタンを敷く。一番奥に置くので、窓やボタンのない所をタップしたときだけ反応する
+        /// </summary>
+        private static Button CreateFieldTapArea(Transform parent)
         {
-            var root = UIDialogBuilder.CreateUIObject(name, parent);
-            Place(root.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), position, MonsterPanelSize);
-
-            // 自分は絵が左・情報が右、相手は情報が左・絵が右（ダイパ風の向き）
-            float bodyX = (MonsterPanelSize.x - BodySize) / 2f * (isPlayer ? -1f : 1f);
-            float infoX = (MonsterPanelSize.x - InfoBoxSize.x) / 2f * (isPlayer ? 1f : -1f);
-
-            var body = CreateImage(root.transform, "Body", Color.white);
-            Place(body.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(bodyX, 0f), new Vector2(BodySize, BodySize));
-
-            var info = CreateImage(root.transform, "Info", BoxColor);
-            Place(info.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(infoX, 0f), InfoBoxSize);
-            var nameText = CreateText(info.transform, "Name", "", NameFontSize, BoxTextColor, TextAnchor.UpperLeft);
-            SetBand(nameText.rectTransform, 0.6f, 1f);
-            var hpText = CreateText(info.transform, "HpText", "", HpFontSize, BoxTextColor, TextAnchor.LowerRight);
-            SetBand(hpText.rectTransform, 0f, 0.35f);
-
-            var hpBack = CreateImage(info.transform, "HpBar", HpBackColor);
-            var hpBackRect = hpBack.rectTransform;
-            hpBackRect.anchorMin = new Vector2(0.05f, 0.45f);
-            hpBackRect.anchorMax = new Vector2(0.95f, 0.45f);
-            hpBackRect.sizeDelta = new Vector2(0f, HpBarHeight);
-            var hpFill = CreateImage(hpBack.transform, "Fill", Color.green);
-            UIDialogBuilder.SetStretchAll(hpFill.rectTransform);
-
-            var panel = root.AddComponent<MonsterPanel>();
-            var so = new SerializedObject(panel);
-            so.FindProperty("_body").objectReferenceValue = body;
-            so.FindProperty("_nameText").objectReferenceValue = nameText;
-            so.FindProperty("_hpText").objectReferenceValue = hpText;
-            so.FindProperty("_hpFill").objectReferenceValue = hpFill.rectTransform;
-            so.FindProperty("_hpFillImage").objectReferenceValue = hpFill;
-            so.ApplyModifiedProperties();
-            return panel;
+            var image = CreateImage(parent, "FieldTapArea", Color.clear);
+            UIDialogBuilder.SetStretchAll(image.rectTransform);
+            return image.gameObject.AddComponent<Button>();
         }
 
-        private static MessageWindow CreateMessageWindow(Transform parent)
+        private static MessageWindow CreateMessageWindow(Transform parent, Button fieldTapArea)
         {
-            var box = CreateImage(parent, "MessageWindow", MessageBoxColor);
-            var rect = box.rectTransform;
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = new Vector2(MessageAreaWidthRatio, 0f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            rect.sizeDelta = new Vector2(0f, BottomAreaHeight);
+            var frame = CreateFramedBox(parent, "MessageWindow", MessageBoxColor, out var inner);
+            SetBottomArea(frame.rectTransform, 0f, 1f);
 
-            // 窓全体をボタンにして、どこをタップしても次の文へ送れるようにする
-            var button = box.gameObject.AddComponent<Button>();
-            var text = CreateText(box.transform, "Text", "", MessageFontSize, Color.white, TextAnchor.MiddleLeft);
-            text.rectTransform.offsetMin = new Vector2(48f, 24f);
-            text.rectTransform.offsetMax = new Vector2(-48f, -24f);
+            // 窓全体もボタンにして、どこをタップしても次の文へ送れるようにする
+            var button = frame.gameObject.AddComponent<Button>();
+            var text = CreateText(inner, "Text", "", MessageFontSize, BoxTextColor, TextAnchor.UpperLeft);
+            text.rectTransform.offsetMin = new Vector2(MessagePaddingX, MessagePaddingY);
+            text.rectTransform.offsetMax = new Vector2(-MessagePaddingX, -MessagePaddingY);
 
-            var window = box.gameObject.AddComponent<MessageWindow>();
+            var indicator = CreateText(inner, "Next", "▼", MessageFontSize, NextIndicatorColor, TextAnchor.MiddleCenter);
+            var indicatorRect = indicator.rectTransform;
+            indicatorRect.anchorMin = indicatorRect.anchorMax = new Vector2(1f, 0f);
+            indicatorRect.pivot = new Vector2(1f, 0f);
+            indicatorRect.sizeDelta = NextIndicatorSize;
+            indicatorRect.anchoredPosition = new Vector2(-MessagePaddingX / 2f, MessagePaddingY / 2f);
+
+            var window = frame.gameObject.AddComponent<MessageWindow>();
             var so = new SerializedObject(window);
             so.FindProperty("_text").objectReferenceValue = text;
-            so.FindProperty("_advanceButton").objectReferenceValue = button;
+            SetArray(so.FindProperty("_advanceButtons"), new Object[] { button, fieldTapArea });
+            so.FindProperty("_nextIndicator").objectReferenceValue = indicator.gameObject;
             so.ApplyModifiedProperties();
             return window;
         }
 
+        /// <summary>メッセージ窓の右側に重ねる。左には「〇〇は どうする？」が見えたまま残る</summary>
         private static CommandPanel CreateCommandPanel(Transform parent)
         {
-            var box = CreateImage(parent, "CommandPanel", CommandBoxColor);
-            var rect = box.rectTransform;
-            rect.anchorMin = new Vector2(MessageAreaWidthRatio, 0f);
+            var frame = CreateFramedBox(parent, "CommandPanel", InfoBoxColor, out var inner);
+            var rect = frame.rectTransform;
+            rect.anchorMin = new Vector2(1f, 0f);
             rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            rect.sizeDelta = new Vector2(0f, BottomAreaHeight);
+            rect.pivot = new Vector2(1f, 0f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(CommandPanelWidth, BottomAreaHeight);
 
-            var grid = UIDialogBuilder.CreateUIObject("Moves", box.transform);
-            UIDialogBuilder.SetStretchAll(grid.GetComponent<RectTransform>());
+            var layout = inner.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = CommandSpacing;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+
+            var fight = CreateButton(inner, "Btn_Fight", "たたかう", FightButtonSize, FightColor);
+            var party = CreateButton(inner, "Btn_Party", "ペンモン", PartyButtonSize, PartyColor);
+            fight.GetComponentInChildren<Text>().fontSize = CommandFontSize;
+
+            var panel = frame.gameObject.AddComponent<CommandPanel>();
+            var so = new SerializedObject(panel);
+            so.FindProperty("_fightButton").objectReferenceValue = fight.GetComponent<Button>();
+            so.FindProperty("_partyButton").objectReferenceValue = party.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+            return panel;
+        }
+
+        /// <summary>技選択は下の窓いっぱいに出す。左に技4つ（2x2）、右に「もどる」</summary>
+        private static MovePanel CreateMovePanel(Transform parent)
+        {
+            var frame = CreateFramedBox(parent, "MovePanel", InfoBoxColor, out var inner);
+            SetBottomArea(frame.rectTransform, 0f, 1f);
+
+            var grid = UIDialogBuilder.CreateUIObject("Moves", inner);
+            var gridRect = grid.GetComponent<RectTransform>();
+            UIDialogBuilder.SetStretchAll(gridRect);
+            gridRect.offsetMax = new Vector2(-MoveBackWidth, 0f);
             var layout = grid.AddComponent<GridLayoutGroup>();
             layout.cellSize = MoveButtonSize;
             layout.spacing = MoveButtonSpacing;
@@ -124,7 +134,7 @@ namespace PenguinMonster.Editor
             layout.constraintCount = 2;
 
             var buttons = new Button[4];
-            var labels = new Text[4];
+            var labels = new Text[buttons.Length];
             for (int i = 0; i < buttons.Length; i++)
             {
                 var buttonObj = CreateButton(grid.transform, $"Btn_Move{i}", "", MoveButtonSize, Color.gray);
@@ -133,18 +143,17 @@ namespace PenguinMonster.Editor
                 labels[i].color = BoxTextColor;
             }
 
-            // 交代ボタンはコマンド窓の右上に乗せる
-            var switchObj = CreateButton(box.transform, "Btn_Switch", "こうたい", SwitchButtonSize, SwitchColor);
-            var switchRect = switchObj.GetComponent<RectTransform>();
-            switchRect.anchorMin = switchRect.anchorMax = new Vector2(1f, 1f);
-            switchRect.pivot = new Vector2(1f, 0f);
-            switchRect.anchoredPosition = new Vector2(-16f, 16f);
+            var back = CreateButton(inner, "Btn_Back", "もどる", MoveBackSize, BackColor);
+            var backRect = back.GetComponent<RectTransform>();
+            backRect.anchorMin = backRect.anchorMax = new Vector2(1f, 0.5f);
+            backRect.pivot = new Vector2(1f, 0.5f);
+            backRect.anchoredPosition = new Vector2(-(MoveBackWidth - MoveBackSize.x) / 2f, 0f);
 
-            var panel = box.gameObject.AddComponent<CommandPanel>();
+            var panel = frame.gameObject.AddComponent<MovePanel>();
             var so = new SerializedObject(panel);
             SetArray(so.FindProperty("_moveButtons"), buttons);
             SetArray(so.FindProperty("_moveLabels"), labels);
-            so.FindProperty("_switchButton").objectReferenceValue = switchObj.GetComponent<Button>();
+            so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
             so.ApplyModifiedProperties();
             return panel;
         }
@@ -154,9 +163,9 @@ namespace PenguinMonster.Editor
             var overlay = CreateImage(parent, "PartyPanel", OverlayColor);
             UIDialogBuilder.SetStretchAll(overlay.rectTransform);
 
-            var box = CreateImage(overlay.transform, "Box", MessageBoxColor);
-            Place(box.rectTransform, new Vector2(0.5f, 0.5f), Vector2.zero, PartyBoxSize);
-            var layout = box.gameObject.AddComponent<VerticalLayoutGroup>();
+            var frame = CreateFramedBox(overlay.transform, "Box", InfoBoxColor, out var inner);
+            Place(frame.rectTransform, Center, Vector2.zero, PartyBoxSize);
+            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.spacing = PartySlotSpacing;
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childControlWidth = false;
@@ -164,28 +173,56 @@ namespace PenguinMonster.Editor
 
             var buttons = new Button[BattleBalance.PartySize];
             var labels = new Text[buttons.Length];
+            var icons = new Image[buttons.Length];
             for (int i = 0; i < buttons.Length; i++)
             {
-                var slot = CreateButton(box.transform, $"Btn_Slot{i}", "", PartySlotSize, SlotColor);
+                var slot = CreateButton(inner, $"Btn_Slot{i}", "", PartySlotSize, SlotColor);
                 buttons[i] = slot.GetComponent<Button>();
                 labels[i] = slot.GetComponentInChildren<Text>();
+                // 左に絵を置くぶん、名前は右へずらす
+                labels[i].rectTransform.offsetMin = new Vector2(PartyIconSize + 16f, 0f);
+                icons[i] = CreatePartyIcon(slot.transform);
             }
-            var back = CreateButton(box.transform, "Btn_Back", "もどる", SwitchButtonSize, BackColor);
+            var back = CreateButton(inner, "Btn_Back", "もどる", BackButtonSize, BackColor);
 
             var panel = overlay.gameObject.AddComponent<PartyPanel>();
             var so = new SerializedObject(panel);
             SetArray(so.FindProperty("_slotButtons"), buttons);
             SetArray(so.FindProperty("_slotLabels"), labels);
+            SetArray(so.FindProperty("_slotIcons"), icons);
             so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
             so.ApplyModifiedProperties();
             return panel;
         }
 
+        private static Image CreatePartyIcon(Transform slot)
+        {
+            var icon = CreateImage(slot, "Icon", Color.white);
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+            var rect = icon.rectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(0f, 0.5f);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.anchoredPosition = new Vector2(16f, 0f);
+            rect.sizeDelta = new Vector2(PartyIconSize, PartyIconSize);
+            return icon;
+        }
+
         private static Button CreateRetryButton(Transform parent)
         {
             var obj = CreateButton(parent, "Btn_Retry", "もういちど", RetryButtonSize, RetryColor);
-            Place(obj.GetComponent<RectTransform>(), new Vector2(0.5f, 0.5f), new Vector2(0f, 120f), RetryButtonSize);
+            Place(obj.GetComponent<RectTransform>(), Center, new Vector2(0f, 120f), RetryButtonSize);
             return obj.GetComponent<Button>();
+        }
+
+        /// <summary>画面下の帯（高さ BottomAreaHeight）の横 [min, max] に置く</summary>
+        private static void SetBottomArea(RectTransform rect, float min, float max)
+        {
+            rect.anchorMin = new Vector2(min, 0f);
+            rect.anchorMax = new Vector2(max, 0f);
+            rect.pivot = new Vector2(0.5f, 0f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(0f, BottomAreaHeight);
         }
     }
 }

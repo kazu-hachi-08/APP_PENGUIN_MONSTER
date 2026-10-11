@@ -17,10 +17,13 @@ namespace PenguinMonster.View
         private const int PlayerSide = 0;
         private const int CpuSide = 1;
 
-        [SerializeField] private MonsterPanel _playerPanel;
-        [SerializeField] private MonsterPanel _enemyPanel;
+        [SerializeField] private MonsterView _playerView;
+        [SerializeField] private MonsterView _enemyView;
+        [SerializeField] private MonsterInfoBox _playerInfo;
+        [SerializeField] private MonsterInfoBox _enemyInfo;
         [SerializeField] private MessageWindow _messageWindow;
         [SerializeField] private CommandPanel _commandPanel;
+        [SerializeField] private MovePanel _movePanel;
         [SerializeField] private PartyPanel _partyPanel;
         [SerializeField] private Button _retryButton;
 
@@ -36,7 +39,11 @@ namespace PenguinMonster.View
         private void Start()
         {
             _commandPanel.Hide();
+            _movePanel.gameObject.SetActive(false);
             _partyPanel.gameObject.SetActive(false);
+            _playerInfo.Hide();
+            _enemyInfo.Hide();
+            _messageWindow.SetText("");
             _retryButton.gameObject.SetActive(false);
             _retryButton.onClick.AddListener(() => SceneManager.LoadScene(SceneNames.PenguinMonster));
 
@@ -70,20 +77,23 @@ namespace PenguinMonster.View
             _playerAction = null;
             ShowCommands();
             yield return new WaitUntil(() => _playerAction != null);
-            _commandPanel.Hide();
         }
 
         private void ShowCommands()
         {
             _messageWindow.SetText($"{Player.Active.Name}は どうする？");
-            _commandPanel.Show(Player,
+            _commandPanel.Show(Player, onFight: ShowMoveSelect, onParty: ShowSwitchSelect);
+        }
+
+        private void ShowMoveSelect()
+        {
+            _movePanel.Show(Player.Active,
                 onMove: index => _playerAction = BattleAction.UseMove(index),
-                onSwitch: ShowSwitchSelect);
+                onBack: ShowCommands);
         }
 
         private void ShowSwitchSelect()
         {
-            _commandPanel.Hide();
             _partyPanel.Show(Player,
                 onSelect: index => _playerAction = BattleAction.SwitchTo(index),
                 onBack: ShowCommands);

@@ -1,5 +1,6 @@
 using System;
 using PenguinMonster.Battle;
+using PenguinMonster.View.Art;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ namespace PenguinMonster.View
     {
         [SerializeField] private Button[] _slotButtons;
         [SerializeField] private Text[] _slotLabels;
+        [SerializeField] private Image[] _slotIcons;
         [SerializeField] private Button _backButton;
 
         private Action<int> _onSelect;
@@ -38,6 +40,7 @@ namespace PenguinMonster.View
                 var monster = side.Party[i];
                 string state = monster.IsFainted ? "ひんし" : side.IsActive(i) ? "せんとうちゅう" : $"HP {monster.CurrentHp}/{monster.MaxHp}";
                 _slotLabels[i].text = $"{monster.Name}   {state}";
+                _slotIcons[i].sprite = MonsterSprites.Front(monster.Definition);
                 _slotButtons[i].interactable = side.CanSwitchTo(i);
             }
             _backButton.gameObject.SetActive(onBack != null);
@@ -46,12 +49,14 @@ namespace PenguinMonster.View
 
         private void Select(int index)
         {
+            BattleSounds.Play(BattleSound.Cursor);
             gameObject.SetActive(false);
             _onSelect?.Invoke(index);
         }
 
         private void Back()
         {
+            BattleSounds.Play(BattleSound.Cursor);
             gameObject.SetActive(false);
             _onBack?.Invoke();
         }

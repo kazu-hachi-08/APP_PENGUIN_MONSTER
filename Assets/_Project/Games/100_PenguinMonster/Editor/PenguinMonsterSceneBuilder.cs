@@ -13,7 +13,7 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
-    /// 各パネルの組み立ては PenguinMonsterSceneBuilder.Panels.cs
+    /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -77,19 +77,24 @@ namespace PenguinMonster.Editor
             var root = UIDialogBuilder.CreateUIObject("Battle", canvas);
             UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
 
-            var enemyPanel = CreateMonsterPanel(root.transform, "EnemyPanel", EnemyPanelPosition, isPlayer: false);
-            var playerPanel = CreateMonsterPanel(root.transform, "PlayerPanel", PlayerPanelPosition, isPlayer: true);
-            var messageWindow = CreateMessageWindow(root.transform);
+            // 一番奥のタップ領域 → 場 → 下の窓 → 交代の画面、の順に重ねる
+            var fieldTapArea = CreateFieldTapArea(root.transform);
+            BuildField(root.transform, out var playerView, out var enemyView, out var playerInfo, out var enemyInfo);
+            var messageWindow = CreateMessageWindow(root.transform, fieldTapArea);
             var commandPanel = CreateCommandPanel(root.transform);
+            var movePanel = CreateMovePanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
             var retryButton = CreateRetryButton(root.transform);
 
             var controller = root.AddComponent<BattleController>();
             var so = new SerializedObject(controller);
-            so.FindProperty("_playerPanel").objectReferenceValue = playerPanel;
-            so.FindProperty("_enemyPanel").objectReferenceValue = enemyPanel;
+            so.FindProperty("_playerView").objectReferenceValue = playerView;
+            so.FindProperty("_enemyView").objectReferenceValue = enemyView;
+            so.FindProperty("_playerInfo").objectReferenceValue = playerInfo;
+            so.FindProperty("_enemyInfo").objectReferenceValue = enemyInfo;
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
+            so.FindProperty("_movePanel").objectReferenceValue = movePanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
             so.FindProperty("_retryButton").objectReferenceValue = retryButton;
             so.ApplyModifiedProperties();

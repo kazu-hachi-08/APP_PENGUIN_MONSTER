@@ -22,11 +22,11 @@
 
 ## 次にやること
 
-1. **Phase 1 の動作確認**（ユーザー側）
+1. **Phase 1・2 の動作確認**（ユーザー側）
    - Unity で開き `Tools > PenguinMonster > Rebuild` → `Scenes/PenguinMonsterScene` を Play
-   - CPU と 3vs3 が最後まで遊べるか、相性・急所・交代のメッセージが出るかを見る
-   - EditMode テスト（27件）はバッチモードで全て通過済み
-2. **コミットと push**（`feature/#1` → PR → main）
-   - Unity が生成した `.meta`・シーン・`ProjectSettings/EditorBuildSettings.asset` も含める
+   - ダイパ風の画面（ドット絵・台座・HPバー・送り表示・たたかう/ペンモン・演出・SE）で CPU と 3vs3 が最後まで遊べるかを見る
+   - EditMode テスト（29件）はバッチモードで全て通過済み。Rebuild もバッチモードで成功済み
+2. **コミットと push**
+   - Phase 1 は `feature/#1`、Phase 2 は `feature/#2`（`feature/#1` から分岐）。Phase 2 はまだコミットしていない
 3. Unity Cloud のリンク（Phase 6 までに）
-4. 次は Phase 2（ダイパ風のバトル画面）
+4. 次は Phase 3（状態異常・能力変化・技表・24体）

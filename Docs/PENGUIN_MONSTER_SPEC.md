@@ -203,13 +203,36 @@
 
 - 横画面固定（Android / Windows / ブラウザ）
 - バトル画面はダイヤモンド・パール風: 手前左に自分（後ろ姿）、奥右に相手（正面）。HPバーと名前の枠、下にメッセージ窓とコマンド
-- ペンモンの絵はコードで生成するドット絵。1体につき正面と後ろの2枚（サイズは 64x64 案）
-- 絵は基本ペンギン＋パーツの組み合わせで作る（パーツの種類は未定）
+- ペンモンの絵はコードで生成するドット絵。1体につき正面と後ろの2枚（64x64）。実行時に定義表の「見た目」から作る
+- 絵は基本ペンギン（体・頭・ヒレ・足。正面はおなかと顔が白）＋パーツの組み合わせで作る
+
+| 項目 | 種類 |
+| --- | --- |
+| 体型 | ふつう / ずんぐり / ほっそり |
+| 体の色 | 紺 / 黒 / 水色 / 青 / 赤 / 黄 / 緑 / 茶 / 紫 / ピンク |
+| 頭 | なし / とさか / つの（氷）/ ほのお / はっぱ / いなずま / かんむり |
+| 首 | なし / マフラー / すず |
+
+- パーツの種類は体数が増えたら足す（Phase 3 の 24 体で見直す）
+- 背景は空（上ほど濃い青）と地面（緑）。ペンモンは楕円の台座の上に立つ
+- 名前の枠: 名前・タイプ・Lv50・HPバー。HPバーは 50% 以下で黄、20% 以下で赤。数字は自分側だけ出す
 
 ## 7. UI・演出・サウンド
 
-- メッセージは「こうかは ばつぐんだ！」のような一文ずつの送り表示
-- 演出・サウンドは未定
+- メッセージは「こうかは ばつぐんだ！」のような一文ずつの送り表示。文字を1つずつ出し、送り中のタップで全文、読み終わったら▼を出してタップで次へ（窓の外の場をタップしてもよい）
+- 「ゆけっ！」「〇〇の △△！」「もどれ！」の文はタップを待たず、そのまま登場・攻撃の演出へつなげる
+- コマンドは「たたかう / ペンモン」の2つ（にげるは無い）。たたかう → 技4つ（タイプの色付き）＋もどる
+- 演出
+
+| 場面 | 演出 |
+| --- | --- |
+| 出てくる | 足元から「ぽよん」と大きくなる |
+| もどる | 小さくなって消える |
+| 技を使う | 相手の方へ踏み込んで戻る |
+| ダメージ | 点滅してから HP バーが少しずつ減る |
+| ひんし | 台座の下へ沈んで消える |
+
+- 効果音は仮でコード生成（決定・技・当たり（相性で3種）・登場・ひんし・勝ち・負け）。BGM は未定
 
 ## 8. オンライン
 
@@ -239,7 +262,7 @@
 ```text
 Scripts/
 ├── Battle/                 # バトルのルール・計算（純C#、PenguinMonster.Battle.asmdef、noEngineReferences）
-│   ├── Data/               # タイプ・相性表・能力値・技／ペンモンの定義と定義表（MoveTable / MonsterTable）
+│   ├── Data/               # タイプ・相性表・能力値・技／ペンモンの定義と見た目（MonsterLook）・定義表（MoveTable / MonsterTable）
 │   ├── BattleBalance.cs    # 調整値（Lv・ダメージ式の定数・選出数など）
 │   ├── BattleState / BattleSide / BattleMonster   # バトルの状態（場は配列で持ち、シングルは1）
 │   ├── BattleEngine(.Order).cs                    # ターンの解決（行動順 → 命中 → ダメージ → ひんし → 勝敗）
@@ -248,10 +271,15 @@ Scripts/
 │   └── CpuPlayer.cs        # CPU（よわい）
 └── View/                   # 表示（MonoBehaviour、名前空間 PenguinMonster.View）
     ├── BattleController(.Playback).cs  # 進行役。入力待ちと BattleEvent の再生
-    ├── MonsterPanel / MessageWindow / CommandPanel / PartyPanel
-    └── TypeColors.cs       # 仮の絵の色
+    ├── MonsterView.cs      # 台座の上のペンモンの絵と演出（登場・踏み込み・点滅・ひんし）
+    ├── MonsterInfoBox.cs   # 名前・Lv・HPバーの枠
+    ├── MessageWindow / CommandPanel / MovePanel / PartyPanel
+    ├── BattleBackdrop.cs   # 背景の Image に生成した絵をはめる
+    ├── BattleSounds(.Synth).cs  # 仮の効果音（コード生成）
+    ├── TypeColors.cs       # 技ボタンのタイプ色
+    └── Art/                # ドット絵の生成（PixelCanvas / PenguinPainter(.Parts) / PenguinPalette / MonsterSprites / BackdropArt）
 Editor/
-└── PenguinMonsterSceneBuilder(.Panels/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
+└── PenguinMonsterSceneBuilder(.Field/.Panels/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
 Scenes/
 └── PenguinMonsterScene.unity   # 生成物（手で編集しない）
 Tests/Editor/               # EditMode テスト（PenguinMonster.Battle.Tests.asmdef）

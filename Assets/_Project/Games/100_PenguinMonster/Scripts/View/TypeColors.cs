@@ -4,7 +4,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 仮の絵（色付きの四角）とボタンに使うタイプごとの色。Phase 2 でドット絵に置き換える
+    /// 技ボタンに使うタイプごとの色
     /// </summary>
     public static class TypeColors
     {
