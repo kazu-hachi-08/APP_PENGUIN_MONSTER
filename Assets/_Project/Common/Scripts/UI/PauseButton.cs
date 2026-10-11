@@ -1,0 +1,35 @@
+using PenguinMonster.Common.Audio;
+using PenguinMonster.Common.Core;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace PenguinMonster.Common.UI
+{
+    /// <summary>
+    /// 画面上のポーズボタン
+    /// スマートフォンにはEscキーが無いため、タッチでポーズできる導線を用意する
+    /// </summary>
+    [RequireComponent(typeof(Button))]
+    public class PauseButton : MonoBehaviour
+    {
+        [SerializeField] private BaseGameManager _gameManager;
+
+        private void Awake()
+        {
+            GetComponent<Button>().onClick.AddListener(OnClicked);
+        }
+
+        private void OnClicked()
+        {
+            if (_gameManager == null) return;
+
+            if (AudioManager.HasInstance)
+            {
+                AudioManager.Instance.PlaySe(SeId.ButtonClick);
+            }
+
+            // ポーズ可否（リザルト中など）の判定は BaseGameManager 側に任せる
+            _gameManager.PauseGame();
+        }
+    }
+}
