@@ -100,6 +100,20 @@ namespace PenguinMonster.View.Art
             }
         }
 
+        /// <summary>左右反転。後ろ姿は正面と逆を向かせる（自分側は右の相手のほうを向く）</summary>
+        public void FlipX()
+        {
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width / 2; x++)
+                {
+                    int left = y * Width + x;
+                    int right = y * Width + (Width - 1 - x);
+                    (Pixels[left], Pixels[right]) = (Pixels[right], Pixels[left]);
+                }
+            }
+        }
+
         public Sprite ToSprite(string name, Vector2 pivot)
         {
             var texture = new Texture2D(Width, Height, TextureFormat.RGBA32, false)

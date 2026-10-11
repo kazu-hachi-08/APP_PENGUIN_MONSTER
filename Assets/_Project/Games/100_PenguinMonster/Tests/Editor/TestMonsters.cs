@@ -36,7 +36,7 @@ namespace PenguinMonster.Battle.Tests
         public static MonsterDefinition With(MonsterDefinition monster, Ability ability = Ability.None, HeldItem item = HeldItem.None)
         {
             return new MonsterDefinition(monster.No, monster.Name, monster.Types.ToArray(), monster.BaseStats, monster.Moves.ToArray(),
-                monster.Look, ability, item);
+                ability, item);
         }
 
         public static MonsterDefinition[] Party(string prefix, int speed, MoveDefinition move, int attack = 50, int defense = 50)
