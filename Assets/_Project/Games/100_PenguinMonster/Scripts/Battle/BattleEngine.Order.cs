@@ -24,7 +24,7 @@ namespace PenguinMonster.Battle
             public bool IsSwitch => Action.Kind == BattleActionKind.Switch;
         }
 
-        /// <summary>交代 → 技の優先度 → すばやさ（同速はランダム）の順に並べる</summary>
+        /// <summary>交代 → 技の優先度 → すばやさ（ランク・まひ込み。同速はランダム）の順に並べる</summary>
         private List<QueuedAction> OrderActions(BattleAction action0, BattleAction action1)
         {
             var queue = new List<QueuedAction> { Enqueue(0, action0), Enqueue(1, action1) };
@@ -37,7 +37,7 @@ namespace PenguinMonster.Battle
             var active = _state.Sides[side].Active;
             int priority = action.Kind == BattleActionKind.Move ? active.Definition.Moves[action.Index].Priority : 0;
             // 同速の決着用。行動ごとに先に引いておけば、並べ替えの比較回数に乱数の消費が左右されない
-            return new QueuedAction(side, action, priority, active.Stats.Speed, _random.Next());
+            return new QueuedAction(side, action, priority, active.EffectiveSpeed, _random.Next());
         }
 
         private static int CompareOrder(QueuedAction a, QueuedAction b)

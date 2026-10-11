@@ -26,7 +26,7 @@ namespace PenguinMonster.View
                 case BattleEventKind.SentOut:
                     // 「ゆけっ！」の文を出してから登場させる
                     yield return _messageWindow.Show(message);
-                    InfoOf(e.Side).Show(e.Monster, e.Hp);
+                    InfoOf(e.Side).Show(e.Monster, e.Hp, e.Status);
                     BattleSounds.Play(BattleSound.SendOut);
                     yield return ViewOf(e.Side).Appear(SpriteOf(e.Side, e.Monster));
                     break;
@@ -52,6 +52,29 @@ namespace PenguinMonster.View
                     InfoOf(e.Side).Hide();
                     yield return _messageWindow.Play(message);
                     break;
+                case BattleEventKind.StatusDamage:
+                case BattleEventKind.HurtItself:
+                    // 技以外のダメージは、先に HP を減らしてから理由の文を出す
+                    BattleSounds.Play(BattleSound.Hit);
+                    yield return ViewOf(e.Side).Blink();
+                    yield return InfoOf(e.Side).AnimateHp(e.Hp);
+                    yield return _messageWindow.Play(message);
+                    break;
+                case BattleEventKind.StatusInflicted:
+                case BattleEventKind.WokeUp:
+                case BattleEventKind.Thawed:
+                    yield return PlayStatusChange(e, message);
+                    break;
+                case BattleEventKind.Confused:
+                    BattleSounds.Play(BattleSound.Status);
+                    yield return ViewOf(e.Side).Flash(StatusColors.Confusion);
+                    yield return _messageWindow.Play(message);
+                    break;
+                case BattleEventKind.StatChanged:
+                    BattleSounds.Play(e.Amount > 0 ? BattleSound.StatUp : BattleSound.StatDown);
+                    yield return ViewOf(e.Side).Flash(e.Amount > 0 ? StatusColors.StatUp : StatusColors.StatDown);
+                    yield return _messageWindow.Play(message);
+                    break;
                 case BattleEventKind.BattleEnd:
                     BattleSounds.Play(e.Side == PlayerSide ? BattleSound.Win : BattleSound.Lose);
                     yield return _messageWindow.Play(message);
@@ -63,6 +86,18 @@ namespace PenguinMonster.View
                     }
                     break;
             }
+        }
+
+        /// <summary>状態異常になった・治ったとき。印を付け替え、なったときだけ色を光らせる</summary>
+        private IEnumerator PlayStatusChange(BattleEvent e, string message)
+        {
+            if (e.Status != StatusCondition.None)
+            {
+                BattleSounds.Play(BattleSound.Status);
+                yield return ViewOf(e.Side).Flash(StatusColors.Get(e.Status));
+            }
+            InfoOf(e.Side).SetStatus(e.Status);
+            yield return _messageWindow.Play(message);
         }
 
         /// <summary>

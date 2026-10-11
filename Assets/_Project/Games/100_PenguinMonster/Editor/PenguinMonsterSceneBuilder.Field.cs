@@ -41,6 +41,9 @@ namespace PenguinMonster.Editor
         private const int NameFontSize = 40;
         private const int HpLabelFontSize = 26;
         private const int HpFontSize = 32;
+        private const int StatusFontSize = 28;
+        private static readonly Vector2 StatusBadgeSize = new Vector2(130f, 44f);
+        private const float StatusBadgeGap = 6f;
 
         private static readonly Color HpLabelColor = new Color(0.95f, 0.6f, 0.15f);
         private static readonly Color HpBackColor = new Color(0.25f, 0.27f, 0.3f);
@@ -152,6 +155,8 @@ namespace PenguinMonster.Editor
                 SetBand(hpText.rectTransform, 0f, 0.3f, InfoPadding);
             }
 
+            var badge = CreateStatusBadge(showHpNumbers ? inner : frame.rectTransform, showHpNumbers);
+
             var box = frame.gameObject.AddComponent<MonsterInfoBox>();
             var so = new SerializedObject(box);
             so.FindProperty("_nameText").objectReferenceValue = nameText;
@@ -159,8 +164,30 @@ namespace PenguinMonster.Editor
             so.FindProperty("_hpFill").objectReferenceValue = hpFill.rectTransform;
             so.FindProperty("_hpFillImage").objectReferenceValue = hpFill;
             so.FindProperty("_hpText").objectReferenceValue = hpText;
+            so.FindProperty("_statusBadge").objectReferenceValue = badge;
+            so.FindProperty("_statusText").objectReferenceValue = badge.GetComponentInChildren<Text>();
             so.ApplyModifiedProperties();
             return box;
+        }
+
+        /// <summary>
+        /// 状態異常の印（色付きの札に「まひ」など）。自分側は HP の数字の左の空き、
+        /// 相手側は枠の中に余白が無いので枠のすぐ下に置く
+        /// </summary>
+        private static Image CreateStatusBadge(RectTransform parent, bool inside)
+        {
+            var badge = CreateImage(parent, "StatusBadge", Color.gray);
+            badge.raycastTarget = false;
+            var rect = badge.rectTransform;
+            rect.anchorMin = rect.anchorMax = inside ? new Vector2(0f, 0.15f) : Vector2.zero;
+            rect.pivot = inside ? new Vector2(0f, 0.5f) : new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(InfoPadding, inside ? 0f : -StatusBadgeGap);
+            rect.sizeDelta = StatusBadgeSize;
+
+            var label = CreateText(badge.transform, "Label", "", StatusFontSize, Color.white, TextAnchor.MiddleCenter);
+            label.fontStyle = FontStyle.Bold;
+            badge.gameObject.SetActive(false);
+            return badge;
         }
     }
 }

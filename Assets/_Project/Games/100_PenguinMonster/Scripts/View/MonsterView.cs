@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 台座の上に立つペンモンの絵と、その演出（出てくる・もどる・攻撃・点滅・ひんし）。
+    /// 台座の上に立つペンモンの絵と、その演出（出てくる・もどる・攻撃・点滅・ひんし・色が光る）。
     /// 親に RectMask2D を付けて台座の高さで切り、ひんしで「下に沈んで消える」ように見せる
     /// </summary>
     public class MonsterView : MonoBehaviour
@@ -21,6 +21,8 @@ namespace PenguinMonster.View
         [SerializeField] private float _blinkInterval = 0.07f;
         [SerializeField] private int _blinkCount = 3;
         [SerializeField] private float _faintSeconds = 0.45f;
+        [SerializeField] private float _flashSeconds = 0.3f;
+        [SerializeField] private int _flashCount = 2;
 
         // 出てくるときに少し大きくなってから戻る「ぽよん」の強さ
         private const float AppearOvershoot = 1.7f;
@@ -63,6 +65,16 @@ namespace PenguinMonster.View
                 yield return new WaitForSeconds(_blinkInterval);
             }
             _image.enabled = true;
+        }
+
+        /// <summary>色を2回ふわっと重ねる。状態異常になった・能力が変わったときの演出</summary>
+        public IEnumerator Flash(Color color)
+        {
+            for (int i = 0; i < _flashCount; i++)
+            {
+                yield return Tween(_flashSeconds, t => _image.color = Color.Lerp(Color.white, color, Mathf.Sin(t * Mathf.PI)));
+            }
+            _image.color = Color.white;
         }
 
         /// <summary>絵の高さぶん下へ沈める。台座より下はマスクで見えないので、地面に消えていくように見える</summary>

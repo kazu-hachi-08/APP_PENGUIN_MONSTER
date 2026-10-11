@@ -13,7 +13,7 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
-    /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs
+    /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、仮の選択画面は .Pick.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -85,6 +85,8 @@ namespace PenguinMonster.Editor
             var movePanel = CreateMovePanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
             var retryButton = CreateRetryButton(root.transform);
+            // 仮の選択画面はバトル開始前に全面を覆うので一番手前
+            var pickPanel = CreatePickPanel(root.transform);
 
             var controller = root.AddComponent<BattleController>();
             var so = new SerializedObject(controller);
@@ -97,6 +99,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
             so.FindProperty("_retryButton").objectReferenceValue = retryButton;
+            so.FindProperty("_pickPanel").objectReferenceValue = pickPanel;
             so.ApplyModifiedProperties();
         }
 

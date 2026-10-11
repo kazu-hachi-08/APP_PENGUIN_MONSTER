@@ -5,7 +5,7 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// ターンを進める（仕様書 §4.1）。状態を書き換え、起きたことを BattleEvent の列で返す。
-    /// 行動順の決め方は BattleEngine.Order.cs
+    /// 行動順は .Order.cs、状態異常・こんらん・ターン終わりは .Status.cs、技の効果は .Effects.cs
     /// </summary>
     public sealed partial class BattleEngine
     {
@@ -47,6 +47,10 @@ namespace PenguinMonster.Battle
                 }
                 Execute(queued.Side, queued.Action, events);
             }
+            if (!_state.IsOver)
+            {
+                ApplyEndOfTurn(events);
+            }
             return events;
         }
 
@@ -78,6 +82,7 @@ namespace PenguinMonster.Battle
         private void ExecuteSwitch(int side, int partyIndex, List<BattleEvent> events)
         {
             var battleSide = _state.Sides[side];
+            battleSide.Active.OnWithdrawn();
             events.Add(BattleEvent.Of(BattleEventKind.Withdrawn, side, battleSide.Active));
             events.AddRange(Replace(side, partyIndex));
         }
@@ -91,17 +96,41 @@ namespace PenguinMonster.Battle
             {
                 return;
             }
+            if (!TryAct(side, user, events))
+            {
+                return;
+            }
 
             var move = user.Definition.Moves[moveIndex];
             events.Add(BattleEvent.MoveUsed(side, user, move));
 
-            if (_random.Next(BattleBalance.AccuracyPercentMax) >= move.Accuracy)
+            if (!move.TargetsSelfOnly && !RollHit(user, target, move))
             {
                 events.Add(BattleEvent.Of(BattleEventKind.Missed, side, user));
                 return;
             }
+            if (move.IsStatus)
+            {
+                ApplyStatusMove(side, move, events);
+                return;
+            }
 
-            ApplyDamage(1 - side, target, DamageCalculator.Calculate(user, target, move, _random), events);
+            var result = DamageCalculator.Calculate(user, target, move, _random);
+            ApplyDamage(1 - side, target, result, events);
+            if (result.Effectiveness == 0f)
+            {
+                return;
+            }
+            ThawByFire(1 - side, target, move, events);
+            ApplySecondaryEffects(side, move, events);
+        }
+
+        /// <summary>命中 × 命中ランク ÷ 回避ランク（仕様書 §4.3）。ランクは差を -6〜+6 に収めて1つの倍率にする</summary>
+        private bool RollHit(BattleMonster user, BattleMonster target, MoveDefinition move)
+        {
+            int stage = user.GetStage(StatKind.Accuracy) - target.GetStage(StatKind.Evasion);
+            stage = Math.Max(-BattleBalance.MaxStatStage, Math.Min(BattleBalance.MaxStatStage, stage));
+            return _random.Next(BattleBalance.AccuracyPercentMax) < StageMultiplier.ApplyAccuracy(move.Accuracy, stage);
         }
 
         private void ApplyDamage(int targetSide, BattleMonster target, DamageResult result, List<BattleEvent> events)
@@ -126,10 +155,22 @@ namespace PenguinMonster.Battle
             {
                 events.Add(BattleEvent.Of(BattleEventKind.NotVeryEffective, targetSide, target));
             }
+            CheckFainted(targetSide, target, events);
+        }
 
-            if (target.IsFainted)
+        /// <summary>技以外のダメージ（こんらんの自傷・どく・やけど）。HPの変化と文を1つのイベントで表す</summary>
+        private void ApplyDirectDamage(int side, BattleMonster monster, int damage, BattleEventKind kind, List<BattleEvent> events)
+        {
+            monster.TakeDamage(damage);
+            events.Add(BattleEvent.Of(kind, side, monster));
+            CheckFainted(side, monster, events);
+        }
+
+        private void CheckFainted(int side, BattleMonster monster, List<BattleEvent> events)
+        {
+            if (monster.IsFainted)
             {
-                events.Add(BattleEvent.Of(BattleEventKind.Fainted, targetSide, target));
+                events.Add(BattleEvent.Of(BattleEventKind.Fainted, side, monster));
                 CheckBattleEnd(events);
             }
         }

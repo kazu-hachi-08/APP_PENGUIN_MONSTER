@@ -29,6 +29,8 @@ namespace PenguinMonster.View.Art
         public static readonly Color32 Gold = new Color32(250, 200, 50, 255);
         public static readonly Color32 GoldShade = new Color32(200, 140, 30, 255);
         public static readonly Color32 Gem = new Color32(230, 60, 90, 255);
+        public static readonly Color32 Fin = new Color32(96, 100, 124, 255);
+        public static readonly Color32 FinShade = new Color32(44, 46, 60, 255);
         public static readonly Color32 Scarf = new Color32(220, 50, 60, 255);
         public static readonly Color32 ScarfShade = new Color32(160, 30, 45, 255);
 

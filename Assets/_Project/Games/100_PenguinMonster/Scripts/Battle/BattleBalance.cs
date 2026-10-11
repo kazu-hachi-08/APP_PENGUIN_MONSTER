@@ -31,5 +31,28 @@ namespace PenguinMonster.Battle
 
         /// <summary>ダメージ式の「2×Lv÷5＋2」の部分。Lv固定なので定数で持つ</summary>
         public const int LevelFactor = 2 * Level / 5 + 2;
+
+        // 能力変化（仕様書 §4.5）。倍率は 能力 (2+n)/2、命中・回避 (3+n)/3（下がるときは分母に足す）
+        public const int MaxStatStage = 6;
+        public const int StatStageBase = 2;
+        public const int AccuracyStageBase = 3;
+
+        // 状態異常（仕様書 §4.4）。ダメージは最大HPを割る数
+        public const int ParalysisSpeedDivisor = 2;
+        public const int ParalysisImmobileDenominator = 4;
+        public const int PoisonDamageDenominator = 8;
+        public const int BadPoisonDamageDenominator = 16;
+        public const int BurnDamageDenominator = 16;
+        public const float BurnPhysicalMultiplier = 0.5f;
+        /// <summary>動けないターン数（両端を含む）</summary>
+        public const int SleepMinTurns = 1;
+        public const int SleepMaxTurns = 3;
+        public const int FreezeThawDenominator = 5;
+
+        // こんらん。ターン数は「技を使おうとした回数」で数え、0 になった回は治って普通に動ける（1〜4回 こんらんする）
+        public const int ConfusionMinTurns = 2;
+        public const int ConfusionMaxTurns = 5;
+        public const int ConfusionSelfHitDenominator = 3;
+        public const int ConfusionSelfHitPower = 40;
     }
 }

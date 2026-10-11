@@ -43,6 +43,11 @@ namespace PenguinMonster.View.Art
                 case HeadPart.Crown:
                     PaintCrown(canvas, x, top);
                     break;
+                case HeadPart.Fin:
+                    // シャチの背びれ。先を後ろへ倒して、泳いでいる向きを感じさせる
+                    canvas.FillTriangle(V(x - 4, top - 2), V(x + 3, top - 2), V(x + 5, top + 8), PenguinPalette.FinShade);
+                    canvas.FillTriangle(V(x - 3, top - 1), V(x + 1, top - 1), V(x + 4, top + 6), PenguinPalette.Fin);
+                    break;
             }
         }
 

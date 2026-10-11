@@ -31,21 +31,42 @@ namespace PenguinMonster.Battle
             }
 
             bool isCritical = random.Next(BattleBalance.CriticalChanceDenominator) == 0;
-            int randomPercent = random.Next(BattleBalance.DamageRandomMinPercent, BattleBalance.DamageRandomMaxPercent + 1);
+            int randomPercent = RollRandomPercent(random);
             bool isPhysical = move.Category == MoveCategory.Physical;
-            int attack = isPhysical ? attacker.Stats.Attack : attacker.Stats.SpAttack;
-            int defense = isPhysical ? defender.Stats.Defense : defender.Stats.SpDefense;
+            int attack = attacker.AttackStat(isPhysical, isCritical);
+            int defense = defender.DefenseStat(isPhysical, isCritical);
             bool isStab = attacker.Definition.HasType(move.Type);
 
-            int damage = Compute(move.Power, attack, defense, isCritical, randomPercent, isStab, effectiveness);
+            int damage = Compute(move.Power, attack, defense, isCritical, randomPercent, isStab, effectiveness,
+                IsBurnHalved(attacker, isPhysical));
             return new DamageResult(damage, isCritical, effectiveness);
+        }
+
+        /// <summary>
+        /// こんらんで自分を攻撃したときのダメージ。原作と同じく威力40の物理で、タイプ・一致・急所は無し
+        /// </summary>
+        public static int SelfHit(BattleMonster monster, Random random)
+        {
+            return Compute(BattleBalance.ConfusionSelfHitPower, monster.AttackStat(true, false), monster.DefenseStat(true, false),
+                false, RollRandomPercent(random), false, 1f, IsBurnHalved(monster, true));
+        }
+
+        private static int RollRandomPercent(Random random)
+        {
+            return random.Next(BattleBalance.DamageRandomMinPercent, BattleBalance.DamageRandomMaxPercent + 1);
+        }
+
+        private static bool IsBurnHalved(BattleMonster attacker, bool isPhysical)
+        {
+            return isPhysical && attacker.Status == StatusCondition.Burn;
         }
 
         /// <summary>
         /// 乱数を引き終えた値からダメージを出す。テストで期待値と突き合わせられるよう分けてある。
         /// 本家と同じく段階ごとに切り捨てる（掛ける順で1ずれることがあるため順番を変えないこと）
         /// </summary>
-        public static int Compute(int power, int attack, int defense, bool isCritical, int randomPercent, bool isStab, float effectiveness)
+        public static int Compute(int power, int attack, int defense, bool isCritical, int randomPercent, bool isStab, float effectiveness,
+            bool isBurned = false)
         {
             if (effectiveness == 0f)
             {
@@ -63,6 +84,10 @@ namespace PenguinMonster.Battle
                 damage = (int)(damage * BattleBalance.StabMultiplier);
             }
             damage = (int)(damage * effectiveness);
+            if (isBurned)
+            {
+                damage = (int)(damage * BattleBalance.BurnPhysicalMultiplier);
+            }
 
             // 効果がある技は最低1ダメージ入る
             return Math.Max(1, damage);

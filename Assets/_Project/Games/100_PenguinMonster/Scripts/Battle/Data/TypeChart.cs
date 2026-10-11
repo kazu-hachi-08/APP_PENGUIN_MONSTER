@@ -3,7 +3,8 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// タイプ相性表（仕様書 §3.4）。行が攻撃する技のタイプ、列が受けるペンモンのタイプ
+    /// タイプ相性表（仕様書 §3.4）。行が攻撃する技のタイプ、列が受けるペンモンのタイプ。
+    /// 24体での見直しで、ひ が受けで強すぎたため「やみ・オーロラ → ひ」の いまひとつ を外した
     /// </summary>
     public static class TypeChart
     {
@@ -24,8 +25,8 @@ namespace PenguinMonster.Battle
             /* こけ     */ { X, X, S, H, X, H, S, H, X, X },
             /* いわ     */ { X, S, X, S, X, H, X, S, X, X },
             /* とり     */ { X, X, X, X, H, S, H, X, S, X },
-            /* やみ     */ { S, X, X, H, X, X, X, X, H, S },
-            /* オーロラ */ { X, X, X, H, S, X, X, X, S, H },
+            /* やみ     */ { S, X, X, X, X, X, X, X, H, S },
+            /* オーロラ */ { X, X, X, X, S, X, X, X, S, H },
         };
 
         public static float GetMultiplier(MonsterType attack, MonsterType defense)

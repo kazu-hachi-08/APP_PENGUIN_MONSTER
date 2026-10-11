@@ -36,10 +36,16 @@ namespace PenguinMonster.View
             for (int i = 0; i < _moveButtons.Length; i++)
             {
                 var move = moves[i];
-                _moveLabels[i].text = $"{move.Name}\n<size=26>{move.Type.ToJapanese()}  いりょく {move.Power}</size>";
+                _moveLabels[i].text = $"{move.Name}\n<size=26>{move.Type.ToJapanese()}  {Detail(move)}</size>";
                 _moveButtons[i].image.color = TypeColors.Get(move.Type);
             }
             gameObject.SetActive(true);
+        }
+
+        /// <summary>変化技は威力が無いので「へんか」と出す</summary>
+        private static string Detail(MoveDefinition move)
+        {
+            return move.IsStatus ? "へんか" : $"いりょく {move.Power}";
         }
 
         private void Choose(Action action)

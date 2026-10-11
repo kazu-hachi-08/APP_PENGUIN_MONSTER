@@ -15,6 +15,9 @@ namespace PenguinMonster.View
         Faint,
         Win,
         Lose,
+        StatUp,
+        StatDown,
+        Status,
     }
 
     /// <summary>
@@ -37,6 +40,9 @@ namespace PenguinMonster.View
             { BattleSound.Faint, 0.5f },
             { BattleSound.Win, 0.5f },
             { BattleSound.Lose, 0.5f },
+            { BattleSound.StatUp, 0.4f },
+            { BattleSound.StatDown, 0.4f },
+            { BattleSound.Status, 0.45f },
         };
 
         public static void Play(BattleSound sound)
@@ -61,6 +67,9 @@ namespace PenguinMonster.View
                 case BattleSound.SendOut: return Sweep("Se_SendOut", 0.22f, 400f, 1400f);
                 case BattleSound.Faint: return Sweep("Se_Faint", 0.5f, 700f, 120f);
                 case BattleSound.Win: return Jingle("Se_Win", new[] { 523f, 659f, 784f, 1047f });
+                case BattleSound.StatUp: return Sweep("Se_StatUp", 0.35f, 500f, 1600f);
+                case BattleSound.StatDown: return Sweep("Se_StatDown", 0.35f, 1200f, 300f);
+                case BattleSound.Status: return Impact("Se_Status", 0.25f, 330f);
                 default: return Jingle("Se_Lose", new[] { 392f, 311f, 262f });
             }
         }

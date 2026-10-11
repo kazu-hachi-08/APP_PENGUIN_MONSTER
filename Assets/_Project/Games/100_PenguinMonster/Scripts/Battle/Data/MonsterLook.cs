@@ -33,6 +33,8 @@ namespace PenguinMonster.Battle
         Leaf,
         Bolt,
         Crown,
+        /// <summary>シャチの背びれ（やみタイプ用）</summary>
+        Fin,
     }
 
     /// <summary>首のパーツ</summary>
