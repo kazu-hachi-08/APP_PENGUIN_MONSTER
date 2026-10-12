@@ -57,6 +57,7 @@ namespace PenguinMonster.Editor
             camera.orthographic = true;
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = BackgroundColor;
+            cameraObj.AddComponent<AudioListener>();
         }
 
         private static void CreateEventSystem()
