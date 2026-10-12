@@ -11,16 +11,16 @@ namespace PenguinMonster.View
     {
         private static readonly Color[] Colors =
         {
-            new Color(0.75f, 0.75f, 0.70f), // ノーマル
-            new Color(0.55f, 0.85f, 0.95f), // こおり
-            new Color(0.25f, 0.50f, 0.90f), // うみ
-            new Color(0.95f, 0.45f, 0.25f), // ひ
-            new Color(0.95f, 0.85f, 0.25f), // かみなり
-            new Color(0.40f, 0.75f, 0.35f), // こけ
-            new Color(0.65f, 0.55f, 0.40f), // いわ
-            new Color(0.60f, 0.70f, 0.95f), // とり
-            new Color(0.35f, 0.30f, 0.45f), // やみ
-            new Color(0.85f, 0.55f, 0.90f), // オーロラ
+            new Color(0.63f, 0.62f, 0.57f), // ノーマル — 落ち着いたグレーベージュ
+            new Color(0.45f, 0.72f, 0.80f), // こおり  — 少し暗めの氷青
+            new Color(0.25f, 0.45f, 0.75f), // うみ    — 深めの青
+            new Color(0.80f, 0.35f, 0.20f), // ひ      — 落ち着いた赤橙
+            new Color(0.78f, 0.68f, 0.20f), // かみなり — 暗めの黄
+            new Color(0.35f, 0.62f, 0.30f), // こけ    — 深めの緑
+            new Color(0.60f, 0.50f, 0.33f), // いわ    — 暗めの土色
+            new Color(0.48f, 0.57f, 0.78f), // とり    — 落ち着いた空色
+            new Color(0.32f, 0.28f, 0.40f), // やみ    — 濃い紫
+            new Color(0.68f, 0.42f, 0.72f), // オーロラ — 落ち着いた紫ピンク
         };
 
         /// <summary>タイプの色がこれより明るければ、文字を暗い色にして読めるようにする</summary>

@@ -56,6 +56,7 @@ namespace PenguinMonster.Editor
         private const int HpLabelFontSize = 26;
         private const int HpFontSize = 32;
         private const int StatusFontSize = 28;
+        private const int StatIndicatorFontSize = 24;
         private static readonly Vector2 StatusBadgeSize = new Vector2(130f, 44f);
         private const float StatusBadgeGap = 6f;
 
@@ -219,6 +220,29 @@ namespace PenguinMonster.Editor
 
             var badge = CreateStatusBadge(showHpNumbers ? inner : frame.rectTransform, showHpNumbers);
 
+            // ランク変化インジケーター（攻↑ 防↓↓ 等）。自分側は HP 数字の行の左、相手側は状態異常の印の右
+            var statIndicator = CreateText(
+                showHpNumbers ? inner : frame.rectTransform,
+                "StatIndicator", "", StatIndicatorFontSize, BoxTextColor, TextAnchor.MiddleLeft);
+            statIndicator.supportRichText = true;
+            var statRect = statIndicator.rectTransform;
+            if (showHpNumbers)
+            {
+                // 自分側: HP数字と同じ行の左半分に置く
+                SetBand(statRect, 0f, 0.3f, InfoPadding);
+                statRect.anchorMax = new Vector2(0.65f, 0.3f);
+                statIndicator.alignment = TextAnchor.MiddleLeft;
+            }
+            else
+            {
+                // 相手側: 枠のすぐ下、状態異常バッジの右に並べる
+                statRect.anchorMin = statRect.anchorMax = Vector2.zero;
+                statRect.pivot = new Vector2(0f, 1f);
+                statRect.anchoredPosition = new Vector2(InfoPadding + StatusBadgeSize.x + StatusBadgeGap * 2f, -StatusBadgeGap);
+                statRect.sizeDelta = new Vector2(400f, StatusBadgeSize.y);
+            }
+            statIndicator.gameObject.SetActive(false);
+
             var box = frame.gameObject.AddComponent<MonsterInfoBox>();
             var so = new SerializedObject(box);
             so.FindProperty("_nameText").objectReferenceValue = nameText;
@@ -228,6 +252,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_hpText").objectReferenceValue = hpText;
             so.FindProperty("_statusBadge").objectReferenceValue = badge;
             so.FindProperty("_statusText").objectReferenceValue = badge.GetComponentInChildren<Text>();
+            so.FindProperty("_statIndicatorText").objectReferenceValue = statIndicator;
             so.ApplyModifiedProperties();
             return box;
         }

@@ -84,6 +84,7 @@ namespace PenguinMonster.View
                 case BattleEventKind.StatChanged:
                     BattleSounds.Play(e.Amount > 0 ? BattleSound.StatUp : BattleSound.StatDown);
                     yield return ViewOf(e).Flash(e.Amount > 0 ? StatusColors.StatUp : StatusColors.StatDown);
+                    InfoOf(e).UpdateStatStages(e.Monster);
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.BattleEnd:
