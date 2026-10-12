@@ -46,6 +46,7 @@ namespace PenguinMonster.View
             });
 
             IReadOnlyList<MonsterDefinition> ownSix = null;
+            GameMusic.Play(MusicTrack.Draft);
             _draftPanel.Show(new Draft(MonsterTable.All, draftRandom), six => ownSix = six, BattleBalance.OnlineDraftSeconds);
             yield return new WaitUntil(() => ownSix != null);
             List<MonsterDefinition> opponentSix = null;
@@ -57,6 +58,7 @@ namespace PenguinMonster.View
             List<MonsterDefinition> opponentTeam = null;
             yield return Exchange(LinkMessage.Team, ownTeam, received => opponentTeam = received);
 
+            GameMusic.Play(MusicTrack.Battle);
             yield return isHost.Value
                 ? _battle.RunHost(ownTeam, opponentTeam, random, _link, format)
                 : _battle.RunGuest(ownTeam, opponentTeam, _link, format);
@@ -121,6 +123,7 @@ namespace PenguinMonster.View
             _draftPanel.Hide();
             _selectPanel.Hide();
             _battle.Abort();
+            GameMusic.Stop();
             _quitButton.Hide();
             _resultDialog.Show(WinTitle, "", DisconnectedDetail, onTitle: BackToTitle);
         }

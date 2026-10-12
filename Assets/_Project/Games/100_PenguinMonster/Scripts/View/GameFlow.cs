@@ -38,6 +38,8 @@ namespace PenguinMonster.View
         {
             bool survival = false;
             bool online = false;
+            // 図鑑・設定などタイトルから開く画面と、シングル / ダブルスを選ぶまではタイトルの曲のまま
+            GameMusic.Play(MusicTrack.Title);
             _titlePanel.Show(BestScore.Get(BestWinsKey), BestScore.Get(BestDoubleWinsKey),
                 onSurvival: () => survival = true, onOnline: () => online = true);
             yield return new WaitUntil(() => survival || online);
@@ -58,6 +60,7 @@ namespace PenguinMonster.View
             // 最高連勝数は勝つたびに保存済みなので、やめるときはそのままタイトルへ戻すだけでよい
             _quitButton.Show(SurvivalQuitMessage, BackToTitle);
             IReadOnlyList<MonsterDefinition> playerSix = null;
+            GameMusic.Play(MusicTrack.Draft);
             _draftPanel.Show(new Draft(MonsterTable.All, random), six => playerSix = six);
             yield return new WaitUntil(() => playerSix != null);
 
@@ -82,6 +85,8 @@ namespace PenguinMonster.View
         private IEnumerator PlayOneBattle(SurvivalRun run, SurvivalOpponent opponent, System.Random random)
         {
             bool introDone = false;
+            // 2戦目からは決着で止めた曲を、何戦目かの画面から考える曲で流し直す
+            GameMusic.Play(MusicTrack.Draft);
             _introPanel.Show(run, opponent, () => introDone = true);
             yield return new WaitUntil(() => introDone);
 
@@ -91,6 +96,7 @@ namespace PenguinMonster.View
             yield return new WaitUntil(() => playerTeam != null);
 
             var cpuTeam = opponent.Cpu.ChooseTeam(opponent.Six, opponent.Boss?.TrumpCard, partySize);
+            GameMusic.Play(MusicTrack.Battle);
             yield return _battle.Run(playerTeam, cpuTeam, random, opponent.Cpu, run.Format);
         }
     }

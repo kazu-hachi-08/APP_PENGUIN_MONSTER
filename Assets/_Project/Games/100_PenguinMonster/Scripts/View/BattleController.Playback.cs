@@ -85,6 +85,7 @@ namespace PenguinMonster.View
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.BattleEnd:
+                    GameMusic.Stop();
                     BattleSounds.Play(e.Side == PlayerSide ? BattleSound.Win : BattleSound.Lose);
                     yield return _messageWindow.Play(message);
                     break;

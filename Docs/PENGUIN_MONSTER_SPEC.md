@@ -401,7 +401,11 @@
 | 能力が上がる / 下がる | 青 / 赤に光る |
 | 毒・火傷・自分を攻撃 | 点滅して HP が減ってから、理由の文を出す |
 
-- 効果音は仮でコード生成（決定・技・当たり（相性で3種）・登場・瀕死・勝ち・負け・状態異常・能力アップ / ダウン）。BGM は未定
+- 効果音は仮でコード生成（決定・技・当たり（相性で3種）・登場・瀕死・勝ち・負け・状態異常・能力アップ / ダウン）
+- BGM も仮でコード生成（チップチューンの3曲をループ）。素材が揃ったら差し替える
+  - タイトル: タイトルと、そこから開く画面・シングル / ダブルス選び・オンラインの部屋選び
+  - 考える曲: ドラフト・「N戦目」の画面・見せ合い・選出
+  - バトル: バトル中（ボス戦も同じ曲）。決着（勝ち・負けのジングル）と相手の切断で止め、結果の画面では流さない
 
 ## 8. オンライン
 
@@ -482,6 +486,7 @@ Scripts/
     ├── MessageWindow / CommandPanel / MovePanel / TargetPanel（ダブルスの狙う相手） / PartyPanel
     ├── BattleBackdrop.cs   # 背景の Image に生成した絵をはめる
     ├── BattleSounds(.Synth).cs  # 仮の効果音（コード生成）
+    ├── GameMusic(.Synth/.Songs).cs  # 仮の BGM（楽譜からコード生成）
     ├── TypeColors.cs / StatusColors.cs  # 技ボタン・タイプの札の色 / 状態異常の印・光る色
     └── Art/                # ドット絵の生成（PixelCanvas / PenguinBrush / EyeStyle（目の種類） / PenguinDesigns（タイプ別の partial に1体ずつ）/ PenguinPalette / MonsterSprites / BackdropArt）
 Editor/
