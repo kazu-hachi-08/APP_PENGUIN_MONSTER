@@ -156,6 +156,8 @@ namespace PenguinMonster.Common.Online
         /// <summary>部屋から抜ける。待機中のキャンセルとシーン離脱の両方で使う</summary>
         public void Leave()
         {
+            // オフラインでは端末のスリープ設定に戻す（電池を無駄に使わないため）
+            Screen.sleepTimeout = SleepTimeout.SystemSetting;
             UnsubscribeNetworkEvents();
             StopNameWait();
             _memberIds.Clear();
@@ -197,6 +199,8 @@ namespace PenguinMonster.Common.Online
 
         private async Task PrepareAsync()
         {
+            // 相手を待つ間に画面が消えるとアプリが止まり、Relay の無通信タイムアウト（約10秒）で切断されるため
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
             // 直前にオフラインで遊んでいると席0がユーザー名のままなので、名前交換が済むまでは「P1」「P2」に戻しておく
             SeatNames.UseOnline(null);
             EnsureNetworkManager();

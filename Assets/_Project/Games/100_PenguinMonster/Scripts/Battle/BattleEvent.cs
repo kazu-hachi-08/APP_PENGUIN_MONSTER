@@ -43,6 +43,20 @@ namespace PenguinMonster.Battle
         ItemEndured,
         /// <summary>持ち物の反動で HP が減った（いのちのつらら）</summary>
         ItemRecoil,
+        /// <summary>連続技が当たった回数。Amount が回数、主語は受けた側</summary>
+        HitCount,
+        /// <summary>吸収の技で HP が回復した</summary>
+        Drained,
+        /// <summary>技の反動で HP が減った</summary>
+        Recoil,
+        /// <summary>回復の技で HP が回復した</summary>
+        Healed,
+        /// <summary>天候が始まった。Amount が天候（Weather）。主語は始めたペンモン</summary>
+        WeatherStarted,
+        /// <summary>天候が止んだ。Amount が止んだ天候。主語はいない</summary>
+        WeatherEnded,
+        /// <summary>吹雪のターン終わりのダメージ</summary>
+        WeatherDamage,
     }
 
     /// <summary>
@@ -92,6 +106,16 @@ namespace PenguinMonster.Battle
 
         public static BattleEvent StatChange(BattleEventKind kind, int side, BattleMonster monster, StatKind stat, int amount)
             => new BattleEvent(kind, side, monster, stat: stat, amount: amount);
+
+        /// <summary>数を持つイベント（連続技の回数など）</summary>
+        public static BattleEvent Count(BattleEventKind kind, int side, BattleMonster monster, int amount)
+            => new BattleEvent(kind, side, monster, amount: amount);
+
+        /// <summary>天候の始まり・終わり。止んだときは主語がいないので monster は null</summary>
+        public static BattleEvent WeatherChange(BattleEventKind kind, int side, BattleMonster monster, Weather weather)
+            => new BattleEvent(kind, side, monster, amount: (int)weather);
+
+        public Weather Weather => (Weather)Amount;
 
         public static BattleEvent BattleEnd(int winner)
             => new BattleEvent(BattleEventKind.BattleEnd, winner, null);

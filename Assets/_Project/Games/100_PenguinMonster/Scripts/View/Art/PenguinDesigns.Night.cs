@@ -139,5 +139,50 @@ namespace PenguinMonster.View.Art
             b.Cheek(x - 5f, eyeY + 2f);
             b.SideBeak(x - 2f, eyeY + 4f, FaceLeft, true);
         }
+
+        /// <summary>No.64 ヨイヤミペン: 物腰やわらかな策士。コウモリの襟を立て、ヒレの先に吸い取った紫の光の玉を浮かべて薄く笑う</summary>
+        private static void Yoiyami(PenguinBrush b)
+        {
+            var body = Rgb(80, 60, 110);
+            var bodyShade = PenguinPalette.Shade(body);
+            var collar = Rgb(40, 30, 60);
+            var orb = Rgb(200, 140, 255);
+            b.Polygon(V(32, 38), collar, V(16, 30), V(13, 47), V(21, 42), V(25, 49), V(32, 41), V(39, 49), V(43, 42), V(51, 47), V(48, 30));
+            b.Feet(32f, 6f);
+            b.Shaded(32f, 19f, 12f, 13f, body);
+            b.Belly(31f, 18f, 8f, 9f);
+            b.Flipper(V(42, 24), V(50, 14), 3f, bodyShade);
+            b.Shaded(32f, 36f, 10.5f, 10f, body);
+            b.White(30f, 35f, 7.5f, 6f);
+            b.TurnedFace(30f, 36f, FaceLeft, EyeStyle.Sleepy, eyeGap: 6f);
+            b.Flipper(V(23, 24), V(13, 25), 3f, bodyShade);
+            b.Ellipse(9f, 27f, 5.5f, 5.5f, PenguinPalette.Darken(orb, 0.7f));
+            b.Ellipse(8.5f, 27.5f, 4f, 4f, orb);
+            b.Dot(7, 29, PenguinPalette.EyeLight);
+            b.Sparkle(4, 37, orb);
+            b.Sparkle(15, 36, orb);
+        }
+
+        /// <summary>No.65 ハゴロモペン: 穏やかな癒し手。目を閉じて宙に浮かび、オーロラ色の羽衣が体のまわりをゆったりめぐる</summary>
+        private static void Hagoromo(PenguinBrush b)
+        {
+            var body = Rgb(170, 160, 215);
+            var bodyShade = PenguinPalette.Shade(body);
+            var teal = Rgb(110, 220, 200);
+            var pink = Rgb(240, 150, 200);
+            Ribbon(b, teal, V(6, 46), V(14, 52), V(26, 48), V(40, 51), V(52, 45), V(58, 32), V(54, 20), V(60, 8));
+            b.Foot(28f, 7f, 80f, 0.6f);
+            b.Foot(36f, 7f, 100f, 0.6f);
+            b.Shaded(32f, 22f, 11f, 12f, body);
+            b.Belly(31f, 21f, 7f, 8.5f);
+            b.Flipper(V(23, 26), V(28, 21), 2.5f, bodyShade);
+            b.Flipper(V(41, 26), V(36, 21), 2.5f, bodyShade);
+            b.Shaded(32f, 39f, 10f, 9.5f, body);
+            b.White(31f, 38f, 7.5f, 6f);
+            b.Face(31f, 39f, 3.5f, EyeStyle.Line);
+            Ribbon(b, pink, V(4, 14), V(12, 20), V(20, 16), V(30, 12), V(44, 14), V(52, 10));
+            b.Sparkle(10, 32, teal);
+            b.Sparkle(54, 56, pink);
+        }
     }
 }

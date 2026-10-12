@@ -11,6 +11,8 @@ namespace PenguinMonster.Battle
         private const string PriorityText = "先制";
         private const string HitsAllFoesText = "相手 全員に 当たる";
         private const string EffectSeparator = "・";
+        private const string DrainText = "与えた ダメージの 半分 回復する";
+        private const string RecoilText = "与えた ダメージの 1/3を 自分も 受ける";
 
         private static readonly string[] CategoryNames = { "物理", "特殊", "変化" };
 
@@ -34,6 +36,18 @@ namespace PenguinMonster.Battle
             if (move.HitsAllFoes)
             {
                 parts.Add(HitsAllFoesText);
+            }
+            if (move.IsMultiHit)
+            {
+                parts.Add(move.MinHits == move.MaxHits ? $"{move.MaxHits}回 当たる" : $"{move.MinHits}〜{move.MaxHits}回 当たる");
+            }
+            if (move.Drains)
+            {
+                parts.Add(DrainText);
+            }
+            if (move.Recoils)
+            {
+                parts.Add(RecoilText);
             }
             foreach (var effect in move.Effects)
             {
@@ -71,6 +85,14 @@ namespace PenguinMonster.Battle
             if (effect.Relays)
             {
                 return "能力の 変化を 引き継いで 控えの 先頭と 交代する";
+            }
+            if (effect.Heals)
+            {
+                return "自分の HPを 半分 回復する";
+            }
+            if (effect.Weather != Weather.None)
+            {
+                return $"{BattleBalance.WeatherTurns}ターン {(effect.Weather == Weather.Sun ? "日差しを 強くする" : effect.Weather.ToJapanese() + "に する")}";
             }
             string who = effect.Target == EffectTarget.Self ? "自分" : "相手";
             string direction = effect.Stages > 0 ? "上げる" : "下げる";

@@ -39,11 +39,19 @@ namespace PenguinMonster.View
         private IEnumerator WaitForAction(int slot, List<int> reserved)
         {
             _pendingAction = null;
+            var view = PlayerViewAt(slot);
+            view.StartBob();
             ShowCommands(slot, reserved);
             // 時間切れは一番上の技（仕様書 §4.7）。狙いは倒れていればエンジンがもう片方へ向ける
             StartChoiceTimer(() => _pendingAction = BattleAction.UseMove(0));
             yield return new WaitUntil(() => _pendingAction != null);
             _turnTimer.Stop();
+            view.StopBob();
+        }
+
+        private MonsterView PlayerViewAt(int slot)
+        {
+            return IsDoubles ? _playerDoubleViews[slot] : _playerView;
         }
 
         private void ShowCommands(int slot, List<int> reserved)

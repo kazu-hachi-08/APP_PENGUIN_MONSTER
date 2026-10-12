@@ -12,10 +12,10 @@ namespace PenguinMonster.View
     /// </summary>
     public class MovePanel : MonoBehaviour
     {
-        // タイプの明るい色の上でも読めるよう、濃い色にする
-        private const string SuperEffectiveTag = "<color=#C0182A>抜群！</color>";
-        private const string NotVeryEffectiveTag = "<color=#555A66>今ひとつ</color>";
-        private const string NoEffectTag = "<color=#2A2A33>効果なし</color>";
+        // 統一背景色の上で目立つよう、相性タグは明るい色にする
+        private const string SuperEffectiveTag = "<color=#FF6B6B>抜群！</color>";
+        private const string NotVeryEffectiveTag = "<color=#8E9AAF>今ひとつ</color>";
+        private const string NoEffectTag = "<color=#6C6C7A>効果なし</color>";
         private const string HasEffectsMark = "　＋効果";
         private const string NoEffectsText = "特別な 効果は ない";
 
@@ -55,8 +55,8 @@ namespace PenguinMonster.View
             {
                 var move = _moves[i];
                 string tag = CommonTag(move, targets);
-                _moveLabels[i].text = $"{move.Name}{tag}\n<size=26>{move.Type.ToJapanese()}  {Detail(move)}</size>";
-                _moveButtons[i].image.color = TypeColors.Get(move.Type);
+                string typeHex = ColorUtility.ToHtmlStringRGB(TypeColors.Get(move.Type));
+                _moveLabels[i].text = $"{move.Name}\n<size=28><color=#{typeHex}>■</color> {move.Type.ToJapanese()}</size>{tag}";
             }
             HideHint();
             gameObject.SetActive(true);

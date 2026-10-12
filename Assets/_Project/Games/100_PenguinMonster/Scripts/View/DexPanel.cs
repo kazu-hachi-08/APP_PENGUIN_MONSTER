@@ -16,6 +16,7 @@ namespace PenguinMonster.View
         [SerializeField] private Button[] _filterButtons;
         [SerializeField] private Button[] _listButtons;
         [SerializeField] private Image[] _listIcons;
+        [SerializeField] private ScrollRect _scrollRect;
         [SerializeField] private Image _icon;
         [SerializeField] private Text _nameText;
         [SerializeField] private Image[] _typeBadges;
@@ -81,8 +82,22 @@ namespace PenguinMonster.View
                     _listIcons[i].sprite = MonsterSprites.Front(_shown[i]);
                 }
             }
+            ResetScroll();
             // しぼりこんだ先頭を出しておけば、右側が空になることはない（どのタイプも1体以上いる）
             Select(_shown[0]);
+        }
+
+        private void ResetScroll()
+        {
+            if (_scrollRect != null)
+            {
+                _scrollRect.velocity = Vector2.zero;
+                if (_scrollRect.content != null)
+                {
+                    _scrollRect.content.anchoredPosition = new Vector2(_scrollRect.content.anchoredPosition.x, 0f);
+                }
+                _scrollRect.verticalNormalizedPosition = 1f;
+            }
         }
 
         private void Select(MonsterDefinition monster)

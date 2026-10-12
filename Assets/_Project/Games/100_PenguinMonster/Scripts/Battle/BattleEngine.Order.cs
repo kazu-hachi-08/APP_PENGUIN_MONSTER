@@ -64,10 +64,17 @@ namespace PenguinMonster.Battle
                     continue;
                 }
                 var action = actions[slot];
-                int priority = action.Kind == BattleActionKind.Move ? active.Definition.Moves[action.Index].Priority : 0;
+                int priority = action.Kind == BattleActionKind.Move ? MovePriority(active, active.Definition.Moves[action.Index]) : 0;
                 // 同速の決着用。行動ごとに先に引いておけば、並べ替えの比較回数に乱数の消費が左右されない
                 queue.Add(new QueuedAction(side, slot, action, priority, active.EffectiveSpeed, _random.Next()));
             }
+        }
+
+        /// <summary>ちゃっかり は変化技を先に出せる</summary>
+        private static int MovePriority(BattleMonster user, MoveDefinition move)
+        {
+            bool prankster = move.IsStatus && user.HasAbility(Ability.Prankster);
+            return move.Priority + (prankster ? BattleBalance.PranksterPriorityBonus : 0);
         }
 
         private static int CompareOrder(QueuedAction a, QueuedAction b)

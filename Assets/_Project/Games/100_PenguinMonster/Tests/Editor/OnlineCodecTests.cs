@@ -55,11 +55,15 @@ namespace PenguinMonster.Battle.Tests
             }
         }
 
-        /// <summary>24体を6体ずつに分けて全員戦わせ、特性・持ち物で HP が増減しても写しがずれないかも見る</summary>
+        /// <summary>6体ずつに分けて戦わせ、特性・持ち物・天候で HP が増減しても写しがずれないかも見る（50〜 は Phase 11 の子）</summary>
         [TestCase(0)]
         [TestCase(6)]
         [TestCase(12)]
         [TestCase(18)]
+        [TestCase(50)]
+        [TestCase(56)]
+        [TestCase(62)]
+        [TestCase(68)]
         public void MirrorFollowsHostUntilTheEnd(int firstIndex)
         {
             var hostTeam = MonsterTable.All.Skip(firstIndex).Take(3).ToList();
@@ -100,6 +104,7 @@ namespace PenguinMonster.Battle.Tests
             {
                 var original = host.Sides[side];
                 var copy = mirror.Sides[1 - side];
+                Assert.AreEqual(host.Weather, mirror.Weather);
                 Assert.AreEqual(original.ActivePartyIndex, copy.ActivePartyIndex);
                 for (int i = 0; i < original.Party.Count; i++)
                 {

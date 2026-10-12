@@ -37,7 +37,7 @@ namespace PenguinMonster.Battle
             int randomPercent = RollRandomPercent(random);
             bool isPhysical = move.Category == MoveCategory.Physical;
             int attack = attacker.AttackStat(isPhysical, isCritical);
-            int defense = defender.DefenseStat(isPhysical, isCritical);
+            int defense = DefenseInWeather(defender, isPhysical, defender.DefenseStat(isPhysical, isCritical));
             bool isStab = attacker.Definition.HasType(move.Type);
 
             int damage = Compute(move.Power, attack, defense, isCritical, randomPercent, isStab, effectiveness,
@@ -58,10 +58,28 @@ namespace PenguinMonster.Battle
             }
 
             bool isPhysical = move.Category == MoveCategory.Physical;
-            int damage = Compute(move.Power, attacker.AttackStat(isPhysical, false), defender.DefenseStat(isPhysical, false),
+            int defense = DefenseInWeather(defender, isPhysical, defender.DefenseStat(isPhysical, false));
+            int damage = Compute(move.Power, attacker.AttackStat(isPhysical, false), defense,
                 false, BattleBalance.DamageRandomMaxPercent, attacker.Definition.HasType(move.Type), effectiveness,
                 IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier);
-            return damage * move.Accuracy / (float)BattleBalance.AccuracyPercentMax;
+            return damage * ExpectedHits(attacker, move) * move.Accuracy / BattleBalance.AccuracyPercentMax;
+        }
+
+        /// <summary>連続技の見込みの回数。連打名人なら最大、2〜5回は原作の確率での平均</summary>
+        private static float ExpectedHits(BattleMonster attacker, MoveDefinition move)
+        {
+            if (move.MinHits == move.MaxHits || attacker.HasAbility(Ability.SkillLink))
+            {
+                return move.MaxHits;
+            }
+            return BattleBalance.AverageMultiHits;
+        }
+
+        /// <summary>吹雪のとき、氷タイプは物理技を受ける防御が上がる（雪に埋もれて固くなるイメージ）</summary>
+        private static int DefenseInWeather(BattleMonster defender, bool isPhysical, int defense)
+        {
+            bool snowGuard = isPhysical && defender.CurrentWeather == Weather.Snow && defender.Definition.HasType(MonsterType.Ice);
+            return snowGuard ? (int)(defense * BattleBalance.SnowIceDefenseMultiplier) : defense;
         }
 
         /// <summary>
@@ -86,7 +104,24 @@ namespace PenguinMonster.Battle
         /// <summary>特性・持ち物によるダメージの倍率をまとめたもの（仕様書 §4.6）。1 なら変化なし</summary>
         private static float Modifier(BattleMonster attacker, BattleMonster defender, MoveDefinition move, float effectiveness)
         {
-            return AttackerModifier(attacker, move, effectiveness) * DefenderModifier(defender, move, effectiveness);
+            return WeatherModifier(attacker.CurrentWeather, move.Type)
+                * AttackerModifier(attacker, move, effectiveness) * DefenderModifier(defender, move, effectiveness);
+        }
+
+        /// <summary>大雨は海が強く火が弱い、日差しはその逆</summary>
+        private static float WeatherModifier(Weather weather, MonsterType moveType)
+        {
+            bool sea = moveType == MonsterType.Sea;
+            bool fire = moveType == MonsterType.Fire;
+            if ((weather == Weather.Rain && sea) || (weather == Weather.Sun && fire))
+            {
+                return BattleBalance.WeatherBoostMultiplier;
+            }
+            if ((weather == Weather.Rain && fire) || (weather == Weather.Sun && sea))
+            {
+                return BattleBalance.WeatherWeakenMultiplier;
+            }
+            return 1f;
         }
 
         private static float AttackerModifier(BattleMonster attacker, MoveDefinition move, float effectiveness)
@@ -101,6 +136,14 @@ namespace PenguinMonster.Battle
             if (isPhysical && attacker.HasAbility(Ability.HugePower))
             {
                 modifier *= BattleBalance.HugePowerMultiplier;
+            }
+            if (attacker.HasAbility(Ability.Technician) && move.Power <= BattleBalance.TechnicianPowerMax)
+            {
+                modifier *= BattleBalance.TechnicianMultiplier;
+            }
+            if (attacker.HasAbility(Ability.Reckless) && move.Recoils)
+            {
+                modifier *= BattleBalance.RecklessMultiplier;
             }
             if (attacker.HasAbility(Ability.Avenger))
             {
@@ -127,6 +170,11 @@ namespace PenguinMonster.Battle
             if (defender.HasAbility(Ability.ThickFat) && (move.Type == MonsterType.Ice || move.Type == MonsterType.Fire))
             {
                 modifier *= BattleBalance.ThickFatMultiplier;
+            }
+            // 連続技は2発目から満タンでなくなるので、1発目だけ軽くなる
+            if (defender.HasAbility(Ability.Multiscale) && defender.IsFullHp)
+            {
+                modifier *= BattleBalance.MultiscaleMultiplier;
             }
             if (effectiveness > 1f && defender.HasItem(HeldItem.SnowCoat))
             {

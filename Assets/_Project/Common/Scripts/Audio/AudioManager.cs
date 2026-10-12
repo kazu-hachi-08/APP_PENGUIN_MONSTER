@@ -49,8 +49,27 @@ namespace PenguinMonster.Common.Audio
         {
             base.Awake();
             InitializeAudioSources();
+            EnsureAudioListener();
             LoadAudioSettings();
             BuildDictionaries();
+        }
+
+        private void EnsureAudioListener()
+        {
+            if (FindObjectOfType<AudioListener>() != null)
+            {
+                return;
+            }
+
+            var mainCamera = Camera.main;
+            if (mainCamera != null)
+            {
+                mainCamera.gameObject.AddComponent<AudioListener>();
+            }
+            else
+            {
+                gameObject.AddComponent<AudioListener>();
+            }
         }
 
         private void InitializeAudioSources()

@@ -33,6 +33,8 @@ namespace PenguinMonster.Battle
         public const int BossInterval = 7;
         /// <summary>CPU がドラフトで「種族値の合計が一番高い」のを取る確率（%）。1連勝ごとにこれだけ上がる</summary>
         public const int CpuStrongPickPercentPerWin = 10;
+        /// <summary>CPU（ふつう・つよい）は HP が最大HPのこの分の1以下なら回復の技を使う</summary>
+        public const int CpuHealHpDenominator = 2;
         public const int PercentMax = 100;
 
         // オンラインの制限時間（秒。仕様書 §2.1 / §2.2 / §4.7）。過ぎたら自動で決める
@@ -114,5 +116,46 @@ namespace PenguinMonster.Battle
         public const float LightFeatherSpeedMultiplier = 1.2f;
         public const float SnowCoatMultiplier = 0.75f;
         public const float ChickDownDefenseMultiplier = 1.5f;
+        /// <summary>貝の首飾り: 与えたダメージのこの分の1を回復</summary>
+        public const int ShellNecklaceHealDenominator = 8;
+
+        // 技の効果（仕様書 §4.2）。反動・吸収は与えたダメージを、回復は最大HPを割る数
+        public const int RecoilDenominator = 3;
+        public const int DrainDenominator = 2;
+        public const int HealMoveDenominator = 2;
+        /// <summary>2〜5回当たる技で、2回・3回・4回・5回になる確率（%）。原作と同じ</summary>
+        public static readonly int[] MultiHitPercents = { 35, 35, 15, 15 };
+        /// <summary>CPU が見込みダメージに掛ける 2〜5回の技の平均回数（上の確率から）</summary>
+        public const float AverageMultiHits = 3.1f;
+
+        // 特性（Phase 11 で追加）
+        /// <summary>ひと休み: 交代で引っ込むと最大HPのこの分の1を回復</summary>
+        public const int RestHealDenominator = 3;
+        public const int WeatherSpeedMultiplier = 2;
+
+        // 特性（段階4 で追加）
+        /// <summary>小技名人: 威力がこれ以下の技が強くなる</summary>
+        public const int TechnicianPowerMax = 60;
+        public const float TechnicianMultiplier = 1.5f;
+        /// <summary>向こう見ず: 反動のある技の倍率</summary>
+        public const float RecklessMultiplier = 1.2f;
+        /// <summary>まっさら: HP 満タンで受けるダメージの倍率</summary>
+        public const float MultiscaleMultiplier = 0.5f;
+        public const int MoodyRaiseStages = 2;
+        public const int MoodyLowerStages = -1;
+        /// <summary>ちゃっかり: 変化技の優先度に足す数</summary>
+        public const int PranksterPriorityBonus = 1;
+
+        // 天候（仕様書 §4.10）
+        public const int WeatherTurns = 5;
+        /// <summary>お天気石を持った子が始めた天候のターン数</summary>
+        public const int WeatherStoneTurns = 8;
+        /// <summary>大雨の海技・日差しの火技</summary>
+        public const float WeatherBoostMultiplier = 1.5f;
+        /// <summary>大雨の火技・日差しの海技</summary>
+        public const float WeatherWeakenMultiplier = 0.5f;
+        public const int SnowDamageDenominator = 16;
+        /// <summary>吹雪のとき、氷タイプが物理技を受ける防御の倍率</summary>
+        public const float SnowIceDefenseMultiplier = 1.5f;
     }
 }

@@ -42,6 +42,8 @@ namespace PenguinMonster.View
                     yield return ViewOf(e).Lunge();
                     break;
                 case BattleEventKind.Damaged:
+                    // エフェクトが当たり切ってから音と点滅を出し、「当たった」瞬間をそろえる
+                    yield return PlayMoveEffect(events, index);
                     BattleSounds.Play(HitSoundFor(events, index));
                     yield return ViewOf(e).Blink();
                     yield return InfoOf(e).AnimateHp(e.Hp);
@@ -56,6 +58,8 @@ namespace PenguinMonster.View
                 case BattleEventKind.HurtItself:
                 case BattleEventKind.AbilityDamage:
                 case BattleEventKind.ItemRecoil:
+                case BattleEventKind.Recoil:
+                case BattleEventKind.WeatherDamage:
                     // 技以外のダメージは、先に HP を減らしてから理由の文を出す
                     BattleSounds.Play(BattleSound.Hit);
                     yield return ViewOf(e).Blink();
@@ -69,6 +73,8 @@ namespace PenguinMonster.View
                     yield return PlayStatusChange(e, message);
                     break;
                 case BattleEventKind.ItemHealed:
+                case BattleEventKind.Drained:
+                case BattleEventKind.Healed:
                     // 回復は HP が増えてから理由の文を出す（減るときと同じ順）
                     BattleSounds.Play(BattleSound.StatUp);
                     yield return InfoOf(e).AnimateHp(e.Hp);
@@ -82,9 +88,21 @@ namespace PenguinMonster.View
                 case BattleEventKind.StatChanged:
                     BattleSounds.Play(e.Amount > 0 ? BattleSound.StatUp : BattleSound.StatDown);
                     yield return ViewOf(e).Flash(e.Amount > 0 ? StatusColors.StatUp : StatusColors.StatDown);
+                    InfoOf(e).UpdateStatStages(e.Monster);
+                    yield return _messageWindow.Play(message);
+                    break;
+                case BattleEventKind.WeatherStarted:
+                    // 場の色が変わってから「吹雪が 吹き始めた！」
+                    BattleSounds.Play(BattleSound.Status);
+                    _weather.Show(e.Weather);
+                    yield return _messageWindow.Play(message);
+                    break;
+                case BattleEventKind.WeatherEnded:
+                    _weather.Hide();
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.BattleEnd:
+                    GameMusic.Stop();
                     BattleSounds.Play(e.Side == PlayerSide ? BattleSound.Win : BattleSound.Lose);
                     yield return _messageWindow.Play(message);
                     break;
@@ -107,6 +125,37 @@ namespace PenguinMonster.View
             }
             InfoOf(e).SetStatus(e.Status);
             yield return _messageWindow.Play(message);
+        }
+
+        /// <summary>
+        /// 技のエフェクトを受けた側に出す。ダメージのイベントは技の名前を持たないので、前の「〇〇の △△！」までさかのぼる。
+        /// 技は名前から引き直す（オンラインのゲストも技の名前は受け取っているので、通信を増やさずに済む）
+        /// </summary>
+        private IEnumerator PlayMoveEffect(List<BattleEvent> events, int damagedIndex)
+        {
+            int usedIndex = damagedIndex - 1;
+            while (usedIndex >= 0 && events[usedIndex].Kind != BattleEventKind.MoveUsed)
+            {
+                usedIndex--;
+            }
+            var move = usedIndex < 0 ? null : MoveOf(events[usedIndex]);
+            if (move == null)
+            {
+                yield break;
+            }
+            yield return _moveEffect.Play(move, ViewOf(events[damagedIndex]).Body, ViewOf(events[usedIndex]).Body);
+        }
+
+        private static MoveDefinition MoveOf(BattleEvent used)
+        {
+            foreach (var move in used.Monster.Definition.Moves)
+            {
+                if (move.Name == used.MoveName)
+                {
+                    return move;
+                }
+            }
+            return null;
         }
 
         /// <summary>

@@ -1,6 +1,27 @@
 # ペンモン
 
-（ゲーム概要は仕様書が固まったら記載する）
+ペンギンだけのモンスターをドラフトで集めて戦う、ターン制の対戦ゲーム。見た目と手触りはダイヤモンド・パール風の2D。
+
+* **勝ち抜き戦（1人）**: 最初にドラフトで6体を選び、CPU と連戦する。勝つほど相手が強くなり、7戦ごとにボスが出る
+* **オンライン対戦（2人）**: 参加コードで友達と1対1。毎回ドラフトで6体を選ぶ
+* 3vs3 のシングルと、4vs4 で2体ずつ場に出るダブルスを選べる。ペンモンは150体
+
+遊び方はゲーム内の「あそびかた」、細かいルールは仕様書を参照。
+
+## ▶ ブラウザで遊ぶ
+
+**https://kazu-hachi-08.github.io/penguin-monster-web/**
+
+* PCのブラウザ（Chrome / Edge 推奨）で開く。横画面のゲームなので、スマホは横向きで
+
+## ▶ Windows版をダウンロード
+
+**https://github.com/kazu-hachi-08/APP_PENGUIN_MONSTER/releases/latest**
+
+* zipを展開して exe を起動する
+* 初回に「WindowsによってPCが保護されました」と出たら「詳細情報 → 実行」で起動できる
+* 中身は `Tools/Release/release-windows-test.bat` で公開した最新のテスト版（`test-日時` タグ）
+* 公開手順: `Tools/Release/release-windows.ps1` の先頭コメントを参照
 
 ---
 
@@ -8,8 +29,7 @@
 
 | ドキュメント | 内容 |
 | ---- | ---- |
-| [Docs/PENGUIN_MONSTER_SPEC.md](Docs/PENGUIN_MONSTER_SPEC.md) | 仕様書（ルール・キャラ・画面・コード構成） |
-| [Docs/IMPLEMENTATION_PLAN.md](Docs/IMPLEMENTATION_PLAN.md) | 実装計画書（フェーズごとの作業と完了条件） |
+| [Docs/PENGUIN_MONSTER_SPEC.md](Docs/PENGUIN_MONSTER_SPEC.md) | 仕様書（ルール・ペンモン・バトル・画面・オンライン・コード構成） |
 | [Docs/DEVELOPMENT_SETUP.md](Docs/DEVELOPMENT_SETUP.md) | 開発環境のセットアップ・テスト |
 | [CLAUDE.md](CLAUDE.md) | AI 開発ガイドライン |
 
@@ -21,7 +41,7 @@
 | ---- | ---- |
 | ゲームエンジン | Unity 6000.6.2f1（URP 2D） |
 | 言語 | C# |
-| グラフィック | 2Dドット絵 |
+| グラフィック | 2Dドット絵（コードで生成） |
 | オンライン | Unity Relay + Netcode for GameObjects |
 | 対象プラットフォーム | Android / Windows / ブラウザ（WebGL）。横画面固定 |
 | ソース管理 | GitHub |
@@ -33,13 +53,13 @@
 Assets/_Project/
 ├── Common/                     # 共通基盤（Scene / Input / UI / Audio / Online / Profile など）
 └── Games/100_PenguinMonster/   # ペンモン本体（Scripts / Editor / Data / Sprites / Audio / Scenes / Tests）
-Docs/                           # 仕様書・実装計画書・開発手順
-Tools/Release/                  # Windows版のリリーススクリプト
+Docs/                           # 仕様書・開発手順
+Tools/Release/                  # Windows版・ブラウザ版のリリーススクリプト
 ```
 
-* フォルダ名 `Games/100_PenguinMonster` は変えない
-* ゲームのルール・計算は Unity に依存しない純C#に置く
-* シーン・データはコードから生成する
+* フォルダ名 `Games/100_PenguinMonster` は変えない（Editor スクリプトに直書きパスがあるため）
+* バトルのロジック（`Scripts/Battle/`）は Unity に依存しない純C#（`PenguinMonster.Battle.asmdef`）
+* シーン・ペンモンのデータはコードから生成する（`Tools > PenguinMonster > Rebuild`）
 
 詳しくは [Docs/DEVELOPMENT_SETUP.md](Docs/DEVELOPMENT_SETUP.md) を参照。
 
@@ -74,6 +94,6 @@ featureブランチで実装 → 動作確認 → Pull Request → レビュー 
 
 ### Unity開発時の注意
 
-* ゲームのシーンは生成物なので手で編集しない。変えたいときは SceneBuilder を直して Rebuild する
-* キャラの数値は定義表で調整する（アセットを Inspector で直しても Rebuild で戻る）
+* `PenguinMonsterScene.unity` は生成物なので手で編集しない。変えたいときは SceneBuilder を直して Rebuild する
+* ペンモンの数値は定義表で調整する（アセットを Inspector で直しても Rebuild で戻る）
 * アセットを追加したら `.meta` も必ず一緒にコミットする

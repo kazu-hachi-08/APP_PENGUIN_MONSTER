@@ -33,7 +33,8 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 PlayerLungeDirection = new Vector2(1f, 0.5f);
 
         private static readonly Vector2 EnemyInfoPosition = new Vector2(-500f, 400f);
-        private static readonly Vector2 EnemyInfoSize = new Vector2(700f, 150f);
+        // 相手の枠は下の行にランク変化（攻↑ 等）を入れるぶん、縦に伸ばしてある
+        private static readonly Vector2 EnemyInfoSize = new Vector2(700f, 190f);
         private static readonly Vector2 PlayerInfoPosition = new Vector2(500f, -110f);
         private static readonly Vector2 PlayerInfoSize = new Vector2(700f, 190f);
 
@@ -42,20 +43,23 @@ namespace PenguinMonster.Editor
         private const float PlayerDoubleOffsetX = 190f;
         private const float EnemyDoubleSpriteSize = 256f;
         private const float PlayerDoubleSpriteSize = 384f;
-        // 相手の枠は状態異常の印を枠のすぐ下に出すので、そのぶん間を空けて重ねる。上端は画面の端から 50 空ける
-        private static readonly Vector2[] EnemyDoubleInfoPositions = { new Vector2(-540f, 435f), new Vector2(-540f, 265f) };
-        private static readonly Vector2 EnemyDoubleInfoSize = new Vector2(640f, 110f);
+        // 相手の枠は状態異常の印を枠のすぐ下に出すので、そのぶん（60）間を空けて重ねる。上端は画面の端から 50 空ける
+        private static readonly Vector2[] EnemyDoubleInfoPositions = { new Vector2(-540f, 415f), new Vector2(-540f, 205f) };
+        private static readonly Vector2 EnemyDoubleInfoSize = new Vector2(640f, 150f);
         // 下の枠の HP の数字がメッセージ窓に隠れないよう、窓の上端（y=-240）から 20 空ける
         private static readonly Vector2[] PlayerDoubleInfoPositions = { new Vector2(560f, 25f), new Vector2(560f, -140f) };
         private static readonly Vector2 PlayerDoubleInfoSize = new Vector2(640f, 160f);
         private const float InfoPadding = 28f;
         private const float HpBarHeight = 22f;
         private const float HpFillInset = 3f;
+        // 相手の枠の、ランク変化を出す下の行の上端（枠の中の高さに対する割合）
+        private const float EnemyStatBandTop = 0.27f;
 
         private const int NameFontSize = 40;
         private const int HpLabelFontSize = 26;
         private const int HpFontSize = 32;
         private const int StatusFontSize = 28;
+        private const int StatIndicatorFontSize = 24;
         private static readonly Vector2 StatusBadgeSize = new Vector2(130f, 44f);
         private const float StatusBadgeGap = 6f;
 
@@ -153,14 +157,36 @@ namespace PenguinMonster.Editor
             return view;
         }
 
+        /// <summary>
+        /// 技のエフェクトを出す層。ペンモンの絵は台座のマスクの中にあって上や横にはみ出すと切れるので、場全体に重ねて別に置く
+        /// </summary>
+        private static MoveEffectView CreateMoveEffectLayer(Transform parent)
+        {
+            var layer = UIDialogBuilder.CreateUIObject("MoveEffects", parent);
+            UIDialogBuilder.SetStretchAll(layer.GetComponent<RectTransform>());
+            var particles = new Image[MoveEffectView.ParticleCount];
+            for (int i = 0; i < particles.Length; i++)
+            {
+                particles[i] = CreateImage(layer.transform, $"Particle{i}", Color.white);
+                particles[i].raycastTarget = false;
+                particles[i].enabled = false;
+            }
+
+            var view = layer.AddComponent<MoveEffectView>();
+            var so = new SerializedObject(view);
+            SetArray(so.FindProperty("_particles"), particles);
+            so.ApplyModifiedProperties();
+            return view;
+        }
+
         private static MonsterInfoBox CreateInfoBox(Transform parent, string name, Vector2 position, Vector2 size, bool showHpNumbers)
         {
             var frame = CreateFramedBox(parent, name, InfoBoxColor, out var inner);
             Place(frame.rectTransform, Center, position, size);
 
-            // 数字が無い相手側は、名前とHPバーを上下に広く使う
-            float nameBottom = showHpNumbers ? 0.6f : 0.5f;
-            float barY = showHpNumbers ? 0.45f : 0.28f;
+            // 数字が無い相手側は、下の行（0〜EnemyStatBandTop）をランク変化に使い、その上に名前とHPバーを置く
+            float nameBottom = showHpNumbers ? 0.6f : 0.55f;
+            float barY = showHpNumbers ? 0.45f : 0.4f;
 
             var nameText = CreateText(inner, "Name", "", NameFontSize, BoxTextColor, TextAnchor.MiddleLeft);
             SetBand(nameText.rectTransform, nameBottom, 1f, InfoPadding);
@@ -197,6 +223,23 @@ namespace PenguinMonster.Editor
 
             var badge = CreateStatusBadge(showHpNumbers ? inner : frame.rectTransform, showHpNumbers);
 
+            // ランク変化インジケーター（攻↑ 防↓↓ 等）。枠の外だと空の上に文字が浮いて見えるので、両側とも枠の中に置く
+            var statIndicator = CreateText(inner, "StatIndicator", "", StatIndicatorFontSize, BoxTextColor, TextAnchor.MiddleLeft);
+            statIndicator.supportRichText = true;
+            var statRect = statIndicator.rectTransform;
+            if (showHpNumbers)
+            {
+                // 自分側: HP数字と同じ行の左半分に置く
+                SetBand(statRect, 0f, 0.3f, InfoPadding);
+                statRect.anchorMax = new Vector2(0.65f, 0.3f);
+            }
+            else
+            {
+                // 相手側: HPバーの下の行
+                SetBand(statRect, 0f, EnemyStatBandTop, InfoPadding);
+            }
+            statIndicator.gameObject.SetActive(false);
+
             var box = frame.gameObject.AddComponent<MonsterInfoBox>();
             var so = new SerializedObject(box);
             so.FindProperty("_nameText").objectReferenceValue = nameText;
@@ -206,6 +249,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_hpText").objectReferenceValue = hpText;
             so.FindProperty("_statusBadge").objectReferenceValue = badge;
             so.FindProperty("_statusText").objectReferenceValue = badge.GetComponentInChildren<Text>();
+            so.FindProperty("_statIndicatorText").objectReferenceValue = statIndicator;
             so.ApplyModifiedProperties();
             return box;
         }

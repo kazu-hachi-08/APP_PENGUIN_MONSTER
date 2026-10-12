@@ -8,7 +8,8 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 見せ合い・選出の画面。上の帯に相手の6体、まん中に自分の6体のマス、下に「おまかせ」「けってい」
+    /// 見せ合い・選出の画面。夜空と雪の上に、上の帯に相手の6体、まん中に自分の6体のマス、下に「おまかせ」「けってい」。
+    /// 開いたら相手の帯は右から・自分の列は左から滑り込み（SlideIn）、境目の左に「VS」が弾んで出る
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -30,8 +31,16 @@ namespace PenguinMonster.Editor
         private const float OpponentIconSize = 160f;
         private const int OpponentCaptionFontSize = 36;
 
-        private static readonly Color SelectBackColor = new Color(0.16f, 0.2f, 0.32f);
-        private static readonly Color OpponentBandColor = new Color(0.32f, 0.16f, 0.2f);
+        // 帯と自分の列は画面の幅ぶん外から入れる
+        private static readonly Vector2 OpponentSlideFrom = new Vector2(1920f, 0f);
+        private static readonly Vector2 OwnSlideFrom = new Vector2(-1920f, 0f);
+        // 相手の見出しの真下・帯と自分の列の境目。自分のマスの上の余白に収まる
+        private static readonly Vector2 VsSize = new Vector2(240f, 140f);
+        private const int VsFontSize = 110;
+        private const float VsTilt = 8f;
+
+        // 夜空が少し透けるよう、帯は半透明にする
+        private static readonly Color OpponentBandColor = new Color(0.45f, 0.12f, 0.18f, 0.85f);
         private static readonly Color SelectTitleColor = Color.white;
         private static readonly Color SelectOrderColor = new Color(0.85f, 0.2f, 0.2f);
         private static readonly Color SelectRandomColor = new Color(0.45f, 0.45f, 0.5f);
@@ -39,14 +48,14 @@ namespace PenguinMonster.Editor
 
         private static SelectPanel CreateSelectPanel(Transform parent)
         {
-            var back = CreateImage(parent, "SelectPanel", SelectBackColor);
-            UIDialogBuilder.SetStretchAll(back.rectTransform);
+            var back = CreateNightBack(parent, "SelectPanel");
 
             var title = CreateText(back.transform, "Title", "", SelectTitleFontSize, SelectTitleColor, TextAnchor.MiddleCenter);
+            StyleHeading(title);
             title.rectTransform.anchorMin = new Vector2(0f, 1f);
             title.rectTransform.offsetMin = new Vector2(0f, -SelectTitleHeight);
 
-            CreateOpponentBand(back.transform, out var opponentIcons, out var opponentLabels);
+            var band = CreateOpponentBand(back.transform, out var opponentIcons, out var opponentLabels);
 
             int count = BattleBalance.DraftRounds;
             var row = CreateSelectRow(back.transform);
@@ -63,6 +72,7 @@ namespace PenguinMonster.Editor
             var random = CreateButton(footer, "Btn_Random", "おまかせ", SelectButtonSize, SelectRandomColor);
             var decide = CreateButton(footer, "Btn_Decide", "決定", SelectButtonSize, SelectDecideColor);
             var timer = CreateCountdown(back.transform, TopRight, PanelCountdownPosition);
+            var vs = CreateVsBadge(back.transform);
 
             var panel = back.gameObject.AddComponent<SelectPanel>();
             var so = new SerializedObject(panel);
@@ -76,14 +86,28 @@ namespace PenguinMonster.Editor
             so.FindProperty("_randomButton").objectReferenceValue = random.GetComponent<Button>();
             so.FindProperty("_decideButton").objectReferenceValue = decide.GetComponent<Button>();
             so.FindProperty("_timer").objectReferenceValue = timer;
+            so.FindProperty("_opponentSlide").objectReferenceValue = AddSlideIn(band, OpponentSlideFrom);
+            so.FindProperty("_ownSlide").objectReferenceValue = AddSlideIn(row.gameObject, OwnSlideFrom);
+            so.FindProperty("_vsPop").objectReferenceValue = vs;
             so.ApplyModifiedProperties();
 
             back.gameObject.SetActive(false);
             return panel;
         }
 
+        /// <summary>相手の帯と自分の列の境目に置く「VS」。ロゴと同じ縁取りで、少し傾けて勢いを出す</summary>
+        private static PopIn CreateVsBadge(Transform parent)
+        {
+            var vs = CreateText(parent, "Vs", "VS", VsFontSize, Color.white, TextAnchor.MiddleCenter);
+            StyleHeading(vs);
+            vs.color = TitleLetterColors[0];
+            Place(vs.rectTransform, new Vector2(0f, 1f), new Vector2(OpponentCaptionWidth / 2f, -(SelectTitleHeight + OpponentBandHeight)), VsSize);
+            vs.rectTransform.localEulerAngles = new Vector3(0f, 0f, VsTilt);
+            return AddPopIn(vs.gameObject);
+        }
+
         /// <summary>タイトルのすぐ下の帯。左に「あいて」の見出し、右に相手の6体（押せない）</summary>
-        private static void CreateOpponentBand(Transform parent, out Image[] icons, out Text[] labels)
+        private static GameObject CreateOpponentBand(Transform parent, out Image[] icons, out Text[] labels)
         {
             var band = CreateImage(parent, "OpponentBand", OpponentBandColor);
             var rect = band.rectTransform;
@@ -118,6 +142,7 @@ namespace PenguinMonster.Editor
                 labels[i] = CreateText(entry.transform, "Label", "", SelectNameFontSize, SelectTitleColor, TextAnchor.LowerCenter);
                 labels[i].supportRichText = true;
             }
+            return band.gameObject;
         }
 
         private static Transform CreateSelectRow(Transform parent)

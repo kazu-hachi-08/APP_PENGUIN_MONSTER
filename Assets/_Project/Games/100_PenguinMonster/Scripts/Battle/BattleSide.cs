@@ -13,6 +13,8 @@ namespace PenguinMonster.Battle
 
         public int Index { get; }
         public IReadOnlyList<BattleMonster> Party { get; }
+        /// <summary>この陣営がいるバトル。ペンモンが場の天候を見るのに使う</summary>
+        internal BattleState State { get; set; }
         public int ActiveCount => _activePartyIndices.Length;
 
         /// <summary>シングル用。場の先頭のペンモン</summary>

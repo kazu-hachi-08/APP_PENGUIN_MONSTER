@@ -148,5 +148,59 @@ namespace PenguinMonster.View.Art
                 b.Ellipse(tip.x, tip.y, 1.2f, 1.2f, color);
             }
         }
+
+        /// <summary>No.58 ヒデリペン: 陽気な目立ちたがり。背中に燃える太陽を背負い、サングラスをかけて岩の上で両ヒレを空へ突き上げる</summary>
+        private static void Hideri(PenguinBrush b)
+        {
+            var body = Rgb(200, 110, 60);
+            var bodyShade = PenguinPalette.Shade(body);
+            var glasses = Rgb(30, 30, 40);
+            const int Rays = 12;
+            for (int i = 0; i < Rays; i++)
+            {
+                float angle = i * Mathf.PI * 2f / Rays;
+                b.Triangle(OnEllipse(32f, 40f, 15f, 15f, angle - 0.18f), OnEllipse(32f, 40f, 15f, 15f, angle + 0.18f),
+                    OnEllipse(32f, 40f, 22f, 21f, angle), FlameOuter);
+            }
+            b.Ellipse(32f, 40f, 16f, 16f, FlameMiddle);
+            b.Ellipse(31.5f, 40.5f, 14f, 14f, FlameInner);
+            b.Polygon(V(32, 5), Stone, V(8, 1), V(56, 1), V(52, 9), V(12, 9));
+            b.Line(0.6f, PenguinPalette.Shade(Stone), V(20, 9), V(23, 5), V(21, 2));
+            b.Line(0.6f, PenguinPalette.Shade(Stone), V(42, 9), V(40, 4));
+            b.Feet(32f, 7f, 10f);
+            b.Shaded(32f, 22f, 13f, 12f, body);
+            b.Belly(31f, 21f, 9f, 9f);
+            b.Flipper(V(21, 27), V(10, 41), 3f, bodyShade);
+            b.Flipper(V(43, 27), V(54, 41), 3f, bodyShade);
+            b.Shaded(32f, 38f, 11f, 10.5f, body);
+            b.White(31f, 37f, 8f, 6.5f);
+            b.Face(31f, 38f, 4f, EyeStyle.Sharp);
+            if (!b.Front) return;
+            b.Rect(23, 37, 7, 3, glasses);
+            b.Rect(32, 37, 7, 3, glasses);
+            b.Rect(30, 39, 2, 1, glasses);
+            b.Dot(24, 39, PenguinPalette.EyeLight);
+            b.Dot(33, 39, PenguinPalette.EyeLight);
+        }
+
+        /// <summary>No.62 カエンペン: 猪突猛進。全身に炎をまとって前のめりに突っ走り、炎が後ろへ長く尾を引く</summary>
+        private static void Kaen(PenguinBrush b)
+        {
+            var red = Rgb(210, 60, 40);
+            var redShade = PenguinPalette.Shade(red);
+            b.Triangle(V(34, 8), V(34, 34), V(62, 18), FlameOuter);
+            b.Triangle(V(36, 12), V(36, 30), V(58, 20), FlameMiddle);
+            b.Triangle(V(38, 16), V(38, 26), V(52, 21), FlameInner);
+            b.Triangle(V(26, 38), V(36, 32), V(58, 48), FlameOuter);
+            b.Triangle(V(28, 37), V(35, 33), V(50, 44), FlameMiddle);
+            b.Foot(32f, 3f, -25f);
+            b.Foot(14f, 5f, 25f);
+            b.ShadedTilted(28f, 19f, 12f, 11f, 35f, red);
+            b.BellyTilted(24f, 17f, 7f, 7f, 35f);
+            b.Flipper(V(32, 24), V(46, 29), 2.5f, redShade);
+            b.Shaded(17f, 31f, 10f, 9.5f, red);
+            b.White(15f, 30f, 7f, 6f);
+            b.TurnedFace(15f, 31f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f, open: true);
+        }
     }
 }

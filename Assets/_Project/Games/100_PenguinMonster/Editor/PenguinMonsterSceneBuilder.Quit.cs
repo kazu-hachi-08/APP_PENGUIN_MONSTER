@@ -16,6 +16,7 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 QuitButtonPosition = new Vector2(-150f, -55f);
         private static readonly Vector2 QuitButtonSize = new Vector2(220f, 80f);
         private static readonly Color QuitButtonColor = new Color(0.45f, 0.45f, 0.5f);
+        private static readonly string[] QuitDialogButtons = { "Btn_Cancel", "Btn_Confirm" };
 
         private static QuitButton CreateQuitButton(Transform parent)
         {
@@ -28,6 +29,12 @@ namespace PenguinMonster.Editor
 
             // 確認は画面いっぱいに暗幕を敷きたいので、セーフエリアの外（兄弟）に置く
             var dialog = UIDialogBuilder.CreateCommonDialog(parent);
+            // 箱は共通基盤のままだが、ボタンだけはゲームのほかのボタンと同じ見た目にそろえる
+            foreach (var name in QuitDialogButtons)
+            {
+                var button = dialog.transform.Find($"Panel/ButtonArea/{name}");
+                StyleButton(button.gameObject, (RectTransform)button.GetComponentInChildren<Text>().transform);
+            }
 
             var quit = root.AddComponent<QuitButton>();
             var so = new SerializedObject(quit);

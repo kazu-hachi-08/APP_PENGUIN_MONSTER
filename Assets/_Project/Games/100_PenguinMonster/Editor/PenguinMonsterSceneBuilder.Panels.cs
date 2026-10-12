@@ -56,6 +56,8 @@ namespace PenguinMonster.Editor
         private static readonly Color OverlayColor = new Color(0f, 0f, 0f, 0.6f);
         private static readonly Color SlotColor = new Color(0.3f, 0.5f, 0.8f);
         private static readonly Color BackColor = new Color(0.45f, 0.45f, 0.5f);
+        /// <summary>技ボタンの統一背景色。タイプ色で塗らず、落ち着いた濃紺にする</summary>
+        private static readonly Color MoveButtonColor = new Color(0.22f, 0.26f, 0.38f);
 
         /// <summary>
         /// 画面全体に透明なボタンを敷く。一番奥に置くので、窓やボタンのない所をタップしたときだけ反応する
@@ -144,10 +146,10 @@ namespace PenguinMonster.Editor
             var labels = new Text[buttons.Length];
             for (int i = 0; i < buttons.Length; i++)
             {
-                var buttonObj = CreateButton(grid.transform, $"Btn_Move{i}", "", MoveButtonSize, Color.gray);
+                var buttonObj = CreateButton(grid.transform, $"Btn_Move{i}", "", MoveButtonSize, MoveButtonColor);
                 buttons[i] = buttonObj.GetComponent<Button>();
                 labels[i] = buttonObj.GetComponentInChildren<Text>();
-                labels[i].color = BoxTextColor;
+                labels[i].color = Color.white;
                 buttonObj.AddComponent<MoveHoldHint>();
             }
 

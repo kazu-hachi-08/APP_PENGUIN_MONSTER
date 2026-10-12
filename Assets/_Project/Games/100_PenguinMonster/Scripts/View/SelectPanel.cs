@@ -10,7 +10,8 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// 見せ合い・選出の画面（仕様書 §2.2）。上に相手の6体を見せ、下の自分の6体から3体（ダブルスは4体）を選ぶ。
-    /// 選んだ順が出す順（1番目が先頭）。もう一度押すと外せる
+    /// 選んだ順が出す順（1番目が先頭）。もう一度押すと外せる。
+    /// 演出: 開いたら相手の帯は右から、自分の列は左から滑り込み、あいだに「VS」を出す
     /// </summary>
     public class SelectPanel : MonoBehaviour
     {
@@ -25,6 +26,10 @@ namespace PenguinMonster.View
         [SerializeField] private Button _decideButton;
         [Tooltip("オンラインの制限時間。オフラインでは隠れたまま")]
         [SerializeField] private CountdownTimer _timer;
+        [SerializeField] private SlideIn _opponentSlide;
+        [SerializeField] private SlideIn _ownSlide;
+        [SerializeField] private PopIn _vsPop;
+        [SerializeField] private float _vsDelay = 0.3f;
         [SerializeField] private Color _cellColor = new Color(0.3f, 0.5f, 0.8f);
         [SerializeField] private Color _pickedColor = new Color(0.95f, 0.6f, 0.2f);
 
@@ -68,6 +73,9 @@ namespace PenguinMonster.View
             }
             Refresh();
             gameObject.SetActive(true);
+            _opponentSlide.Play();
+            _ownSlide.Play();
+            _vsPop.Play(_vsDelay);
             _timer.Begin(timeLimit, DecideByTimeout);
         }
 

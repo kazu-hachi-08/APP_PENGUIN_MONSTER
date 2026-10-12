@@ -72,12 +72,46 @@ namespace PenguinMonster.Battle
                     return $"{subject}は {ItemName(e)}で 持ちこたえた！";
                 case BattleEventKind.ItemRecoil:
                     return $"{subject}は {ItemName(e)}で 少し HPが 減った！";
+                case BattleEventKind.HitCount:
+                    return $"{e.Amount}回 当たった！";
+                case BattleEventKind.Drained:
+                    return $"{subject}は 体力を 吸い取った！";
+                case BattleEventKind.Recoil:
+                    return $"{subject}は 反動で ダメージを 受けた！";
+                case BattleEventKind.Healed:
+                    return $"{subject}の 体力が 回復した！";
+                case BattleEventKind.WeatherStarted:
+                    return WeatherStarted(e.Weather);
+                case BattleEventKind.WeatherEnded:
+                    return WeatherEnded(e.Weather);
+                case BattleEventKind.WeatherDamage:
+                    return $"{subject}は 吹雪に 打たれている！";
                 default:
                     return null;
             }
         }
 
         private static string ItemName(BattleEvent e) => e.Monster.Definition.Item.ToJapanese();
+
+        private static string WeatherStarted(Weather weather)
+        {
+            switch (weather)
+            {
+                case Weather.Snow: return "吹雪が 吹き始めた！";
+                case Weather.Rain: return "大雨が 降り始めた！";
+                default: return "日差しが 強くなった！";
+            }
+        }
+
+        private static string WeatherEnded(Weather weather)
+        {
+            switch (weather)
+            {
+                case Weather.Snow: return "吹雪が 止んだ！";
+                case Weather.Rain: return "雨が 上がった！";
+                default: return "日差しが 元に 戻った！";
+            }
+        }
 
         private static string Inflicted(StatusCondition status)
         {

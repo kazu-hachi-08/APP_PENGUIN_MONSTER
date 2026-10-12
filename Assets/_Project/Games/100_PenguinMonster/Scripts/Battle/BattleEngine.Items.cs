@@ -57,6 +57,17 @@ namespace PenguinMonster.Battle
             ApplyDirectDamage(side, user, damage, BattleEventKind.ItemRecoil, events);
         }
 
+        /// <summary>貝の首飾り: 攻撃技で与えたダメージの 1/8 回復（全体技は合計から1回）</summary>
+        private void ApplyShellNecklace(int side, BattleMonster user, int dealt, List<BattleEvent> events)
+        {
+            if (_state.IsOver || user.IsFainted || user.IsFullHp || dealt <= 0 || !user.HasItem(HeldItem.ShellNecklace))
+            {
+                return;
+            }
+            user.Heal(Math.Max(1, dealt / BattleBalance.ShellNecklaceHealDenominator));
+            events.Add(BattleEvent.Of(BattleEventKind.ItemHealed, side, user));
+        }
+
         /// <summary>ほしざかな: ターン終わりに最大HPの 1/16 回復</summary>
         private void ApplyEndOfTurnItem(int side, BattleMonster monster, List<BattleEvent> events)
         {

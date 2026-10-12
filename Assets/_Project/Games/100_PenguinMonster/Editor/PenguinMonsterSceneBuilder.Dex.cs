@@ -24,11 +24,16 @@ namespace PenguinMonster.Editor
         private const float DexBodyBottom = 40f;
         private const float DexListLeft = 40f;
         private const float DexListWidth = 870f;
-        // 50 体が枠（高さ 1080 - 上 230 - 下 40）に収まるように、8 列 x 7 行にする
+        // 150 体に増えたため、見やすい大きさ（マス 100）にして縦スクロールできるようにする
         private const int DexListColumns = 8;
         private static readonly Vector2 DexCellSize = new Vector2(100f, 100f);
-        private const float DexCellSpacing = 10f;
+        private const float DexCellSpacing = 6f;
         private const float DexCellIconPadding = 4f;
+
+        private const float DexScrollbarWidth = 14f;
+        private const float DexScrollbarSpacing = 10f;
+        private static readonly Color DexScrollbarTrackColor = new Color(0.06f, 0.08f, 0.14f, 0.6f);
+        private static readonly Color DexScrollbarHandleColor = new Color(0.35f, 0.45f, 0.65f, 0.85f);
 
         private const float DexDetailLeft = 940f;
         private const float DexDetailRight = 40f;
@@ -47,6 +52,7 @@ namespace PenguinMonster.Editor
         private const float DexMovesTop = 330f;
 
         private const int DexNameFontSize = 48;
+        private const int DexNameMinFontSize = 28;
         private const int DexBadgeFontSize = 30;
         private const int DexStatsFontSize = 32;
         private const int DexTraitsFontSize = 30;
@@ -61,7 +67,7 @@ namespace PenguinMonster.Editor
         {
             var back = CreateSubMenuFrame(parent, "DexPanel", "図鑑", out var content, out var backButton);
             var filters = CreateDexFilters(content);
-            var cells = CreateDexList(content, out var cellIcons);
+            var cells = CreateDexList(content, out var cellIcons, out var scrollRect);
             var detail = CreateDexDetail(content);
 
             return FinishSubMenu<DexPanel>(back, backButton, so =>
@@ -69,6 +75,7 @@ namespace PenguinMonster.Editor
                 SetArray(so.FindProperty("_filterButtons"), filters);
                 SetArray(so.FindProperty("_listButtons"), cells);
                 SetArray(so.FindProperty("_listIcons"), cellIcons);
+                so.FindProperty("_scrollRect").objectReferenceValue = scrollRect;
                 so.FindProperty("_cellColor").colorValue = DexCellColor;
                 detail.Apply(so);
             });
@@ -96,28 +103,100 @@ namespace PenguinMonster.Editor
             return obj.GetComponent<Button>();
         }
 
-        /// <summary>定義表の体数ぶんのマス。しぼりこみで使わないマスは実行時に隠す</summary>
-        private static Button[] CreateDexList(Transform parent, out Image[] icons)
+        /// <summary>定義表の体数ぶんのマス。スクロール枠に入れて一覧表示する</summary>
+        private static Button[] CreateDexList(Transform parent, out Image[] icons, out ScrollRect scrollRect)
         {
-            var list = UIDialogBuilder.CreateUIObject("List", parent);
-            var rect = list.GetComponent<RectTransform>();
+            var scrollObj = UIDialogBuilder.CreateUIObject("List", parent);
+            var rect = scrollObj.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = new Vector2(0f, 1f);
             rect.pivot = new Vector2(0f, 0.5f);
             rect.offsetMin = new Vector2(DexListLeft, DexBodyBottom);
             rect.offsetMax = new Vector2(DexListLeft + DexListWidth, -DexBodyTop);
-            var layout = list.AddComponent<GridLayoutGroup>();
+
+            scrollRect = scrollObj.AddComponent<ScrollRect>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.scrollSensitivity = 35f;
+
+            // ビューポート（マスがはみ出さないようにマスクする）
+            var viewport = UIDialogBuilder.CreateUIObject("Viewport", scrollObj.transform);
+            var vRect = viewport.GetComponent<RectTransform>();
+            vRect.anchorMin = Vector2.zero;
+            vRect.anchorMax = Vector2.one;
+            vRect.pivot = new Vector2(0f, 1f);
+            vRect.offsetMin = Vector2.zero;
+            vRect.offsetMax = new Vector2(-(DexScrollbarWidth + DexScrollbarSpacing), 0f);
+
+            var vImg = viewport.AddComponent<Image>();
+            vImg.color = Color.clear;
+            viewport.AddComponent<RectMask2D>();
+
+            // マスを並べるコンテナ
+            var content = UIDialogBuilder.CreateUIObject("Content", viewport.transform);
+            var cRect = content.GetComponent<RectTransform>();
+            cRect.anchorMin = new Vector2(0f, 1f);
+            cRect.anchorMax = new Vector2(1f, 1f);
+            cRect.pivot = new Vector2(0f, 1f);
+            cRect.offsetMin = Vector2.zero;
+            cRect.offsetMax = Vector2.zero;
+
+            var layout = content.AddComponent<GridLayoutGroup>();
             layout.cellSize = DexCellSize;
             layout.spacing = Vector2.one * DexCellSpacing;
             layout.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             layout.constraintCount = DexListColumns;
+            layout.startCorner = GridLayoutGroup.Corner.UpperLeft;
+            layout.startAxis = GridLayoutGroup.Axis.Horizontal;
+            layout.childAlignment = TextAnchor.UpperLeft;
+            layout.padding = new RectOffset(2, 2, 2, 2);
+
+            var fitter = content.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            // スクロールバー
+            var scrollbarObj = UIDialogBuilder.CreateUIObject("Scrollbar", scrollObj.transform);
+            var sbRect = scrollbarObj.GetComponent<RectTransform>();
+            sbRect.anchorMin = new Vector2(1f, 0f);
+            sbRect.anchorMax = new Vector2(1f, 1f);
+            sbRect.pivot = new Vector2(1f, 1f);
+            sbRect.offsetMin = new Vector2(-DexScrollbarWidth, 0f);
+            sbRect.offsetMax = Vector2.zero;
+
+            var trackImg = scrollbarObj.AddComponent<Image>();
+            trackImg.color = DexScrollbarTrackColor;
+
+            var slidingArea = UIDialogBuilder.CreateUIObject("Sliding Area", scrollbarObj.transform);
+            var saRect = slidingArea.GetComponent<RectTransform>();
+            UIDialogBuilder.SetStretchAll(saRect);
+
+            var handle = UIDialogBuilder.CreateUIObject("Handle", slidingArea.transform);
+            var hRect = handle.GetComponent<RectTransform>();
+            hRect.anchorMin = Vector2.zero;
+            hRect.anchorMax = Vector2.one;
+            hRect.offsetMin = Vector2.zero;
+            hRect.offsetMax = Vector2.zero;
+            var handleImg = handle.AddComponent<Image>();
+            handleImg.color = DexScrollbarHandleColor;
+
+            var scrollbar = scrollbarObj.AddComponent<Scrollbar>();
+            scrollbar.direction = Scrollbar.Direction.BottomToTop;
+            scrollbar.targetGraphic = handleImg;
+            scrollbar.handleRect = hRect;
+
+            scrollRect.viewport = vRect;
+            scrollRect.content = cRect;
+            scrollRect.verticalScrollbar = scrollbar;
+            scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
 
             int count = MonsterTable.All.Count;
             var buttons = new Button[count];
             icons = new Image[count];
             for (int i = 0; i < count; i++)
             {
-                var cell = CreateButton(list.transform, $"Btn_Cell{i}", "", DexCellSize, DexCellColor);
+                var cell = CreateButton(content.transform, $"Btn_Cell{i}", "", DexCellSize, DexCellColor);
                 buttons[i] = cell.GetComponent<Button>();
                 icons[i] = CreateImage(cell.transform, "Icon", Color.white);
                 icons[i].preserveAspect = true;
@@ -172,6 +251,10 @@ namespace PenguinMonster.Editor
 
             detail.Name = CreateText(right, "Name", "", DexNameFontSize, DexTextColor, TextAnchor.MiddleLeft);
             detail.Name.fontStyle = FontStyle.Bold;
+            // 長い名前（ギョウレツヒナペン など）は折り返した2行目が高さに収まらず消えるため、1行に収まるまで縮める
+            detail.Name.resizeTextForBestFit = true;
+            detail.Name.resizeTextMinSize = DexNameMinFontSize;
+            detail.Name.resizeTextMaxSize = DexNameFontSize;
             PlaceTopBand(detail.Name.rectTransform, 0f, DexNameHeight);
             CreateDexBadges(right, out detail.Badges, out detail.BadgeLabels);
 
