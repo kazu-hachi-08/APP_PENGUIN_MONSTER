@@ -15,8 +15,9 @@ namespace PenguinMonster.Editor
         private const string StatCaptions = "HP\n攻撃\n防御\n特攻\n特防\n素早さ\n合計";
         private const int TypesPerMonster = 2;
 
-        private const float DraftTitleHeight = 110f;
-        private const float DraftFooterHeight = 170f;
+        // カード（高さ 780）の上下に 25 ずつ余白が残るよう、タイトルと下の帯は細めにする
+        private const float DraftTitleHeight = 100f;
+        private const float DraftFooterHeight = 150f;
         private static readonly Vector2 DraftCardSize = new Vector2(500f, 780f);
         private const float DraftCardSpacing = 60f;
         private const float DraftCardIconSize = 180f;

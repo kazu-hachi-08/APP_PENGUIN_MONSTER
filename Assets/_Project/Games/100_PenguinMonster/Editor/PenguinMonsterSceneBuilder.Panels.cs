@@ -13,7 +13,8 @@ namespace PenguinMonster.Editor
     public static partial class PenguinMonsterSceneBuilder
     {
         private const float BottomAreaHeight = 300f;
-        private const float MessagePaddingX = 56f;
+        // 窓は画面の端から端まであるので、書き始めがスマホのカメラ穴に掛からないよう左右を広く空ける
+        private const float MessagePaddingX = 100f;
         private const float MessagePaddingY = 36f;
         private static readonly Vector2 NextIndicatorSize = new Vector2(60f, 60f);
 

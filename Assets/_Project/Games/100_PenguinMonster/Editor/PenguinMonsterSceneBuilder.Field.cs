@@ -42,10 +42,11 @@ namespace PenguinMonster.Editor
         private const float PlayerDoubleOffsetX = 190f;
         private const float EnemyDoubleSpriteSize = 256f;
         private const float PlayerDoubleSpriteSize = 384f;
-        // 相手の枠は状態異常の印を枠のすぐ下に出すので、そのぶん間を空けて重ねる
-        private static readonly Vector2[] EnemyDoubleInfoPositions = { new Vector2(-540f, 470f), new Vector2(-540f, 300f) };
+        // 相手の枠は状態異常の印を枠のすぐ下に出すので、そのぶん間を空けて重ねる。上端は画面の端から 50 空ける
+        private static readonly Vector2[] EnemyDoubleInfoPositions = { new Vector2(-540f, 435f), new Vector2(-540f, 265f) };
         private static readonly Vector2 EnemyDoubleInfoSize = new Vector2(640f, 110f);
-        private static readonly Vector2[] PlayerDoubleInfoPositions = { new Vector2(560f, 5f), new Vector2(560f, -160f) };
+        // 下の枠の HP の数字がメッセージ窓に隠れないよう、窓の上端（y=-240）から 20 空ける
+        private static readonly Vector2[] PlayerDoubleInfoPositions = { new Vector2(560f, 25f), new Vector2(560f, -140f) };
         private static readonly Vector2 PlayerDoubleInfoSize = new Vector2(640f, 160f);
         private const float InfoPadding = 28f;
         private const float HpBarHeight = 22f;

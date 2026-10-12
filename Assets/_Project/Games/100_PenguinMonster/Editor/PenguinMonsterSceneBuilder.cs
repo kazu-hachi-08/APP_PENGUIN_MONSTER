@@ -24,7 +24,6 @@ namespace PenguinMonster.Editor
 
         // 横画面の基準解像度。共通基盤のダイアログと同じ値にそろえる
         private static readonly Vector2 ReferenceResolution = new Vector2(1920f, 1080f);
-        private const float MatchWidthOrHeight = 0.5f;
         private static readonly Color BackgroundColor = new Color(0.80f, 0.90f, 0.95f);
         private const string NextBattleLabel = "次の 戦いへ";
         private const string OfflineLabel = "CPUと対戦";
@@ -76,7 +75,9 @@ namespace PenguinMonster.Editor
             var scaler = canvasObj.AddComponent<CanvasScaler>();
             scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
             scaler.referenceResolution = ReferenceResolution;
-            scaler.matchWidthOrHeight = MatchWidthOrHeight;
+            // 比率が違う画面（20:9 のスマホ・4:3 のタブレット）でも基準の 1920x1080 が必ず全部見えるよう、足りない側を広げる。
+            // 縦横の中間で合わせると、横長のスマホで高さが 966 まで縮み、上下の枠がはみ出したため
+            scaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
             canvasObj.AddComponent<GraphicRaycaster>();
             return canvas;
         }
