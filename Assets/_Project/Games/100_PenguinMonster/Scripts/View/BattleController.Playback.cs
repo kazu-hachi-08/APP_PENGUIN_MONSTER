@@ -114,7 +114,7 @@ namespace PenguinMonster.View
         }
 
         /// <summary>
-        /// 技のタイプのエフェクトを受けた側に出す。ダメージのイベントは技の名前を持たないので、前の「〇〇の △△！」までさかのぼる。
+        /// 技のエフェクトを受けた側に出す。ダメージのイベントは技の名前を持たないので、前の「〇〇の △△！」までさかのぼる。
         /// 技は名前から引き直す（オンラインのゲストも技の名前は受け取っているので、通信を増やさずに済む）
         /// </summary>
         private IEnumerator PlayMoveEffect(List<BattleEvent> events, int damagedIndex)
@@ -129,7 +129,7 @@ namespace PenguinMonster.View
             {
                 yield break;
             }
-            yield return _moveEffect.Play(move.Type, ViewOf(events[damagedIndex]).Body, ViewOf(events[usedIndex]).Body);
+            yield return _moveEffect.Play(move, ViewOf(events[damagedIndex]).Body, ViewOf(events[usedIndex]).Body);
         }
 
         private static MoveDefinition MoveOf(BattleEvent used)

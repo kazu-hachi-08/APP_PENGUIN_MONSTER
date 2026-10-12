@@ -1,24 +1,15 @@
 using System.Collections.Generic;
-using PenguinMonster.Battle;
 using UnityEngine;
 
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// タイプごとの粒の動き方。位置は「受けた側の絵の高さを 1」とした、絵の真ん中からの距離で書く
+    /// 型ごとの粒の動き方。位置は「受けた側の絵の高さを 1」とした、絵の真ん中からの距離で書く
     /// （シングル / ダブルス、手前 / 奥で絵の大きさが違っても同じ見た目にするため）。
     /// 乱数は見た目のゆらぎだけに使うので、オンラインで2台の見た目がずれても勝敗には関係しない
     /// </summary>
     public partial class MoveEffectView
     {
-        private static readonly Color[] AuroraTints =
-        {
-            new Color(1f, 0.6f, 0.85f),
-            new Color(0.55f, 0.95f, 1f),
-            new Color(0.6f, 1f, 0.65f),
-            new Color(0.8f, 0.65f, 1f),
-        };
-
         private struct Particle
         {
             public Vector2 From;
@@ -58,26 +49,29 @@ namespace PenguinMonster.View
         }
 
         /// <param name="toward">使った側から受けた側への向き</param>
-        private static List<Particle> Recipe(MonsterType type, Vector2 toward)
+        private static List<Particle> Recipe(MoveStyle style, Vector2 toward)
         {
             var list = new List<Particle>();
-            switch (type)
+            switch (style)
             {
-                case MonsterType.Ice: Shards(list); break;
-                case MonsterType.Sea: Splash(list); break;
-                case MonsterType.Fire: Flames(list); break;
-                case MonsterType.Thunder: Strike(list); break;
-                case MonsterType.Moss: LeafSwirl(list); break;
-                case MonsterType.Rock: Rockfall(list); break;
-                case MonsterType.Bird: Gust(list, toward); break;
-                case MonsterType.Dark: Claws(list); break;
-                case MonsterType.Aurora: Sparkles(list); break;
+                case MoveStyle.Pierce: Pierce(list, toward); break;
+                case MoveStyle.Slash: Claws(list); break;
+                case MoveStyle.Bite: Bite(list); break;
+                case MoveStyle.Converge: Shards(list); break;
+                case MoveStyle.Blow: Gust(list, toward); break;
+                case MoveStyle.Shot: Shot(list, toward); break;
+                case MoveStyle.Fall: Rockfall(list); break;
+                case MoveStyle.Plunge: Strike(list); break;
+                case MoveStyle.Rise: Flames(list); break;
+                case MoveStyle.Splash: Splash(list); break;
+                case MoveStyle.Swirl: LeafSwirl(list); break;
+                case MoveStyle.Twinkle: Sparkles(list); break;
                 default: Impact(list); break;
             }
             return list;
         }
 
-        /// <summary>ノーマル: 星が3つ、少しずつずれて「バシッ」と弾ける</summary>
+        /// <summary>打つ: 星が3つ、少しずつずれて「バシッ」と弾ける</summary>
         private static void Impact(List<Particle> list)
         {
             for (int i = 0; i < 3; i++)
@@ -89,7 +83,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>氷: まわりから結晶が飛んできて刺さる</summary>
+        /// <summary>集まって刺さる: まわりから粒が飛んできて刺さる</summary>
         private static void Shards(List<Particle> list)
         {
             const int count = 6;
@@ -98,13 +92,13 @@ namespace PenguinMonster.View
                 float angle = i * 360f / count + Random.Range(-15f, 15f);
                 var dir = Direction(angle);
                 var p = Move(dir * 0.65f, dir * 0.05f, i * 0.04f, 0.25f, 1.3f);
-                // 結晶は先が上（90度）を向いた絵なので、先を中心（angle + 180度）へ向ける
+                // 結晶などは先が上（90度）を向いた絵なので、先を中心（angle + 180度）へ向ける
                 p.Rotation = angle + 90f;
                 list.Add(p);
             }
         }
 
-        /// <summary>海: 真ん中から水しぶきが山なりに飛び散る</summary>
+        /// <summary>飛び散る: 真ん中から粒が山なりに飛び散る</summary>
         private static void Splash(List<Particle> list)
         {
             for (int i = 0; i < 8; i++)
@@ -117,7 +111,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>火: 足元から炎が立ちのぼり、小さくなって消える</summary>
+        /// <summary>立ちのぼる: 足元から粒が立ちのぼり、小さくなって消える</summary>
         private static void Flames(List<Particle> list)
         {
             const int count = 7;
@@ -131,7 +125,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>雷: 上から稲妻が落ち、少し残って火花が散る</summary>
+        /// <summary>一撃で落ちる: 上から大きな粒が1つ落ち、少し残ってまわりに散る</summary>
         private static void Strike(List<Particle> list)
         {
             const float landing = 0.12f;
@@ -152,7 +146,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>苔: 葉っぱが渦を巻きながら集まる</summary>
+        /// <summary>渦: 粒が渦を巻きながら集まる</summary>
         private static void LeafSwirl(List<Particle> list)
         {
             const int count = 6;
@@ -166,7 +160,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>岩: 上から岩が次々に落ちてくる</summary>
+        /// <summary>落ちる: 上から粒が次々に落ちてくる</summary>
         private static void Rockfall(List<Particle> list)
         {
             for (int i = 0; i < 4; i++)
@@ -179,7 +173,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>鳥: 使った側から羽根が風に乗って吹き抜ける</summary>
+        /// <summary>吹き抜ける: 使った側から粒が風に乗って吹き抜ける</summary>
         private static void Gust(List<Particle> list, Vector2 toward)
         {
             const int count = 6;
@@ -195,7 +189,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>闇: 三日月の爪あとが3本、斜めにひっかく</summary>
+        /// <summary>切る: 切り傷が3本、斜めに走る</summary>
         private static void Claws(List<Particle> list)
         {
             var stroke = new Vector2(0.15f, -0.15f);
@@ -208,7 +202,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>オーロラ: まわりで色とりどりの星がまたたく</summary>
+        /// <summary>またたく: まわりで粒がまたたく（オーロラの虹色は Stages で付ける）</summary>
         private static void Sparkles(List<Particle> list)
         {
             for (int i = 0; i < 8; i++)
@@ -216,7 +210,60 @@ namespace PenguinMonster.View
                 var at = Random.insideUnitCircle * 0.45f;
                 var p = Move(at, at, Random.Range(0f, 0.3f), 0.3f, 1.4f);
                 p.Pulse = true;
-                p.Tint = AuroraTints[i % AuroraTints.Length];
+                list.Add(p);
+            }
+        }
+
+        /// <summary>突く: 使った側から粒が3回、少しずつずれて突き刺さる</summary>
+        private static void Pierce(List<Particle> list, Vector2 toward)
+        {
+            var across = new Vector2(-toward.y, toward.x);
+            for (int i = 0; i < 3; i++)
+            {
+                var offset = across * ((i - 1) * 0.12f);
+                var p = Move(-toward * 0.7f + offset, toward * 0.05f + offset, i * 0.09f, 0.16f, 1.4f);
+                p.Accelerate = true;
+                // 先が上を向いた絵なので、先を飛ぶ向きへ向ける
+                p.Rotation = AngleOf(toward) - 90f;
+                list.Add(p);
+            }
+        }
+
+        /// <summary>噛む: 上下の牙が2回かみ合う。下の牙は同じ絵を逆さにして使う</summary>
+        private static void Bite(List<Particle> list)
+        {
+            const float gap = 0.06f;
+            for (int i = 0; i < 2; i++)
+            {
+                float delay = i * 0.22f;
+                var upper = Move(new Vector2(0f, 0.45f), new Vector2(0f, gap), delay, 0.2f, 2.2f);
+                upper.Accelerate = true;
+                list.Add(upper);
+
+                var lower = Move(new Vector2(0f, -0.45f), new Vector2(0f, -gap), delay, 0.2f, 2.2f);
+                lower.Accelerate = true;
+                lower.Rotation = 180f;
+                list.Add(lower);
+            }
+        }
+
+        /// <summary>撃ち出す: 使った側から粒が一列に飛んできて、当たったところで弾ける</summary>
+        private static void Shot(List<Particle> list, Vector2 toward)
+        {
+            const int stream = 6;
+            const float travel = 0.18f;
+            for (int i = 0; i < stream; i++)
+            {
+                var p = Move(-toward * 1.1f, Vector2.zero, i * 0.04f, travel, 1.1f);
+                p.Spin = 180f;
+                list.Add(p);
+            }
+
+            float burst = (stream - 1) * 0.04f + travel;
+            for (int i = 0; i < 3; i++)
+            {
+                var p = Move(Vector2.zero, Direction(Random.Range(0f, 360f)) * 0.35f, burst, 0.22f, 1f);
+                p.EndScale = 0.4f;
                 list.Add(p);
             }
         }
@@ -233,6 +280,11 @@ namespace PenguinMonster.View
         {
             float radians = degrees * Mathf.Deg2Rad;
             return new Vector2(Mathf.Cos(radians), Mathf.Sin(radians));
+        }
+
+        private static float AngleOf(Vector2 direction)
+        {
+            return Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         }
 
         private static Vector2 Rotate(Vector2 v, float degrees)

@@ -1,15 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using PenguinMonster.Battle;
-using PenguinMonster.View.Art;
 using UnityEngine;
 using UnityEngine.UI;
 
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 技が当たったときのタイプごとのエフェクト。粒の動き方（どこから・どこへ・いつ）はタイプごとのレシピ（.Recipes.cs）で決め、
-    /// 動かし方はここで共通にする。ペンモンの絵は台座のマスクの中にあるので、エフェクトは場全体に重ねたこの層に出す
+    /// 技が当たったときのエフェクト。技ごとの型（MoveStyleTable）か特別な技の段（.Signatures.cs）から何を出すかを決め（.Stages.cs）、
+    /// 粒の動き方は型ごとのレシピ（.Recipes.cs）で決め、動かし方はここで共通にする。
+    /// ペンモンの絵は台座のマスクの中にあるので、エフェクトは場全体に重ねたこの層に出す
     /// </summary>
     public partial class MoveEffectView : MonoBehaviour
     {
@@ -32,27 +32,33 @@ namespace PenguinMonster.View
 
         /// <param name="target">受けた側の絵。大きさ（シングル / ダブルス、手前 / 奥）に合わせて粒も大きくする</param>
         /// <param name="attacker">使った側の絵。風や結晶の飛んでくる向きに使う</param>
-        public IEnumerator Play(MonsterType type, RectTransform target, RectTransform attacker)
+        public IEnumerator Play(MoveDefinition move, RectTransform target, RectTransform attacker)
         {
             var center = CenterOf(target);
             var toward = attacker == null ? Vector2.left : (center - CenterOf(attacker)).normalized;
             float unit = target.rect.height;
-            var particles = Recipe(type, toward);
-            float duration = Setup(type, particles, unit);
+            foreach (var stage in StagesOf(move, toward))
+            {
+                yield return PlayStage(stage, center, unit);
+            }
+        }
 
+        private IEnumerator PlayStage(Stage stage, Vector2 center, float unit)
+        {
+            float duration = Setup(stage, unit);
             for (float elapsed = 0f; elapsed < duration; elapsed += Time.deltaTime)
             {
-                Step(particles, center, unit, elapsed);
+                Step(stage.Particles, center, unit, elapsed);
                 yield return null;
             }
             HideAll();
         }
 
         /// <summary>粒に絵と大きさを入れ、全部が消えるまでの秒数を返す</summary>
-        private float Setup(MonsterType type, List<Particle> particles, float unit)
+        private float Setup(Stage stage, float unit)
         {
-            var sprite = MoveEffectSprites.Get(type);
-            var size = sprite.rect.size * (unit / MonsterPixels);
+            var particles = stage.Particles;
+            var size = stage.Sprite.rect.size * (unit / MonsterPixels);
             float duration = 0f;
             for (int i = 0; i < _particles.Length; i++)
             {
@@ -60,7 +66,7 @@ namespace PenguinMonster.View
                 image.enabled = false;
                 if (i >= particles.Count) continue;
 
-                image.sprite = sprite;
+                image.sprite = stage.Sprite;
                 image.color = particles[i].Tint;
                 image.rectTransform.sizeDelta = size;
                 duration = Mathf.Max(duration, particles[i].Delay + particles[i].Life);

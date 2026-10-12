@@ -4,8 +4,16 @@ using UnityEngine;
 
 namespace PenguinMonster.View.Art
 {
+    /// <summary>タイプに関係なく、形で何の技か伝える粒（打つ・切る・噛む）</summary>
+    public enum EffectShape
+    {
+        Star,
+        Slash,
+        Fang,
+    }
+
     /// <summary>
-    /// 技のエフェクトの粒（16x16 のドット絵）をタイプごとに作って使い回す。
+    /// 技のエフェクトの粒（16x16 のドット絵）をタイプごと・形ごとに作って使い回す。
     /// ペンモンの絵と同じくコードで描くので、素材が無くても全タイプにエフェクトを付けられる
     /// </summary>
     public static class MoveEffectSprites
@@ -15,6 +23,7 @@ namespace PenguinMonster.View.Art
 
         private static readonly Vector2 MiddlePivot = new Vector2(0.5f, 0.5f);
         private static readonly Dictionary<MonsterType, Sprite> Cache = new Dictionary<MonsterType, Sprite>();
+        private static readonly Dictionary<EffectShape, Sprite> ShapeCache = new Dictionary<EffectShape, Sprite>();
 
         public static Sprite Get(MonsterType type)
         {
@@ -25,6 +34,26 @@ namespace PenguinMonster.View.Art
 
             sprite = Paint(type).ToSprite($"MoveEffect_{type}", MiddlePivot);
             Cache[type] = sprite;
+            return sprite;
+        }
+
+        /// <summary>形の粒。星以外は白っぽく描き、出すときにタイプの色を付ける</summary>
+        public static Sprite Get(EffectShape shape)
+        {
+            if (ShapeCache.TryGetValue(shape, out var sprite) && sprite != null)
+            {
+                return sprite;
+            }
+
+            var canvas = new PixelCanvas(Size, Size);
+            switch (shape)
+            {
+                case EffectShape.Slash: PaintSlash(canvas); break;
+                case EffectShape.Fang: PaintFang(canvas); break;
+                default: PaintImpact(canvas); break;
+            }
+            sprite = canvas.ToSprite($"MoveEffect_{shape}", MiddlePivot);
+            ShapeCache[shape] = sprite;
             return sprite;
         }
 
@@ -125,6 +154,25 @@ namespace PenguinMonster.View.Art
             c.FillEllipse(Center, Center, 7f, 7f, Rgb(90, 50, 130));
             c.FillEllipse(10.5f, 10.5f, 6.5f, 6.5f, new Color32(0, 0, 0, 0));
             c.Outline(Rgb(210, 150, 255));
+        }
+
+        /// <summary>切る: 闇の三日月と同じ形を白で描く（色はタイプで付ける）</summary>
+        private static void PaintSlash(PixelCanvas c)
+        {
+            c.FillEllipse(Center, Center, 7f, 7f, Rgb(255, 255, 255));
+            c.FillEllipse(10.5f, 10.5f, 6.5f, 6.5f, new Color32(0, 0, 0, 0));
+            c.Outline(Rgb(90, 90, 100));
+        }
+
+        /// <summary>噛む: 上あごの牙3本（下向き）。下あごは同じ絵を逆さにして出す</summary>
+        private static void PaintFang(PixelCanvas c)
+        {
+            var tooth = Rgb(255, 255, 255);
+            c.FillRect(1, 11, 14, 3, Rgb(200, 200, 205));
+            c.FillTriangle(new Vector2(1, 11), new Vector2(6, 11), new Vector2(3.5f, 4), tooth);
+            c.FillTriangle(new Vector2(5.5f, 11), new Vector2(10.5f, 11), new Vector2(8, 2), tooth);
+            c.FillTriangle(new Vector2(10, 11), new Vector2(14.5f, 11), new Vector2(12.5f, 4), tooth);
+            c.Outline(Rgb(90, 90, 100));
         }
 
         private static void PaintSparkle(PixelCanvas c)
