@@ -160,5 +160,80 @@ namespace PenguinMonster.View.Art
             }
             b.TurnedFace(24f, 37f, FaceLeft, EyeStyle.Sparkle, eyeGap: 6f, open: true);
         }
+
+        /// <summary>No.51 ガンコペン: 頑固な石頭。岩のヘルメットをかぶった頭を前へ低く突き出し、足を踏んばって頭から突っ込む。前に石のかけらが飛ぶ</summary>
+        private static void Ganko(PenguinBrush b)
+        {
+            var body = Rgb(120, 105, 95);
+            var bodyShade = PenguinPalette.Shade(body);
+            var helmetShade = PenguinPalette.Shade(Stone);
+            b.Flipper(V(46, 26), V(58, 20), 3f, bodyShade);
+            b.Foot(48f, 3f, -20f);
+            b.Foot(32f, 3f, 10f);
+            // 体は後ろを高く、頭を前へ低く出して、頭突きの勢いを体の傾きで見せる
+            b.ShadedTilted(40f, 19f, 14f, 12f, 35f, body);
+            b.BellyTilted(36f, 16f, 9f, 8f, 35f);
+            b.Shaded(23f, 27f, 11f, 10.5f, body);
+            b.White(20f, 26f, 8f, 6.5f);
+            // ヘルメットは目のすぐ上で切り、頭より一回り大きくかぶせる
+            b.Ellipse(24f, 36f, 13f, 6.5f, helmetShade);
+            b.Ellipse(23f, 37f, 11.5f, 5f, Stone);
+            b.Line(0.6f, helmetShade, V(17, 39), V(20, 36), V(18, 34));
+            b.Line(0.6f, helmetShade, V(29, 41), V(27, 37));
+            b.Flipper(V(34, 18), V(28, 8), 2.5f, bodyShade);
+            b.TurnedFace(19f, 27f, FaceLeft, EyeStyle.Sharp, eyeGap: 6f);
+            b.Shaded(6f, 36f, 2.5f, 2f, Stone);
+            b.Shaded(4f, 25f, 2f, 2f, Stone);
+            b.Shaded(9f, 45f, 1.5f, 1.5f, Stone);
+        }
+
+        /// <summary>No.59 ヒマワリペン: 日なたが大好きな のんびり屋。ひまわりの花びらを顔のまわりに咲かせ、葉っぱのヒレを広げて太陽へ背伸びする</summary>
+        private static void Himawari(PenguinBrush b)
+        {
+            var leaf = Rgb(90, 160, 70);
+            var leafShade = PenguinPalette.Shade(leaf);
+            var petal = Rgb(250, 205, 50);
+            var seed = Rgb(130, 85, 40);
+            const int Petals = 12;
+            for (int i = 0; i < Petals; i++)
+            {
+                var p = OnEllipse(30f, 41f, 13f, 13f, i * Mathf.PI * 2f / Petals);
+                b.Shaded(p.x, p.y, 4.5f, 4.5f, petal);
+            }
+            b.Ellipse(30f, 41f, 11f, 11f, seed);
+            b.Feet(32f, 6f);
+            b.Shaded(32f, 17f, 12f, 13f, leaf);
+            b.Belly(31f, 16f, 8f, 9f);
+            // 葉っぱのヒレを上へ広げて、日を浴びる背伸び
+            b.Tilted(15f, 28f, 8f, 3.5f, 35f, leafShade);
+            b.Tilted(49f, 28f, 8f, 3.5f, -35f, leafShade);
+            b.Line(0.6f, leaf, V(10, 25), V(20, 31));
+            b.Line(0.6f, leaf, V(54, 25), V(44, 31));
+            b.Shaded(30f, 41f, 9f, 8.5f, leaf);
+            b.White(29f, 40f, 6.5f, 5.5f);
+            b.Face(29f, 41f, 3.5f, EyeStyle.Smile);
+        }
+
+        /// <summary>No.60 コケマクラペン: 寝てばかりの のんびり屋。ふかふかの苔のクッションに寝そべり、頭に芽を生やして居眠り</summary>
+        private static void Kokemakura(PenguinBrush b)
+        {
+            var moss = Rgb(120, 170, 80);
+            var mossShade = PenguinPalette.Darken(moss, 0.75f);
+            var body = Rgb(70, 105, 75);
+            var bodyShade = PenguinPalette.Shade(body);
+            FluffBall(b, 33f, 10f, 24f, 7f, moss, mossShade);
+            b.Foot(57f, 21f, 70f, 0.8f);
+            b.Shaded(38f, 22f, 15f, 7.5f, body);
+            b.Flipper(V(40, 24), V(52, 28), 2.5f, bodyShade);
+            b.Shaded(16f, 23f, 9f, 8f, body);
+            b.White(14f, 22f, 6.5f, 5.5f);
+            b.Line(1f, Rgb(140, 200, 90), V(17, 30), V(18, 35));
+            b.Tilted(21f, 36f, 3f, 1.5f, 20f, Rgb(140, 200, 90));
+            b.TurnedFace(14f, 23f, FaceLeft, EyeStyle.Line, eyeGap: 5f);
+            if (!b.Front) return;
+            // 寝息の「z」
+            b.Line(0.6f, PenguinPalette.Belly, V(4, 40), V(8, 40), V(4, 36), V(8, 36));
+            b.Line(0.6f, PenguinPalette.Belly, V(9, 48), V(12, 48), V(9, 45), V(12, 45));
+        }
     }
 }

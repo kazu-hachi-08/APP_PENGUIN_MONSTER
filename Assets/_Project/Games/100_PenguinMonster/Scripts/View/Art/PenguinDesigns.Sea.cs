@@ -173,5 +173,70 @@ namespace PenguinMonster.View.Art
             b.Flipper(V(26, 22), V(32, 13), 2.5f, bodyShade);
             b.TurnedFace(14f, 23f, FaceLeft, EyeStyle.Smile, eyeGap: 6f, open: true);
         }
+
+        /// <summary>No.56 アマグモペン: 物静かな雨降らし。頭の上に小さな雨雲を連れて歩き、ヒレを広げて雨を受ける</summary>
+        private static void Amagumo(PenguinBrush b)
+        {
+            var body = Rgb(90, 120, 160);
+            var bodyShade = PenguinPalette.Shade(body);
+            var cloud = Rgb(160, 168, 192);
+            b.Feet(32f, 6f);
+            b.Shaded(32f, 17f, 13f, 13f, body);
+            b.Belly(31f, 16f, 9f, 10f);
+            b.Flipper(V(21, 24), V(11, 30), 3f, bodyShade);
+            b.Flipper(V(43, 24), V(53, 30), 3f, bodyShade);
+            b.Shaded(32f, 34f, 11f, 10.5f, body);
+            b.White(31f, 33f, 8f, 6.5f);
+            b.Face(31f, 34f, 4f, EyeStyle.Line);
+            b.Shaded(22f, 52f, 7f, 5f, cloud);
+            b.Shaded(42f, 52f, 7f, 5f, cloud);
+            b.Shaded(32f, 55f, 9f, 6.5f, cloud);
+            b.Rect(17, 48, 31, 3, PenguinPalette.Shade(cloud));
+            foreach (var x in new[] { 14, 20, 46, 52 })
+            {
+                b.Line(0.6f, Water, V(x, 45 - x % 3), V(x - 1, 41 - x % 3));
+            }
+            b.Line(0.6f, Water, V(10, 36), V(9, 33));
+            b.Line(0.6f, Water, V(56, 37), V(55, 34));
+        }
+
+        /// <summary>No.66 カイガラペン: 用心深いが一途。大きなホタテの貝殻を背負ってかがみ、頭を低くして前へ押し出す</summary>
+        private static void Kaigara(PenguinBrush b)
+        {
+            var body = Rgb(70, 110, 150);
+            var shell = Rgb(240, 200, 170);
+            var shellShade = PenguinPalette.Shade(shell);
+            const int Ridges = 7;
+            var rim = new Vector2[Ridges * 2 + 1];
+            for (int i = 0; i < rim.Length; i++)
+            {
+                rim[i] = OnEllipse(44f, 10f, 19f, 22f, Mathf.Lerp(15f, 165f, i / (float)(rim.Length - 1)) * Mathf.Deg2Rad);
+            }
+            b.Polygon(V(44, 10), shellShade, rim);
+            b.Polygon(V(44, 11), shell, ShrinkTo(rim, V(44, 10), 0.9f));
+            for (int i = 1; i < Ridges * 2; i += 2)
+            {
+                b.Line(0.6f, shellShade, V(44, 10), rim[i]);
+            }
+            b.Foot(30f, 3f, 10f);
+            b.Foot(18f, 4f, -10f);
+            b.ShadedTilted(32f, 15f, 12f, 10f, 30f, body);
+            b.BellyTilted(28f, 13f, 7f, 6.5f, 30f);
+            b.Shaded(17f, 22f, 9.5f, 9f, body);
+            b.White(15f, 21f, 7f, 6f);
+            b.Flipper(V(26, 16), V(20, 6), 2.5f, PenguinPalette.Shade(body));
+            b.TurnedFace(15f, 22f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f);
+        }
+
+        /// <summary>外周の点を中心へ寄せる（貝殻のふちを1回り細く残すため）</summary>
+        private static Vector2[] ShrinkTo(Vector2[] points, Vector2 center, float rate)
+        {
+            var result = new Vector2[points.Length];
+            for (int i = 0; i < points.Length; i++)
+            {
+                result[i] = Vector2.Lerp(center, points[i], rate);
+            }
+            return result;
+        }
     }
 }

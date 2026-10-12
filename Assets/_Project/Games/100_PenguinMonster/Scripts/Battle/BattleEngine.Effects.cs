@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 技の効果（状態異常にする・こんらんさせる・ランクを変える）。
+    /// 技の効果（状態異常にする・こんらんさせる・ランクを変える・回復・天候）。
     /// 変化技は効果そのもので、決まらなければ文を出す。攻撃技の追加効果は確率で起き、決まらなくても何も出さない
     /// </summary>
     public sealed partial class BattleEngine
@@ -49,6 +49,17 @@ namespace PenguinMonster.Battle
             {
                 Relay(side, user, reportFailure, events);
             }
+            else if (effect.Heals)
+            {
+                HealSelf(side, user, reportFailure, events);
+            }
+            else if (effect.Weather != Weather.None)
+            {
+                if (!TryStartWeather(side, user, effect.Weather, events))
+                {
+                    AddFailed(side, user, reportFailure, events);
+                }
+            }
             else if (effect.Stages != 0)
             {
                 ChangeStage(receiverSide, receiver, effect.Stat, effect.Stages, reportFailure, events);
@@ -82,6 +93,18 @@ namespace PenguinMonster.Battle
             battleSide.ActiveAt(slot).SetStages(stages);
         }
 
+        /// <summary>回復の技。HP が満タンなら決まらない</summary>
+        private static void HealSelf(int side, BattleMonster user, bool reportFailure, List<BattleEvent> events)
+        {
+            if (user.IsFullHp)
+            {
+                AddFailed(side, user, reportFailure, events);
+                return;
+            }
+            user.Heal(user.MaxHp / BattleBalance.HealMoveDenominator);
+            events.Add(BattleEvent.Of(BattleEventKind.Healed, side, user));
+        }
+
         private void TryInflict(int side, BattleMonster receiver, StatusCondition status, bool reportFailure, List<BattleEvent> events)
         {
             if (!receiver.CanReceive(status))
@@ -108,8 +131,13 @@ namespace PenguinMonster.Battle
             events.Add(BattleEvent.Of(BattleEventKind.Confused, side, receiver));
         }
 
+        /// <summary>ひねくれ者はここで向きを逆にする（技・強面・特性のどれで変わる場合も同じに扱うため）</summary>
         private static void ChangeStage(int side, BattleMonster receiver, StatKind stat, int stages, bool reportFailure, List<BattleEvent> events)
         {
+            if (receiver.HasAbility(Ability.Contrary))
+            {
+                stages = -stages;
+            }
             int changed = receiver.ChangeStage(stat, stages);
             if (changed != 0)
             {

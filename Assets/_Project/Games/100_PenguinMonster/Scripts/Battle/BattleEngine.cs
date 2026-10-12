@@ -6,7 +6,7 @@ namespace PenguinMonster.Battle
     /// <summary>
     /// ターンを進める（仕様書 §4.1）。状態を書き換え、起きたことを BattleEvent の列で返す。
     /// 行動順は .Order.cs、技の対象と命中・ダメージは .Moves.cs、状態異常・こんらん・ターン終わりは .Status.cs、
-    /// 技の効果は .Effects.cs、特性・持ち物は .Abilities.cs / .Items.cs
+    /// 技の効果は .Effects.cs、特性・持ち物は .Abilities.cs / .Items.cs、天候は .Weather.cs
     /// </summary>
     public sealed partial class BattleEngine
     {
@@ -105,11 +105,13 @@ namespace PenguinMonster.Battle
         {
             var leaving = _state.Sides[side].ActiveAt(slot);
             leaving.OnWithdrawn();
+            RestOnWithdraw(leaving);
             events.Add(BattleEvent.Of(BattleEventKind.Withdrawn, side, leaving));
             events.AddRange(Replace(side, slot, partyIndex));
         }
 
-        private void ApplyDamage(int targetSide, BattleMonster target, DamageResult result, List<BattleEvent> events)
+        private void ApplyDamage(int targetSide, BattleMonster target, DamageResult result, List<BattleEvent> events,
+            bool reportEffectiveness = true)
         {
             if (result.Effectiveness == 0f)
             {
@@ -125,11 +127,11 @@ namespace PenguinMonster.Battle
             {
                 events.Add(BattleEvent.Of(BattleEventKind.Critical, targetSide, target));
             }
-            if (result.Effectiveness > 1f)
+            if (reportEffectiveness && result.Effectiveness > 1f)
             {
                 events.Add(BattleEvent.Of(BattleEventKind.SuperEffective, targetSide, target));
             }
-            else if (result.Effectiveness < 1f)
+            else if (reportEffectiveness && result.Effectiveness < 1f)
             {
                 events.Add(BattleEvent.Of(BattleEventKind.NotVeryEffective, targetSide, target));
             }

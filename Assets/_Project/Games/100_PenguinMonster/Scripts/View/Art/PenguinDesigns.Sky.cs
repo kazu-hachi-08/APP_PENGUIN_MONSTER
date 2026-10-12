@@ -72,5 +72,30 @@ namespace PenguinMonster.View.Art
             b.Flipper(V(22, 35), V(6, 44), 3f, mintShade);
             b.TurnedFace(18f, 41f, FaceLeft, EyeStyle.Round, eyeGap: 6f, open: true);
         }
+
+        /// <summary>No.52 ツツキペン: 向こう見ずな突撃屋。翼をたたんで頭から急降下し、長いくちばしで突っ込む。赤いとさかが風になびく</summary>
+        private static void Tsutsuki(PenguinBrush b)
+        {
+            var feather = Rgb(150, 105, 70);
+            var featherShade = PenguinPalette.Shade(feather);
+            var crest = Rgb(225, 60, 50);
+            var tip = Rgb(240, 225, 200);
+            var wind = Rgb(225, 232, 240);
+            b.Line(0.6f, wind, V(48, 60), V(60, 48));
+            b.Line(0.6f, wind, V(38, 60), V(46, 52));
+            b.Line(0.6f, wind, V(58, 36), V(62, 32));
+            b.Foot(52f, 52f, 40f, 0.7f);
+            b.Foot(56f, 48f, 50f, 0.7f);
+            b.ShadedTilted(38f, 36f, 8f, 15f, -50f, feather);
+            b.BellyTilted(36f, 33f, 4.5f, 10f, -50f);
+            b.Triangle(V(18, 28), V(24, 30), V(20, 42), crest);
+            b.Triangle(V(22, 30), V(27, 27), V(30, 40), PenguinPalette.Shade(crest));
+            b.Shaded(21f, 21f, 9f, 8.5f, feather);
+            b.White(19f, 20f, 6.5f, 5.5f);
+            Wing(b, V(40, 38), new[] { V(36, 34), V(46, 40), V(56, 50), V(60, 57), V(52, 53), V(42, 44) }, feather, featherShade, tip);
+            b.TurnedFace(19f, 21f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f);
+            b.Triangle(V(15, 19), V(17, 15), V(4, 7), PenguinPalette.Beak);
+            b.Triangle(V(15, 17), V(17, 15), V(4, 7), PenguinPalette.BeakShade);
+        }
     }
 }

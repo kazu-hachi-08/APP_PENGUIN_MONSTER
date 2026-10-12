@@ -7,7 +7,7 @@ namespace PenguinMonster.Battle
     }
 
     /// <summary>
-    /// 技の効果1つ（状態異常にする / こんらんさせる / ランクを変える / 羽リレー）。
+    /// 技の効果1つ（状態異常にする / こんらんさせる / ランクを変える / 羽リレー / 回復 / 天候）。
     /// 攻撃技では当たった後に Chance% で起きる追加効果、変化技では技そのものの効果になる
     /// </summary>
     public sealed class MoveEffect
@@ -24,10 +24,16 @@ namespace PenguinMonster.Battle
         public StatKind Stat { get; }
         /// <summary>ランクの増減。0 ならランクは変えない</summary>
         public int Stages { get; }
+        /// <summary>自分の HP を最大HPの半分回復する</summary>
+        public bool Heals { get; }
+        /// <summary>場をこの天候にする。None なら天候は変えない</summary>
+        public Weather Weather { get; }
 
         private MoveEffect(EffectTarget target, int chance, StatusCondition status, bool confuses, StatKind stat, int stages,
-            bool relays = false)
+            bool relays = false, bool heals = false, Weather weather = Weather.None)
         {
+            Heals = heals;
+            Weather = weather;
             Target = target;
             Chance = chance;
             Status = status;
@@ -51,5 +57,12 @@ namespace PenguinMonster.Battle
 
         public static MoveEffect Relay()
             => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, relays: true);
+
+        public static MoveEffect Heal()
+            => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, heals: true);
+
+        /// <summary>場全体にかかるが、相手の回避で外れないよう自分にかける技として扱う</summary>
+        public static MoveEffect SetWeather(Weather weather)
+            => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, weather: weather);
     }
 }

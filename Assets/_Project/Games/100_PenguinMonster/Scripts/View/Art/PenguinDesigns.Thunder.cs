@@ -126,5 +126,51 @@ namespace PenguinMonster.View.Art
             b.Sparkle(58, 46, Bolt);
             b.Sparkle(34, 44, Bolt);
         }
+
+        /// <summary>No.63 イナズマペン: 短気で負けず嫌い。稲妻の軌跡を引いて前のめりに駆け出し、頭のとさかも稲妻の形</summary>
+        private static void Inazuma(PenguinBrush b)
+        {
+            var body = Rgb(60, 60, 82);
+            var bodyShade = PenguinPalette.Shade(body);
+            b.Line(2.5f, BoltShade, V(62, 44), V(50, 34), V(57, 28), V(42, 18));
+            b.Line(1.2f, Bolt, V(62, 44), V(50, 34), V(57, 28), V(42, 18));
+            b.Foot(33f, 3f, -25f);
+            b.Foot(15f, 5f, 25f);
+            b.ShadedTilted(29f, 19f, 11f, 12f, 30f, body);
+            b.BellyTilted(25f, 17f, 6.5f, 8f, 30f);
+            if (b.Front)
+            {
+                b.Line(0.8f, Bolt, V(25, 25), V(28, 20), V(24, 17), V(27, 11));
+            }
+            b.Flipper(V(34, 24), V(46, 28), 2.5f, bodyShade);
+            b.Triangle(V(19, 41), V(26, 41), V(28, 54), Bolt);
+            b.Triangle(V(24, 44), V(29, 45), V(36, 56), BoltShade);
+            b.Shaded(19f, 33f, 10f, 9.5f, body);
+            b.White(17f, 32f, 7f, 6f);
+            b.TurnedFace(17f, 33f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f, open: true);
+        }
+
+        /// <summary>No.67 ライウンペン: 気分屋の雨男。黒い雷雲に乗って空を漂い、片ヒレを上げて雷と雨を呼ぶ。雲の下から稲妻</summary>
+        private static void Raiun(PenguinBrush b)
+        {
+            var body = Rgb(60, 110, 170);
+            var bodyShade = PenguinPalette.Shade(body);
+            var cloud = Rgb(95, 100, 130);
+            b.Line(1.6f, BoltShade, V(18, 16), V(14, 10), V(19, 7), V(16, 2));
+            b.Line(0.8f, Bolt, V(18, 16), V(14, 10), V(19, 7), V(16, 2));
+            b.Line(1.6f, BoltShade, V(46, 16), V(50, 11), V(45, 7), V(48, 3));
+            b.Line(0.8f, Bolt, V(46, 16), V(50, 11), V(45, 7), V(48, 3));
+            b.Shaded(32f, 31f, 11f, 9f, body);
+            b.Belly(31f, 30f, 7.5f, 6.5f);
+            b.Shaded(18f, 21f, 9f, 6f, cloud);
+            b.Shaded(46f, 21f, 9f, 6f, cloud);
+            b.Shaded(32f, 22f, 12f, 7f, cloud);
+            b.Flipper(V(22, 32), V(13, 29), 3f, bodyShade);
+            b.Flipper(V(42, 34), V(52, 48), 3f, bodyShade);
+            b.Shaded(32f, 45f, 10f, 9.5f, body);
+            b.White(31f, 44f, 7.5f, 6f);
+            b.Face(31f, 45f, 3.5f, EyeStyle.Round);
+            b.Sparkle(54, 52, Bolt);
+        }
     }
 }

@@ -9,14 +9,24 @@ namespace PenguinMonster.Battle
     /// </summary>
     public sealed partial class BattleEngine
     {
-        /// <summary>場に出たとき。こわもて は場の相手全員の こうげき を下げる</summary>
+        /// <summary>場に出たとき。こわもて は場の相手全員の こうげき を下げる。天候を呼ぶ特性は天候を始める</summary>
         private void OnSentOut(int side, int slot, List<BattleEvent> events)
         {
             var monster = _state.Sides[side].ActiveAt(slot);
+            if (monster.IsFainted)
+            {
+                return;
+            }
+            var weather = WeatherCalledBy(monster.Definition.Ability);
+            if (weather != Weather.None)
+            {
+                CallWeather(side, monster, weather, events);
+                return;
+            }
             var foe = _state.Opponent(side);
             var foeSlots = foe.AliveSlots();
             // 両方ひんしの入れ替えで、相手がまだ出ていないときは空振りさせる
-            if (monster.IsFainted || !monster.HasAbility(Ability.Intimidate) || foeSlots.Count == 0)
+            if (!monster.HasAbility(Ability.Intimidate) || foeSlots.Count == 0)
             {
                 return;
             }
@@ -24,6 +34,37 @@ namespace PenguinMonster.Battle
             foreach (int foeSlot in foeSlots)
             {
                 ChangeStage(1 - side, foe.ActiveAt(foeSlot), StatKind.Attack, BattleBalance.IntimidateStages, true, events);
+            }
+        }
+
+        private static Weather WeatherCalledBy(Ability ability)
+        {
+            switch (ability)
+            {
+                case Ability.SnowCloud: return Weather.Snow;
+                case Ability.RainCall: return Weather.Rain;
+                case Ability.SunCall: return Weather.Sun;
+                default: return Weather.None;
+            }
+        }
+
+        /// <summary>すでに同じ天候なら特性の文も出さない。文は「〇〇の 雪雲呼び！」→「吹雪が 吹き始めた！」の順</summary>
+        private void CallWeather(int side, BattleMonster monster, Weather weather, List<BattleEvent> events)
+        {
+            if (_state.Weather == weather)
+            {
+                return;
+            }
+            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
+            TryStartWeather(side, monster, weather, events);
+        }
+
+        /// <summary>ひと休み: 交代で引っ込むと回復する。引っ込めた後なので文は出さない（Withdrawn の HP に回復後の値が乗る）</summary>
+        private static void RestOnWithdraw(BattleMonster leaving)
+        {
+            if (leaving.HasAbility(Ability.Rest) && !leaving.IsFainted)
+            {
+                leaving.Heal(leaving.MaxHp / BattleBalance.RestHealDenominator);
             }
         }
 
@@ -46,7 +87,7 @@ namespace PenguinMonster.Battle
         /// <summary>いきおいづく: 相手をたおしたら こうげき が上がる</summary>
         private void OnKnockedOut(int side, BattleMonster user, List<BattleEvent> events)
         {
-            if (!_state.IsOver && user.HasAbility(Ability.Momentum))
+            if (!_state.IsOver && !user.IsFainted && user.HasAbility(Ability.Momentum))
             {
                 RaiseByAbility(side, user, StatKind.Attack, BattleBalance.MomentumStages, events);
             }
@@ -88,12 +129,65 @@ namespace PenguinMonster.Battle
             TryInflict(attackerSide, attacker, status, false, events);
         }
 
-        /// <summary>ターン終わりの特性。おいかぜのり は すばやさ が上がる</summary>
+        /// <summary>ターン終わりの特性。おいかぜのり は すばやさ が上がる。気まぐれ は能力が上下する</summary>
         private void ApplyEndOfTurnAbility(int side, BattleMonster monster, List<BattleEvent> events)
         {
-            if (!_state.IsOver && !monster.IsFainted && monster.HasAbility(Ability.Tailwind))
+            if (_state.IsOver || monster.IsFainted)
+            {
+                return;
+            }
+            if (monster.HasAbility(Ability.Tailwind))
             {
                 RaiseByAbility(side, monster, StatKind.Speed, BattleBalance.TailwindStages, events);
+            }
+            else if (monster.HasAbility(Ability.Moody))
+            {
+                ApplyMoody(side, monster, events);
+            }
+        }
+
+        // 気まぐれで動く能力。命中・回避まで動かすと運だけで決まる試合が増えるので、5つの能力に絞る
+        private static readonly StatKind[] MoodyStats =
+        {
+            StatKind.Attack, StatKind.Defense, StatKind.SpAttack, StatKind.SpDefense, StatKind.Speed,
+        };
+
+        /// <summary>
+        /// 気まぐれ: まだ上がる能力から1つを2段上げ、それ以外でまだ下がる能力から1つを1段下げる。
+        /// 乱数はホストだけが引き、結果はランクの変化のイベントで送るので、オンラインでもずれない
+        /// </summary>
+        private void ApplyMoody(int side, BattleMonster monster, List<BattleEvent> events)
+        {
+            var raisable = new List<StatKind>();
+            foreach (var stat in MoodyStats)
+            {
+                if (monster.GetStage(stat) < BattleBalance.MaxStatStage)
+                {
+                    raisable.Add(stat);
+                }
+            }
+            var raised = raisable.Count > 0 ? raisable[_random.Next(raisable.Count)] : (StatKind?)null;
+            var lowerable = new List<StatKind>();
+            foreach (var stat in MoodyStats)
+            {
+                if (stat != raised && monster.GetStage(stat) > -BattleBalance.MaxStatStage)
+                {
+                    lowerable.Add(stat);
+                }
+            }
+            var lowered = lowerable.Count > 0 ? lowerable[_random.Next(lowerable.Count)] : (StatKind?)null;
+            if (raised == null && lowered == null)
+            {
+                return;
+            }
+            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
+            if (raised != null)
+            {
+                ChangeStage(side, monster, raised.Value, BattleBalance.MoodyRaiseStages, false, events);
+            }
+            if (lowered != null)
+            {
+                ChangeStage(side, monster, lowered.Value, BattleBalance.MoodyLowerStages, false, events);
             }
         }
 

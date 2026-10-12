@@ -122,5 +122,24 @@ namespace PenguinMonster.View.Art
             b.Rect(13, 21, 2, 8, band);
             b.TurnedFace(21f, 32f, FaceLeft, EyeStyle.Sharp, open: true);
         }
+
+        /// <summary>No.53 ビンタペン: せっかちで手が早い。両方のヒレを大きく振りかぶって高速で往復ビンタ。ヒレの残像が弧を描く</summary>
+        private static void Binta(PenguinBrush b)
+        {
+            var navy = Rgb(70, 80, 140);
+            var navyShade = PenguinPalette.Shade(navy);
+            var blur = Rgb(200, 210, 240);
+            b.Line(1f, blur, V(3, 28), V(4, 40), V(10, 50));
+            b.Line(1f, blur, V(61, 28), V(60, 40), V(54, 50));
+
+            b.Feet(32f, 8f);
+            b.Shaded(32f, 18f, 13f, 13f, navy);
+            b.Belly(31f, 17f, 9f, 10f);
+            b.Flipper(V(21, 26), V(7, 44), 4.5f, navyShade);
+            b.Flipper(V(43, 26), V(57, 44), 4.5f, navyShade);
+            b.Shaded(32f, 37f, 11.5f, 11f, navy);
+            b.White(31f, 36f, 8.5f, 7f);
+            b.Face(31f, 37f, 4f, EyeStyle.Sharp);
+        }
     }
 }

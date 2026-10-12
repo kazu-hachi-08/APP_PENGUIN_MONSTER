@@ -56,7 +56,30 @@ namespace PenguinMonster.Battle
                 // 相手が1体なら狙いは決まっているので乱数を引かない（シングルの乱数の消費を変えないため）
                 return BattleAction.UseMove(move, alive.Count > 1 ? alive[_random.Next(alive.Count)] : alive[0]);
             }
-            return ChooseStrongestMove(user, foe);
+            int support = ChooseSupportMove(user);
+            return support >= 0 ? BattleAction.UseMove(support, foe.AliveSlots()[0]) : ChooseStrongestMove(user, foe);
+        }
+
+        /// <summary>
+        /// 攻撃より先に使う変化技（仕様書 §4.8）。HP が半分以下なら回復、HP が満タン（出てすぐ）でまだその天候でなければ天候の技。
+        /// どちらも無ければ -1。それ以外の変化技は見込みダメージ 0 のまま、使わない
+        /// </summary>
+        private static int ChooseSupportMove(BattleMonster user)
+        {
+            var moves = user.Definition.Moves;
+            for (int i = 0; i < moves.Count; i++)
+            {
+                foreach (var effect in moves[i].Effects)
+                {
+                    bool needsHeal = effect.Heals && user.CurrentHp <= user.MaxHp / BattleBalance.CpuHealHpDenominator;
+                    bool wantsWeather = effect.Weather != Weather.None && user.IsFullHp && user.CurrentWeather != effect.Weather;
+                    if (needsHeal || wantsWeather)
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
         }
 
         /// <summary>瀕死のときに出すペンモン。つよい は相性のいいもの、それ以外は控えの先頭</summary>

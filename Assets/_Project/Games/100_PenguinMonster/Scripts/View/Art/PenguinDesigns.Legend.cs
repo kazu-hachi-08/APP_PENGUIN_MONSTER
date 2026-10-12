@@ -118,5 +118,65 @@ namespace PenguinMonster.View.Art
             b.Ellipse(26f, 57f, 5f, 5f, Rgb(255, 230, 120));
             b.Erase(28.5f, 59f, 4f, 4f);
         }
+
+        /// <summary>No.74 ワダツミペン: 海を統べる寡黙な神。背中に大渦を巡らせ、金の三叉の矛を立てて静かに見下ろす。頭に波の冠（シズクの切り札）</summary>
+        private static void Wadatsumi(PenguinBrush b)
+        {
+            var body = Rgb(40, 80, 150);
+            var bodyShade = PenguinPalette.Shade(body);
+            NightArc(b, Water, 33f, 34f, 27f, 26f, 20f, 330f);
+            NightArc(b, DeepWater, 33f, 34f, 20f, 19f, 60f, 380f);
+            b.Line(1f, PenguinPalette.GoldShade, V(53, 3), V(53, 50));
+            b.Line(0.6f, PenguinPalette.Gold, V(53, 3), V(53, 50));
+            b.Line(1f, PenguinPalette.Gold, V(47, 46), V(59, 46));
+            foreach (var x in new[] { 47, 53, 59 })
+            {
+                b.Triangle(V(x - 1.5f, 46), V(x + 1.5f, 46), V(x, x == 53 ? 60 : 56), PenguinPalette.Gold);
+            }
+            b.Foot(20f, 4f, 0f, 1.1f);
+            b.Foot(38f, 4f, -10f, 1.1f);
+            b.ShadedTilted(29f, 21f, 18f, 16f, -8f, body);
+            b.BellyTilted(26f, 20f, 13f, 12f, -8f);
+            b.Flipper(V(42, 25), V(52, 27), 3.5f, bodyShade);
+            b.Flipper(V(14, 26), V(5, 16), 3.5f, bodyShade);
+            b.Shaded(27f, 41f, 12f, 11.5f, body);
+            b.White(25f, 40f, 9f, 7.5f);
+            b.TurnedFace(25f, 41f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
+            b.Rect(17, 50, 19, 3, PenguinPalette.Gold);
+            b.Triangle(V(17, 52), V(23, 52), V(16, 60), Water);
+            b.Triangle(V(23, 52), V(30, 52), V(24, 61), PenguinPalette.Belly);
+            b.Triangle(V(29, 52), V(36, 52), V(31, 59), Water);
+        }
+
+        /// <summary>No.75 アマテラスペン: 明るく気高い日輪の女王。背に燃える日輪を負い、オーロラの帯をまとって両ヒレを広げる（ヒナタの切り札）</summary>
+        private static void Amaterasu(PenguinBrush b)
+        {
+            var body = Rgb(235, 160, 80);
+            var bodyShade = PenguinPalette.Shade(body);
+            var teal = Rgb(110, 220, 200);
+            var pink = Rgb(240, 150, 200);
+            const int Rays = 16;
+            for (int i = 0; i < Rays; i++)
+            {
+                float angle = i * Mathf.PI * 2f / Rays;
+                b.Triangle(OnEllipse(32f, 37f, 16f, 16f, angle - 0.14f), OnEllipse(32f, 37f, 16f, 16f, angle + 0.14f),
+                    OnEllipse(32f, 37f, 25f, 24f, angle), i % 2 == 0 ? FlameOuter : PenguinPalette.Gold);
+            }
+            b.Ellipse(32f, 37f, 17f, 17f, PenguinPalette.GoldShade);
+            b.Ellipse(31.5f, 37.5f, 15.5f, 15.5f, PenguinPalette.Gold);
+            b.Foot(24f, 4f, 10f, 1.1f);
+            b.Foot(40f, 4f, -10f, 1.1f);
+            b.Shaded(32f, 19f, 15f, 14f, body);
+            b.Belly(31f, 18f, 10f, 10f);
+            NightArc(b, teal, 32f, 18f, 27f, 6f, 180f, 360f);
+            b.Flipper(V(19, 24), V(6, 31), 3.5f, bodyShade);
+            b.Flipper(V(45, 24), V(58, 31), 3.5f, bodyShade);
+            b.Shaded(31f, 37f, 11f, 10.5f, body);
+            b.White(29f, 36f, 8f, 6.5f);
+            b.TurnedFace(29f, 37f, FaceLeft, EyeStyle.Round, eyeGap: 6f);
+            NightArc(b, pink, 32f, 26f, 25f, 5f, 200f, 340f);
+            b.Star(31f, 51f, 4.5f, 2f, FlameOuter);
+            b.Star(31f, 51.5f, 3f, 1.3f, FlameInner);
+        }
     }
 }

@@ -7,7 +7,7 @@ namespace PenguinMonster.Battle
     {
         /// <summary>技をランダムに選ぶ</summary>
         Weak,
-        /// <summary>一番ダメージが出る技を選ぶ</summary>
+        /// <summary>一番ダメージが出る技を選ぶ。HPが減ったら回復、出てすぐなら天候の技を先に使う</summary>
         Normal,
         /// <summary>ふつう ＋ タイプで不利なら交代する。ひんしの後も相性のいいペンモンを出す</summary>
         Strong,

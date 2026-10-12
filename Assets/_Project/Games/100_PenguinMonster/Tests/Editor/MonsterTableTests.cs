@@ -5,23 +5,23 @@ using NUnit.Framework;
 namespace PenguinMonster.Battle.Tests
 {
     /// <summary>
-    /// 定義表の形のチェック（仕様書 §3.5 の段階2）。ランクの帯は見るが、細かいバランスは検証ツールと遊んで決める
+    /// 定義表の形のチェック（仕様書 §3.5 の段階4）。ランクの帯は見るが、細かいバランスは検証ツールと遊んで決める
     /// </summary>
     public class MonsterTableTests
     {
-        private const int Stage2Count = 50;
+        private const int Stage4Count = 150;
 
         [Test]
-        public void 段階2は50体で_Noは1から順に並ぶ()
+        public void 段階4は150体で_Noは1から順に並ぶ()
         {
-            Assert.AreEqual(Stage2Count, MonsterTable.All.Count);
-            CollectionAssert.AreEqual(Enumerable.Range(1, Stage2Count), MonsterTable.All.Select(m => m.No));
+            Assert.AreEqual(Stage4Count, MonsterTable.All.Count);
+            CollectionAssert.AreEqual(Enumerable.Range(1, Stage4Count), MonsterTable.All.Select(m => m.No));
         }
 
-        [TestCase(MonsterRank.Hina, 6, 360, 400)]
-        [TestCase(MonsterRank.Normal, 36, 425, 475)]
-        [TestCase(MonsterRank.Ace, 5, 520, 540)]
-        [TestCase(MonsterRank.Legend, 3, 580, 600)]
+        [TestCase(MonsterRank.Hina, 19, 360, 400)]
+        [TestCase(MonsterRank.Normal, 103, 425, 475)]
+        [TestCase(MonsterRank.Ace, 18, 520, 540)]
+        [TestCase(MonsterRank.Legend, 10, 580, 600)]
         public void ランクごとの数と種族値の合計の帯(MonsterRank rank, int count, int minTotal, int maxTotal)
         {
             var ranked = MonsterTable.All.Where(m => m.Rank == rank).ToList();
@@ -74,10 +74,10 @@ namespace PenguinMonster.Battle.Tests
         }
 
         [Test]
-        public void 使われている技は50から60個()
+        public void 使われている技は95から110個()
         {
             int moveCount = MonsterTable.All.SelectMany(m => m.Moves).Distinct().Count();
-            Assert.That(moveCount, Is.InRange(50, 60));
+            Assert.That(moveCount, Is.InRange(95, 110));
         }
 
         [Test]

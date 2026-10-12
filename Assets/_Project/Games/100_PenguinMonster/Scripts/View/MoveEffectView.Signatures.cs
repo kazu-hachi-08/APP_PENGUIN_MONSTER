@@ -43,6 +43,46 @@ namespace PenguinMonster.View
                         Bigger(StageOf(MoveStyle.Slash, Dark, toward), LegendScale),
                     }
                 },
+                // 太古の大突進: 大きな岩の体当たりのあと、岩くずが降る
+                {
+                    MoveTable.AncientCharge, toward => new List<Stage>
+                    {
+                        Bigger(StageOf(MoveStyle.Hit, Rock, toward), LegendScale),
+                        StageOf(MoveStyle.Fall, Rock, toward),
+                    }
+                },
+                // 世界樹の息吹: 葉が渦を巻いて集まり、足元から芽吹く
+                {
+                    MoveTable.WorldTreeBreath, toward => new List<Stage>
+                    {
+                        Bigger(StageOf(MoveStyle.Swirl, Moss, toward), LegendScale),
+                        StageOf(MoveStyle.Rise, Moss, toward),
+                    }
+                },
+                // 始まりの咆哮: 大きな声が吹き抜け、まわりで光がまたたく
+                {
+                    MoveTable.FirstRoar, toward => new List<Stage>
+                    {
+                        Bigger(StageOf(MoveStyle.Blow, MonsterType.Normal, toward), LegendScale),
+                        StageOf(MoveStyle.Twinkle, Aurora, toward),
+                    }
+                },
+                // 黒い日輪: 闇がまたたいてから、大きな炎が立ちのぼる
+                {
+                    MoveTable.BlackSun, toward => new List<Stage>
+                    {
+                        StageOf(MoveStyle.Twinkle, Dark, toward),
+                        Bigger(StageOf(MoveStyle.Rise, Fire, toward), LegendScale),
+                    }
+                },
+                // 天翔ける翼: 空から大きく急降下し、オーロラの光が散る
+                {
+                    MoveTable.SkySoar, toward => new List<Stage>
+                    {
+                        Bigger(StageOf(MoveStyle.Plunge, Bird, toward), LegendScale),
+                        StageOf(MoveStyle.Twinkle, Aurora, toward),
+                    }
+                },
             };
     }
 }

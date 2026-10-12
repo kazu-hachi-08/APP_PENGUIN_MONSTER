@@ -68,6 +68,7 @@ namespace PenguinMonster.Battle
         {
             float targetMultiplier = targets.Count > 1 ? BattleBalance.SpreadMultiplier : 1f;
             bool hitAny = false;
+            int totalDealt = 0;
             foreach (var target in targets)
             {
                 // 前の相手への攻撃で決着した・とげとげはだ で自分が倒れたら、残りの相手には当てない
@@ -79,13 +80,13 @@ namespace PenguinMonster.Battle
                 {
                     continue;
                 }
-                var result = DamageCalculator.Calculate(user, target, move, _random, targetMultiplier);
-                ApplyDamage(1 - side, target, result, events);
-                if (result.Effectiveness == 0f)
+                if (!Strike(side, user, target, move, targetMultiplier, events, out int dealt))
                 {
                     continue;
                 }
+                totalDealt += dealt;
                 ThawByFire(1 - side, target, move, events);
+                ApplyDrainOrRecoil(side, user, move, dealt, events);
                 // 自分にかかる追加効果は、何体に当たっても1回だけ
                 ApplySecondaryEffects(side, user, target, move, includeSelf: !hitAny, events);
                 hitAny = true;
@@ -94,6 +95,89 @@ namespace PenguinMonster.Battle
             if (hitAny)
             {
                 ApplyLifeIcicleRecoil(side, user, events);
+                ApplyShellNecklace(side, user, totalDealt, events);
+            }
+        }
+
+        /// <summary>
+        /// 1体にダメージを与える。連続技は回数ぶんくり返し、途中の当たりごとに受けた側の特性（とげとげ肌など）を起こす。
+        /// 最後の当たりの特性は、ふつうの技と同じ順（追加効果の後）になるよう AfterHit に任せる。
+        /// 効かなかったら false。dealt は実際に減ったHPの合計（吸収・反動に使う）
+        /// </summary>
+        private bool Strike(int side, BattleMonster user, BattleMonster target, MoveDefinition move, float targetMultiplier,
+            List<BattleEvent> events, out int dealt)
+        {
+            dealt = 0;
+            int hits = RollHitCount(user, move);
+            int landed = 0;
+            while (true)
+            {
+                int hpBefore = target.CurrentHp;
+                var result = DamageCalculator.Calculate(user, target, move, _random, targetMultiplier);
+                // 連続技の相性の文は1回目だけ（毎回「効果は 抜群だ！」が出るとくどいため）
+                ApplyDamage(1 - side, target, result, events, reportEffectiveness: landed == 0);
+                if (result.Effectiveness == 0f)
+                {
+                    return false;
+                }
+                dealt += hpBefore - target.CurrentHp;
+                landed++;
+                if (landed >= hits || target.IsFainted || _state.IsOver)
+                {
+                    break;
+                }
+                if (move.Category == MoveCategory.Physical)
+                {
+                    OnHitByPhysical(side, user, 1 - side, target, events);
+                }
+                if (user.IsFainted || _state.IsOver)
+                {
+                    break;
+                }
+            }
+            if (move.IsMultiHit)
+            {
+                events.Add(BattleEvent.Count(BattleEventKind.HitCount, 1 - side, target, landed));
+            }
+            return true;
+        }
+
+        /// <summary>当たる回数。2〜5回の技は原作と同じ確率で決め、連打名人なら最大</summary>
+        private int RollHitCount(BattleMonster user, MoveDefinition move)
+        {
+            if (move.MinHits == move.MaxHits || user.HasAbility(Ability.SkillLink))
+            {
+                return move.MaxHits;
+            }
+            int roll = _random.Next(BattleBalance.PercentMax);
+            int hits = move.MinHits;
+            foreach (int percent in BattleBalance.MultiHitPercents)
+            {
+                roll -= percent;
+                if (roll < 0 || hits >= move.MaxHits)
+                {
+                    break;
+                }
+                hits++;
+            }
+            return hits;
+        }
+
+        /// <summary>吸収は与えたダメージの半分を回復、反動は 1/3 を受ける（石頭なら受けない）</summary>
+        private void ApplyDrainOrRecoil(int side, BattleMonster user, MoveDefinition move, int dealt, List<BattleEvent> events)
+        {
+            if (_state.IsOver || user.IsFainted || dealt <= 0)
+            {
+                return;
+            }
+            if (move.Drains && !user.IsFullHp)
+            {
+                user.Heal(Math.Max(1, dealt / BattleBalance.DrainDenominator));
+                events.Add(BattleEvent.Of(BattleEventKind.Drained, side, user));
+            }
+            if (move.Recoils && !user.HasAbility(Ability.RockHead))
+            {
+                ApplyDirectDamage(side, user, Math.Max(1, dealt / BattleBalance.RecoilDenominator), BattleEventKind.Recoil, events);
             }
         }
 

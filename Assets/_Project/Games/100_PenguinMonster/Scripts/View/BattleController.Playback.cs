@@ -58,6 +58,8 @@ namespace PenguinMonster.View
                 case BattleEventKind.HurtItself:
                 case BattleEventKind.AbilityDamage:
                 case BattleEventKind.ItemRecoil:
+                case BattleEventKind.Recoil:
+                case BattleEventKind.WeatherDamage:
                     // 技以外のダメージは、先に HP を減らしてから理由の文を出す
                     BattleSounds.Play(BattleSound.Hit);
                     yield return ViewOf(e).Blink();
@@ -71,6 +73,8 @@ namespace PenguinMonster.View
                     yield return PlayStatusChange(e, message);
                     break;
                 case BattleEventKind.ItemHealed:
+                case BattleEventKind.Drained:
+                case BattleEventKind.Healed:
                     // 回復は HP が増えてから理由の文を出す（減るときと同じ順）
                     BattleSounds.Play(BattleSound.StatUp);
                     yield return InfoOf(e).AnimateHp(e.Hp);
@@ -85,6 +89,16 @@ namespace PenguinMonster.View
                     BattleSounds.Play(e.Amount > 0 ? BattleSound.StatUp : BattleSound.StatDown);
                     yield return ViewOf(e).Flash(e.Amount > 0 ? StatusColors.StatUp : StatusColors.StatDown);
                     InfoOf(e).UpdateStatStages(e.Monster);
+                    yield return _messageWindow.Play(message);
+                    break;
+                case BattleEventKind.WeatherStarted:
+                    // 場の色が変わってから「吹雪が 吹き始めた！」
+                    BattleSounds.Play(BattleSound.Status);
+                    _weather.Show(e.Weather);
+                    yield return _messageWindow.Play(message);
+                    break;
+                case BattleEventKind.WeatherEnded:
+                    _weather.Hide();
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.BattleEnd:

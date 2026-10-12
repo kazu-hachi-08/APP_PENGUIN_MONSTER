@@ -84,11 +84,12 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// ターン終わりの どく・やけど のダメージ → 持ち物（ほしざかな）→ 特性（おいかぜのり）。
-        /// 場の全員を すばやさの高い順に（同速は陣営0から）1体ずつ全部済ませる
+        /// ターン終わり。先に天候の残りを数え、続いて場の全員を すばやさの高い順に（同速は陣営0から）1体ずつ、
+        /// 吹雪のダメージ → どく・やけど のダメージ → 持ち物（ほしざかな）→ 特性（おいかぜのり）を全部済ませる
         /// </summary>
         private void ApplyEndOfTurn(List<BattleEvent> events)
         {
+            AdvanceWeather(events);
             foreach (var position in ActivesBySpeed())
             {
                 if (_state.IsOver)
@@ -97,6 +98,11 @@ namespace PenguinMonster.Battle
                 }
                 var monster = _state.Sides[position.Side].ActiveAt(position.Slot);
                 if (monster.IsFainted)
+                {
+                    continue;
+                }
+                ApplyWeatherDamage(position.Side, monster, events);
+                if (_state.IsOver || monster.IsFainted)
                 {
                     continue;
                 }

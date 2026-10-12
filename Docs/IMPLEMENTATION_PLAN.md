@@ -24,4 +24,4 @@
 | [Phase 8](Plan/PHASE_08.md) | ずかん・タイプ相性表・あそびかた・設定 | タイトルのメニューがそろう | 実装済み・動作確認待ち |
 | [Phase 9](Plan/PHASE_09.md) | 50体に拡張・バランス調整 | 50体で遊べる | 進行中（Unity での確認が残り。[引継ぎ](Plan/PHASE_09_HANDOFF.md)） |
 | [Phase 10](Plan/PHASE_10.md) | ダブルス | ダブルスで遊べる | 実装済み・動作確認待ち（Unity での確認は [PHASE_10](Plan/PHASE_10.md) の末尾） |
-| [Phase 11](Plan/PHASE_11.md) | 75→100体・リリース準備 | ストアに出せる | - |
+| [Phase 11](Plan/PHASE_11.md) | 75→150体・リリース準備 | ストアに出せる | 進行中（150体まで実装済み・Unity での確認待ち） |

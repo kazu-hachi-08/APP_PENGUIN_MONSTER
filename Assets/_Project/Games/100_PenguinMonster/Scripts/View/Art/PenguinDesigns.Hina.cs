@@ -172,5 +172,77 @@ namespace PenguinMonster.View.Art
                 b.Triangle(left, right, tip, color);
             }
         }
+
+        /// <summary>No.68 コツブヒナペン: いたずら好き。足元の小石の山から ひとつかみずつ、ヒレを振りかぶって次々に投げる。小石が弧を描いて飛ぶ</summary>
+        private static void KotsubuHina(PenguinBrush b)
+        {
+            var fluff = Rgb(165, 155, 145);
+            var fluffShade = PenguinPalette.Shade(fluff);
+            b.Shaded(50f, 5f, 4.5f, 3f, Stone);
+            b.Shaded(57f, 5f, 3.5f, 3f, Stone);
+            b.Shaded(53f, 9f, 3f, 2.5f, Stone);
+            b.Foot(27f, 3f, -10f, 0.7f);
+            b.Foot(38f, 3f, 10f, 0.7f);
+            b.Shaded(33f, 12f, 8.5f, 8f, fluff);
+            b.Belly(31f, 11f, 5.5f, 5f);
+            b.Flipper(V(38, 18), V(45, 29), 2.5f, fluffShade);
+            b.Shaded(45f, 30f, 2f, 2f, Stone);
+            b.Shaded(31f, 23f, 8.5f, 7.5f, fluff);
+            b.White(29f, 22f, 6f, 4.5f);
+            b.Line(0.9f, fluff, V(33, 30), V(31, 34), V(34, 36));
+            b.Flipper(V(26, 14), V(21, 8), 2f, fluffShade);
+            b.TurnedFace(29f, 23f, FaceLeft, EyeStyle.Sparkle, eyeGap: 5f, open: true);
+            b.Shaded(16f, 37f, 2.5f, 2f, Stone);
+            b.Shaded(8f, 33f, 2f, 2f, Stone);
+            b.Shaded(4f, 25f, 2f, 1.5f, Stone);
+            b.Line(0.5f, Rgb(230, 230, 230), V(20, 40), V(23, 41));
+            b.Line(0.5f, Rgb(230, 230, 230), V(11, 37), V(14, 38));
+        }
+
+        /// <summary>No.69 ネボスケヒナペン: いつも眠い。ふかふかの苔の巣にすっぽり収まり、ナイトキャップで鼻ちょうちんを ふくらませる</summary>
+        private static void NebosukeHina(PenguinBrush b)
+        {
+            var fluff = Rgb(160, 195, 140);
+            var moss = Rgb(100, 150, 70);
+            var cap = Rgb(120, 140, 220);
+            var bubble = Rgb(190, 230, 250);
+            b.Shaded(32f, 15f, 9f, 8f, fluff);
+            b.Shaded(30f, 25f, 8.5f, 7.5f, fluff);
+            b.White(28f, 24f, 6f, 4.5f);
+            b.Polygon(V(35, 34), cap, V(23, 30), V(39, 29), V(49, 38), V(46, 41));
+            b.Shaded(48f, 40f, 2.5f, 2.5f, PenguinPalette.Belly);
+            b.TurnedFace(28f, 25f, FaceLeft, EyeStyle.Line, eyeGap: 5f);
+            FluffBall(b, 32f, 8f, 18f, 5f, moss, PenguinPalette.Darken(moss, 0.75f));
+            if (!b.Front) return;
+            b.Ellipse(18f, 21f, 3f, 3f, bubble);
+            b.Dot(17, 22, PenguinPalette.EyeLight);
+            b.Line(0.6f, PenguinPalette.Belly, V(8, 38), V(11, 38), V(8, 35), V(11, 35));
+        }
+
+        /// <summary>No.70 ポカポカヒナペン: 陽だまりのような甘えん坊。頭の上の小さなお日さまに温められて、ヒレを広げてにっこり</summary>
+        private static void PokapokaHina(PenguinBrush b)
+        {
+            var fluff = Rgb(250, 190, 120);
+            var fluffShade = PenguinPalette.Shade(fluff);
+            const int Rays = 8;
+            for (int i = 0; i < Rays; i++)
+            {
+                float angle = i * Mathf.PI * 2f / Rays;
+                b.Line(0.7f, FlameMiddle, OnEllipse(32f, 46f, 7f, 7f, angle), OnEllipse(32f, 46f, 10f, 10f, angle));
+            }
+            b.Ellipse(32f, 46f, 5.5f, 5.5f, FlameMiddle);
+            b.Ellipse(31.5f, 46.5f, 4f, 4f, FlameInner);
+            b.Foot(26f, 3f, -15f, 0.7f);
+            b.Foot(37f, 3f, 15f, 0.7f);
+            b.Shaded(31f, 12f, 9f, 8f, fluff);
+            b.Belly(30f, 11f, 6f, 5f);
+            b.Flipper(V(24, 15), V(15, 21), 2.5f, fluffShade);
+            b.Flipper(V(38, 15), V(47, 21), 2.5f, fluffShade);
+            b.Shaded(31f, 25f, 8.5f, 7.5f, fluff);
+            b.White(30f, 24f, 6f, 4.5f);
+            b.Face(30f, 25f, 3f, EyeStyle.Smile);
+            b.Line(0.5f, FlameOuter, V(10, 30), V(12, 33), V(10, 36));
+            b.Line(0.5f, FlameOuter, V(52, 30), V(54, 33), V(52, 36));
+        }
     }
 }

@@ -53,7 +53,10 @@ namespace PenguinMonster.Battle
             }
         }
 
-        /// <summary>行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍</summary>
+        /// <summary>場の天候。テストで単体で作ったときは None</summary>
+        public Weather CurrentWeather => Side?.State?.Weather ?? Weather.None;
+
+        /// <summary>行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍。天候に乗る特性なら 2 倍</summary>
         public int EffectiveSpeed
         {
             get
@@ -63,7 +66,23 @@ namespace PenguinMonster.Battle
                 {
                     speed /= BattleBalance.ParalysisSpeedDivisor;
                 }
-                return HasItem(HeldItem.LightFeather) ? (int)(speed * BattleBalance.LightFeatherSpeedMultiplier) : speed;
+                if (HasItem(HeldItem.LightFeather))
+                {
+                    speed = (int)(speed * BattleBalance.LightFeatherSpeedMultiplier);
+                }
+                return RidesWeather ? speed * BattleBalance.WeatherSpeedMultiplier : speed;
+            }
+        }
+
+        /// <summary>雪滑り・波乗り・光合成 が、それぞれの天候で働いている</summary>
+        private bool RidesWeather
+        {
+            get
+            {
+                var weather = CurrentWeather;
+                return (weather == Weather.Snow && HasAbility(Ability.SnowSlide))
+                    || (weather == Weather.Rain && HasAbility(Ability.RainSurf))
+                    || (weather == Weather.Sun && HasAbility(Ability.Photosynthesis));
             }
         }
 

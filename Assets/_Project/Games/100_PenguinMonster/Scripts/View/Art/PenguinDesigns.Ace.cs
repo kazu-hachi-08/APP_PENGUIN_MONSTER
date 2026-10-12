@@ -172,5 +172,71 @@ namespace PenguinMonster.View.Art
             b.Line(0.5f, Bolt, V(6, 4), V(3, 8));
             b.Line(0.5f, Bolt, V(30, 4), V(33, 8));
         }
+
+        /// <summary>No.71 フブキオウペン: 誇り高い吹雪の王者。氷の大きな翼を前後に広げて急降下し、つららの冠と尾羽が吹雪に光る</summary>
+        private static void Fubukiou(PenguinBrush b)
+        {
+            var body = Rgb(110, 160, 215);
+            var bodyShade = PenguinPalette.Shade(body);
+            Wing(b, V(38, 32), new[] { V(40, 28), V(52, 33), V(61, 44), V(60, 56), V(51, 61), V(43, 44) }, IceLight, IceShade, PenguinPalette.Belly);
+            b.Triangle(V(27, 14), V(33, 14), V(28, 2), IceShade);
+            b.Triangle(V(31, 14), V(37, 14), V(38, 3), IceLight);
+            b.Foot(28f, 11f, 70f, 0.7f);
+            b.ShadedTilted(32f, 23f, 9f, 12f, 15f, body);
+            b.BellyTilted(30f, 22f, 5.5f, 8.5f, 15f);
+            b.Triangle(V(22, 45), V(27, 45), V(22, 56), IceLight);
+            b.Triangle(V(26, 46), V(31, 46), V(30, 58), IceShade);
+            b.Triangle(V(30, 45), V(34, 44), V(37, 55), IceLight);
+            b.Shaded(28f, 38f, 9.5f, 9f, body);
+            b.White(26f, 37f, 7f, 5.5f);
+            Wing(b, V(26, 28), new[] { V(28, 24), V(14, 20), V(3, 25), V(2, 37), V(7, 47), V(22, 38) }, IceLight, IceShade, PenguinPalette.Belly);
+            b.TurnedFace(26f, 38f, FaceLeft, EyeStyle.Sharp, eyeGap: 6f, open: true);
+            b.Sparkle(10, 58, IceLight);
+            b.Sparkle(52, 10, IceLight);
+        }
+
+        /// <summary>No.72 ウミドリペン: 自由気ままな渡り鳥。細長い翼をまっすぐ広げて大波の上すれすれを滑空する</summary>
+        private static void Umidori(PenguinBrush b)
+        {
+            var gray = Rgb(165, 175, 192);
+            var wing = Rgb(110, 120, 142);
+            var wingShade = PenguinPalette.Shade(wing);
+            var tip = Rgb(50, 55, 70);
+            b.Polygon(V(32, 4), Water, V(2, 1), V(62, 1), V(62, 9), V(52, 13), V(42, 9), V(30, 13), V(18, 9), V(2, 12));
+            b.Line(0.6f, PenguinPalette.Belly, V(18, 9), V(24, 12), V(30, 13));
+            b.Line(0.6f, PenguinPalette.Belly, V(42, 9), V(47, 12), V(52, 13));
+            Wing(b, V(38, 32), new[] { V(36, 34), V(46, 40), V(56, 48), V(62, 54), V(58, 48), V(42, 30) }, wing, wingShade, tip);
+            b.Foot(52f, 25f, 20f, 0.7f);
+            b.ShadedTilted(36f, 29f, 7.5f, 14f, 72f, gray);
+            b.BellyTilted(35f, 27f, 4.5f, 10f, 72f);
+            b.Shaded(20f, 33f, 9f, 8.5f, gray);
+            b.White(18f, 32f, 6.5f, 5.5f);
+            Wing(b, V(30, 34), new[] { V(32, 36), V(22, 44), V(10, 52), V(2, 56), V(8, 48), V(26, 32) }, wing, wingShade, tip);
+            b.TurnedFace(18f, 33f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f);
+        }
+
+        /// <summary>No.73 ジュカイペン: 森を守る用心棒。葉っぱの大きな翼を上へ広げて威嚇し、つるの尾が後ろへうねる。頭に若葉の冠羽</summary>
+        private static void Jukai(PenguinBrush b)
+        {
+            var green = Rgb(60, 130, 80);
+            var greenShade = PenguinPalette.Shade(green);
+            var leaf = Rgb(110, 190, 90);
+            var leafShade = PenguinPalette.Shade(leaf);
+            var leafTip = Rgb(200, 240, 150);
+            b.Line(1.2f, leafShade, V(36, 10), V(44, 5), V(52, 8), V(60, 4));
+            b.Tilted(53f, 11f, 3f, 1.5f, 30f, leaf);
+            b.Tilted(45f, 2f, 3f, 1.5f, -20f, leaf);
+            Wing(b, V(38, 30), new[] { V(40, 26), V(53, 29), V(61, 41), V(60, 53), V(51, 58), V(44, 42) }, leaf, leafShade, leafTip);
+            b.Feet(32f, 6f);
+            b.Shaded(32f, 20f, 11f, 12f, green);
+            b.Belly(31f, 19f, 7f, 8.5f);
+            b.Tilted(28f, 51f, 2.5f, 6f, 25f, leaf);
+            b.Tilted(33f, 52f, 2.5f, 6f, -10f, leafShade);
+            b.Shaded(31f, 38f, 9.5f, 9f, green);
+            b.White(29f, 37f, 7f, 5.5f);
+            Wing(b, V(25, 30), new[] { V(23, 26), V(11, 29), V(3, 41), V(4, 53), V(13, 58), V(20, 42) }, leaf, leafShade, leafTip);
+            b.Flipper(V(40, 22), V(44, 14), 2f, greenShade);
+            b.TurnedFace(29f, 38f, FaceLeft, EyeStyle.Sharp, eyeGap: 6f);
+        }
     }
 }
