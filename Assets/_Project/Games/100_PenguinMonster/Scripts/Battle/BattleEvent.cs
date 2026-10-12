@@ -1,0 +1,114 @@
+namespace PenguinMonster.Battle
+{
+    public enum BattleEventKind
+    {
+        SentOut,
+        Withdrawn,
+        MoveUsed,
+        Missed,
+        Damaged,
+        Critical,
+        SuperEffective,
+        NotVeryEffective,
+        NoEffect,
+        Fainted,
+        BattleEnd,
+        /// <summary>変化技が決まらなかった（すでに状態異常・タイプで効かない など）</summary>
+        Failed,
+        StatusInflicted,
+        /// <summary>まひ・ねむり・こおりで動けなかった（理由は Status）</summary>
+        Immobilized,
+        WokeUp,
+        Thawed,
+        Confused,
+        /// <summary>こんらん中に技を使おうとした（「こんらんしている！」）</summary>
+        ConfusionCheck,
+        HurtItself,
+        ConfusionEnded,
+        /// <summary>ターン終わりの どく・やけど のダメージ（理由は Status）</summary>
+        StatusDamage,
+        /// <summary>ランクが変わった。Amount が変わった量（＋で上がる）</summary>
+        StatChanged,
+        /// <summary>ランクがもう変わらない。Amount の符号が上げようとしたか下げようとしたか</summary>
+        StatUnchanged,
+        /// <summary>特性が働いた（「〇〇の こわもて！」）。続くイベントがその効果</summary>
+        AbilityActivated,
+        /// <summary>特性 とげとげはだ で受けたダメージ</summary>
+        AbilityDamage,
+        /// <summary>持ち物で HP が回復した（ほしざかな・おやつのイカ）</summary>
+        ItemHealed,
+        /// <summary>持ち物で状態異常が治った（さっぱりこんぶ）</summary>
+        ItemCured,
+        /// <summary>持ち物で HP1 で残った（ふんばりマフラー）</summary>
+        ItemEndured,
+        /// <summary>持ち物の反動で HP が減った（いのちのつらら）</summary>
+        ItemRecoil,
+    }
+
+    /// <summary>
+    /// バトルで起きたことを1つずつ表す。表示（メッセージ・HPバー・状態異常の印）は View がこれを順に再生して行う。
+    /// HP と状態異常は起きた時点の値を持たせる（BattleMonster の値はターン終わりの値なので、途中の表示に使えない）
+    /// </summary>
+    public sealed class BattleEvent
+    {
+        public BattleEventKind Kind { get; }
+        /// <summary>主語になる陣営。BattleEnd のときは勝った陣営</summary>
+        public int Side { get; }
+        /// <summary>主語のペンモンが場の何番目にいたか（ダブルスの表示用。シングルはいつも 0）</summary>
+        public int Slot { get; }
+        public BattleMonster Monster { get; }
+        public string MoveName { get; }
+        public int Hp { get; }
+        public StatusCondition Status { get; }
+        public StatKind Stat { get; }
+        public int Amount { get; }
+
+        private BattleEvent(BattleEventKind kind, int side, BattleMonster monster, string moveName = null,
+            StatKind stat = default, int amount = 0)
+            : this(kind, side, SlotNow(monster), monster, moveName, monster?.CurrentHp ?? 0, monster?.Status ?? StatusCondition.None,
+                stat, amount)
+        {
+        }
+
+        private BattleEvent(BattleEventKind kind, int side, int slot, BattleMonster monster, string moveName, int hp,
+            StatusCondition status, StatKind stat, int amount)
+        {
+            Kind = kind;
+            Side = side;
+            Slot = slot;
+            Monster = monster;
+            MoveName = moveName;
+            Hp = hp;
+            Status = status;
+            Stat = stat;
+            Amount = amount;
+        }
+
+        public static BattleEvent Of(BattleEventKind kind, int side, BattleMonster monster)
+            => new BattleEvent(kind, side, monster);
+
+        public static BattleEvent MoveUsed(int side, BattleMonster monster, MoveDefinition move)
+            => new BattleEvent(BattleEventKind.MoveUsed, side, monster, move.Name);
+
+        public static BattleEvent StatChange(BattleEventKind kind, int side, BattleMonster monster, StatKind stat, int amount)
+            => new BattleEvent(kind, side, monster, stat: stat, amount: amount);
+
+        public static BattleEvent BattleEnd(int winner)
+            => new BattleEvent(BattleEventKind.BattleEnd, winner, null);
+
+        /// <summary>オンラインで受け取った値から作り直す。HP・状態異常は送られてきた時点の値を使う</summary>
+        internal static BattleEvent Restore(BattleEventKind kind, int side, int slot, BattleMonster monster, string moveName,
+            int hp, StatusCondition status, StatKind stat, int amount)
+            => new BattleEvent(kind, side, slot, monster, moveName, hp, status, stat, amount);
+
+        /// <summary>
+        /// 起きた時点の場の番号。再生はターンを計算し終えてからなので、そのときには交代で別のペンモンが入っていることがある。
+        /// 場にいない（単体で作ったテスト用のペンモンなど）ときは 0
+        /// </summary>
+        private static int SlotNow(BattleMonster monster)
+        {
+            int slot = monster?.Side?.SlotOf(monster) ?? 0;
+            return slot < 0 ? 0 : slot;
+        }
+    }
+}

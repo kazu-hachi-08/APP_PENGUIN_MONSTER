@@ -39,6 +39,8 @@ namespace PenguinMonster.Common.UI
 
             _onRetry = onRetry;
             _onTitle = onTitle;
+            // 続きが無い場面（負けて終わりなど）では押しても何も起きないボタンを見せない
+            if (_retryButton != null) _retryButton.gameObject.SetActive(onRetry != null);
 
             gameObject.SetActive(true);
         }
