@@ -83,12 +83,22 @@ namespace PenguinMonster.Editor
             return text;
         }
 
-        private static GameObject CreateButton(Transform parent, string name, string label, Vector2 size, Color color)
+        /// <summary>
+        /// ゲームのボタンはすべて、タイトルと同じ「ぷっくり」ボタンにする（StyleButton）。
+        /// 文字があれば影を付けて、色の付いた面の上でも読めるようにする
+        /// </summary>
+        /// <param name="sinkLabel">押したときに文字も沈めるか。中身を自分で並べるカードは false にして面だけ沈める</param>
+        private static GameObject CreateButton(Transform parent, string name, string label, Vector2 size, Color color, bool sinkLabel = true)
         {
             var obj = UIDialogBuilder.CreateButton(parent, name, label, size.x, size.y, color);
             var text = obj.GetComponentInChildren<Text>();
             text.fontSize = ButtonFontSize;
             text.raycastTarget = false;
+            if (!string.IsNullOrEmpty(label))
+            {
+                AddOutline(text, ButtonTextEdgeColor, ButtonTextEdge);
+            }
+            StyleButton(obj, sinkLabel ? text.rectTransform : null);
             return obj;
         }
 

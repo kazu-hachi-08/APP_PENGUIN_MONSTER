@@ -27,6 +27,7 @@ namespace PenguinMonster.View
         [SerializeField] private SelectPanel _selectPanel;
         [SerializeField] private BattleController _battle;
         [SerializeField] private ResultDialog _resultDialog;
+        [SerializeField] private ResultBanner _resultBanner;
         [SerializeField] private QuitButton _quitButton;
 
         private void Start()

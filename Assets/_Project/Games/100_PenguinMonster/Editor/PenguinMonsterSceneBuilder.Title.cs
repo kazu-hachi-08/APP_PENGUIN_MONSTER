@@ -28,7 +28,6 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 TitleLetterInnerEdge = new Vector2(4f, -4f);
         private static readonly Vector2 TitleLetterOuterEdge = new Vector2(8f, -8f);
         private static readonly Vector2 TitleLogoShadow = new Vector2(10f, -14f);
-        private static readonly Vector2 TitleButtonTextEdge = new Vector2(3f, -3f);
         private static readonly Vector2 TitleSubPosition = new Vector2(0f, -330f);
         private static readonly Vector2 TitleSubSize = new Vector2(1200f, 70f);
         private const float TitleMascotX = 620f;
@@ -68,7 +67,6 @@ namespace PenguinMonster.Editor
             new Color(1f, 0.6f, 0.25f),
             new Color(0.95f, 0.98f, 1f),
         };
-        private static readonly Color TitleButtonTextEdgeColor = new Color(0f, 0f, 0f, 0.5f);
         private static readonly Color TitleSubColor = new Color(0.8f, 0.88f, 1f);
         private static readonly Color TitleBestFillColor = new Color(0.1f, 0.16f, 0.32f);
         private static readonly Color TitleSnowFieldColor = new Color(0.86f, 0.92f, 1f);
@@ -241,15 +239,7 @@ namespace PenguinMonster.Editor
         private static Button CreateTitleMenuButton(Transform menu, string label, Color color, Vector2 size, int fontSize)
         {
             var obj = CreateButton(menu, $"Btn_{label}", label, size, color);
-            var text = obj.GetComponentInChildren<Text>();
-            text.fontSize = fontSize;
-            AddOutline(text, TitleButtonTextEdgeColor, TitleButtonTextEdge);
-
-            // 角丸の絵と押し込みは ChunkyButton が実行時にはめる（絵をアセットにしないので、シーン上では四角のまま）
-            var chunky = obj.AddComponent<ChunkyButton>();
-            var so = new SerializedObject(chunky);
-            so.FindProperty("_label").objectReferenceValue = text.rectTransform;
-            so.ApplyModifiedProperties();
+            obj.GetComponentInChildren<Text>().fontSize = fontSize;
             return obj.GetComponent<Button>();
         }
     }

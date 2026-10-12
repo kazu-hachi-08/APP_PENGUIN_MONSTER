@@ -19,8 +19,7 @@ namespace PenguinMonster.Editor
         private const float SubMenuTitleHeight = 110f;
         private static readonly Vector2 SubMenuBackPosition = new Vector2(170f, -55f);
         private static readonly Vector2 SubMenuBackSize = new Vector2(260f, 86f);
-        private const int SubMenuTitleFontSize = 52;
-        private static readonly Color SubMenuBackColor = new Color(0.14f, 0.2f, 0.32f);
+        private const int SubMenuTitleFontSize = 60;
         private static readonly Color SubMenuButtonColor = new Color(0.45f, 0.45f, 0.5f);
 
         // タイプ相性表: 見出し1行 + 10タイプ、見出し1列 + 10タイプ
@@ -79,12 +78,11 @@ namespace PenguinMonster.Editor
         /// <summary>画面いっぱいの背景・上の見出し・左上の「もどる」。中身は content（セーフエリアの内側）に置く</summary>
         private static Image CreateSubMenuFrame(Transform parent, string name, string title, out Transform content, out Button backButton)
         {
-            var back = CreateImage(parent, name, SubMenuBackColor);
-            UIDialogBuilder.SetStretchAll(back.rectTransform);
+            var back = CreateNightBack(parent, name);
             content = CreateSafeContent(back.transform);
 
             var titleText = CreateText(content, "Title", title, SubMenuTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            titleText.fontStyle = FontStyle.Bold;
+            StyleHeading(titleText);
             titleText.rectTransform.anchorMin = new Vector2(0f, 1f);
             titleText.rectTransform.offsetMin = new Vector2(0f, -SubMenuTitleHeight);
 

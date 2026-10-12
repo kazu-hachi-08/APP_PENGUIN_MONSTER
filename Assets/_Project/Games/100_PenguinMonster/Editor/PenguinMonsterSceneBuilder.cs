@@ -16,7 +16,8 @@ namespace PenguinMonster.Editor
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
     /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、
     /// タイトルは .Title.cs、ドラフトは .Draft.cs、「やめる」は .Quit.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
-    /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs
+    /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs、
+    /// 結果は .Result.cs、オンラインの部屋は .Room.cs、画面をまたいでそろえる見た目（夜空・見出し・ボタン）は .Style.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -25,11 +26,8 @@ namespace PenguinMonster.Editor
         // 横画面の基準解像度。共通基盤のダイアログと同じ値にそろえる
         private static readonly Vector2 ReferenceResolution = new Vector2(1920f, 1080f);
         private static readonly Color BackgroundColor = new Color(0.80f, 0.90f, 0.95f);
-        private const string NextBattleLabel = "次の 戦いへ";
-        private const string OfflineLabel = "CPUと対戦";
         private static readonly Vector2 BattleCountdownPosition = new Vector2(0f, -50f);
         private static readonly Vector2 TopCenter = new Vector2(0.5f, 1f);
-        private static readonly Vector2 HostButtonPosition = new Vector2(0f, 80f);
 
         [MenuItem("Tools/PenguinMonster/Rebuild")]
         public static void Rebuild()
@@ -124,15 +122,14 @@ namespace PenguinMonster.Editor
 
         /// <summary>
         /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
-        /// 結果は共通基盤の ResultDialog を使う。「もう一度遊ぶ」は勝ち抜き戦の「つぎの たたかいへ」に使う
+        /// 結果は共通基盤の ResultDialog を見た目だけ作り直して使う。「もう一度遊ぶ」は勝ち抜き戦の「次の 戦いへ」に使う
         /// </summary>
         private static void BuildFlow(Transform canvas, BattleController battle)
         {
             var root = UIDialogBuilder.CreateUIObject("Flow", canvas);
             UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
 
-            var resultDialog = UIDialogBuilder.CreateResultDialog(root.transform);
-            resultDialog.transform.Find("Panel/ButtonArea/Btn_Retry").GetComponentInChildren<Text>().text = NextBattleLabel;
+            var resultDialog = CreateResultPanel(root.transform, out var resultBanner);
             var selectPanel = CreateSelectPanel(root.transform);
             var introPanel = CreateIntroPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
@@ -140,7 +137,8 @@ namespace PenguinMonster.Editor
             var quitButton = CreateQuitButton(root.transform);
             var subMenus = CreateSubMenus(root.transform);
             var titlePanel = CreateTitlePanel(root.transform, subMenus);
-            CreateOnline(canvas, out var session, out var modeSelect);
+            var session = new GameObject("OnlineSession").AddComponent<OnlineSession>();
+            var modeSelect = CreateRoomPanel(canvas, session);
 
             var flow = root.AddComponent<GameFlow>();
             var so = new SerializedObject(flow);
@@ -151,23 +149,11 @@ namespace PenguinMonster.Editor
             so.FindProperty("_selectPanel").objectReferenceValue = selectPanel;
             so.FindProperty("_battle").objectReferenceValue = battle;
             so.FindProperty("_resultDialog").objectReferenceValue = resultDialog;
+            so.FindProperty("_resultBanner").objectReferenceValue = resultBanner;
             so.FindProperty("_quitButton").objectReferenceValue = quitButton;
             so.FindProperty("_session").objectReferenceValue = session;
             so.FindProperty("_modeSelect").objectReferenceValue = modeSelect;
             so.ApplyModifiedProperties();
-        }
-
-        /// <summary>
-        /// 接続（共通基盤の OnlineSession）と、部屋を作る / コードで参加の画面（ModeSelectPanel）。
-        /// CPU 戦はタイトルの「勝ち抜き戦」から入るので、ModeSelectPanel の CPU 戦ボタンは隠し、部屋を作るを中央に寄せる
-        /// </summary>
-        private static void CreateOnline(Transform canvas, out OnlineSession session, out ModeSelectPanel modeSelect)
-        {
-            session = new GameObject("OnlineSession").AddComponent<OnlineSession>();
-            modeSelect = ModeSelectPanelBuilder.Create(canvas, session, OfflineLabel);
-            var menu = modeSelect.transform.Find("Panel/Menu");
-            menu.Find("Btn_Npc").gameObject.SetActive(false);
-            ((RectTransform)menu.Find("Btn_Host")).anchoredPosition = HostButtonPosition;
         }
 
         private static void AddToBuildSettings()

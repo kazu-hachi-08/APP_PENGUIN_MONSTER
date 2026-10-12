@@ -22,8 +22,7 @@ namespace PenguinMonster.View
         {
             bool next = false;
             _quitButton.Hide();
-            _resultDialog.Show(WinTitle, $"{run.Wins} 連勝", opponent.IsBoss ? BossWinDetail : WinDetail,
-                onRetry: () => next = true, onTitle: BackToTitle);
+            ShowResult(true, $"{run.Wins} 連勝", opponent.IsBoss ? BossWinDetail : WinDetail, onRetry: () => next = true);
             yield return new WaitUntil(() => next);
             _quitButton.Show(SurvivalQuitMessage, BackToTitle);
         }
@@ -32,7 +31,15 @@ namespace PenguinMonster.View
         {
             _quitButton.Hide();
             string record = run.Wins > bestAtStart ? NewRecordText : $"最高記録: {Mathf.Max(run.Wins, bestAtStart)} 連勝";
-            _resultDialog.Show(LoseTitle, $"{run.Wins} 連勝", $"{LoseDetail}\n{record}", onTitle: BackToTitle);
+            ShowResult(false, $"{run.Wins} 連勝", $"{LoseDetail}\n{record}");
+        }
+
+        /// <param name="score">連勝数。空ならバッジごと隠す（オンライン）</param>
+        /// <param name="onRetry">「次の 戦いへ」。null ならボタンを出さない</param>
+        private void ShowResult(bool won, string score, string detail, System.Action onRetry = null)
+        {
+            _resultDialog.Show(won ? WinTitle : LoseTitle, score, detail, onRetry, onTitle: BackToTitle);
+            _resultBanner.Play(won);
         }
 
         /// <summary>タイトル専用のシーンは無いので、シーンを読み直して最初（タイトル）から始め直す</summary>

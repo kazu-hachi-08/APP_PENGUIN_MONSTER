@@ -8,7 +8,8 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// ドラフトの画面。まん中に提示の3枚のカード（絵・名前・タイプ・特性と持ち物・種族値）、下の帯に取ったペンモンの6マス
+    /// ドラフトの画面。夜空と雪の上に、まん中に提示の3枚のカード（絵・名前・タイプ・特性と持ち物・種族値）、下の帯に取ったペンモンの6マス。
+    /// カードは配るたびに「ぽよん」と出し（PopIn）、取ったペンモンは一番手前の絵（Flyer）が下のマスへ運ぶ
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -46,16 +47,15 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 PanelCountdownPosition = new Vector2(-480f, -55f);
         private static readonly Vector2 TopRight = new Vector2(1f, 1f);
 
-        private static readonly Color DraftBackColor = new Color(0.16f, 0.24f, 0.36f);
         private static readonly Color DraftCardColor = new Color(0.97f, 0.97f, 0.9f);
         private static readonly Color DraftSlotColor = new Color(0.1f, 0.14f, 0.22f);
 
         private static DraftPanel CreateDraftPanel(Transform parent)
         {
-            var back = CreateImage(parent, "DraftPanel", DraftBackColor);
-            UIDialogBuilder.SetStretchAll(back.rectTransform);
+            var back = CreateNightBack(parent, "DraftPanel");
 
             var title = CreateText(back.transform, "Title", "", DraftTitleFontSize, Color.white, TextAnchor.MiddleCenter);
+            StyleHeading(title);
             title.rectTransform.anchorMin = new Vector2(0f, 1f);
             title.rectTransform.offsetMin = new Vector2(0f, -DraftTitleHeight);
 
@@ -75,6 +75,7 @@ namespace PenguinMonster.Editor
 
             var picked = CreatePickedSlots(back.transform);
             var timer = CreateCountdown(back.transform, TopRight, PanelCountdownPosition);
+            var flyer = CreateDraftFlyer(back.transform);
 
             var panel = back.gameObject.AddComponent<DraftPanel>();
             var so = new SerializedObject(panel);
@@ -88,10 +89,22 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_typeLabels"), badgeLabels);
             SetArray(so.FindProperty("_pickedIcons"), picked);
             so.FindProperty("_timer").objectReferenceValue = timer;
+            so.FindProperty("_flyer").objectReferenceValue = flyer;
             so.ApplyModifiedProperties();
 
             back.gameObject.SetActive(false);
             return panel;
+        }
+
+        /// <summary>取ったペンモンを運ぶ絵。位置と大きさは飛ぶたびに DraftPanel が決めるので、ここでは隠しておくだけ</summary>
+        private static Image CreateDraftFlyer(Transform parent)
+        {
+            var flyer = CreateImage(parent, "Flyer", Color.white);
+            flyer.preserveAspect = true;
+            flyer.raycastTarget = false;
+            Place(flyer.rectTransform, Center, Vector2.zero, Vector2.one * DraftCardIconSize);
+            flyer.enabled = false;
+            return flyer;
         }
 
         private static Transform CreateDraftRow(Transform parent)
@@ -113,8 +126,9 @@ namespace PenguinMonster.Editor
         private static void CreateDraftCard(Transform row, int index, out Button button, out Image icon, out Text name, out Text stats,
             out Text traits, Image[] badges, Text[] badgeLabels)
         {
-            var card = CreateButton(row, $"Btn_Card{index}", "", DraftCardSize, DraftCardColor);
+            var card = CreateButton(row, $"Btn_Card{index}", "", DraftCardSize, DraftCardColor, sinkLabel: false);
             button = card.GetComponent<Button>();
+            AddPopIn(card);
 
             icon = CreateTopIcon(card.transform, DraftCardIconSize);
 

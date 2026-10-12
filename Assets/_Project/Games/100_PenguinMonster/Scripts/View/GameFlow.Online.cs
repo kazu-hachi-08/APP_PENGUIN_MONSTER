@@ -125,13 +125,13 @@ namespace PenguinMonster.View
             _battle.Abort();
             GameMusic.Stop();
             _quitButton.Hide();
-            _resultDialog.Show(WinTitle, "", DisconnectedDetail, onTitle: BackToTitle);
+            ShowResult(true, "", DisconnectedDetail);
         }
 
         private void ShowOnlineResult(bool won)
         {
             _quitButton.Hide();
-            _resultDialog.Show(won ? WinTitle : LoseTitle, "", won ? WinDetail : LoseDetail, onTitle: BackToTitle);
+            ShowResult(won, "", won ? WinDetail : LoseDetail);
         }
 
         private void OnDestroy()

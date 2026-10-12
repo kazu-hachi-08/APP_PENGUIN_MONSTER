@@ -22,6 +22,10 @@ namespace PenguinMonster.View.Art
         private static readonly Color32 PlatformTop = new Color32(196, 236, 170, 255);
         private static readonly Color32 PlatformHighlight = new Color32(222, 248, 200, 255);
 
+        private const int NightSkyHeight = 10;
+        private static readonly Color32 NightSkyTop = new Color32(16, 28, 66, 255);
+        private static readonly Color32 NightSkyBottom = new Color32(46, 84, 146, 255);
+
         private static readonly Vector2 CenterPivot = new Vector2(0.5f, 0.5f);
 
         /// <summary>上から下へ明るくなる空。段ごとに色を分けてドット絵らしい帯にする</summary>
@@ -29,6 +33,9 @@ namespace PenguinMonster.View.Art
 
         /// <summary>奥ほど明るい地面</summary>
         public static Sprite CreateGround() => CreateBands("Backdrop_Ground", GroundHeight, GroundNear, GroundFar);
+
+        /// <summary>タイトル以外の画面の夜空。上ほど濃い紺で、タイトルの空とつながって見えるようにする</summary>
+        public static Sprite CreateNightSky() => CreateBands("Backdrop_NightSky", NightSkyHeight, NightSkyBottom, NightSkyTop);
 
         public static Sprite CreatePlatform()
         {
