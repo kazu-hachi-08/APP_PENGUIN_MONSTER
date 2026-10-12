@@ -52,8 +52,8 @@ Assets/
 │
 ├── Settings/Build Profiles/        # Android / Web / Windows
 └── WebGLTemplates/PenguinMonster/  # ブラウザ版の index.html
-Docs/                               # 仕様書・実装計画書・開発手順
-Tools/Release/                      # Windows版のリリーススクリプト
+Docs/                               # 仕様書・開発手順
+Tools/Release/                      # Windows版・ブラウザ版のリリーススクリプト
 ```
 
 フォルダ名 `Games/100_PenguinMonster` は変えない（Editor スクリプトに直書きパスを持たせるため、動かすときはまとめて直す）。
