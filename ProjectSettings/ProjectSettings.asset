@@ -346,7 +346,7 @@ PlayerSettings:
   - m_BuildTarget: 
     m_Icons:
     - serializedVersion: 2
-      m_Icon: {fileID: 0}
+      m_Icon: {fileID: 2800000, guid: 240b9afbab6abed4296ab3a97b83fff1, type: 3}
       m_Width: 128
       m_Height: 128
       m_Kind: 0
@@ -928,10 +928,10 @@ PlayerSettings:
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
   enableDirectStorage: 0
-  cloudProjectId: 
+  cloudProjectId: a7c6d4d8-d3eb-4a34-a656-298aabd3ab6b
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: 
+  projectName: APP_PENGUIN_MONSTER
   organizationId: kamizato911
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
