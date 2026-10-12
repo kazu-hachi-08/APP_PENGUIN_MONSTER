@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 下側の窓（メッセージ・コマンド・技選択）と、交代の画面
+    /// 下側の窓（メッセージ・コマンド・技選択・ダブルスの狙う相手）と、交代の画面
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -31,9 +31,13 @@ namespace PenguinMonster.Editor
         private const float MoveHintPadding = 28f;
         private const int MoveHintFontSize = 34;
 
-        private static readonly Vector2 PartyBoxSize = new Vector2(900f, 680f);
+        private static readonly Vector2 TargetButtonSize = new Vector2(620f, 220f);
+        private const float TargetSpacing = 32f;
+
+        // ダブルスの4体が入る大きさ（シングルは余った枠を隠す）
+        private static readonly Vector2 PartyBoxSize = new Vector2(900f, 800f);
         private static readonly Vector2 PartySlotSize = new Vector2(760f, 130f);
-        private const float PartySlotSpacing = 24f;
+        private const float PartySlotSpacing = 20f;
         private const float PartyIconSize = 112f;
         private static readonly Vector2 BackButtonSize = new Vector2(220f, 80f);
 
@@ -196,7 +200,7 @@ namespace PenguinMonster.Editor
             layout.childControlWidth = false;
             layout.childControlHeight = false;
 
-            var buttons = new Button[BattleBalance.PartySize];
+            var buttons = new Button[BattleBalance.DoublesPartySize];
             var labels = new Text[buttons.Length];
             var icons = new Image[buttons.Length];
             for (int i = 0; i < buttons.Length; i++)
@@ -217,6 +221,38 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_slotIcons"), icons);
             so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
             so.ApplyModifiedProperties();
+            return panel;
+        }
+
+        /// <summary>ダブルスの狙う相手。下の窓いっぱいに、相手の場の左右と同じ並びでボタン2つと「戻る」</summary>
+        private static TargetPanel CreateTargetPanel(Transform parent)
+        {
+            var frame = CreateFramedBox(parent, "TargetPanel", InfoBoxColor, out var inner);
+            SetBottomArea(frame.rectTransform, 0f, 1f);
+            var layout = inner.gameObject.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = TargetSpacing;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+
+            var buttons = new Button[BattleBalance.DoublesActiveCount];
+            var labels = new Text[buttons.Length];
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                var buttonObj = CreateButton(inner, $"Btn_Target{i}", "", TargetButtonSize, SlotColor);
+                buttons[i] = buttonObj.GetComponent<Button>();
+                labels[i] = buttonObj.GetComponentInChildren<Text>();
+                labels[i].supportRichText = true;
+            }
+            var back = CreateButton(inner, "Btn_Back", "戻る", MoveBackSize, BackColor);
+
+            var panel = frame.gameObject.AddComponent<TargetPanel>();
+            var so = new SerializedObject(panel);
+            SetArray(so.FindProperty("_targetButtons"), buttons);
+            SetArray(so.FindProperty("_targetLabels"), labels);
+            so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
+            so.ApplyModifiedProperties();
+            frame.gameObject.SetActive(false);
             return panel;
         }
 

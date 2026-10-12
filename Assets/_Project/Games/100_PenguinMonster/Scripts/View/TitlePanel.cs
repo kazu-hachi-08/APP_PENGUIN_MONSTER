@@ -34,11 +34,11 @@ namespace PenguinMonster.View
             }
         }
 
-        public void Show(int bestWins, Action onSurvival, Action onOnline)
+        public void Show(int bestSingleWins, int bestDoubleWins, Action onSurvival, Action onOnline)
         {
             _onSurvival = onSurvival;
             _onOnline = onOnline;
-            _bestText.text = $"勝ち抜き戦 最高記録: {bestWins} 連勝";
+            _bestText.text = $"勝ち抜き戦 最高記録: シングル {bestSingleWins} 連勝 / ダブルス {bestDoubleWins} 連勝";
             // 飾りのペンモンは定義表の先頭から順に並べる（絵は実行時に作るのでシーンには焼かない）
             for (int i = 0; i < _mascots.Length; i++)
             {

@@ -5,7 +5,8 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// ターンを進める（仕様書 §4.1）。状態を書き換え、起きたことを BattleEvent の列で返す。
-    /// 行動順は .Order.cs、状態異常・こんらん・ターン終わりは .Status.cs、技の効果は .Effects.cs、特性・持ち物は .Abilities.cs / .Items.cs
+    /// 行動順は .Order.cs、技の対象と命中・ダメージは .Moves.cs、状態異常・こんらん・ターン終わりは .Status.cs、
+    /// 技の効果は .Effects.cs、特性・持ち物は .Abilities.cs / .Items.cs
     /// </summary>
     public sealed partial class BattleEngine
     {
@@ -20,22 +21,32 @@ namespace PenguinMonster.Battle
             _random = random;
         }
 
-        /// <summary>バトル開始時、先頭のペンモンを場に出す。両方出てから、すばやさの高い側から場に出たときの特性</summary>
+        /// <summary>バトル開始時、先頭のペンモンを場に出す。全員出てから、すばやさの高い順に場に出たときの特性</summary>
         public List<BattleEvent> StartBattle()
         {
             var events = new List<BattleEvent>();
             foreach (var side in _state.Sides)
             {
-                events.Add(BattleEvent.Of(BattleEventKind.SentOut, side.Index, side.Active));
+                for (int slot = 0; slot < side.ActiveCount; slot++)
+                {
+                    events.Add(BattleEvent.Of(BattleEventKind.SentOut, side.Index, side.ActiveAt(slot)));
+                }
             }
-            foreach (var side in SidesBySpeed())
+            foreach (var position in ActivesBySpeed())
             {
-                OnSentOut(side.Index, events);
+                OnSentOut(position.Side, position.Slot, events);
             }
             return events;
         }
 
+        /// <summary>シングル用。お互い1つずつの行動でターンを進める</summary>
         public List<BattleEvent> ResolveTurn(BattleAction action0, BattleAction action1)
+        {
+            return ResolveTurn(new[] { action0 }, new[] { action1 });
+        }
+
+        /// <param name="actions0">陣営 0 の場の順の行動。倒れて空いた場のぶんは何でもよい（使わない）</param>
+        public List<BattleEvent> ResolveTurn(IReadOnlyList<BattleAction> actions0, IReadOnlyList<BattleAction> actions1)
         {
             if (_state.IsOver)
             {
@@ -43,13 +54,13 @@ namespace PenguinMonster.Battle
             }
 
             var events = new List<BattleEvent>();
-            foreach (var queued in OrderActions(action0, action1))
+            foreach (var queued in OrderActions(actions0, actions1))
             {
                 if (_state.IsOver)
                 {
                     break;
                 }
-                Execute(queued.Side, queued.Action, events);
+                Execute(queued.Side, queued.Slot, queued.Action, events);
             }
             if (!_state.IsOver)
             {
@@ -58,8 +69,11 @@ namespace PenguinMonster.Battle
             return events;
         }
 
-        /// <summary>ひんしになった場のペンモンを入れ替える</summary>
-        public List<BattleEvent> Replace(int side, int partyIndex)
+        /// <summary>シングル用。瀕死になった場のペンモンを入れ替える</summary>
+        public List<BattleEvent> Replace(int side, int partyIndex) => Replace(side, 0, partyIndex);
+
+        /// <summary>場の slot 番目に、選出の partyIndex 番目を出す（瀕死の入れ替え・交代・羽リレー）</summary>
+        public List<BattleEvent> Replace(int side, int slot, int partyIndex)
         {
             var battleSide = _state.Sides[side];
             if (!battleSide.CanSwitchTo(partyIndex))
@@ -67,77 +81,32 @@ namespace PenguinMonster.Battle
                 throw new ArgumentException($"選出の {partyIndex} 番目は出せません", nameof(partyIndex));
             }
 
-            battleSide.SetActive(partyIndex);
-            var events = new List<BattleEvent> { BattleEvent.Of(BattleEventKind.SentOut, side, battleSide.Active) };
-            OnSentOut(side, events);
+            battleSide.SetActive(slot, partyIndex);
+            var events = new List<BattleEvent> { BattleEvent.Of(BattleEventKind.SentOut, side, battleSide.ActiveAt(slot)) };
+            OnSentOut(side, slot, events);
             return events;
         }
 
-        private void Execute(int side, BattleAction action, List<BattleEvent> events)
-        {
-            if (action.Kind == BattleActionKind.Switch)
-            {
-                ExecuteSwitch(side, action.Index, events);
-            }
-            else
-            {
-                ExecuteMove(side, action.Index, events);
-            }
-        }
-
-        private void ExecuteSwitch(int side, int partyIndex, List<BattleEvent> events)
+        private void Execute(int side, int slot, BattleAction action, List<BattleEvent> events)
         {
             var battleSide = _state.Sides[side];
-            battleSide.Active.OnWithdrawn();
-            events.Add(BattleEvent.Of(BattleEventKind.Withdrawn, side, battleSide.Active));
-            events.AddRange(Replace(side, partyIndex));
+            if (action.Kind == BattleActionKind.Move)
+            {
+                ExecuteMove(side, slot, action, events);
+            }
+            // ダブルスで同じ控えを2体が選んでいたら、後の交代は取りやめる
+            else if (!battleSide.ActiveAt(slot).IsFainted && battleSide.CanSwitchTo(action.Index))
+            {
+                ExecuteSwitch(side, slot, action.Index, events);
+            }
         }
 
-        private void ExecuteMove(int side, int moveIndex, List<BattleEvent> events)
+        private void ExecuteSwitch(int side, int slot, int partyIndex, List<BattleEvent> events)
         {
-            var user = _state.Sides[side].Active;
-            var target = _state.Opponent(side).Active;
-            // 先に倒されたペンモンは行動しない
-            if (user.IsFainted || target.IsFainted)
-            {
-                return;
-            }
-            if (!TryAct(side, user, events))
-            {
-                return;
-            }
-
-            var move = user.Definition.Moves[moveIndex];
-            events.Add(BattleEvent.MoveUsed(side, user, move));
-
-            if (!move.TargetsSelfOnly && !RollHit(user, target, move))
-            {
-                events.Add(BattleEvent.Of(BattleEventKind.Missed, side, user));
-                return;
-            }
-            if (move.IsStatus)
-            {
-                ApplyStatusMove(side, move, events);
-                return;
-            }
-
-            var result = DamageCalculator.Calculate(user, target, move, _random);
-            ApplyDamage(1 - side, target, result, events);
-            if (result.Effectiveness == 0f)
-            {
-                return;
-            }
-            ThawByFire(1 - side, target, move, events);
-            ApplySecondaryEffects(side, move, events);
-            AfterAttack(side, user, target, move, events);
-        }
-
-        /// <summary>命中 × 命中ランク ÷ 回避ランク（仕様書 §4.3）。ランクは差を -6〜+6 に収めて1つの倍率にする</summary>
-        private bool RollHit(BattleMonster user, BattleMonster target, MoveDefinition move)
-        {
-            int stage = user.GetStage(StatKind.Accuracy) - target.GetStage(StatKind.Evasion);
-            stage = Math.Max(-BattleBalance.MaxStatStage, Math.Min(BattleBalance.MaxStatStage, stage));
-            return _random.Next(BattleBalance.AccuracyPercentMax) < StageMultiplier.ApplyAccuracy(move.Accuracy, stage);
+            var leaving = _state.Sides[side].ActiveAt(slot);
+            leaving.OnWithdrawn();
+            events.Add(BattleEvent.Of(BattleEventKind.Withdrawn, side, leaving));
+            events.AddRange(Replace(side, slot, partyIndex));
         }
 
         private void ApplyDamage(int targetSide, BattleMonster target, DamageResult result, List<BattleEvent> events)

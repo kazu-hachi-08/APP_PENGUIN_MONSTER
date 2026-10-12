@@ -26,30 +26,30 @@ namespace PenguinMonster.View
                 case BattleEventKind.SentOut:
                     // 「ゆけっ！」の文を出してから登場させる
                     yield return _messageWindow.Show(message);
-                    InfoOf(e.Side).Show(e.Monster, e.Hp, e.Status);
+                    InfoOf(e).Show(e.Monster, e.Hp, e.Status);
                     BattleSounds.Play(BattleSound.SendOut);
-                    yield return ViewOf(e.Side).Appear(SpriteOf(e.Side, e.Monster));
+                    yield return ViewOf(e).Appear(SpriteOf(e.Side, e.Monster));
                     break;
                 case BattleEventKind.Withdrawn:
                     yield return _messageWindow.Show(message);
-                    yield return ViewOf(e.Side).Withdraw();
-                    InfoOf(e.Side).Hide();
+                    yield return ViewOf(e).Withdraw();
+                    InfoOf(e).Hide();
                     break;
                 case BattleEventKind.MoveUsed:
                     // 技名の文はタップを待たず、そのまま踏み込みとダメージへつなげる
                     yield return _messageWindow.Show(message);
                     BattleSounds.Play(BattleSound.Attack);
-                    yield return ViewOf(e.Side).Lunge();
+                    yield return ViewOf(e).Lunge();
                     break;
                 case BattleEventKind.Damaged:
                     BattleSounds.Play(HitSoundFor(events, index));
-                    yield return ViewOf(e.Side).Blink();
-                    yield return InfoOf(e.Side).AnimateHp(e.Hp);
+                    yield return ViewOf(e).Blink();
+                    yield return InfoOf(e).AnimateHp(e.Hp);
                     break;
                 case BattleEventKind.Fainted:
                     BattleSounds.Play(BattleSound.Faint);
-                    yield return ViewOf(e.Side).Faint();
-                    InfoOf(e.Side).Hide();
+                    yield return ViewOf(e).Faint();
+                    InfoOf(e).Hide();
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.StatusDamage:
@@ -58,8 +58,8 @@ namespace PenguinMonster.View
                 case BattleEventKind.ItemRecoil:
                     // 技以外のダメージは、先に HP を減らしてから理由の文を出す
                     BattleSounds.Play(BattleSound.Hit);
-                    yield return ViewOf(e.Side).Blink();
-                    yield return InfoOf(e.Side).AnimateHp(e.Hp);
+                    yield return ViewOf(e).Blink();
+                    yield return InfoOf(e).AnimateHp(e.Hp);
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.StatusInflicted:
@@ -71,17 +71,17 @@ namespace PenguinMonster.View
                 case BattleEventKind.ItemHealed:
                     // 回復は HP が増えてから理由の文を出す（減るときと同じ順）
                     BattleSounds.Play(BattleSound.StatUp);
-                    yield return InfoOf(e.Side).AnimateHp(e.Hp);
+                    yield return InfoOf(e).AnimateHp(e.Hp);
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.Confused:
                     BattleSounds.Play(BattleSound.Status);
-                    yield return ViewOf(e.Side).Flash(StatusColors.Confusion);
+                    yield return ViewOf(e).Flash(StatusColors.Confusion);
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.StatChanged:
                     BattleSounds.Play(e.Amount > 0 ? BattleSound.StatUp : BattleSound.StatDown);
-                    yield return ViewOf(e.Side).Flash(e.Amount > 0 ? StatusColors.StatUp : StatusColors.StatDown);
+                    yield return ViewOf(e).Flash(e.Amount > 0 ? StatusColors.StatUp : StatusColors.StatDown);
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.BattleEnd:
@@ -103,9 +103,9 @@ namespace PenguinMonster.View
             if (e.Status != StatusCondition.None)
             {
                 BattleSounds.Play(BattleSound.Status);
-                yield return ViewOf(e.Side).Flash(StatusColors.Get(e.Status));
+                yield return ViewOf(e).Flash(StatusColors.Get(e.Status));
             }
-            InfoOf(e.Side).SetStatus(e.Status);
+            InfoOf(e).SetStatus(e.Status);
             yield return _messageWindow.Play(message);
         }
 
@@ -127,9 +127,26 @@ namespace PenguinMonster.View
             return BattleSound.Hit;
         }
 
-        private MonsterView ViewOf(int side) => side == PlayerSide ? _playerView : _enemyView;
+        /// <summary>イベントの主語がいた場の絵。ダブルスは場の番号で左右を選ぶ</summary>
+        private MonsterView ViewOf(BattleEvent e)
+        {
+            if (!IsDoubles)
+            {
+                return e.Side == PlayerSide ? _playerView : _enemyView;
+            }
+            return e.Side == PlayerSide ? _playerDoubleViews[e.Slot] : _enemyDoubleViews[e.Slot];
+        }
 
-        private MonsterInfoBox InfoOf(int side) => side == PlayerSide ? _playerInfo : _enemyInfo;
+        private MonsterInfoBox InfoOf(BattleEvent e)
+        {
+            if (!IsDoubles)
+            {
+                return e.Side == PlayerSide ? _playerInfo : _enemyInfo;
+            }
+            return e.Side == PlayerSide ? _playerDoubleInfos[e.Slot] : _enemyDoubleInfos[e.Slot];
+        }
+
+        private bool IsDoubles => _state.Sides[PlayerSide].ActiveCount > 1;
 
         /// <summary>手前の自分は後ろ姿、奥の相手は正面</summary>
         private static Sprite SpriteOf(int side, BattleMonster monster)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using PenguinMonster.Battle;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,11 +23,12 @@ namespace PenguinMonster.View
             _partyButton.onClick.AddListener(() => Choose(_onParty));
         }
 
-        public void Show(BattleSide side, Action onFight, Action onParty)
+        /// <param name="reserved">ダブルスでもう1体が交代先に選んだ控え（交代できる子に数えない）</param>
+        public void Show(BattleSide side, ICollection<int> reserved, Action onFight, Action onParty)
         {
             _onFight = onFight;
             _onParty = onParty;
-            _partyButton.interactable = CanSwitchAny(side);
+            _partyButton.interactable = CanSwitchAny(side, reserved);
             gameObject.SetActive(true);
         }
 
@@ -42,11 +44,11 @@ namespace PenguinMonster.View
             action?.Invoke();
         }
 
-        private static bool CanSwitchAny(BattleSide side)
+        private static bool CanSwitchAny(BattleSide side, ICollection<int> reserved)
         {
             for (int i = 0; i < side.Party.Count; i++)
             {
-                if (side.CanSwitchTo(i))
+                if (side.CanSwitchTo(i) && !reserved.Contains(i))
                 {
                     return true;
                 }

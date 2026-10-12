@@ -8,15 +8,17 @@ namespace PenguinMonster.Battle
     /// </summary>
     public sealed partial class BattleEngine
     {
-        private void ApplyStatusMove(int side, MoveDefinition move, List<BattleEvent> events)
+        private void ApplyStatusMove(int side, BattleMonster user, BattleMonster target, MoveDefinition move, List<BattleEvent> events)
         {
             foreach (var effect in move.Effects)
             {
-                ApplyEffect(side, effect, true, events);
+                ApplyEffect(side, user, target, effect, true, events);
             }
         }
 
-        private void ApplySecondaryEffects(int side, MoveDefinition move, List<BattleEvent> events)
+        /// <param name="includeSelf">false なら自分にかかる効果は飛ばす（全体技の2体目以降）</param>
+        private void ApplySecondaryEffects(int side, BattleMonster user, BattleMonster target, MoveDefinition move, bool includeSelf,
+            List<BattleEvent> events)
         {
             foreach (var effect in move.Effects)
             {
@@ -25,24 +27,27 @@ namespace PenguinMonster.Battle
                 {
                     return;
                 }
-                if (Receiver(side, effect).IsFainted)
+                bool toSelf = effect.Target == EffectTarget.Self;
+                if ((toSelf && !includeSelf) || (toSelf ? user : target).IsFainted)
                 {
                     continue;
                 }
                 if (effect.Chance >= MoveEffect.AlwaysPercent || _random.Next(MoveEffect.AlwaysPercent) < effect.Chance)
                 {
-                    ApplyEffect(side, effect, false, events);
+                    ApplyEffect(side, user, target, effect, false, events);
                 }
             }
         }
 
-        private void ApplyEffect(int side, MoveEffect effect, bool reportFailure, List<BattleEvent> events)
+        private void ApplyEffect(int side, BattleMonster user, BattleMonster target, MoveEffect effect, bool reportFailure,
+            List<BattleEvent> events)
         {
-            int receiverSide = effect.Target == EffectTarget.Self ? side : 1 - side;
-            var receiver = _state.Sides[receiverSide].Active;
+            bool toSelf = effect.Target == EffectTarget.Self;
+            int receiverSide = toSelf ? side : 1 - side;
+            var receiver = toSelf ? user : target;
             if (effect.Relays)
             {
-                Relay(side, reportFailure, events);
+                Relay(side, user, reportFailure, events);
             }
             else if (effect.Stages != 0)
             {
@@ -62,23 +67,19 @@ namespace PenguinMonster.Battle
         /// 羽リレー: ランクを引き継いで控えの先頭と交代する。交代先を選ばせないのは、
         /// ターンの途中で入力を待たずに済み、オンラインでも SentOut のイベントだけで同期できるため
         /// </summary>
-        private void Relay(int side, bool reportFailure, List<BattleEvent> events)
+        private void Relay(int side, BattleMonster user, bool reportFailure, List<BattleEvent> events)
         {
             var battleSide = _state.Sides[side];
             int next = battleSide.FirstBenchIndex();
             if (next < 0)
             {
-                AddFailed(side, battleSide.Active, reportFailure, events);
+                AddFailed(side, user, reportFailure, events);
                 return;
             }
-            var stages = battleSide.Active.CopyStages();
-            ExecuteSwitch(side, next, events);
-            battleSide.Active.SetStages(stages);
-        }
-
-        private BattleMonster Receiver(int side, MoveEffect effect)
-        {
-            return effect.Target == EffectTarget.Self ? _state.Sides[side].Active : _state.Opponent(side).Active;
+            int slot = battleSide.SlotOf(user);
+            var stages = user.CopyStages();
+            ExecuteSwitch(side, slot, next, events);
+            battleSide.ActiveAt(slot).SetStages(stages);
         }
 
         private void TryInflict(int side, BattleMonster receiver, StatusCondition status, bool reportFailure, List<BattleEvent> events)

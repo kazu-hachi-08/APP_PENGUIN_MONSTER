@@ -23,6 +23,8 @@ namespace PenguinMonster.Battle
         /// <summary>命中率（%）</summary>
         public int Accuracy { get; }
         public int Priority { get; }
+        /// <summary>相手全員に当たる（ダブルスで意味がある。シングルは相手が1体なので変わらない）</summary>
+        public bool HitsAllFoes { get; }
         public IReadOnlyList<MoveEffect> Effects { get; }
 
         public bool IsStatus => Category == MoveCategory.Status;
@@ -48,7 +50,7 @@ namespace PenguinMonster.Battle
         }
 
         public MoveDefinition(string name, MonsterType type, MoveCategory category, int power, int accuracy,
-            int priority = 0, MoveEffect[] effects = null)
+            int priority = 0, MoveEffect[] effects = null, bool hitsAllFoes = false)
         {
             Name = name;
             Type = type;
@@ -56,6 +58,7 @@ namespace PenguinMonster.Battle
             Power = power;
             Accuracy = accuracy;
             Priority = priority;
+            HitsAllFoes = hitsAllFoes;
             Effects = effects ?? Array.Empty<MoveEffect>();
         }
     }

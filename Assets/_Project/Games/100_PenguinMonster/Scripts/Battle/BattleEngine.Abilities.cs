@@ -9,22 +9,29 @@ namespace PenguinMonster.Battle
     /// </summary>
     public sealed partial class BattleEngine
     {
-        /// <summary>場に出たとき。こわもて は相手の こうげき を下げる</summary>
-        private void OnSentOut(int side, List<BattleEvent> events)
+        /// <summary>場に出たとき。こわもて は場の相手全員の こうげき を下げる</summary>
+        private void OnSentOut(int side, int slot, List<BattleEvent> events)
         {
-            var monster = _state.Sides[side].Active;
-            var foe = _state.Opponent(side).Active;
+            var monster = _state.Sides[side].ActiveAt(slot);
+            var foe = _state.Opponent(side);
+            var foeSlots = foe.AliveSlots();
             // 両方ひんしの入れ替えで、相手がまだ出ていないときは空振りさせる
-            if (!monster.HasAbility(Ability.Intimidate) || foe.IsFainted)
+            if (monster.IsFainted || !monster.HasAbility(Ability.Intimidate) || foeSlots.Count == 0)
             {
                 return;
             }
             events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
-            ChangeStage(1 - side, foe, StatKind.Attack, BattleBalance.IntimidateStages, true, events);
+            foreach (int foeSlot in foeSlots)
+            {
+                ChangeStage(1 - side, foe.ActiveAt(foeSlot), StatKind.Attack, BattleBalance.IntimidateStages, true, events);
+            }
         }
 
-        /// <summary>攻撃技が当たったあと。相手をたおした・物理で殴られた の特性と、いのちのつらら の反動</summary>
-        private void AfterAttack(int side, BattleMonster user, BattleMonster target, MoveDefinition move, List<BattleEvent> events)
+        /// <summary>
+        /// 攻撃技が相手1体に当たったあと。相手をたおした・物理で殴られた の特性。
+        /// いのちのつらら の反動は、全体技でも技ごとに1回なので BattleEngine.Moves.cs で済ませる
+        /// </summary>
+        private void AfterHit(int side, BattleMonster user, BattleMonster target, MoveDefinition move, List<BattleEvent> events)
         {
             if (target.IsFainted)
             {
@@ -34,7 +41,6 @@ namespace PenguinMonster.Battle
             {
                 OnHitByPhysical(side, user, 1 - side, target, events);
             }
-            ApplyLifeIcicleRecoil(side, user, events);
         }
 
         /// <summary>いきおいづく: 相手をたおしたら こうげき が上がる</summary>

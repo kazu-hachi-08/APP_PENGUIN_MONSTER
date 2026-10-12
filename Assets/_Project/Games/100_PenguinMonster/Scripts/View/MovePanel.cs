@@ -44,7 +44,8 @@ namespace PenguinMonster.View
             _backButton.onClick.AddListener(() => Choose(_onBack));
         }
 
-        public void Show(BattleMonster monster, BattleMonster target, Action<int> onMove, Action onBack)
+        /// <param name="targets">場の相手（ダブルスは2体）。相性の札はどの相手にも同じときだけ出す</param>
+        public void Show(BattleMonster monster, IReadOnlyList<BattleMonster> targets, Action<int> onMove, Action onBack)
         {
             _onMove = onMove;
             _onBack = onBack;
@@ -53,7 +54,7 @@ namespace PenguinMonster.View
             for (int i = 0; i < _moveButtons.Length; i++)
             {
                 var move = _moves[i];
-                string tag = EffectivenessTag(move.Effectiveness(target.Definition.Types));
+                string tag = CommonTag(move, targets);
                 _moveLabels[i].text = $"{move.Name}{tag}\n<size=26>{move.Type.ToJapanese()}  {Detail(move)}</size>";
                 _moveButtons[i].image.color = TypeColors.Get(move.Type);
             }
@@ -61,8 +62,28 @@ namespace PenguinMonster.View
             gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// 相手全員に同じ札が付くときだけその札。ダブルスで相手によって違うときは出さず、狙う相手を選ぶ窓で1体ずつ見せる
+        /// </summary>
+        private static string CommonTag(MoveDefinition move, IReadOnlyList<BattleMonster> targets)
+        {
+            if (targets.Count == 0)
+            {
+                return "";
+            }
+            string tag = EffectivenessTag(move.Effectiveness(targets[0].Definition.Types));
+            for (int i = 1; i < targets.Count; i++)
+            {
+                if (EffectivenessTag(move.Effectiveness(targets[i].Definition.Types)) != tag)
+                {
+                    return "";
+                }
+            }
+            return tag;
+        }
+
         /// <summary>等倍は何も出さない（いつも出すと大事な ばつぐん が目立たなくなる）</summary>
-        private static string EffectivenessTag(float multiplier)
+        internal static string EffectivenessTag(float multiplier)
         {
             if (multiplier == 0f)
             {

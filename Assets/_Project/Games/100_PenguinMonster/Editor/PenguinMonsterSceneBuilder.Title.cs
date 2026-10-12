@@ -39,7 +39,8 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 TitleMainButtonSize = new Vector2(620f, 200f);
         private const float TitleMainSpacing = 40f;
         private static readonly Vector2 TitleBestPosition = new Vector2(0f, -150f);
-        private static readonly Vector2 TitleBestSize = new Vector2(700f, 70f);
+        // シングルとダブルスの2つの記録が1行に入る幅
+        private static readonly Vector2 TitleBestSize = new Vector2(1100f, 70f);
         private static readonly Vector2 TitleSubMenuPosition = new Vector2(0f, 90f);
         private static readonly Vector2 TitleSubButtonSize = new Vector2(340f, 100f);
         private const float TitleSubSpacing = 30f;

@@ -12,15 +12,18 @@ namespace PenguinMonster.Battle
         private readonly Random _random;
 
         public IReadOnlyList<MonsterDefinition> PlayerSix { get; }
+        /// <summary>シングルかダブルスか。1回の勝ち抜き戦の中では変えない</summary>
+        public BattleFormat Format { get; }
         public int Wins { get; private set; }
         /// <summary>次に戦うのが何戦目か（1 から）</summary>
         public int BattleNumber => Wins + 1;
         public bool IsBossBattle => IsBoss(BattleNumber);
 
-        public SurvivalRun(IReadOnlyList<MonsterDefinition> playerSix, Random random)
+        public SurvivalRun(IReadOnlyList<MonsterDefinition> playerSix, Random random, BattleFormat format = BattleFormat.Single)
         {
             PlayerSix = playerSix;
             _random = random;
+            Format = format;
         }
 
         public void RecordWin() => Wins++;

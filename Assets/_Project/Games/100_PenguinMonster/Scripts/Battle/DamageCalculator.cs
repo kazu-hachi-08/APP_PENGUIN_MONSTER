@@ -21,7 +21,9 @@ namespace PenguinMonster.Battle
     /// </summary>
     public static class DamageCalculator
     {
-        public static DamageResult Calculate(BattleMonster attacker, BattleMonster defender, MoveDefinition move, Random random)
+        /// <param name="targetMultiplier">全体技が2体に当たったときの倍率（仕様書 §4.9）。特性・持ち物の倍率と一緒に最後に掛ける</param>
+        public static DamageResult Calculate(BattleMonster attacker, BattleMonster defender, MoveDefinition move, Random random,
+            float targetMultiplier = 1f)
         {
             float effectiveness = TypeChart.GetMultiplier(move.Type, defender.Definition.Types);
             if (effectiveness == 0f)
@@ -39,7 +41,7 @@ namespace PenguinMonster.Battle
             bool isStab = attacker.Definition.HasType(move.Type);
 
             int damage = Compute(move.Power, attack, defense, isCritical, randomPercent, isStab, effectiveness,
-                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness));
+                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier);
             return new DamageResult(damage, isCritical, effectiveness);
         }
 
@@ -47,7 +49,7 @@ namespace PenguinMonster.Battle
         /// CPU が技を比べるための見込みダメージ。乱数は引かず（急所なし・乱数最大）、命中率を掛ける。
         /// 変化技と効かない技は 0
         /// </summary>
-        public static float Expected(BattleMonster attacker, BattleMonster defender, MoveDefinition move)
+        public static float Expected(BattleMonster attacker, BattleMonster defender, MoveDefinition move, float targetMultiplier = 1f)
         {
             float effectiveness = TypeChart.GetMultiplier(move.Type, defender.Definition.Types);
             if (move.IsStatus || effectiveness == 0f)
@@ -58,7 +60,7 @@ namespace PenguinMonster.Battle
             bool isPhysical = move.Category == MoveCategory.Physical;
             int damage = Compute(move.Power, attacker.AttackStat(isPhysical, false), defender.DefenseStat(isPhysical, false),
                 false, BattleBalance.DamageRandomMaxPercent, attacker.Definition.HasType(move.Type), effectiveness,
-                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness));
+                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier);
             return damage * move.Accuracy / (float)BattleBalance.AccuracyPercentMax;
         }
 

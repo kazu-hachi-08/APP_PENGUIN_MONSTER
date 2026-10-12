@@ -1,3 +1,4 @@
+using PenguinMonster.Battle;
 using PenguinMonster.Common.Editor;
 using PenguinMonster.View;
 using UnityEditor;
@@ -7,7 +8,8 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 上側のバトル場（空・地面・台座・ペンモン・名前とHPの枠）。ダイパ風に奥右に相手、手前左に自分
+    /// 上側のバトル場（空・地面・台座・ペンモン・名前とHPの枠）。ダイパ風に奥右に相手、手前左に自分。
+    /// ダブルスはダイパと同じく1つの台座に2体を左右に並べ、絵を一回り小さくする。名前の枠は縦に2つ重ねる
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -34,6 +36,17 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 EnemyInfoSize = new Vector2(700f, 150f);
         private static readonly Vector2 PlayerInfoPosition = new Vector2(500f, -110f);
         private static readonly Vector2 PlayerInfoSize = new Vector2(700f, 190f);
+
+        // ダブルス。台座の中心から左右にずらして並べる（相手 4倍・自分 6倍）
+        private const float EnemyDoubleOffsetX = 140f;
+        private const float PlayerDoubleOffsetX = 190f;
+        private const float EnemyDoubleSpriteSize = 256f;
+        private const float PlayerDoubleSpriteSize = 384f;
+        // 相手の枠は状態異常の印を枠のすぐ下に出すので、そのぶん間を空けて重ねる
+        private static readonly Vector2[] EnemyDoubleInfoPositions = { new Vector2(-540f, 470f), new Vector2(-540f, 300f) };
+        private static readonly Vector2 EnemyDoubleInfoSize = new Vector2(640f, 110f);
+        private static readonly Vector2[] PlayerDoubleInfoPositions = { new Vector2(560f, 5f), new Vector2(560f, -160f) };
+        private static readonly Vector2 PlayerDoubleInfoSize = new Vector2(640f, 160f);
         private const float InfoPadding = 28f;
         private const float HpBarHeight = 22f;
         private const float HpFillInset = 3f;
@@ -56,6 +69,32 @@ namespace PenguinMonster.Editor
             playerView = CreateMonsterView(parent, "PlayerView", PlayerPlatformPosition, PlayerSpriteSize, PlayerLungeDirection);
             enemyInfo = CreateInfoBox(parent, "EnemyInfo", EnemyInfoPosition, EnemyInfoSize, showHpNumbers: false);
             playerInfo = CreateInfoBox(parent, "PlayerInfo", PlayerInfoPosition, PlayerInfoSize, showHpNumbers: true);
+        }
+
+        /// <summary>ダブルスの場（場の順。0 が左）。シングルの場と同じ所に重ねて作り、使わない方は隠れたまま</summary>
+        private static void BuildDoubleField(Transform parent, out MonsterView[] playerViews, out MonsterView[] enemyViews,
+            out MonsterInfoBox[] playerInfos, out MonsterInfoBox[] enemyInfos)
+        {
+            int count = BattleBalance.DoublesActiveCount;
+            playerViews = new MonsterView[count];
+            enemyViews = new MonsterView[count];
+            playerInfos = new MonsterInfoBox[count];
+            enemyInfos = new MonsterInfoBox[count];
+            for (int slot = 0; slot < count; slot++)
+            {
+                float side = slot == 0 ? -1f : 1f;
+                enemyViews[slot] = CreateMonsterView(parent, $"EnemyView{slot}",
+                    EnemyPlatformPosition + new Vector2(side * EnemyDoubleOffsetX, 0f), EnemyDoubleSpriteSize, EnemyLungeDirection);
+                playerViews[slot] = CreateMonsterView(parent, $"PlayerView{slot}",
+                    PlayerPlatformPosition + new Vector2(side * PlayerDoubleOffsetX, 0f), PlayerDoubleSpriteSize, PlayerLungeDirection);
+            }
+            for (int slot = 0; slot < count; slot++)
+            {
+                enemyInfos[slot] = CreateInfoBox(parent, $"EnemyInfo{slot}", EnemyDoubleInfoPositions[slot], EnemyDoubleInfoSize,
+                    showHpNumbers: false);
+                playerInfos[slot] = CreateInfoBox(parent, $"PlayerInfo{slot}", PlayerDoubleInfoPositions[slot], PlayerDoubleInfoSize,
+                    showHpNumbers: true);
+            }
         }
 
         private static void CreateBackdrop(Transform parent)

@@ -89,9 +89,11 @@ namespace PenguinMonster.Editor
             // 一番奥のタップ領域 → 場 → 下の窓 → 交代の画面、の順に重ねる
             var fieldTapArea = CreateFieldTapArea(root.transform);
             BuildField(root.transform, out var playerView, out var enemyView, out var playerInfo, out var enemyInfo);
+            BuildDoubleField(root.transform, out var playerViews, out var enemyViews, out var playerInfos, out var enemyInfos);
             var messageWindow = CreateMessageWindow(root.transform, fieldTapArea);
             var commandPanel = CreateCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
+            var targetPanel = CreateTargetPanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
             // 交代の画面の上にも見えるよう、最後に重ねる
             var turnTimer = CreateCountdown(root.transform, TopCenter, BattleCountdownPosition);
@@ -102,9 +104,14 @@ namespace PenguinMonster.Editor
             so.FindProperty("_enemyView").objectReferenceValue = enemyView;
             so.FindProperty("_playerInfo").objectReferenceValue = playerInfo;
             so.FindProperty("_enemyInfo").objectReferenceValue = enemyInfo;
+            SetArray(so.FindProperty("_playerDoubleViews"), playerViews);
+            SetArray(so.FindProperty("_enemyDoubleViews"), enemyViews);
+            SetArray(so.FindProperty("_playerDoubleInfos"), playerInfos);
+            SetArray(so.FindProperty("_enemyDoubleInfos"), enemyInfos);
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
+            so.FindProperty("_targetPanel").objectReferenceValue = targetPanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
             so.FindProperty("_turnTimer").objectReferenceValue = turnTimer;
             so.ApplyModifiedProperties();
@@ -112,7 +119,7 @@ namespace PenguinMonster.Editor
         }
 
         /// <summary>
-        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
+        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
         /// 結果は共通基盤の ResultDialog を使う。「もう一度遊ぶ」は勝ち抜き戦の「つぎの たたかいへ」に使う
         /// </summary>
         private static void BuildFlow(Transform canvas, BattleController battle)
@@ -125,6 +132,7 @@ namespace PenguinMonster.Editor
             var selectPanel = CreateSelectPanel(root.transform);
             var introPanel = CreateIntroPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
+            var formatPanel = CreateFormatPanel(root.transform);
             var quitButton = CreateQuitButton(root.transform);
             var subMenus = CreateSubMenus(root.transform);
             var titlePanel = CreateTitlePanel(root.transform, subMenus);
@@ -133,6 +141,7 @@ namespace PenguinMonster.Editor
             var flow = root.AddComponent<GameFlow>();
             var so = new SerializedObject(flow);
             so.FindProperty("_titlePanel").objectReferenceValue = titlePanel;
+            so.FindProperty("_formatPanel").objectReferenceValue = formatPanel;
             so.FindProperty("_draftPanel").objectReferenceValue = draftPanel;
             so.FindProperty("_introPanel").objectReferenceValue = introPanel;
             so.FindProperty("_selectPanel").objectReferenceValue = selectPanel;

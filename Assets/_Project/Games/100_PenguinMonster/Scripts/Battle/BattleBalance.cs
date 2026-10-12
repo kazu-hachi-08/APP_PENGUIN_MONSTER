@@ -42,6 +42,12 @@ namespace PenguinMonster.Battle
 
         /// <summary>1陣営あたりの場の数。シングルは1、ダブルスは2</summary>
         public const int SingleActiveCount = 1;
+        public const int DoublesActiveCount = 2;
+
+        // ダブルス（仕様書 §4.9）。場に2体ずつなので、控えが残るよう選出は1体多くする
+        public const int DoublesPartySize = 4;
+        /// <summary>相手全員に当たる技が、2体以上に当たったときのダメージの倍率</summary>
+        public const float SpreadMultiplier = 0.75f;
 
         // ダメージ式の定数（ポケモンと同じ式）
         public const int DamageDivisor = 50;

@@ -8,13 +8,36 @@ namespace PenguinMonster.Battle
     /// </summary>
     public static class OnlineCodec
     {
-        public static int[] EncodeAction(BattleAction action) => new[] { (int)action.Kind, action.Index };
+        /// <summary>行動1つは 3 int（種類・技の番号か選出の何番目か・狙う相手の場）</summary>
+        public const int FieldsPerAction = 3;
 
-        public static BattleAction DecodeAction(int[] data)
+        public static int[] EncodeAction(BattleAction action) => EncodeActions(new[] { action });
+
+        public static BattleAction DecodeAction(int[] data) => DecodeActions(data)[0];
+
+        /// <summary>場の順の行動（シングルは1つ、ダブルスは2つ）を1つの列にする</summary>
+        public static int[] EncodeActions(IReadOnlyList<BattleAction> actions)
         {
-            return (BattleActionKind)data[0] == BattleActionKind.Switch
-                ? BattleAction.SwitchTo(data[1])
-                : BattleAction.UseMove(data[1]);
+            var data = new int[actions.Count * FieldsPerAction];
+            for (int i = 0; i < actions.Count; i++)
+            {
+                data[i * FieldsPerAction] = (int)actions[i].Kind;
+                data[i * FieldsPerAction + 1] = actions[i].Index;
+                data[i * FieldsPerAction + 2] = actions[i].Target;
+            }
+            return data;
+        }
+
+        public static List<BattleAction> DecodeActions(int[] data)
+        {
+            var actions = new List<BattleAction>();
+            for (int offset = 0; offset + FieldsPerAction <= data.Length; offset += FieldsPerAction)
+            {
+                actions.Add((BattleActionKind)data[offset] == BattleActionKind.Switch
+                    ? BattleAction.SwitchTo(data[offset + 1])
+                    : BattleAction.UseMove(data[offset + 1], data[offset + 2]));
+            }
+            return actions;
         }
 
         /// <summary>ペンモンは No の列で送る（ドラフトの6体・選出の3体。どちらも同じペンモンは重ならない）</summary>

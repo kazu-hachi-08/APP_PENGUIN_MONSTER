@@ -8,7 +8,8 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// 技の定義表（50体ぶん）。技名は原作と被らないオリジナル（仕様書 §1.2）。
-    /// 変化技の威力は 0、自分にかける変化技の命中は使わない（必ず決まる）
+    /// 変化技の威力は 0、自分にかける変化技の命中は使わない（必ず決まる）。
+    /// hitsAllFoes はダブルスで相手2体に当たる技（波・吹雪・噴火・声・風・落石など、広がるイメージのもの）
     /// </summary>
     public static class MoveTable
     {
@@ -20,7 +21,7 @@ namespace PenguinMonster.Battle
         public static readonly MoveDefinition PenguinPress = new MoveDefinition("ペンギンプレス", Normal, Physical, 85, Sure,
             effects: new[] { Ailment(Paralysis, 30) });
         public static readonly MoveDefinition Shout = new MoveDefinition("叫び声", Normal, Special, 80, Sure,
-            effects: new[] { Confusion(10) });
+            effects: new[] { Confusion(10) }, hitsAllFoes: true);
         public static readonly MoveDefinition FlapDance = new MoveDefinition("羽ばたきダンス", Normal, Status, 0, Sure,
             effects: new[] { SelfStat(Attack, 2) });
         public static readonly MoveDefinition CutePose = new MoveDefinition("可愛いポーズ", Normal, Status, 0, Sure,
@@ -34,21 +35,21 @@ namespace PenguinMonster.Battle
         public static readonly MoveDefinition IcicleBeak = new MoveDefinition("氷柱クチバシ", Ice, Physical, 75, Sure,
             effects: new[] { Ailment(Freeze, 10) });
         public static readonly MoveDefinition BlizzardBreath = new MoveDefinition("吹雪ブレス", Ice, Special, 90, 85,
-            effects: new[] { Ailment(Freeze, 10) });
+            effects: new[] { Ailment(Freeze, 10) }, hitsAllFoes: true);
         public static readonly MoveDefinition SnowPellet = new MoveDefinition("雪つぶて", Ice, Physical, 40, Sure, priority: 1);
         public static readonly MoveDefinition IcebergDrop = new MoveDefinition("氷山落とし", Ice, Physical, 100, 80);
         public static readonly MoveDefinition ColdBreath = new MoveDefinition("冷たい息", Ice, Special, 55, 95,
-            effects: new[] { FoeStat(Speed, -1) });
+            effects: new[] { FoeStat(Speed, -1) }, hitsAllFoes: true);
         // 伝説 ナンキョクペン の専用技
         public static readonly MoveDefinition GreatGlacier = new MoveDefinition("大氷河", Ice, Physical, 120, 85,
             effects: new[] { Ailment(Freeze, 10) });
 
         // うみ
-        public static readonly MoveDefinition BigWave = new MoveDefinition("大波", Sea, Special, 80, Sure);
+        public static readonly MoveDefinition BigWave = new MoveDefinition("大波", Sea, Special, 80, Sure, hitsAllFoes: true);
         public static readonly MoveDefinition SeaGun = new MoveDefinition("潮鉄砲", Sea, Physical, 70, Sure);
         public static readonly MoveDefinition Whirlpool = new MoveDefinition("渦潮アタック", Sea, Physical, 90, 90);
         public static readonly MoveDefinition BubbleSpit = new MoveDefinition("泡吐き", Sea, Special, 40, Sure,
-            effects: new[] { FoeStat(Speed, -1, 30) });
+            effects: new[] { FoeStat(Speed, -1, 30) }, hitsAllFoes: true);
         public static readonly MoveDefinition Splash = new MoveDefinition("水かけ", Sea, Status, 0, Sure,
             effects: new[] { FoeStat(Accuracy, -1) });
         public static readonly MoveDefinition HotSpring = new MoveDefinition("温泉しぶき", Sea, Special, 80, Sure,
@@ -60,7 +61,7 @@ namespace PenguinMonster.Battle
         public static readonly MoveDefinition CampfireBreath = new MoveDefinition("焚き火ブレス", Fire, Special, 85, 90,
             effects: new[] { Ailment(Burn, 10) });
         public static readonly MoveDefinition Eruption = new MoveDefinition("噴火ブラスト", Fire, Special, 110, 80,
-            effects: new[] { Ailment(Burn, 10) });
+            effects: new[] { Ailment(Burn, 10) }, hitsAllFoes: true);
         public static readonly MoveDefinition WispFlame = new MoveDefinition("ゆらゆら火", Fire, Status, 0, 85,
             effects: new[] { Ailment(Burn) });
         public static readonly MoveDefinition FlareUp = new MoveDefinition("燃え上がる", Fire, Status, 0, Sure,
@@ -92,7 +93,7 @@ namespace PenguinMonster.Battle
             effects: new[] { Ailment(BadPoison) });
 
         // いわ
-        public static readonly MoveDefinition Boulder = new MoveDefinition("ごろごろ落とし", Rock, Physical, 80, 90);
+        public static readonly MoveDefinition Boulder = new MoveDefinition("ごろごろ落とし", Rock, Physical, 80, 90, hitsAllFoes: true);
         public static readonly MoveDefinition CliffBreak = new MoveDefinition("崖崩し", Rock, Physical, 100, 80);
         public static readonly MoveDefinition RockSkin = new MoveDefinition("岩肌", Rock, Status, 0, Sure,
             effects: new[] { SelfStat(Defense, 2) });
@@ -102,7 +103,7 @@ namespace PenguinMonster.Battle
         public static readonly MoveDefinition FlapAttack = new MoveDefinition("羽ばたきアタック", Bird, Physical, 80, Sure);
         public static readonly MoveDefinition DiveBeak = new MoveDefinition("急降下ダイブ", Bird, Physical, 100, 90);
         public static readonly MoveDefinition Whirlwind = new MoveDefinition("ぐるぐる風", Bird, Special, 60, Sure,
-            effects: new[] { Confusion(30) });
+            effects: new[] { Confusion(30) }, hitsAllFoes: true);
         public static readonly MoveDefinition SkyDream = new MoveDefinition("空への憧れ", Bird, Status, 0, Sure,
             effects: new[] { SelfStat(Speed, 2) });
 
@@ -122,7 +123,7 @@ namespace PenguinMonster.Battle
 
         // オーロラ
         public static readonly MoveDefinition AuroraWave = new MoveDefinition("オーロラウェーブ", Aurora, Special, 80, Sure,
-            effects: new[] { Confusion(10) });
+            effects: new[] { Confusion(10) }, hitsAllFoes: true);
         public static readonly MoveDefinition SparkleLaser = new MoveDefinition("煌めきレーザー", Aurora, Special, 100, 85);
         public static readonly MoveDefinition QuietPrayer = new MoveDefinition("静かな祈り", Aurora, Status, 0, Sure,
             effects: new[] { SelfStat(SpAttack, 1), SelfStat(SpDefense, 1) });

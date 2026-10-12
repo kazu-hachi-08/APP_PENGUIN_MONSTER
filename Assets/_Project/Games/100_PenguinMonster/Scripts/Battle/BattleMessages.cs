@@ -22,7 +22,8 @@ namespace PenguinMonster.Battle
                 case BattleEventKind.MoveUsed:
                     return $"{subject}の {e.MoveName}！";
                 case BattleEventKind.Missed:
-                    return "しかし 攻撃は 外れた！";
+                    // ダブルスでは2体のうちどちらに外れたか分かるよう、外れた相手を主語にする
+                    return $"しかし {subject}には 当たらなかった！";
                 case BattleEventKind.Critical:
                     return "急所に 当たった！";
                 case BattleEventKind.SuperEffective:

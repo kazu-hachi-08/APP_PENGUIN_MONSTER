@@ -4,12 +4,12 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// あそびかた（Phase 8）。上のタブで ドラフト・選出・バトル・勝ち抜き戦 を切り替える。
+    /// あそびかた（Phase 8）。上のタブで ドラフト・選出・バトル・ダブルス・勝ち抜き戦 を切り替える。
     /// 文面は仕様書 §2・§4 の要約。ルールを変えたらここも直す
     /// </summary>
     public class HowToPanel : SubMenuPanel
     {
-        public static readonly string[] PageTitles = { "ドラフト", "選出", "バトル", "勝ち抜き戦" };
+        public static readonly string[] PageTitles = { "ドラフト", "選出", "バトル", "ダブルス", "勝ち抜き戦" };
 
         private static readonly string[] PageBodies =
         {
@@ -30,11 +30,17 @@ namespace PenguinMonster.View
             + "・麻痺・毒・火傷・眠り・氷・混乱 や、能力の ランク にも 注意\n"
             + "・相手の 3体を 全部 倒したら 勝ち！",
 
+            "・4体を 選んで、場に 2体ずつ 出して 戦います（最初に シングルか ダブルスを 選びます）\n"
+            + "・左の ペンモンから 順に 行動を 選びます。技を 選んだら、狙う 相手も 選びます\n"
+            + "・「相手 全員に 当たる」技は 2体に 当たりますが、ダメージは 0.75倍\n"
+            + "・倒れたら 控えから 出します。控えが いなければ 1体で 戦い続けます\n"
+            + "・相手の 4体を 全部 倒したら 勝ち！",
+
             "・最初の ドラフトで 選んだ 6体で、負けるまで 戦い続けます\n"
             + "・HP や 状態異常 は 毎回 全回復 します\n"
             + "・勝つほど 相手の CPU が 賢く、強く なります\n"
             + "・7戦目・14戦目… は ボス戦！\n"
-            + "・何連勝 できるか 挑戦 しよう。最高記録は タイトルに 出ます",
+            + "・何連勝 できるか 挑戦 しよう。最高記録は シングル・ダブルス 別々に タイトルに 出ます",
         };
 
         [SerializeField] private Button[] _tabButtons;

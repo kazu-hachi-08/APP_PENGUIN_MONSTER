@@ -7,9 +7,9 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 3vs3 の進行役（1試合ぶん）。ターンの計算は BattleEngine に任せ、ここは入力待ちと表示の順番だけを持つ。
+    /// 1試合の進行役（シングル 3vs3 / ダブルス 4vs4）。ターンの計算は BattleEngine に任せ、ここは入力待ちと表示の順番だけを持つ。
     /// チームは GameFlow から渡される（ドラフト・選出・結果はバトルの外）。
-    /// イベントの再生は BattleController.Playback.cs、オンライン対戦は BattleController.Online.cs
+    /// 行動の選び方は BattleController.Commands.cs、イベントの再生は .Playback.cs、オンライン対戦は .Online.cs
     /// </summary>
     public partial class BattleController : MonoBehaviour
     {
@@ -17,13 +17,21 @@ namespace PenguinMonster.View
         private const int PlayerSide = 0;
         private const int OpponentSide = 1;
 
+        [Header("シングルの場")]
         [SerializeField] private MonsterView _playerView;
         [SerializeField] private MonsterView _enemyView;
         [SerializeField] private MonsterInfoBox _playerInfo;
         [SerializeField] private MonsterInfoBox _enemyInfo;
+        [Header("ダブルスの場（場の順。0 が左）")]
+        [SerializeField] private MonsterView[] _playerDoubleViews;
+        [SerializeField] private MonsterView[] _enemyDoubleViews;
+        [SerializeField] private MonsterInfoBox[] _playerDoubleInfos;
+        [SerializeField] private MonsterInfoBox[] _enemyDoubleInfos;
+        [Header("窓")]
         [SerializeField] private MessageWindow _messageWindow;
         [SerializeField] private CommandPanel _commandPanel;
         [SerializeField] private MovePanel _movePanel;
+        [SerializeField] private TargetPanel _targetPanel;
         [SerializeField] private PartyPanel _partyPanel;
         [Tooltip("オンラインの1ターンの制限時間。オフラインでは隠れたまま")]
         [SerializeField] private CountdownTimer _turnTimer;
@@ -32,7 +40,6 @@ namespace PenguinMonster.View
         /// <summary>オフラインとホストは _engine の状態、ゲストはホストから届いたイベントで作る写し</summary>
         private BattleState _state;
         private CpuPlayer _cpu;
-        private BattleAction _playerAction;
         private int _replacementIndex = -1;
         /// <summary>行動・入れ替えを選ぶ制限時間。0 なら制限なし（CPU 戦）</summary>
         private float _choiceSeconds;
@@ -53,11 +60,31 @@ namespace PenguinMonster.View
         private void ClearField()
         {
             HideChoices();
-            _playerView.Hide();
-            _enemyView.Hide();
-            _playerInfo.Hide();
-            _enemyInfo.Hide();
+            foreach (var view in AllViews())
+            {
+                view.Hide();
+            }
+            foreach (var info in AllInfos())
+            {
+                info.Hide();
+            }
             _messageWindow.SetText("");
+        }
+
+        private IEnumerable<MonsterView> AllViews()
+        {
+            yield return _playerView;
+            yield return _enemyView;
+            foreach (var view in _playerDoubleViews) yield return view;
+            foreach (var view in _enemyDoubleViews) yield return view;
+        }
+
+        private IEnumerable<MonsterInfoBox> AllInfos()
+        {
+            yield return _playerInfo;
+            yield return _enemyInfo;
+            foreach (var info in _playerDoubleInfos) yield return info;
+            foreach (var info in _enemyDoubleInfos) yield return info;
         }
 
         private void HideChoices()
@@ -65,21 +92,22 @@ namespace PenguinMonster.View
             _turnTimer.Stop();
             _commandPanel.Hide();
             _movePanel.gameObject.SetActive(false);
+            _targetPanel.gameObject.SetActive(false);
             _partyPanel.gameObject.SetActive(false);
         }
 
         /// <summary>CPU とのバトルを決着まで進める。勝敗は終わったあと PlayerWon で見る</summary>
         public IEnumerator Run(List<MonsterDefinition> playerParty, List<MonsterDefinition> cpuParty,
-            System.Random random, CpuPlayer cpu)
+            System.Random random, CpuPlayer cpu, BattleFormat format)
         {
-            BeginLocal(playerParty, cpuParty, random, choiceSeconds: 0f);
+            BeginLocal(playerParty, cpuParty, random, format, choiceSeconds: 0f);
             _cpu = cpu;
 
             yield return Play(_engine.StartBattle());
             while (!_state.IsOver)
             {
-                yield return WaitForPlayerAction();
-                yield return Play(_engine.ResolveTurn(_playerAction, _cpu.ChooseAction(Opponent, Player)));
+                yield return WaitForPlayerActions();
+                yield return Play(_engine.ResolveTurn(_playerActions, _cpu.ChooseActions(Opponent, Player)));
                 if (!_state.IsOver)
                 {
                     yield return ReplaceFainted();
@@ -89,73 +117,48 @@ namespace PenguinMonster.View
 
         /// <summary>計算を自分の端末でする試合（CPU 戦・オンラインのホスト）を始める</summary>
         private void BeginLocal(List<MonsterDefinition> playerParty, List<MonsterDefinition> opponentParty,
-            System.Random random, float choiceSeconds)
+            System.Random random, BattleFormat format, float choiceSeconds)
         {
             ClearField();
-            _engine = new BattleEngine(new BattleState(playerParty, opponentParty), random);
+            _engine = new BattleEngine(new BattleState(playerParty, opponentParty, format.ActiveCount()), random);
             _state = _engine.State;
             _choiceSeconds = choiceSeconds;
         }
 
-        private IEnumerator WaitForPlayerAction()
-        {
-            _playerAction = null;
-            ShowCommands();
-            // 時間切れは一番上の技（仕様書 §4.7）
-            StartChoiceTimer(() => _playerAction = BattleAction.UseMove(0));
-            yield return new WaitUntil(() => _playerAction != null);
-            _turnTimer.Stop();
-        }
-
-        private void ShowCommands()
-        {
-            _messageWindow.SetText($"{Player.Active.Name}は どうする？");
-            _commandPanel.Show(Player, onFight: ShowMoveSelect, onParty: ShowSwitchSelect);
-        }
-
-        private void ShowMoveSelect()
-        {
-            _movePanel.Show(Player.Active, Opponent.Active,
-                onMove: index => _playerAction = BattleAction.UseMove(index),
-                onBack: ShowCommands);
-        }
-
-        private void ShowSwitchSelect()
-        {
-            _partyPanel.Show(Player,
-                onSelect: index => _playerAction = BattleAction.SwitchTo(index),
-                onBack: ShowCommands);
-        }
-
+        /// <summary>空いた場を前から1つずつ埋める。自分が先、CPU が後</summary>
         private IEnumerator ReplaceFainted()
         {
-            if (Player.NeedsReplacement)
+            foreach (int slot in Player.ReplaceableSlots())
             {
-                yield return ChooseReplacement();
-                yield return Play(_engine.Replace(PlayerSide, _replacementIndex));
+                yield return ChooseReplacement(slot, new List<int>());
+                yield return Play(_engine.Replace(PlayerSide, slot, _replacementIndex));
             }
-            if (Opponent.NeedsReplacement)
+            foreach (int slot in Opponent.ReplaceableSlots())
             {
-                yield return Play(_engine.Replace(OpponentSide, _cpu.ChooseReplacement(Opponent, Player)));
+                yield return Play(_engine.Replace(OpponentSide, slot, _cpu.ChooseReplacement(Opponent, Player)));
             }
         }
 
-        /// <summary>ひんしの後に出すペンモンを選ばせ、_replacementIndex に入れる。時間切れは出せる中の先頭</summary>
-        private IEnumerator ChooseReplacement()
+        /// <summary>
+        /// 瀕死の後に場の slot 番目へ出すペンモンを選ばせ、_replacementIndex に入れる。
+        /// reserved は同じ入れ替えで先に選んだ子（オンラインはまとめて送るので、写しの場にはまだ出ていない）。時間切れは出せる中の先頭
+        /// </summary>
+        private IEnumerator ChooseReplacement(int slot, List<int> reserved)
         {
             _replacementIndex = -1;
-            _messageWindow.SetText("次の ペンモンを 選んでください");
-            _partyPanel.Show(Player, onSelect: index => _replacementIndex = index, onBack: null);
-            StartChoiceTimer(() => _replacementIndex = FirstReplaceable());
+            string fainted = Player.ActiveCount > 1 ? $"{Player.ActiveAt(slot).Name}の 代わりに " : "";
+            _messageWindow.SetText($"{fainted}次の ペンモンを 選んでください");
+            _partyPanel.Show(Player, onSelect: index => _replacementIndex = index, onBack: null, reserved);
+            StartChoiceTimer(() => _replacementIndex = FirstReplaceable(reserved));
             yield return new WaitUntil(() => _replacementIndex >= 0);
             _turnTimer.Stop();
         }
 
-        private int FirstReplaceable()
+        private int FirstReplaceable(List<int> reserved)
         {
             for (int i = 0; i < Player.Party.Count; i++)
             {
-                if (Player.CanSwitchTo(i))
+                if (Player.CanSwitchTo(i) && !reserved.Contains(i))
                 {
                     return i;
                 }

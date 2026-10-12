@@ -85,17 +85,17 @@ namespace PenguinMonster.Battle
 
         /// <summary>
         /// ターン終わりの どく・やけど のダメージ → 持ち物（ほしざかな）→ 特性（おいかぜのり）。
-        /// すばやさの高い側から（同速は陣営0から）1体ずつ全部済ませる
+        /// 場の全員を すばやさの高い順に（同速は陣営0から）1体ずつ全部済ませる
         /// </summary>
         private void ApplyEndOfTurn(List<BattleEvent> events)
         {
-            foreach (var side in SidesBySpeed())
+            foreach (var position in ActivesBySpeed())
             {
                 if (_state.IsOver)
                 {
                     return;
                 }
-                var monster = side.Active;
+                var monster = _state.Sides[position.Side].ActiveAt(position.Slot);
                 if (monster.IsFainted)
                 {
                     continue;
@@ -103,18 +103,11 @@ namespace PenguinMonster.Battle
                 int damage = StatusDamage(monster);
                 if (damage > 0)
                 {
-                    ApplyDirectDamage(side.Index, monster, damage, BattleEventKind.StatusDamage, events);
+                    ApplyDirectDamage(position.Side, monster, damage, BattleEventKind.StatusDamage, events);
                 }
-                ApplyEndOfTurnItem(side.Index, monster, events);
-                ApplyEndOfTurnAbility(side.Index, monster, events);
+                ApplyEndOfTurnItem(position.Side, monster, events);
+                ApplyEndOfTurnAbility(position.Side, monster, events);
             }
-        }
-
-        private IEnumerable<BattleSide> SidesBySpeed()
-        {
-            var first = _state.Sides[0];
-            var second = _state.Sides[1];
-            return second.Active.EffectiveSpeed > first.Active.EffectiveSpeed ? new[] { second, first } : new[] { first, second };
         }
 
         /// <summary>状態異常によるターン終わりのダメージ。もうどくは呼ぶたびに段階が1つ上がる</summary>

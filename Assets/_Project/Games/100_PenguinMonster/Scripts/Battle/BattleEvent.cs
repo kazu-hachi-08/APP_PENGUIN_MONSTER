@@ -54,6 +54,8 @@ namespace PenguinMonster.Battle
         public BattleEventKind Kind { get; }
         /// <summary>主語になる陣営。BattleEnd のときは勝った陣営</summary>
         public int Side { get; }
+        /// <summary>主語のペンモンが場の何番目にいたか（ダブルスの表示用。シングルはいつも 0）</summary>
+        public int Slot { get; }
         public BattleMonster Monster { get; }
         public string MoveName { get; }
         public int Hp { get; }
@@ -63,15 +65,17 @@ namespace PenguinMonster.Battle
 
         private BattleEvent(BattleEventKind kind, int side, BattleMonster monster, string moveName = null,
             StatKind stat = default, int amount = 0)
-            : this(kind, side, monster, moveName, monster?.CurrentHp ?? 0, monster?.Status ?? StatusCondition.None, stat, amount)
+            : this(kind, side, SlotNow(monster), monster, moveName, monster?.CurrentHp ?? 0, monster?.Status ?? StatusCondition.None,
+                stat, amount)
         {
         }
 
-        private BattleEvent(BattleEventKind kind, int side, BattleMonster monster, string moveName, int hp,
+        private BattleEvent(BattleEventKind kind, int side, int slot, BattleMonster monster, string moveName, int hp,
             StatusCondition status, StatKind stat, int amount)
         {
             Kind = kind;
             Side = side;
+            Slot = slot;
             Monster = monster;
             MoveName = moveName;
             Hp = hp;
@@ -93,8 +97,18 @@ namespace PenguinMonster.Battle
             => new BattleEvent(BattleEventKind.BattleEnd, winner, null);
 
         /// <summary>オンラインで受け取った値から作り直す。HP・状態異常は送られてきた時点の値を使う</summary>
-        internal static BattleEvent Restore(BattleEventKind kind, int side, BattleMonster monster, string moveName,
+        internal static BattleEvent Restore(BattleEventKind kind, int side, int slot, BattleMonster monster, string moveName,
             int hp, StatusCondition status, StatKind stat, int amount)
-            => new BattleEvent(kind, side, monster, moveName, hp, status, stat, amount);
+            => new BattleEvent(kind, side, slot, monster, moveName, hp, status, stat, amount);
+
+        /// <summary>
+        /// 起きた時点の場の番号。再生はターンを計算し終えてからなので、そのときには交代で別のペンモンが入っていることがある。
+        /// 場にいない（単体で作ったテスト用のペンモンなど）ときは 0
+        /// </summary>
+        private static int SlotNow(BattleMonster monster)
+        {
+            int slot = monster?.Side?.SlotOf(monster) ?? 0;
+            return slot < 0 ? 0 : slot;
+        }
     }
 }

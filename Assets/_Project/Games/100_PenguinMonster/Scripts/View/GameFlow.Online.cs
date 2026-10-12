@@ -8,7 +8,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// オンライン対戦の流れ（仕様書 §8）: 部屋を作る / コードで参加 → ドラフト → 見せ合い・選出 → バトル → 結果 → タイトル。
+    /// オンライン対戦の流れ（仕様書 §8）: 部屋を作る / コードで参加 → シングル / ダブルス（ホストが選ぶ）→ ドラフト → 見せ合い・選出 → バトル → 結果 → タイトル。
     /// ドラフトの抽選はホストが決めた種でゲストの端末が引く（提示はお互い別々で、相手の取り方に左右されないため）。
     /// 相手が抜けたら、どこにいても勝ち扱いで終わる
     /// </summary>
@@ -16,6 +16,7 @@ namespace PenguinMonster.View
     {
         private const string DisconnectedDetail = "相手が 切断しました";
         private const string OnlineQuitMessage = "相手の 勝ちに なります";
+        private const string ChoosingRulesText = "相手が ルールを 選んでいます…";
 
         [SerializeField] private OnlineSession _session;
         [SerializeField] private ModeSelectPanel _modeSelect;
@@ -37,7 +38,12 @@ namespace PenguinMonster.View
 
             var random = new System.Random();
             System.Random draftRandom = null;
-            yield return ShareDraftSeed(isHost.Value, random, seeded => draftRandom = seeded);
+            var format = BattleFormat.Single;
+            yield return ShareRules(isHost.Value, random, (seeded, chosen) =>
+            {
+                draftRandom = seeded;
+                format = chosen;
+            });
 
             IReadOnlyList<MonsterDefinition> ownSix = null;
             _draftPanel.Show(new Draft(MonsterTable.All, draftRandom), six => ownSix = six, BattleBalance.OnlineDraftSeconds);
@@ -46,30 +52,37 @@ namespace PenguinMonster.View
             yield return Exchange(LinkMessage.Six, ownSix, received => opponentSix = received);
 
             List<MonsterDefinition> ownTeam = null;
-            _selectPanel.Show(ownSix, opponentSix, team => ownTeam = team, BattleBalance.OnlineSelectSeconds);
+            _selectPanel.Show(ownSix, opponentSix, format.PartySize(), team => ownTeam = team, BattleBalance.OnlineSelectSeconds);
             yield return new WaitUntil(() => ownTeam != null);
             List<MonsterDefinition> opponentTeam = null;
             yield return Exchange(LinkMessage.Team, ownTeam, received => opponentTeam = received);
 
             yield return isHost.Value
-                ? _battle.RunHost(ownTeam, opponentTeam, random, _link)
-                : _battle.RunGuest(ownTeam, opponentTeam, _link);
+                ? _battle.RunHost(ownTeam, opponentTeam, random, _link, format)
+                : _battle.RunGuest(ownTeam, opponentTeam, _link, format);
 
             // 決着の後に相手がタイトルへ戻っても、切断で結果を上書きしない
             CloseLink();
             ShowOnlineResult(_battle.PlayerWon);
         }
 
-        /// <summary>ホストは種を決めて送り、ゲストは届くのを待つ。ホスト自身のドラフトはホストの乱数で引く</summary>
-        private IEnumerator ShareDraftSeed(bool isHost, System.Random random, System.Action<System.Random> onReady)
+        /// <summary>
+        /// ホストがシングル / ダブルスを選び、ゲストのドラフトの種と一緒に送る。ゲストは届くのを待つ。
+        /// ホスト自身のドラフトはホストの乱数で引く
+        /// </summary>
+        private IEnumerator ShareRules(bool isHost, System.Random random, System.Action<System.Random, BattleFormat> onReady)
         {
             if (isHost)
             {
-                _link.Send(LinkMessage.DraftSeed, new[] { random.Next() });
-                onReady(random);
+                BattleFormat? format = null;
+                _formatPanel.Show(chosen => format = chosen, onBack: BackToTitle);
+                yield return new WaitUntil(() => format.HasValue);
+                _link.Send(LinkMessage.DraftSeed, new[] { random.Next(), (int)format.Value });
+                onReady(random, format.Value);
                 yield break;
             }
-            yield return _link.Wait(LinkMessage.DraftSeed, data => onReady(new System.Random(data[0])));
+            _battle.ShowWaiting(ChoosingRulesText);
+            yield return _link.Wait(LinkMessage.DraftSeed, data => onReady(new System.Random(data[0]), (BattleFormat)data[1]));
         }
 
         /// <summary>自分のペンモンの並びを送り、相手のが届くまで待つ</summary>
@@ -104,6 +117,7 @@ namespace PenguinMonster.View
         {
             CloseLink();
             StopAllCoroutines();
+            _formatPanel.Hide();
             _draftPanel.Hide();
             _selectPanel.Hide();
             _battle.Abort();

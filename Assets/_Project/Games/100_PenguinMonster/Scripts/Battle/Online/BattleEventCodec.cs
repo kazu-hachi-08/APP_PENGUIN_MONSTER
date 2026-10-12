@@ -10,7 +10,7 @@ namespace PenguinMonster.Battle
     /// </summary>
     public static class BattleEventCodec
     {
-        public const int FieldsPerEvent = 8;
+        public const int FieldsPerEvent = 9;
         private const int None = -1;
 
         public static int[] Encode(IReadOnlyList<BattleEvent> events, BattleState state)
@@ -45,6 +45,7 @@ namespace PenguinMonster.Battle
             data[offset + 5] = (int)e.Status;
             data[offset + 6] = (int)e.Stat;
             data[offset + 7] = e.Amount;
+            data[offset + 8] = e.Slot;
         }
 
         private static BattleEvent Read(int[] data, int offset, BattleState mirror, bool swapSides)
@@ -56,7 +57,7 @@ namespace PenguinMonster.Battle
             var monster = partyIndex == None ? null : mirror.Sides[side].Party[partyIndex];
             string moveName = moveIndex == None ? null : monster.Definition.Moves[moveIndex].Name;
 
-            var e = BattleEvent.Restore(kind, side, monster, moveName,
+            var e = BattleEvent.Restore(kind, side, data[offset + 8], monster, moveName,
                 data[offset + 4], (StatusCondition)data[offset + 5], (StatKind)data[offset + 6], data[offset + 7]);
             Apply(mirror, e, partyIndex);
             return e;
@@ -76,7 +77,7 @@ namespace PenguinMonster.Battle
             e.Monster.Restore(e.Hp, e.Status);
             if (e.Kind == BattleEventKind.SentOut)
             {
-                mirror.Sides[e.Side].SetActive(partyIndex);
+                mirror.Sides[e.Side].SetActive(e.Slot, partyIndex);
             }
         }
 

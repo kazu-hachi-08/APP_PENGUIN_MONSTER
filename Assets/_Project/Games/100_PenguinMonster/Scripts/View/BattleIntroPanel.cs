@@ -40,7 +40,7 @@ namespace PenguinMonster.View
             bool isBoss = opponent.IsBoss;
             _back.color = isBoss ? _bossColor : _normalColor;
             _headline.text = isBoss ? $"ボス戦！ {run.BattleNumber}戦目" : $"{run.BattleNumber}戦目";
-            _subText.text = $"今の 連勝: {run.Wins}";
+            _subText.text = $"{run.Format.ToJapanese()}　今の 連勝: {run.Wins}";
             _bossName.gameObject.SetActive(isBoss);
             _bossLine.gameObject.SetActive(isBoss);
             _bossAce.gameObject.SetActive(isBoss);

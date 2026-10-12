@@ -9,6 +9,7 @@ namespace PenguinMonster.Battle
     {
         private const string NoPower = "-";
         private const string PriorityText = "先制";
+        private const string HitsAllFoesText = "相手 全員に 当たる";
         private const string EffectSeparator = "・";
 
         private static readonly string[] CategoryNames = { "物理", "特殊", "変化" };
@@ -29,6 +30,10 @@ namespace PenguinMonster.Battle
             if (move.Priority > 0)
             {
                 parts.Add(PriorityText);
+            }
+            if (move.HitsAllFoes)
+            {
+                parts.Add(HitsAllFoesText);
             }
             foreach (var effect in move.Effects)
             {

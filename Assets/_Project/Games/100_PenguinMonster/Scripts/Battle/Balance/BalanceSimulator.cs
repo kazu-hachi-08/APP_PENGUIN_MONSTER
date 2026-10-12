@@ -29,15 +29,16 @@ namespace PenguinMonster.Battle
         /// <summary>壁どうしで終わらない試合を打ち切るターン数。引き分けとしてどちらも勝ちに数えない</summary>
         public const int MaxTurns = 200;
 
-        public static IReadOnlyList<MonsterWinRate> Run(IReadOnlyList<MonsterDefinition> pool, int battles, int seed)
+        public static IReadOnlyList<MonsterWinRate> Run(IReadOnlyList<MonsterDefinition> pool, int battles, int seed,
+            BattleFormat format = BattleFormat.Single)
         {
             var random = new Random(seed);
             var rates = pool.ToDictionary(m => m, m => new MonsterWinRate(m));
             for (int i = 0; i < battles; i++)
             {
-                var team0 = RandomTeam(pool, random);
-                var team1 = RandomTeam(pool, random);
-                int winner = Play(team0, team1, random);
+                var team0 = RandomTeam(pool, random, format.PartySize());
+                var team1 = RandomTeam(pool, random, format.PartySize());
+                int winner = Play(team0, team1, random, format);
                 Record(rates, team0, winner == 0);
                 Record(rates, team1, winner == 1);
             }
@@ -45,38 +46,43 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>1試合を最後まで進めて勝った陣営を返す。打ち切りなら -1</summary>
-        public static int Play(IReadOnlyList<MonsterDefinition> team0, IReadOnlyList<MonsterDefinition> team1, Random random)
+        public static int Play(IReadOnlyList<MonsterDefinition> team0, IReadOnlyList<MonsterDefinition> team1, Random random,
+            BattleFormat format = BattleFormat.Single)
         {
-            var state = new BattleState(team0, team1);
+            var state = new BattleState(team0, team1, format.ActiveCount());
             var engine = new BattleEngine(state, random);
             var cpus = new[] { new CpuPlayer(random, CpuLevel.Strong), new CpuPlayer(random, CpuLevel.Strong) };
             engine.StartBattle();
             for (int turn = 0; turn < MaxTurns && !state.IsOver; turn++)
             {
-                var action0 = cpus[0].ChooseAction(state.Sides[0], state.Sides[1]);
-                var action1 = cpus[1].ChooseAction(state.Sides[1], state.Sides[0]);
-                engine.ResolveTurn(action0, action1);
+                var actions0 = cpus[0].ChooseActions(state.Sides[0], state.Sides[1]);
+                var actions1 = cpus[1].ChooseActions(state.Sides[1], state.Sides[0]);
+                engine.ResolveTurn(actions0, actions1);
                 ReplaceFainted(engine, state, cpus);
             }
             return state.Winner;
         }
 
+        /// <summary>空いた場を前から1つずつ埋める。埋めるたびに出したペンモンは控えから外れるので、同じ子を2回選ばない</summary>
         private static void ReplaceFainted(BattleEngine engine, BattleState state, CpuPlayer[] cpus)
         {
             foreach (var side in state.Sides)
             {
-                if (!state.IsOver && side.NeedsReplacement)
+                foreach (int slot in side.ReplaceableSlots())
                 {
-                    engine.Replace(side.Index, cpus[side.Index].ChooseReplacement(side, state.Opponent(side.Index)));
+                    if (!state.IsOver)
+                    {
+                        engine.Replace(side.Index, slot, cpus[side.Index].ChooseReplacement(side, state.Opponent(side.Index)));
+                    }
                 }
             }
         }
 
-        private static List<MonsterDefinition> RandomTeam(IReadOnlyList<MonsterDefinition> pool, Random random)
+        private static List<MonsterDefinition> RandomTeam(IReadOnlyList<MonsterDefinition> pool, Random random, int size)
         {
             var rest = new List<MonsterDefinition>(pool);
             var team = new List<MonsterDefinition>();
-            while (team.Count < BattleBalance.PartySize)
+            while (team.Count < size)
             {
                 int index = random.Next(rest.Count);
                 team.Add(rest[index]);

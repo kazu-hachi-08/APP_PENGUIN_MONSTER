@@ -46,9 +46,9 @@ namespace PenguinMonster.Battle.Tests
             Assert.AreEqual("", MoveTable.Tackle.Effects());
             Assert.AreEqual("先制", MoveTable.BellySlide.Effects());
             Assert.AreEqual("30%で 相手を 麻痺に する", MoveTable.PenguinPress.Effects());
-            Assert.AreEqual("10%で 相手を 混乱させる", MoveTable.Shout.Effects());
+            Assert.AreEqual("相手 全員に 当たる・10%で 相手を 混乱させる", MoveTable.Shout.Effects());
             Assert.AreEqual("自分の 攻撃を 2段階 上げる", MoveTable.FlapDance.Effects());
-            Assert.AreEqual("相手の 素早さを 1段階 下げる", MoveTable.ColdBreath.Effects());
+            Assert.AreEqual("相手 全員に 当たる・相手の 素早さを 1段階 下げる", MoveTable.ColdBreath.Effects());
             Assert.AreEqual("能力の 変化を 引き継いで 控えの 先頭と 交代する", MoveTable.FeatherRelay.Effects());
         }
 

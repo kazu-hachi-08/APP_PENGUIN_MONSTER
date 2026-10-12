@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 見せ合い・選出の画面（仕様書 §2.2）。上に相手の6体を見せ、下の自分の6体から3体を選ぶ。
+    /// 見せ合い・選出の画面（仕様書 §2.2）。上に相手の6体を見せ、下の自分の6体から3体（ダブルスは4体）を選ぶ。
     /// 選んだ順が出す順（1番目が先頭）。もう一度押すと外せる
     /// </summary>
     public class SelectPanel : MonoBehaviour
@@ -32,6 +32,7 @@ namespace PenguinMonster.View
 
         private readonly List<int> _picked = new List<int>();
         private IReadOnlyList<MonsterDefinition> _monsters;
+        private int _partySize = BattleBalance.PartySize;
         private Action<List<MonsterDefinition>> _onDecide;
 
         private void Awake()
@@ -45,11 +46,13 @@ namespace PenguinMonster.View
             _decideButton.onClick.AddListener(Decide);
         }
 
+        /// <param name="partySize">選ぶ数（シングル 3・ダブルス 4）</param>
         /// <param name="timeLimit">制限時間。0 なら制限なし（オフライン）</param>
-        public void Show(IReadOnlyList<MonsterDefinition> own, IReadOnlyList<MonsterDefinition> opponent,
+        public void Show(IReadOnlyList<MonsterDefinition> own, IReadOnlyList<MonsterDefinition> opponent, int partySize,
             Action<List<MonsterDefinition>> onDecide, float timeLimit = 0f)
         {
             _monsters = own;
+            _partySize = partySize;
             _onDecide = onDecide;
             _picked.Clear();
 
@@ -78,7 +81,7 @@ namespace PenguinMonster.View
         /// <summary>時間切れ。選びかけのぶんは残し、足りないぶんを上から埋めて決める（仕様書 §2.2）</summary>
         private void DecideByTimeout()
         {
-            for (int i = 0; i < _monsters.Count && _picked.Count < BattleBalance.PartySize; i++)
+            for (int i = 0; i < _monsters.Count && _picked.Count < _partySize; i++)
             {
                 if (!_picked.Contains(i))
                 {
@@ -91,7 +94,7 @@ namespace PenguinMonster.View
         private void Toggle(int index)
         {
             BattleSounds.Play(BattleSound.Cursor);
-            if (!_picked.Remove(index) && _picked.Count < BattleBalance.PartySize)
+            if (!_picked.Remove(index) && _picked.Count < _partySize)
             {
                 _picked.Add(index);
             }
@@ -103,13 +106,13 @@ namespace PenguinMonster.View
         {
             BattleSounds.Play(BattleSound.Cursor);
             var rest = Enumerable.Range(0, _monsters.Count).Except(_picked).OrderBy(_ => UnityEngine.Random.value).ToList();
-            _picked.AddRange(rest.Take(BattleBalance.PartySize - _picked.Count));
+            _picked.AddRange(rest.Take(_partySize - _picked.Count));
             Refresh();
         }
 
         private void Decide()
         {
-            if (_picked.Count != BattleBalance.PartySize)
+            if (_picked.Count != _partySize)
             {
                 return;
             }
@@ -120,14 +123,14 @@ namespace PenguinMonster.View
 
         private void Refresh()
         {
-            _titleText.text = $"{Title}（{_picked.Count}/{BattleBalance.PartySize}）";
+            _titleText.text = $"{Title}（{_picked.Count}/{_partySize}）";
             for (int i = 0; i < _cellButtons.Length; i++)
             {
                 int order = _picked.IndexOf(i);
                 _cellButtons[i].image.color = order >= 0 ? _pickedColor : _cellColor;
                 _cellOrders[i].text = order >= 0 ? (order + 1).ToString() : "";
             }
-            _decideButton.interactable = _picked.Count == BattleBalance.PartySize;
+            _decideButton.interactable = _picked.Count == _partySize;
         }
 
         private static string Label(MonsterDefinition monster)
