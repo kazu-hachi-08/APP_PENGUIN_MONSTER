@@ -23,9 +23,14 @@ namespace PenguinMonster.View
         [SerializeField] private float _faintSeconds = 0.45f;
         [SerializeField] private float _flashSeconds = 0.3f;
         [SerializeField] private int _flashCount = 2;
+        [Tooltip("コマンドを選んでいる間の上下ゆれの高さ。ドット絵なのでなめらかにせず2段で切り替える（ダイパ風）")]
+        [SerializeField] private float _bobHeight = 6f;
+        [SerializeField] private float _bobInterval = 0.25f;
 
         // 出てくるときに少し大きくなってから戻る「ぽよん」の強さ
         private const float AppearOvershoot = 1.7f;
+
+        private Coroutine _bob;
 
         private RectTransform Rect => _image.rectTransform;
 
@@ -88,8 +93,34 @@ namespace PenguinMonster.View
             Hide();
         }
 
+        /// <summary>コマンドを選んでいる間、上下に揺らす。誰の行動を選んでいるかを見せるため</summary>
+        public void StartBob()
+        {
+            StopBob();
+            _bob = StartCoroutine(Bob());
+        }
+
+        public void StopBob()
+        {
+            if (_bob == null) return;
+            StopCoroutine(_bob);
+            _bob = null;
+            Rect.anchoredPosition = Vector2.zero;
+        }
+
+        private IEnumerator Bob()
+        {
+            var wait = new WaitForSeconds(_bobInterval);
+            for (bool up = true; ; up = !up)
+            {
+                Rect.anchoredPosition = up ? new Vector2(0f, _bobHeight) : Vector2.zero;
+                yield return wait;
+            }
+        }
+
         public void Hide()
         {
+            StopBob();
             _image.enabled = false;
             Rect.anchoredPosition = Vector2.zero;
             Rect.localScale = Vector3.one;
