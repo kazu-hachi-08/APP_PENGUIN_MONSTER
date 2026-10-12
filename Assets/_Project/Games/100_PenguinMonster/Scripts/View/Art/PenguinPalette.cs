@@ -14,6 +14,8 @@ namespace PenguinMonster.View.Art
         public static readonly Color32 BeakShade = new Color32(210, 116, 24, 255);
         public static readonly Color32 Eye = new Color32(24, 24, 32, 255);
         public static readonly Color32 EyeLight = new Color32(255, 255, 255, 255);
+        // 開けた口の中。叫ぶ・笑う顔に使う
+        public static readonly Color32 Mouth = new Color32(150, 40, 60, 255);
         public static readonly Color32 Cheek = new Color32(255, 150, 160, 255);
         public static readonly Color32 Gold = new Color32(250, 200, 50, 255);
         public static readonly Color32 GoldShade = new Color32(200, 140, 30, 255);

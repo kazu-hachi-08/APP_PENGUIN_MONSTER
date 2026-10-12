@@ -63,6 +63,8 @@ namespace PenguinMonster.View
             var all = MonsterTable.All;
             _image.sprite = MonsterSprites.Front(all[Random.Range(0, all.Count)]);
             _direction = Random.value < 0.5f ? 1f : -1f;
+            // 正面の絵は左を向いているので、右へ歩くときは反転して進む向きを向かせる
+            _rect.localScale = new Vector3(-_direction, 1f, 1f);
             _speed = Random.Range(_minSpeed, _maxSpeed);
             _wait = Random.Range(0f, _maxWait);
             _walkTime = 0f;

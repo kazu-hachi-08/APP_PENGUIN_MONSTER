@@ -6,7 +6,7 @@ namespace PenguinMonster.View.Art
     /// デザインを短く書くための筆。左右対称の形は「2」の付くメソッドで片側だけ書けば反対側も塗る。
     /// 顔とおなかの白は正面だけ塗るので、各デザインは正面・後ろ姿を同じコードで描ける
     /// </summary>
-    public sealed class PenguinBrush
+    public sealed partial class PenguinBrush
     {
         public const float CenterX = 32f;
 
@@ -169,6 +169,8 @@ namespace PenguinMonster.View.Art
         private static readonly string[] SparkleEye = { "o##", "###", "#o#" };
         private static readonly string[] CrossEye = { ".#.", "###", ".#." };
         private static readonly string[] LineEye = { "####" };
+        // キリッ目の上下を逆にした形。内側が上がると、困った・おびえた顔になる
+        private static readonly string[] WorriedEye = { "..##", "####", ".##." };
 
         private static string[] EyePattern(EyeStyle eyes)
         {
@@ -180,6 +182,7 @@ namespace PenguinMonster.View.Art
                 case EyeStyle.Sparkle: return SparkleEye;
                 case EyeStyle.Cross: return CrossEye;
                 case EyeStyle.Line: return LineEye;
+                case EyeStyle.Worried: return WorriedEye;
                 default: return DotEye;
             }
         }
@@ -196,7 +199,7 @@ namespace PenguinMonster.View.Art
             int left = Mathf.RoundToInt(x - eyeOffsetX - width / 2f);
             int right = Mathf.RoundToInt(x * 2f) - left - width;
             int top = Mathf.RoundToInt(y + height / 2f) - 1;
-            bool flipRight = eyes == EyeStyle.Sharp;
+            bool flipRight = FlipsOnRight(eyes);
             for (int row = 0; row < height; row++)
             {
                 for (int col = 0; col < width; col++)
@@ -206,6 +209,9 @@ namespace PenguinMonster.View.Art
                 }
             }
         }
+
+        /// <summary>内側と外側で形が違う目は、右目で形も反転する</summary>
+        private static bool FlipsOnRight(EyeStyle eyes) => eyes == EyeStyle.Sharp || eyes == EyeStyle.Worried;
 
         private void EyeDot(int x, int y, char c)
         {

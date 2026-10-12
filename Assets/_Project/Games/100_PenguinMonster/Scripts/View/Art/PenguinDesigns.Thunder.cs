@@ -9,61 +9,83 @@ namespace PenguinMonster.View.Art
         private static readonly Color32 Bolt = Rgb(255, 236, 70);
         private static readonly Color32 BoltShade = Rgb(200, 150, 30);
 
-        /// <summary>No.4 イナペン: いなずま形の翼を左右に広げる</summary>
+        /// <summary>No.4 イナペン: せっかちな走り屋。頭を突き出して前のめりに駆け、いなずま形の翼とくせ毛を後ろへ流す</summary>
         private static void Ina(PenguinBrush b)
         {
-            var wing = new[] { V(22, 24), V(12, 30), V(17, 33), V(5, 46) };
-            b.Line2(2.2f, BoltShade, wing);
-            b.Line2(1.3f, Bolt, wing);
-            StandardBody(b, Rgb(240, 200, 50), 15f, 12f, 13f, 32f, 12f);
-            var tuft = new[] { V(34, 43), V(30, 49), V(34, 50), V(30, 57) };
+            var body = Rgb(240, 200, 50);
+            var bodyShade = PenguinPalette.Shade(body);
+            // 翼は2枚とも後ろ上へ流して、速さをシルエットの傾きで見せる
+            var farWing = new[] { V(36, 30), V(41, 43), V(37, 45), V(44, 60) };
+            b.Line(2.2f, BoltShade, farWing);
+            b.Line(1.2f, body, farWing);
+            b.Foot(48f, 5f, 40f);
+            b.Foot(25f, 3f, -10f);
+            b.ShadedTilted(34f, 18f, 10f, 15f, 40f, body);
+            b.BellyTilted(30f, 16f, 6f, 11f, 40f);
+            var tuft = new[] { V(22, 38), V(30, 42), V(28, 45), V(36, 50) };
             b.Line(1.3f, BoltShade, tuft);
-            b.Line(0.7f, Bolt, tuft);
-            b.Face(CenterX, 31f, 4f, EyeStyle.Round);
+            b.Line(0.7f, body, tuft);
+            // 頭は体より前・低めに置き、前へ突っ込んでいる勢いを出す
+            b.Shaded(19f, 29f, 10.5f, 10f, body);
+            b.White(16f, 28f, 7.5f, 6f);
+            var nearWing = new[] { V(42, 24), V(51, 29), V(49, 32), V(60, 38) };
+            b.Line(2.2f, BoltShade, nearWing);
+            b.Line(1.3f, Bolt, nearWing);
+            b.TurnedFace(16f, 29f, FaceLeft, EyeStyle.Dot, eyeGap: 6f);
+            b.Line(0.5f, BoltShade, V(52, 22), V(60, 22));
+            b.Line(0.5f, BoltShade, V(55, 16), V(61, 16));
         }
 
-        /// <summary>No.17 ライペン: 背中に雷さまの太鼓の輪を背負う</summary>
+        /// <summary>No.17 ライペン: 怒りんぼの雷さま。どっしり足を開き、背中の太鼓の輪を2本のばちで打ち鳴らして吠える</summary>
         private static void Rai(PenguinBrush b)
         {
             var body = Rgb(90, 90, 170);
+            var bodyShade = PenguinPalette.Shade(body);
             var drum = Rgb(210, 60, 50);
+            var stick = Rgb(150, 100, 60);
+            const float RingX = 34f;
             const float RingY = 30f;
             const float RingRadius = 23f;
-            const int Drums = 8;
-            b.Ellipse(CenterX, RingY, RingRadius + 1f, RingRadius + 1f, PenguinPalette.GoldShade);
-            b.Erase(CenterX, RingY, RingRadius - 1f, RingRadius - 1f);
+            const int Drums = 6;
+            // 太鼓は背中の上半分だけに並べる。輪を閉じると丸い枠に見え、体の形が埋もれた
+            b.Line(1.2f, PenguinPalette.GoldShade, ArcPoints(RingX, RingY, RingRadius, RingRadius, -0.2f, Mathf.PI + 0.2f));
             for (int i = 0; i < Drums; i++)
             {
-                float angle = i * Mathf.PI * 2f / Drums;
-                float x = CenterX + Mathf.Cos(angle) * RingRadius;
-                float y = RingY + Mathf.Sin(angle) * RingRadius;
-                b.Shaded(x, y, 4.5f, 4.5f, drum);
-                b.Ellipse(x - 0.5f, y + 0.5f, 1.8f, 1.8f, PenguinPalette.Gold);
+                float angle = -0.2f + i * (Mathf.PI + 0.4f) / (Drums - 1);
+                var p = OnEllipse(RingX, RingY, RingRadius, RingRadius, angle);
+                b.Shaded(p.x, p.y, 4.5f, 4.5f, drum);
+                b.Ellipse(p.x - 0.5f, p.y + 0.5f, 1.8f, 1.8f, PenguinPalette.Gold);
             }
-            b.Feet(CenterX, 7f);
-            b.Shaded2(20f, 16f, 3f, 6f, PenguinPalette.Shade(body));
-            b.Shaded(CenterX, 16f, 13f, 12f, body);
-            b.Belly(CenterX, 15f, 9f, 9f);
-            b.Shaded(CenterX, 32f, 13f, 13f, body);
-            b.White(CenterX, 31f, 10f, 7.5f);
-            b.Face(CenterX, 31f, 5f, EyeStyle.Round);
+            b.Line(0.8f, stick, V(46, 26), V(56, 32));
+            b.Flipper(V(42, 24), V(48, 28), 3f, bodyShade);
+            b.Foot(18f, 4f, 15f, 1.2f);
+            b.Foot(48f, 4f, -15f, 1.2f);
+            b.ShadedTilted(34f, 18f, 16f, 13f, 5f, body);
+            b.BellyTilted(31f, 16f, 11f, 9f, 5f);
+            b.Shaded(27f, 34f, 12f, 11.5f, body);
+            b.White(24f, 33f, 9f, 7f);
+            b.Line(0.8f, stick, V(16, 38), V(12, 48));
+            b.Flipper(V(20, 28), V(15, 38), 3f, bodyShade);
+            b.TurnedFace(24f, 34f, FaceLeft, EyeStyle.Sharp, open: true);
         }
 
-        /// <summary>No.18 アラシペン: 体が嵐の雲。下に いなずまを垂らして浮かぶ</summary>
+        /// <summary>No.18 アラシペン: 不機嫌な雨雲。横に広がった雲の体から頭だけ出して浮かび、下へいなずまを落とす</summary>
         private static void Arashi(PenguinBrush b)
         {
             var cloud = Rgb(120, 125, 150);
             var cloudShade = PenguinPalette.Shade(cloud);
-            b.Line(1.6f, Bolt, V(30, 16), V(36, 9), V(29, 7), V(33, 1));
-            b.Line(0.6f, Water, V(14, 12), V(13, 9));
-            b.Line(0.6f, Water, V(48, 13), V(47, 10));
-            b.Line(0.6f, Water, V(22, 8), V(21, 5));
-            b.Shaded2(9f, 22f, 3f, 5.5f, cloudShade);
-            // ふくらみを全部影色で塗ってから明るい色を重ねる。1つずつ影を付けると雲の中に線が残る
+            var bolt = new[] { V(30, 18), V(24, 12), V(29, 10), V(20, 1) };
+            b.Line(1.6f, BoltShade, bolt);
+            b.Line(0.8f, Bolt, bolt);
+            b.Line(0.6f, Water, V(42, 12), V(41, 9));
+            b.Line(0.6f, Water, V(50, 14), V(49, 11));
+            b.Line(0.6f, Water, V(56, 9), V(55, 6));
+            b.Line(0.6f, Water, V(38, 6), V(37, 3));
+            // 雲は右へ長くたなびかせ、頭を左端に寄せて、ゆっくり流れてくる向きを出す
             var puffs = new[]
             {
-                new Vector4(18, 25, 9, 8), new Vector4(46, 25, 9, 8), new Vector4(24, 36, 9, 8),
-                new Vector4(40, 36, 9, 8), new Vector4(32, 41, 9, 8), new Vector4(32, 25, 15, 11),
+                new Vector4(40, 22, 10, 7), new Vector4(54, 22, 8, 6), new Vector4(48, 31, 9, 7),
+                new Vector4(36, 30, 9, 7), new Vector4(58, 30, 5, 5), new Vector4(26, 21, 8, 6),
             };
             foreach (var p in puffs)
             {
@@ -73,23 +95,36 @@ namespace PenguinMonster.View.Art
             {
                 b.Ellipse(p.x - 1f, p.y + 1f, p.z - 1.5f, p.w - 1.5f, cloud);
             }
-            b.White(CenterX, 27f, 10f, 7f);
-            b.Face(CenterX, 28f, 4.5f, EyeStyle.Sleepy);
+            b.Shaded(22f, 33f, 11f, 10.5f, cloud);
+            b.White(19f, 32f, 8f, 6.5f);
+            b.Flipper(V(30, 28), V(30, 19), 2.5f, cloudShade);
+            b.TurnedFace(19f, 33f, FaceLeft, EyeStyle.Sleepy, eyeGap: 6f);
+            b.Line(1f, cloudShade, V(22, 43), V(25, 47), V(29, 46));
         }
 
-        /// <summary>No.36 ホタルペン: 頭に触角、おしりが黄色く光る</summary>
+        /// <summary>No.36 ホタルペン: 恥ずかしがり屋。光るおしりを高く上げてうずくまり、低い頭で こちらをうかがう。触角は前へ垂れる</summary>
         private static void Hotaru(PenguinBrush b)
         {
             var body = Rgb(70, 100, 80);
-            b.Ellipse(48f, 12f, 11f, 9f, Rgb(230, 245, 170));
-            b.Shaded(48f, 12f, 7f, 6f, Bolt);
-            b.Ellipse(47f, 13f, 3.5f, 3f, Rgb(255, 250, 170));
-            b.Line2(0.6f, PenguinPalette.Shade(body), V(27, 42), V(23, 50), V(20, 52));
-            b.Ellipse2(20f, 52f, 2f, 2f, Bolt);
-            StandardBody(b, body, 15f, 12f, 13f, 32f, 12f);
-            b.Sparkle(10, 26, Bolt);
-            b.Sparkle(54, 32, Bolt);
-            b.Face(CenterX, 31f, 4.5f, EyeStyle.Round);
+            var bodyShade = PenguinPalette.Shade(body);
+            // おしりの光を絵の主役にするため、体を前へ倒して光る所をいちばん高く大きく置く
+            b.Ellipse(46f, 30f, 14f, 13f, Rgb(230, 245, 170));
+            b.Foot(30f, 3f);
+            b.Foot(42f, 4f, -10f);
+            b.ShadedTilted(36f, 16f, 10f, 14f, 55f, body);
+            b.BellyTilted(32f, 12f, 6f, 9f, 55f);
+            b.Shaded(47f, 29f, 9f, 8.5f, Bolt);
+            b.Ellipse(45f, 31f, 4f, 3.5f, Rgb(255, 250, 170));
+            b.Line(0.6f, bodyShade, V(16, 26), V(10, 30), V(6, 27));
+            b.Line(0.6f, bodyShade, V(20, 27), V(18, 33), V(13, 34));
+            b.Ellipse(6f, 26f, 1.8f, 1.8f, Bolt);
+            b.Ellipse(13f, 34f, 1.8f, 1.8f, Bolt);
+            b.Shaded(19f, 18f, 9f, 8.5f, body);
+            b.White(16f, 17f, 6.5f, 5f);
+            b.Flipper(V(26, 16), V(21, 9), 2.5f, bodyShade);
+            b.TurnedFace(16f, 18f, FaceLeft, EyeStyle.Worried, eyeGap: 6f);
+            b.Sparkle(58, 46, Bolt);
+            b.Sparkle(34, 44, Bolt);
         }
     }
 }

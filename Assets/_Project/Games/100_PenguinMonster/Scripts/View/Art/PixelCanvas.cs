@@ -45,6 +45,26 @@ namespace PenguinMonster.View.Art
             }
         }
 
+        /// <summary>傾けた楕円。体を前のめり・反り返りにして、正面の直立以外の姿勢を描く。angle は度で反時計回り</summary>
+        public void FillTiltedEllipse(float centerX, float centerY, float radiusX, float radiusY, float angle, Color32 color)
+        {
+            float cos = Mathf.Cos(angle * Mathf.Deg2Rad);
+            float sin = Mathf.Sin(angle * Mathf.Deg2Rad);
+            float reach = Mathf.Max(radiusX, radiusY);
+            for (int y = Mathf.FloorToInt(centerY - reach); y <= Mathf.CeilToInt(centerY + reach); y++)
+            {
+                for (int x = Mathf.FloorToInt(centerX - reach); x <= Mathf.CeilToInt(centerX + reach); x++)
+                {
+                    float px = x + 0.5f - centerX;
+                    float py = y + 0.5f - centerY;
+                    // 楕円の向きに座標を回してから、ふつうの楕円と同じ判定をする
+                    float dx = (px * cos + py * sin) / radiusX;
+                    float dy = (-px * sin + py * cos) / radiusY;
+                    if (dx * dx + dy * dy <= 1f) Set(x, y, color);
+                }
+            }
+        }
+
         public void FillRect(int left, int bottom, int width, int height, Color32 color)
         {
             for (int y = bottom; y < bottom + height; y++)

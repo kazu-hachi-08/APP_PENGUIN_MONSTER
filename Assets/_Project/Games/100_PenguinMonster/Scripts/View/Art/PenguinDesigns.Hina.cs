@@ -6,116 +6,171 @@ namespace PenguinMonster.View.Art
     /// <summary>ヒナランクのデザイン（仕様書 §6）。体をふつうの6割ほどにして、頭に綿毛のアホ毛を立てる</summary>
     public static partial class PenguinDesigns
     {
-        private const float ChickEyeY = 20f;
-        private const float ChickEyeOffset = 3.5f;
-
-        /// <summary>ヒナの体。並んだときに小ささで見分けられるよう、どのヒナもこの大きさにそろえる</summary>
-        private static void ChickBody(PenguinBrush b, Color32 color, bool tuft = true)
-        {
-            b.Feet(CenterX, 4f);
-            b.Shaded2(24f, 10f, 2.5f, 4f, PenguinPalette.Shade(color));
-            b.Shaded(CenterX, 10f, 9f, 8f, color);
-            b.Belly(CenterX, 9f, 5.5f, 5.5f);
-            b.Shaded(CenterX, 21f, 10f, 9f, color);
-            b.White(CenterX, 20f, 7f, 5.5f);
-            if (tuft)
-            {
-                b.Line(0.9f, color, V(32, 29), V(30, 33), V(33, 35));
-            }
-        }
-
-        private static void ChickFace(PenguinBrush b, EyeStyle eyes) => b.Face(CenterX, ChickEyeY, ChickEyeOffset, eyes);
-
-        /// <summary>No.37 ヒナペン: 灰色のふわふわ。力持ちなので自分より大きなダンベルを持ち上げる</summary>
+        /// <summary>No.37 ヒナペン: 力持ちでがんばり屋。足を大きく開いて踏んばり、体をのけぞらせて自分より大きなダンベルを斜めに差し上げる</summary>
         private static void HinaPen(PenguinBrush b)
         {
             var fluff = Rgb(170, 172, 186);
+            var fluffShade = PenguinPalette.Shade(fluff);
             var iron = Rgb(80, 82, 96);
-            b.Line2(1.6f, PenguinPalette.Shade(fluff), V(24, 13), V(19, 28), V(18, 37));
-            b.Line(0.8f, iron, V(12, 38), V(52, 38));
-            b.Rect(8, 32, 6, 12, iron);
-            b.Rect(50, 32, 6, 12, iron);
-            b.Rect(9, 40, 2, 3, Rgb(140, 142, 160));
-            b.Rect(51, 40, 2, 3, Rgb(140, 142, 160));
-            ChickBody(b, fluff);
-            ChickFace(b, EyeStyle.Sparkle);
+            var ironLight = Rgb(140, 142, 160);
+            b.Foot(20f, 3f, 20f, 0.7f);
+            b.Foot(44f, 3f, -20f, 0.7f);
+            b.Line(2f, fluffShade, V(24, 6), V(28, 12));
+            b.Line(2f, fluffShade, V(40, 6), V(36, 12));
+            // 片側を高く持ち上げて傾け、重さに振られている途中に見せる
+            b.Flipper(V(28, 22), V(20, 34), 2.5f, fluffShade);
+            b.Flipper(V(40, 22), V(46, 38), 2.5f, fluffShade);
+            b.Line(1f, iron, V(12, 32), V(54, 41));
+            b.Tilted(13f, 32f, 3f, 7f, 12f, iron);
+            b.Tilted(53f, 41f, 3f, 7f, 12f, iron);
+            b.Rect(12, 34, 1, 3, ironLight);
+            b.Rect(52, 43, 1, 3, ironLight);
+            b.ShadedTilted(33f, 13f, 8.5f, 7.5f, -8f, fluff);
+            b.BellyTilted(31f, 12f, 5.5f, 5f, -8f);
+            b.Shaded(34f, 23f, 8.5f, 7.5f, fluff);
+            b.White(32f, 22f, 6f, 4.5f);
+            b.Line(0.9f, fluff, V(36, 30), V(36, 34), V(39, 35));
+            b.TurnedFace(32f, 23f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f, open: true);
         }
 
-        /// <summary>No.38 ユキヒナペン: 白い綿毛。頭に小さな雪だま</summary>
+        /// <summary>No.38 ユキヒナペン: のんびり屋。雪の上にぺたんと座りこみ、足を投げ出して、舞い落ちる雪を口を開けて見上げる。下ぶくれの低い体</summary>
         private static void YukiHina(PenguinBrush b)
         {
-            ChickBody(b, Rgb(205, 228, 248));
-            b.Shaded(39f, 31f, 3.5f, 3.5f, PenguinPalette.Belly);
-            b.Sparkle(14, 26, IceLight);
-            b.Sparkle(50, 18, IceLight);
-            ChickFace(b, EyeStyle.Sparkle);
+            var fluff = Rgb(205, 228, 248);
+            var fluffShade = PenguinPalette.Shade(fluff);
+            b.Flipper(V(42, 12), V(51, 5), 2.5f, fluffShade);
+            b.Shaded(35f, 10f, 11f, 8.5f, fluff);
+            b.Belly(31f, 9f, 7f, 5.5f);
+            // 投げ出した足は裏を見せて立て、座りこんでいるのがわかるようにする
+            b.Foot(20f, 6f, 70f, 0.7f);
+            b.Foot(25f, 4f, 45f, 0.7f);
+            b.Shaded(31f, 22f, 8.5f, 7.5f, fluff);
+            b.White(29f, 22f, 6f, 4.5f);
+            b.Line(0.9f, fluff, V(34, 29), V(36, 33), V(33, 35));
+            b.Flipper(V(26, 13), V(20, 15), 2f, fluffShade);
+            b.TurnedFace(29f, 23f, FaceLeft, EyeStyle.Round, eyeGap: 5f, open: true);
+            b.Sparkle(18, 32, IceLight);
+            b.Sparkle(11, 22, IceLight);
+            b.Sparkle(49, 26, IceLight);
         }
 
-        /// <summary>No.39 ハネヒナペン: 体のわりに大きな羽を広げる（足の速さの印）</summary>
+        /// <summary>No.39 ハネヒナペン: 元気いっぱいのせっかち。前のめりに駆け出して宙に浮き、体のわりに大きな羽を後ろへ長く伸ばして風を切る（足の速さの印）</summary>
         private static void HaneHina(PenguinBrush b)
         {
             var feather = Rgb(205, 165, 115);
             var featherShade = PenguinPalette.Shade(feather);
             var tip = Rgb(250, 240, 220);
-            var shoulder = V(25, 13);
-            b.Triangle2(shoulder, V(25, 18), V(5, 34), featherShade);
-            b.Triangle2(shoulder, V(5, 34), V(2, 24), feather);
-            b.Triangle2(shoulder, V(2, 24), V(6, 13), featherShade);
-            b.Triangle2(shoulder, V(6, 13), V(24, 7), feather);
-            b.Triangle2(V(5, 34), V(2, 24), V(6, 30), tip);
-            b.Triangle2(V(2, 24), V(6, 13), V(5, 20), tip);
-            ChickBody(b, feather);
-            ChickFace(b, EyeStyle.Sparkle);
+            Wing(b, V(40, 16), new[] { V(40, 20), V(51, 19), V(60, 15), V(61, 9), V(55, 5), V(47, 8) }, feather, featherShade, tip);
+            b.Foot(46f, 9f, -40f, 0.7f);
+            b.Foot(40f, 6f, -15f, 0.7f);
+            // 奥の羽は低く後ろへ、手前の羽は高く後ろへ伸ばし、横から見て矢じりのような形にする
+            // 体を前へ倒して、頭がおなかより前に出る駆け足の重心にする
+            b.ShadedTilted(36f, 15f, 7f, 8.5f, 35f, feather);
+            b.BellyTilted(34f, 14f, 4f, 5.5f, 35f);
+            b.Shaded(27f, 23f, 8f, 7.5f, feather);
+            b.White(25f, 23f, 5.5f, 4.5f);
+            b.Line(0.9f, feather, V(27, 30), V(25, 34), V(28, 36));
+            Wing(b, V(35, 21), new[] { V(33, 25), V(41, 36), V(49, 43), V(57, 42), V(61, 35), V(54, 26), V(42, 19) }, feather, featherShade, tip);
+            b.TurnedFace(25f, 24f, FaceLeft, EyeStyle.Sparkle, eyeGap: 5f, open: true);
         }
 
-        /// <summary>No.40 ナキムシペン: 黒い綿毛の泣き虫。涙のしずくが飛ぶ</summary>
+        /// <summary>No.40 ナキムシペン: 臆病な泣き虫。小さく体を丸め、ヒレで自分を抱えて相手から目をそらす。涙と震え</summary>
         private static void Nakimushi(PenguinBrush b)
         {
+            var black = Rgb(78, 76, 100);
+            var blackShade = PenguinPalette.Shade(black);
             var tear = Rgb(120, 200, 250);
-            ChickBody(b, Rgb(78, 76, 100));
-            ChickFace(b, EyeStyle.Sparkle);
+            var shiver = Rgb(150, 160, 190);
+            b.Foot(28f, 2f, 0f, 0.6f);
+            b.Foot(37f, 2f, 0f, 0.6f);
+            b.Shaded(33f, 9f, 10f, 7.5f, black);
+            b.Shaded(34f, 16f, 9.5f, 8.5f, black);
+            b.White(36f, 15f, 6.5f, 5f);
+            b.Flipper(V(24, 12), V(34, 6), 2.5f, blackShade);
+            b.Flipper(V(43, 12), V(36, 6), 2.5f, blackShade);
+            b.Line(0.9f, black, V(33, 24), V(31, 27), V(34, 29));
+            b.TurnedFace(36f, 16f, FaceRight, EyeStyle.Worried, eyeGap: 6f);
+            b.Line(0.5f, shiver, V(19, 16), V(17, 14), V(19, 12));
+            b.Line(0.5f, shiver, V(48, 16), V(50, 14), V(48, 12));
             if (!b.Front) return;
-            b.Ellipse2(26.5f, 15.5f, 1.2f, 2f, tear);
-            b.Ellipse(18f, 24f, 1.5f, 2.2f, tear);
-            b.Ellipse(46f, 22f, 1.3f, 2f, tear);
+            b.Ellipse(31f, 11f, 1f, 1.8f, tear);
+            b.Ellipse(44f, 22f, 1.2f, 2f, tear);
         }
 
-        /// <summary>No.41 カラヒナペン: 割れた卵の殻から顔を出す。殻の上半分を帽子のようにかぶる</summary>
+        /// <summary>No.41 カラヒナペン: 引っ込み思案で頑固。まだ割れていない卵に閉じこもり、ひびの窓からのぞく。殻のふたを斜めにかぶり、足だけ出して立つ</summary>
         private static void KaraHina(PenguinBrush b)
         {
             var chick = Rgb(165, 145, 125);
             var shell = Rgb(245, 235, 210);
             var shellShade = PenguinPalette.Darken(shell, 0.82f);
             var spot = Rgb(170, 130, 90);
-            b.Line(0.9f, chick, V(38, 30), V(40, 34), V(43, 34));
-            b.Shaded(CenterX, 21f, 10f, 9f, chick);
-            b.White(CenterX, 20f, 7f, 5.5f);
-            ChickFace(b, EyeStyle.Dot);
-            b.Polygon(V(32, 8), shellShade, V(16, 1), V(12, 9), V(15, 17), V(20, 13), V(24, 17), V(28, 13),
-                V(32, 17), V(36, 13), V(40, 17), V(44, 13), V(49, 17), V(52, 9), V(48, 1));
-            b.Polygon(V(31, 9), shell, V(17, 3), V(14, 9), V(16, 14), V(20, 11), V(24, 15), V(28, 11),
-                V(32, 15), V(36, 11), V(40, 15), V(44, 11), V(48, 14), V(49, 8), V(46, 3));
-            b.Ellipse(21f, 7f, 2f, 1.5f, spot);
-            b.Ellipse(40f, 5f, 1.5f, 1.2f, spot);
-            b.Ellipse(45f, 10f, 1.2f, 1f, spot);
-            b.Polygon(V(28, 31), shellShade, V(20, 27), V(36, 28), V(34, 34), V(27, 36), V(21, 33));
-            b.Polygon(V(27, 32), shell, V(21, 28), V(25, 30), V(29, 28), V(33, 30), V(32, 33), V(26, 35), V(22, 32));
-            b.Ellipse(26f, 33f, 1.2f, 1f, spot);
+            b.Foot(28f, 3f, 10f, 0.6f);
+            b.Foot(38f, 3f, -10f, 0.6f);
+            // 少し傾けた縦長の卵。ヒナで唯一、体ごと殻の形のシルエットにする
+            b.Tilted(33f, 16f, 10f, 13f, 8f, shellShade);
+            b.Tilted(32f, 17f, 8.5f, 11.5f, 8f, shell);
+            b.Ellipse(38f, 9f, 2f, 1.5f, spot);
+            b.Ellipse(29f, 7f, 1.5f, 1.2f, spot);
+            b.Ellipse(40f, 20f, 1.2f, 1f, spot);
+            // ふたは傾けてかぶり、すき間から綿毛のアホ毛だけ出す
+            b.Line(0.9f, chick, V(39, 28), V(42, 33), V(45, 32));
+            b.Polygon(V(31, 32), shellShade, V(22, 28), V(26, 31), V(30, 28), V(34, 31), V(38, 28), V(40, 32), V(36, 37), V(28, 38), V(22, 34));
+            b.Polygon(V(30, 33), shell, V(23, 29), V(26, 32), V(30, 29), V(34, 32), V(37, 30), V(37, 33), V(34, 36), V(28, 37), V(23, 33));
+            b.Ellipse(28f, 35f, 1.2f, 1f, spot);
+            KaraHinaWindow(b, chick, shell);
         }
 
-        /// <summary>No.42 ピリヒナペン: 黄色の綿毛が静電気で逆立つ</summary>
+        /// <summary>殻のひびの窓。中の顔は正面からしか見えないので、後ろ姿では閉じた殻のまま</summary>
+        private static void KaraHinaWindow(PenguinBrush b, Color32 chick, Color32 shell)
+        {
+            if (!b.Front) return;
+            b.Ellipse(29f, 18f, 6.5f, 4.5f, PenguinPalette.Darken(chick, 0.6f));
+            b.Ellipse(29f, 18f, 5.5f, 3.5f, chick);
+            // 窓の縁に殻のかけらを残して、丸い穴ではなく割れたひびに見せる
+            b.Triangle(V(25, 23), V(29, 23), V(27, 20), shell);
+            b.Triangle(V(31, 23), V(35, 22), V(33, 20), shell);
+            b.Triangle(V(26, 13), V(31, 13), V(29, 16), shell);
+            b.SideBeak(24f, 16.5f, FaceLeft, false, 3f);
+            b.Eye(27f, 19f, EyeStyle.Dot, false);
+            b.Eye(32f, 19f, EyeStyle.Dot, true);
+        }
+
+        /// <summary>No.42 ピリヒナペン: お調子者で騒がしい。静電気で綿毛がとげとげに逆立ったまま跳び上がり、ヒレをばたつかせて叫ぶ。目はしびれて十字</summary>
         private static void PiriHina(PenguinBrush b)
         {
             var fluff = Rgb(250, 215, 80);
+            var fluffShade = PenguinPalette.Shade(fluff);
             var spark = Rgb(150, 220, 255);
-            b.Triangle(V(29, 27), V(35, 27), V(32, 38), fluff);
-            b.Triangle2(V(24, 26), V(29, 29), V(20, 36), fluff);
-            b.Triangle2(V(22, 22), V(25, 27), V(15, 29), fluff);
-            ChickBody(b, fluff, false);
-            b.Line(0.6f, spark, V(12, 20), V(9, 17), V(12, 15), V(9, 12));
-            b.Line(0.6f, spark, V(52, 26), V(55, 23), V(52, 21), V(55, 18));
-            b.Line(0.6f, spark, V(44, 36), V(46, 39), V(43, 40));
-            ChickFace(b, EyeStyle.Sparkle);
+            b.Foot(28f, 4f, -30f, 0.6f);
+            b.Foot(37f, 5f, 20f, 0.6f);
+            b.Flipper(V(24, 20), V(14, 30), 2.5f, fluffShade);
+            b.Flipper(V(41, 20), V(50, 32), 2.5f, fluffShade);
+            // 頭と体を1つのとげとげの玉にして、他のヒナと形で見分けられるようにする
+            PiriSpikes(b, 33f, 19f, 13f, 9f, fluffShade);
+            b.Shaded(33f, 19f, 10f, 10f, fluff);
+            b.Belly(32f, 14f, 6f, 4.5f);
+            b.White(30f, 22f, 6f, 4f);
+            b.Line(0.8f, fluff, V(34, 28), V(32, 32), V(36, 34), V(34, 38));
+            b.TurnedFace(30f, 23f, FaceLeft, EyeStyle.Cross, eyeGap: 6f, open: true);
+            b.Line(0.6f, spark, V(10, 18), V(7, 15), V(10, 13), V(7, 10));
+            b.Line(0.6f, spark, V(54, 22), V(57, 19), V(54, 17), V(57, 14));
+            b.Line(0.6f, spark, V(44, 36), V(46, 39), V(43, 41));
+        }
+
+        /// <summary>玉のまわりに三角のとげを放射状に並べる。下側は足が出るので空ける</summary>
+        private static void PiriSpikes(PenguinBrush b, float x, float y, float outer, float inner, Color32 color)
+        {
+            const int Spikes = 9;
+            const float HalfWidth = 0.35f;
+            for (int i = 0; i < Spikes; i++)
+            {
+                float angle = (i * 360f / Spikes + 10f) * Mathf.Deg2Rad;
+                if (Mathf.Sin(angle) < -0.7f) continue;
+                var tip = V(x + Mathf.Cos(angle) * outer, y + Mathf.Sin(angle) * outer);
+                var left = V(x + Mathf.Cos(angle - HalfWidth) * inner, y + Mathf.Sin(angle - HalfWidth) * inner);
+                var right = V(x + Mathf.Cos(angle + HalfWidth) * inner, y + Mathf.Sin(angle + HalfWidth) * inner);
+                b.Triangle(left, right, tip, color);
+            }
         }
     }
 }

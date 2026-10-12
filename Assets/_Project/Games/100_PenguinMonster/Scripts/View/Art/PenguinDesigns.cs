@@ -56,21 +56,6 @@ namespace PenguinMonster.View.Art
             return false;
         }
 
-        /// <summary>
-        /// 基本のちびペンギン（足・ヒレ・体・頭・おなかと顔の白）。目と頭の飾りは各デザインが足す。
-        /// 頭を体と同じくらい大きくして、かわいさを出す
-        /// </summary>
-        private static void StandardBody(PenguinBrush b, Color32 color, float bodyY, float bodyRadiusX, float bodyRadiusY,
-            float headY, float headRadius)
-        {
-            b.Feet(CenterX, bodyRadiusX * 0.5f);
-            b.Shaded2(CenterX - bodyRadiusX + 1f, bodyY, 3.5f, 7f, PenguinPalette.Shade(color));
-            b.Shaded(CenterX, bodyY, bodyRadiusX, bodyRadiusY, color);
-            b.Belly(CenterX, bodyY - 1f, bodyRadiusX - 4f, bodyRadiusY - 2.5f);
-            b.Shaded(CenterX, headY, headRadius, headRadius, color);
-            b.White(CenterX, headY - 1f, headRadius - 3f, headRadius - 4.5f);
-        }
-
         private static Color32 Rgb(byte r, byte g, byte bl) => PenguinPalette.Rgb(r, g, bl);
     }
 }
