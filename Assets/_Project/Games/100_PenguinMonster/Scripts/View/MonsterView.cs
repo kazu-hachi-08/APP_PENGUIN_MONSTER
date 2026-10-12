@@ -29,6 +29,9 @@ namespace PenguinMonster.View
 
         private RectTransform Rect => _image.rectTransform;
 
+        /// <summary>絵そのもの（原点は足元）。技のエフェクトを絵の上に重ねる位置と大きさに使う</summary>
+        public RectTransform Body => Rect;
+
         private void Awake()
         {
             _image.enabled = false;

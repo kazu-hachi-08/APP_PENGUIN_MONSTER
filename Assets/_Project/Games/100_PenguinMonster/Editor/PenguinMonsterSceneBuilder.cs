@@ -91,6 +91,8 @@ namespace PenguinMonster.Editor
             var fieldTapArea = CreateFieldTapArea(root.transform);
             BuildField(root.transform, out var playerView, out var enemyView, out var playerInfo, out var enemyInfo);
             BuildDoubleField(root.transform, out var playerViews, out var enemyViews, out var playerInfos, out var enemyInfos);
+            // エフェクトはペンモンと名前の枠より手前、下の窓より奥
+            var moveEffect = CreateMoveEffectLayer(root.transform);
             var messageWindow = CreateMessageWindow(root.transform, fieldTapArea);
             var commandPanel = CreateCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
@@ -109,6 +111,7 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_enemyDoubleViews"), enemyViews);
             SetArray(so.FindProperty("_playerDoubleInfos"), playerInfos);
             SetArray(so.FindProperty("_enemyDoubleInfos"), enemyInfos);
+            so.FindProperty("_moveEffect").objectReferenceValue = moveEffect;
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;

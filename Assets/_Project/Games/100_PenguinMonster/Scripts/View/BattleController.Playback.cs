@@ -42,6 +42,8 @@ namespace PenguinMonster.View
                     yield return ViewOf(e).Lunge();
                     break;
                 case BattleEventKind.Damaged:
+                    // エフェクトが当たり切ってから音と点滅を出し、「当たった」瞬間をそろえる
+                    yield return PlayMoveEffect(events, index);
                     BattleSounds.Play(HitSoundFor(events, index));
                     yield return ViewOf(e).Blink();
                     yield return InfoOf(e).AnimateHp(e.Hp);
@@ -108,6 +110,37 @@ namespace PenguinMonster.View
             }
             InfoOf(e).SetStatus(e.Status);
             yield return _messageWindow.Play(message);
+        }
+
+        /// <summary>
+        /// 技のタイプのエフェクトを受けた側に出す。ダメージのイベントは技の名前を持たないので、前の「〇〇の △△！」までさかのぼる。
+        /// 技は名前から引き直す（オンラインのゲストも技の名前は受け取っているので、通信を増やさずに済む）
+        /// </summary>
+        private IEnumerator PlayMoveEffect(List<BattleEvent> events, int damagedIndex)
+        {
+            int usedIndex = damagedIndex - 1;
+            while (usedIndex >= 0 && events[usedIndex].Kind != BattleEventKind.MoveUsed)
+            {
+                usedIndex--;
+            }
+            var move = usedIndex < 0 ? null : MoveOf(events[usedIndex]);
+            if (move == null)
+            {
+                yield break;
+            }
+            yield return _moveEffect.Play(move.Type, ViewOf(events[damagedIndex]).Body, ViewOf(events[usedIndex]).Body);
+        }
+
+        private static MoveDefinition MoveOf(BattleEvent used)
+        {
+            foreach (var move in used.Monster.Definition.Moves)
+            {
+                if (move.Name == used.MoveName)
+                {
+                    return move;
+                }
+            }
+            return null;
         }
 
         /// <summary>

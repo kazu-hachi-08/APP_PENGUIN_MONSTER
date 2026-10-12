@@ -395,11 +395,27 @@
 | 出てくる | 足元から「ぽよん」と大きくなる |
 | もどる | 小さくなって消える |
 | 技を使う | 相手の方へ踏み込んで戻る |
+| 技が当たる | 受けた側に技のタイプのエフェクト（下の表）を出し、当たり切ったら当たった音 |
 | ダメージ | 点滅してから HP バーが少しずつ減る |
 | 瀕死 | 台座の下へ沈んで消える |
 | 状態異常になる / 混乱する | その色にふわっと2回光る（麻痺 黄・毒 紫・火傷 赤・眠り 灰・氷 水色・混乱 ピンク）。名前の枠に印が付く |
 | 能力が上がる / 下がる | 青 / 赤に光る |
 | 毒・火傷・自分を攻撃 | 点滅して HP が減ってから、理由の文を出す |
+
+- 技のエフェクト: タイプごとに1種類。粒は 16x16 のドット絵をコードで生成し、ペンモンの絵と同じドットの大きさで出す（ダブルスや手前 / 奥で絵の大きさが違っても同じ見た目）。ダメージを与えた技だけに出す（外れ・効果なし・変化技は出さない。変化技は今までどおり色が光る）。全体技は当たった相手ごとに出す。ゆらぎに乱数を使うが、見た目だけなのでオンラインで2台の見た目が少しずれてもよい
+
+| タイプ | エフェクト |
+| --- | --- |
+| ノーマル | 「バシッ」の星が3つ、ずれて弾ける |
+| 氷 | まわりから氷の結晶が飛んできて刺さる |
+| 海 | 真ん中から水しぶきが山なりに飛び散る |
+| 火 | 足元から炎が立ちのぼる |
+| 雷 | 上から稲妻が落ち、火花が散る |
+| 苔 | 葉っぱが渦を巻きながら集まる |
+| 岩 | 上から岩が次々に落ちてくる |
+| 鳥 | 使った側から羽根が風に乗って吹き抜ける |
+| 闇 | 三日月の爪あとが3本、斜めにひっかく |
+| オーロラ | 色とりどりの星がまたたく |
 
 - 効果音は仮でコード生成（決定・技・当たり（相性で3種）・登場・瀕死・勝ち・負け・状態異常・能力アップ / ダウン）
 - BGM も仮でコード生成（チップチューンの3曲をループ）。素材が揃ったら差し替える
@@ -482,13 +498,14 @@ Scripts/
     ├── BattleController(.Commands/.Playback/.Online).cs  # バトルの進行役。行動の入力待ちと BattleEvent の再生、オンラインのホスト / ゲスト
     ├── CountdownTimer.cs   # オンラインの制限時間（残り秒数の表示と時間切れ）
     ├── MonsterView.cs      # 台座の上のペンモンの絵と演出（登場・踏み込み・点滅・瀕死）
+    ├── MoveEffectView(.Recipes).cs  # 技が当たったときのタイプごとのエフェクト（場全体に重ねた層）。粒の動き方は .Recipes.cs
     ├── MonsterInfoBox.cs   # 名前・Lv・HPバーの枠
     ├── MessageWindow / CommandPanel / MovePanel / TargetPanel（ダブルスの狙う相手） / PartyPanel
     ├── BattleBackdrop.cs   # 背景の Image に生成した絵をはめる
     ├── BattleSounds(.Synth).cs  # 仮の効果音（コード生成）
     ├── GameMusic(.Synth/.Songs).cs  # 仮の BGM（楽譜からコード生成）
     ├── TypeColors.cs / StatusColors.cs  # 技ボタン・タイプの札の色 / 状態異常の印・光る色
-    └── Art/                # ドット絵の生成（PixelCanvas / PenguinBrush / EyeStyle（目の種類） / PenguinDesigns（タイプ別の partial に1体ずつ）/ PenguinPalette / MonsterSprites / BackdropArt）
+    └── Art/                # ドット絵の生成（PixelCanvas / PenguinBrush / EyeStyle（目の種類） / PenguinDesigns（タイプ別の partial に1体ずつ）/ PenguinPalette / MonsterSprites / MoveEffectSprites（技のエフェクトの粒） / BackdropArt）
 Editor/
 ├── PenguinMonsterSceneBuilder(.Field/.Panels/.Title/.Format/.Draft/.Intro/.Select/.Menus/.Dex/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
 └── BalanceReportMenu.cs  # Tools > PenguinMonster > Balance Report で勝率の表を Console に出す

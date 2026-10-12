@@ -153,6 +153,28 @@ namespace PenguinMonster.Editor
             return view;
         }
 
+        /// <summary>
+        /// 技のエフェクトを出す層。ペンモンの絵は台座のマスクの中にあって上や横にはみ出すと切れるので、場全体に重ねて別に置く
+        /// </summary>
+        private static MoveEffectView CreateMoveEffectLayer(Transform parent)
+        {
+            var layer = UIDialogBuilder.CreateUIObject("MoveEffects", parent);
+            UIDialogBuilder.SetStretchAll(layer.GetComponent<RectTransform>());
+            var particles = new Image[MoveEffectView.ParticleCount];
+            for (int i = 0; i < particles.Length; i++)
+            {
+                particles[i] = CreateImage(layer.transform, $"Particle{i}", Color.white);
+                particles[i].raycastTarget = false;
+                particles[i].enabled = false;
+            }
+
+            var view = layer.AddComponent<MoveEffectView>();
+            var so = new SerializedObject(view);
+            SetArray(so.FindProperty("_particles"), particles);
+            so.ApplyModifiedProperties();
+            return view;
+        }
+
         private static MonsterInfoBox CreateInfoBox(Transform parent, string name, Vector2 position, Vector2 size, bool showHpNumbers)
         {
             var frame = CreateFramedBox(parent, name, InfoBoxColor, out var inner);

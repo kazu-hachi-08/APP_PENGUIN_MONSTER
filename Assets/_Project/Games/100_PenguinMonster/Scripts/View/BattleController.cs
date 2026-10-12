@@ -27,6 +27,8 @@ namespace PenguinMonster.View
         [SerializeField] private MonsterView[] _enemyDoubleViews;
         [SerializeField] private MonsterInfoBox[] _playerDoubleInfos;
         [SerializeField] private MonsterInfoBox[] _enemyDoubleInfos;
+        [Tooltip("技が当たったときのエフェクト。場全体に重ねた層")]
+        [SerializeField] private MoveEffectView _moveEffect;
         [Header("窓")]
         [SerializeField] private MessageWindow _messageWindow;
         [SerializeField] private CommandPanel _commandPanel;
