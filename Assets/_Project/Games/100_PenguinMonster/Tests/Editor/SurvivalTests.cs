@@ -57,6 +57,32 @@ namespace PenguinMonster.Battle.Tests
             }
         }
 
+        [Test]
+        public void ボスはチームに伝説の切り札を1体持つ()
+        {
+            foreach (var boss in BossTable.All)
+            {
+                CollectionAssert.Contains(boss.Team, boss.TrumpCard, boss.Name);
+                Assert.AreEqual(MonsterRank.Legend, boss.TrumpCard.Rank, boss.Name);
+                Assert.AreEqual(1, boss.Team.Count(m => m.Rank == MonsterRank.Legend), boss.Name);
+            }
+        }
+
+        [Test]
+        public void 切り札は必ず選出されて最後に出る()
+        {
+            var boss = BossTable.All[0];
+            var cpu = new CpuPlayer(new Random(5));
+            for (int i = 0; i < 100; i++)
+            {
+                var team = cpu.ChooseTeam(boss.Team, boss.TrumpCard);
+
+                Assert.AreEqual(BattleBalance.PartySize, team.Distinct().Count());
+                Assert.AreSame(boss.TrumpCard, team.Last());
+                CollectionAssert.IsSubsetOf(team, boss.Team);
+            }
+        }
+
         [TestCase(0, 0)]
         [TestCase(5, 50)]
         [TestCase(30, 100)]

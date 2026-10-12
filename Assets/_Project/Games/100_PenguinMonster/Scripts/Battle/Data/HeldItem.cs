@@ -28,6 +28,8 @@ namespace PenguinMonster.Battle
         LightFeather,
         /// <summary>ばつぐんの技で受けるダメージ 0.75 倍</summary>
         SnowCoat,
+        /// <summary>防御・特防 1.5 倍。ヒナだけが持ち、小さいのにやけに倒れない子にする</summary>
+        ChickDown,
     }
 
     public static class HeldItemNames
@@ -35,7 +37,7 @@ namespace PenguinMonster.Battle
         private static readonly string[] Names =
         {
             "", "干し魚", "おやつのイカ", "さっぱり昆布", "勇気の羽", "賢い羽",
-            "命のつらら", "目利きメガネ", "踏ん張りマフラー", "軽い羽", "雪のコート",
+            "命のつらら", "目利きメガネ", "踏ん張りマフラー", "軽い羽", "雪のコート", "ヒナの綿毛",
         };
 
         private static readonly string[] Descriptions =
@@ -44,6 +46,7 @@ namespace PenguinMonster.Battle
             "状態異常を 治す（1回）", "物理技が 少し 強くなる", "特殊技が 少し 強くなる",
             "技が 強いが 撃つと HPが 減る", "抜群の 技が 少し 強くなる",
             "HP満タンなら 1残る（1回）", "素早さが 少し 上がる", "抜群の 技を 少し 耐える",
+            "防御と 特防が 1.5倍",
         };
 
         public static string ToJapanese(this HeldItem item) => Names[(int)item];

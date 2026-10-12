@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using PenguinMonster.Battle;
 using UnityEngine;
 using static PenguinMonster.View.Art.PenguinBrush;
 
@@ -19,6 +20,11 @@ namespace PenguinMonster.View.Art
             { 7, Hyouga }, { 8, Hoshi }, { 9, Koutei }, { 10, Ryuuhyou }, { 11, Penta }, { 12, Mofu },
             { 13, Uzu }, { 14, Sango }, { 15, Kazan }, { 16, Takibi }, { 17, Rai }, { 18, Arashi },
             { 19, Nori }, { 20, Tsubasa }, { 21, Kaze }, { 22, Shachi }, { 23, Yoru }, { 24, Auro },
+            { 25, Tsurara }, { 26, Kamakura }, { 27, Onsen }, { 28, Hanabi }, { 29, Kinoko }, { 30, Tsuta },
+            { 31, Magician }, { 32, Boxer }, { 33, Shinju }, { 34, Iruka }, { 35, Koumori }, { 36, Hotaru },
+            { 37, HinaPen }, { 38, YukiHina }, { 39, HaneHina }, { 40, Nakimushi }, { 41, KaraHina }, { 42, PiriHina },
+            { 43, Same }, { 44, Hinotori }, { 45, YukiHyou }, { 46, Hikari }, { 47, Raigan },
+            { 48, Nankyoku }, { 49, Raitei }, { 50, Kyokuya },
         };
 
         public static PixelCanvas Paint(int no, bool front)
@@ -28,11 +34,26 @@ namespace PenguinMonster.View.Art
             var design = ByNo.TryGetValue(no, out var found) ? found : Penta;
             design(new PenguinBrush(canvas, front));
             canvas.Outline(PenguinPalette.Outline);
+            if (IsLegend(no))
+            {
+                // 黒い輪郭の外にもう1周 金を回して、ひと目で伝説とわかるようにする（仕様書 §6）
+                canvas.Outline(PenguinPalette.Gold);
+            }
             if (!front)
             {
                 canvas.FlipX();
             }
             return canvas;
+        }
+
+        /// <summary>MonsterTable.ByNo は無い No で例外を出すので、テスト用の No でも描けるように自前で探す</summary>
+        private static bool IsLegend(int no)
+        {
+            foreach (var monster in MonsterTable.All)
+            {
+                if (monster.No == no) return monster.Rank == MonsterRank.Legend;
+            }
+            return false;
         }
 
         /// <summary>

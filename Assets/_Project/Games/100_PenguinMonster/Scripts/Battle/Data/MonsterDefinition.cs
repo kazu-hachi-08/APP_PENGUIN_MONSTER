@@ -14,9 +14,10 @@ namespace PenguinMonster.Battle
         public IReadOnlyList<MoveDefinition> Moves { get; }
         public Ability Ability { get; }
         public HeldItem Item { get; }
+        public MonsterRank Rank { get; }
 
         public MonsterDefinition(int no, string name, MonsterType[] types, Stats baseStats, MoveDefinition[] moves,
-            Ability ability = Ability.None, HeldItem item = HeldItem.None)
+            Ability ability = Ability.None, HeldItem item = HeldItem.None, MonsterRank rank = MonsterRank.Normal)
         {
             No = no;
             Name = name;
@@ -25,6 +26,7 @@ namespace PenguinMonster.Battle
             Moves = moves;
             Ability = ability;
             Item = item;
+            Rank = rank;
         }
 
         public bool HasType(MonsterType type)

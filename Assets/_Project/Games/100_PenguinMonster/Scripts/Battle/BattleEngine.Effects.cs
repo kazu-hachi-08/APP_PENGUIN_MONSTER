@@ -40,7 +40,11 @@ namespace PenguinMonster.Battle
         {
             int receiverSide = effect.Target == EffectTarget.Self ? side : 1 - side;
             var receiver = _state.Sides[receiverSide].Active;
-            if (effect.Stages != 0)
+            if (effect.Relays)
+            {
+                Relay(side, reportFailure, events);
+            }
+            else if (effect.Stages != 0)
             {
                 ChangeStage(receiverSide, receiver, effect.Stat, effect.Stages, reportFailure, events);
             }
@@ -52,6 +56,24 @@ namespace PenguinMonster.Battle
             {
                 TryInflict(receiverSide, receiver, effect.Status, reportFailure, events);
             }
+        }
+
+        /// <summary>
+        /// 羽リレー: ランクを引き継いで控えの先頭と交代する。交代先を選ばせないのは、
+        /// ターンの途中で入力を待たずに済み、オンラインでも SentOut のイベントだけで同期できるため
+        /// </summary>
+        private void Relay(int side, bool reportFailure, List<BattleEvent> events)
+        {
+            var battleSide = _state.Sides[side];
+            int next = battleSide.FirstBenchIndex();
+            if (next < 0)
+            {
+                AddFailed(side, battleSide.Active, reportFailure, events);
+                return;
+            }
+            var stages = battleSide.Active.CopyStages();
+            ExecuteSwitch(side, next, events);
+            battleSide.Active.SetStages(stages);
         }
 
         private BattleMonster Receiver(int side, MoveEffect effect)

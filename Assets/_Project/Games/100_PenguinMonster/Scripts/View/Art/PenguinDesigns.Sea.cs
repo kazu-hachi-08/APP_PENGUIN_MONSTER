@@ -90,5 +90,52 @@ namespace PenguinMonster.View.Art
             }
             return points;
         }
+
+        /// <summary>No.33 シンジュペン: 開いた二枚貝の殻に座り、頭に真珠をのせる</summary>
+        private static void Shinju(PenguinBrush b)
+        {
+            var shell = Rgb(250, 190, 200);
+            var shellShade = PenguinPalette.Shade(shell);
+            const int Ridges = 6;
+            b.Ellipse(CenterX, 14f, 28f, 26f, shellShade);
+            b.Ellipse(CenterX - 1f, 15f, 26.5f, 24.5f, shell);
+            b.Erase(CenterX, -12f, 40f, 20f);
+            for (int i = 1; i < Ridges; i++)
+            {
+                float angle = i * Mathf.PI / Ridges;
+                b.Line(0.5f, shellShade, V(CenterX, 9), OnEllipse(CenterX, 14f, 26f, 24f, angle));
+            }
+            b.Feet(CenterX, 6f, 10f);
+            b.Shaded2(22f, 19f, 3f, 5f, PenguinPalette.Shade(Water));
+            b.Shaded(CenterX, 19f, 11f, 9f, Water);
+            b.Belly(CenterX, 18f, 7f, 6.5f);
+            b.Shaded(CenterX, 32f, 11f, 11f, Water);
+            b.White(CenterX, 31f, 8f, 6.5f);
+            b.Face(CenterX, 31f, 4f, EyeStyle.Line);
+            b.Polygon(V(32, 5), shellShade, V(6, 8), V(58, 8), V(52, 2), V(12, 2));
+            b.Polygon(V(32, 6), shell, V(8, 8), V(56, 8), V(51, 3), V(13, 3));
+            b.Ellipse(CenterX, 45f, 3.5f, 3.5f, Rgb(225, 225, 240));
+            b.Ellipse(31f, 46f, 2.5f, 2.5f, PenguinPalette.Belly);
+        }
+
+        /// <summary>No.34 イルカペン: 水色の流線形。頭に背びれ、うしろに尾びれ</summary>
+        private static void Iruka(PenguinBrush b)
+        {
+            var body = Rgb(110, 195, 230);
+            var bodyShade = PenguinPalette.Shade(body);
+            b.Triangle(V(42, 8), V(58, 18), V(55, 6), bodyShade);
+            b.Triangle(V(42, 6), V(60, 1), V(55, 6), bodyShade);
+            b.Triangle(V(26, 40), V(38, 42), V(23, 52), bodyShade);
+            b.Triangle(V(28, 41), V(36, 42), V(25, 49), body);
+            b.Feet(CenterX, 6f);
+            b.Shaded2(21f, 17f, 3f, 7f, bodyShade);
+            b.Shaded(CenterX, 17f, 11f, 15f, body);
+            b.Belly(CenterX, 15f, 7f, 11.5f);
+            b.Shaded(CenterX, 35f, 11f, 10f, body);
+            b.White(CenterX, 34f, 8f, 6f);
+            b.Face(CenterX, 34f, 4f, EyeStyle.Smile);
+            b.Ellipse(10f, 40f, 1.5f, 1.5f, Water);
+            b.Ellipse(14f, 46f, 1f, 1f, Water);
+        }
     }
 }

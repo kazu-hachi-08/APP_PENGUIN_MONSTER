@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ドラフト（仕様書 §2.1）。3体の提示から1体ずつ取って6体そろえる。
+    /// ドラフト（仕様書 §2.1）。3体の提示から1体ずつ取って6体そろえる。提示はランクの重み付きで引く。
     /// 提示はプレイヤーごとに別々なので、1人につき1つ作る（相手と同じペンモンを取ってもよい）
     /// </summary>
     public sealed class Draft
@@ -42,8 +42,9 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// 自分がまだ取っていない中から純ランダムに引く（タイプの偏りの補正はしない）。
-        /// 先頭から部分的にシャッフルして、重複なしで提示数ぶん取り出す
+        /// 自分がまだ取っていない中から、ランクの重みを付けて重複なしで提示数ぶん引く（仕様書 §2.1）。
+        /// 伝説を上限まで取ったら、もう伝説は候補に入れない。タイプの偏りの補正はしない。
+        /// 1枠につき乱数を1回だけ引く（オンラインのゲストが同じ種で同じ提示を引けるよう、引き方を変えないこと）
         /// </summary>
         private void DrawOffer()
         {
@@ -52,19 +53,69 @@ namespace PenguinMonster.Battle
             {
                 return;
             }
+            var candidates = Candidates();
+            for (int i = 0; i < BattleBalance.DraftOfferCount; i++)
+            {
+                int index = WeightedIndex(candidates);
+                _offer.Add(candidates[index]);
+                candidates.RemoveAt(index);
+            }
+        }
+
+        private List<MonsterDefinition> Candidates()
+        {
+            bool legendAllowed = CountPicked(MonsterRank.Legend) < BattleBalance.MaxLegendsPerTeam;
             var candidates = new List<MonsterDefinition>();
             foreach (var monster in _pool)
             {
-                if (!_picked.Contains(monster))
+                if (!_picked.Contains(monster) && (legendAllowed || monster.Rank != MonsterRank.Legend))
                 {
                     candidates.Add(monster);
                 }
             }
-            for (int i = 0; i < BattleBalance.DraftOfferCount; i++)
+            return candidates;
+        }
+
+        private int CountPicked(MonsterRank rank)
+        {
+            int count = 0;
+            foreach (var monster in _picked)
             {
-                int j = _random.Next(i, candidates.Count);
-                (candidates[i], candidates[j]) = (candidates[j], candidates[i]);
-                _offer.Add(candidates[i]);
+                if (monster.Rank == rank)
+                {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        private int WeightedIndex(List<MonsterDefinition> candidates)
+        {
+            int total = 0;
+            foreach (var monster in candidates)
+            {
+                total += Weight(monster.Rank);
+            }
+            int roll = _random.Next(total);
+            for (int i = 0; i < candidates.Count; i++)
+            {
+                roll -= Weight(candidates[i].Rank);
+                if (roll < 0)
+                {
+                    return i;
+                }
+            }
+            return candidates.Count - 1;
+        }
+
+        public static int Weight(MonsterRank rank)
+        {
+            switch (rank)
+            {
+                case MonsterRank.Hina: return BattleBalance.DraftWeightHina;
+                case MonsterRank.Ace: return BattleBalance.DraftWeightAce;
+                case MonsterRank.Legend: return BattleBalance.DraftWeightLegend;
+                default: return BattleBalance.DraftWeightNormal;
             }
         }
     }

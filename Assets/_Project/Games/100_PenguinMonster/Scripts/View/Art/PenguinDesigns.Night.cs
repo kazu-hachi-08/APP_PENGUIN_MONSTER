@@ -67,5 +67,21 @@ namespace PenguinMonster.View.Art
             b.Line(2.5f, color, points);
             b.Line(0.8f, PenguinPalette.Belly, points);
         }
+
+        /// <summary>No.35 コウモリペン: コウモリの翼ととがった耳</summary>
+        private static void Koumori(PenguinBrush b)
+        {
+            var wing = Rgb(60, 45, 90);
+            var body = Rgb(120, 80, 160);
+            b.Polygon(V(22, 30), wing, V(22, 24), V(18, 38), V(4, 44), V(6, 36), V(2, 30), V(7, 25), V(4, 18), V(12, 20), V(20, 18));
+            b.Polygon(V(42, 30), wing, V(42, 24), V(46, 38), V(60, 44), V(58, 36), V(62, 30), V(57, 25), V(60, 18), V(52, 20), V(44, 18));
+            b.Line2(0.5f, body, V(20, 30), V(5, 40));
+            b.Line2(0.5f, body, V(20, 28), V(4, 28));
+            b.Line2(0.5f, body, V(20, 26), V(6, 20));
+            b.Triangle2(V(22, 37), V(28, 41), V(20, 49), PenguinPalette.Shade(body));
+            b.Triangle2(V(23, 38), V(27, 41), V(21, 46), Rgb(230, 150, 200));
+            StandardBody(b, body, 15f, 11f, 12f, 32f, 12f);
+            b.Face(CenterX, 31f, 4.5f, EyeStyle.Sleepy);
+        }
     }
 }

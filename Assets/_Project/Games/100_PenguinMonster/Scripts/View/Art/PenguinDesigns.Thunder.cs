@@ -76,5 +76,20 @@ namespace PenguinMonster.View.Art
             b.White(CenterX, 27f, 10f, 7f);
             b.Face(CenterX, 28f, 4.5f, EyeStyle.Sleepy);
         }
+
+        /// <summary>No.36 ホタルペン: 頭に触角、おしりが黄色く光る</summary>
+        private static void Hotaru(PenguinBrush b)
+        {
+            var body = Rgb(70, 100, 80);
+            b.Ellipse(48f, 12f, 11f, 9f, Rgb(230, 245, 170));
+            b.Shaded(48f, 12f, 7f, 6f, Bolt);
+            b.Ellipse(47f, 13f, 3.5f, 3f, Rgb(255, 250, 170));
+            b.Line2(0.6f, PenguinPalette.Shade(body), V(27, 42), V(23, 50), V(20, 52));
+            b.Ellipse2(20f, 52f, 2f, 2f, Bolt);
+            StandardBody(b, body, 15f, 12f, 13f, 32f, 12f);
+            b.Sparkle(10, 26, Bolt);
+            b.Sparkle(54, 32, Bolt);
+            b.Face(CenterX, 31f, 4.5f, EyeStyle.Round);
+        }
     }
 }

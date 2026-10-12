@@ -18,6 +18,14 @@ namespace PenguinMonster.Battle
         public const int DraftOfferCount = 3;
         public const int DraftRounds = 6;
 
+        // ドラフトの出やすさの重み（仕様書 §2.1 / §3.5）。伝説はたまに出る「当たり」にするため小さく
+        public const int DraftWeightHina = 10;
+        public const int DraftWeightNormal = 10;
+        public const int DraftWeightAce = 5;
+        public const int DraftWeightLegend = 2;
+        /// <summary>伝説は1チームにこの数まで（伝説だけで固めた壊れたチームを防ぐ）</summary>
+        public const int MaxLegendsPerTeam = 1;
+
         // 勝ち抜き戦（仕様書 §2.3 / §4.8）。連勝数がこの数に届いたら CPU の賢さが1段上がる
         public const int NormalCpuFromWins = 3;
         public const int StrongCpuFromWins = 6;
@@ -84,6 +92,9 @@ namespace PenguinMonster.Battle
         /// <summary>ビリビリボディ・どくぬめり が起きる確率（%）</summary>
         public const int ContactAbilityPercent = 30;
         public const int SpikySkinDamageDenominator = 8;
+        public const float HugePowerMultiplier = 2f;
+        /// <summary>仇討ち: 選出の味方が1体瀕死になるごとに掛ける倍率</summary>
+        public const float AvengerMultiplierPerFainted = 1.3f;
 
         // 持ち物（仕様書 §4.6）。回復・反動は最大HPを割る数
         public const int StarFishHealDenominator = 16;
@@ -96,5 +107,6 @@ namespace PenguinMonster.Battle
         public const float SharpGlassesMultiplier = 1.2f;
         public const float LightFeatherSpeedMultiplier = 1.2f;
         public const float SnowCoatMultiplier = 0.75f;
+        public const float ChickDownDefenseMultiplier = 1.5f;
     }
 }

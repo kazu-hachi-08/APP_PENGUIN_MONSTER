@@ -80,7 +80,7 @@ namespace PenguinMonster.View
             _selectPanel.Show(run.PlayerSix, opponent.Six, team => playerTeam = team);
             yield return new WaitUntil(() => playerTeam != null);
 
-            yield return _battle.Run(playerTeam, opponent.Cpu.ChooseTeam(opponent.Six), random, opponent.Cpu);
+            yield return _battle.Run(playerTeam, opponent.Cpu.ChooseTeam(opponent.Six, opponent.Boss?.TrumpCard), random, opponent.Cpu);
         }
     }
 }

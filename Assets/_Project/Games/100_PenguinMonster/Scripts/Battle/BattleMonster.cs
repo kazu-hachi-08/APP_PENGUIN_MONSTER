@@ -29,6 +29,30 @@ namespace PenguinMonster.Battle
         public bool IsConfused => ConfusionTurns > 0;
         public bool IsFullHp => CurrentHp == MaxHp;
 
+        /// <summary>選出した陣営。仇討ちで味方の様子を見るのに使う。テストで単体で作ったときは null</summary>
+        internal BattleSide Side { get; set; }
+
+        /// <summary>選出の味方（自分以外）で瀕死になっている数</summary>
+        public int FaintedAllies
+        {
+            get
+            {
+                if (Side == null)
+                {
+                    return 0;
+                }
+                int count = 0;
+                foreach (var member in Side.Party)
+                {
+                    if (member != this && member.IsFainted)
+                    {
+                        count++;
+                    }
+                }
+                return count;
+            }
+        }
+
         /// <summary>行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍</summary>
         public int EffectiveSpeed
         {
@@ -65,12 +89,13 @@ namespace PenguinMonster.Battle
             return StageMultiplier.ApplyStat(isPhysical ? Stats.Attack : Stats.SpAttack, isCritical ? Math.Max(0, stage) : stage);
         }
 
-        /// <summary>防御側の能力。急所のときは上がったランクを無視する</summary>
+        /// <summary>防御側の能力。急所のときは上がったランクを無視する。ヒナの綿毛は急所でも消えない（ランクではなく持ち物のため）</summary>
         public int DefenseStat(bool isPhysical, bool isCritical)
         {
             var kind = isPhysical ? StatKind.Defense : StatKind.SpDefense;
             int stage = GetStage(kind);
-            return StageMultiplier.ApplyStat(isPhysical ? Stats.Defense : Stats.SpDefense, isCritical ? Math.Min(0, stage) : stage);
+            int defense = StageMultiplier.ApplyStat(isPhysical ? Stats.Defense : Stats.SpDefense, isCritical ? Math.Min(0, stage) : stage);
+            return HasItem(HeldItem.ChickDown) ? (int)(defense * BattleBalance.ChickDownDefenseMultiplier) : defense;
         }
 
         public bool CanReceive(StatusCondition status)
@@ -136,6 +161,11 @@ namespace PenguinMonster.Battle
             CurrentHp = hp;
             Status = status;
         }
+
+        /// <summary>羽リレーで引き継ぐランクの写し</summary>
+        internal int[] CopyStages() => (int[])_stages.Clone();
+
+        internal void SetStages(int[] stages) => Array.Copy(stages, _stages, _stages.Length);
 
         /// <summary>交代でひっこめたとき、場にいる間だけの変化を戻す</summary>
         internal void OnWithdrawn()

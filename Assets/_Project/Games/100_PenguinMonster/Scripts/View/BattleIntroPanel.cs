@@ -51,7 +51,7 @@ namespace PenguinMonster.View
             {
                 _bossName.text = opponent.Boss.Name;
                 _bossLine.text = $"「{opponent.Boss.Line}」";
-                _bossAce.sprite = MonsterSprites.Front(opponent.Boss.Team[0]);
+                _bossAce.sprite = MonsterSprites.Front(opponent.Boss.TrumpCard);
                 StartCoroutine(PopAce());
             }
         }

@@ -28,6 +28,10 @@ namespace PenguinMonster.Battle
         Momentum,
         /// <summary>急所に当たらない</summary>
         HardFeathers,
+        /// <summary>物理技のダメージ 2 倍。種族値の低いヒナに持たせて「意外と殴れる」子にする</summary>
+        HugePower,
+        /// <summary>選出の味方が瀕死になっているほど攻撃技のダメージが上がる。出す順番で強さが変わる</summary>
+        Avenger,
     }
 
     public static class AbilityNames
@@ -35,7 +39,7 @@ namespace PenguinMonster.Battle
         private static readonly string[] Names =
         {
             "", "強面", "瀬戸際", "ふかふか脂肪", "ビリビリボディ", "毒ぬめり",
-            "とげとげ肌", "夜更かし", "追い風乗り", "勢いづく", "硬い羽",
+            "とげとげ肌", "夜更かし", "追い風乗り", "勢いづく", "硬い羽", "力持ち", "仇討ち",
         };
 
         // ドラフトのカードに1行で出すので短く
@@ -45,7 +49,7 @@ namespace PenguinMonster.Battle
             "氷・火の 技の ダメージ 半分", "物理で 受けると 麻痺させることがある",
             "物理で 受けると 毒にすることがある", "物理で 受けると 相手に ダメージ",
             "眠りに ならない", "ターンの 終わりに 素早さが 上がる", "相手を 倒すと 攻撃が 上がる",
-            "急所に 当たらない",
+            "急所に 当たらない", "物理技の ダメージが 2倍", "味方が 倒れているほど 技が 強い",
         };
 
         public static string ToJapanese(this Ability ability) => Names[(int)ability];

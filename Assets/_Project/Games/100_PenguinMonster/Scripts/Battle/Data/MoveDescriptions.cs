@@ -63,6 +63,10 @@ namespace PenguinMonster.Battle
             {
                 return "相手を 混乱させる";
             }
+            if (effect.Relays)
+            {
+                return "能力の 変化を 引き継いで 控えの 先頭と 交代する";
+            }
             string who = effect.Target == EffectTarget.Self ? "自分" : "相手";
             string direction = effect.Stages > 0 ? "上げる" : "下げる";
             return $"{who}の {effect.Stat.ToJapanese()}を {System.Math.Abs(effect.Stages)}段階 {direction}";

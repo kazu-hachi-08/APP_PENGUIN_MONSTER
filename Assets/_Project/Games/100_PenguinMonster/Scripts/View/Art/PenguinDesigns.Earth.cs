@@ -83,5 +83,41 @@ namespace PenguinMonster.View.Art
             }
             return points;
         }
+
+        /// <summary>No.29 キノコペン: 紫に白い水玉の毒キノコの傘をかぶる</summary>
+        private static void Kinoko(PenguinBrush b)
+        {
+            var cap = Rgb(150, 70, 170);
+            StandardBody(b, Rgb(100, 130, 80), 14f, 13f, 12f, 30f, 12f);
+            // 傘は下が平らな半円にする。楕円を消しゴムで切ると頭まで消えてしまうため
+            b.Polygon(V(CenterX, 38f), PenguinPalette.Shade(cap), ArcPoints(CenterX, 36f, 21f, 15f, 0f, Mathf.PI));
+            b.Polygon(V(CenterX, 39f), cap, ArcPoints(CenterX - 1f, 37f, 19.5f, 13.5f, 0f, Mathf.PI));
+            foreach (var p in new[] { V(20, 44), V(32, 48), V(44, 43), V(26, 40), V(39, 39), V(14, 39), V(50, 38) })
+            {
+                b.Ellipse(p.x, p.y, 2f, 1.8f, PenguinPalette.Belly);
+            }
+            b.Face(CenterX, 29f, 4.5f, EyeStyle.Dot);
+        }
+
+        /// <summary>No.30 ツタペン: 体にツタが巻きつき、葉っぱの翼を広げる</summary>
+        private static void Tsuta(PenguinBrush b)
+        {
+            var leaf = Rgb(110, 190, 80);
+            var leafShade = PenguinPalette.Shade(leaf);
+            var vine = Rgb(60, 120, 50);
+            foreach (var p in new[] { V(9, 40), V(6, 28), V(10, 17) })
+            {
+                b.Line2(0.6f, vine, V(20, 22), p);
+                b.Ellipse2(p.x, p.y, 6f, 3.5f, leafShade);
+                b.Ellipse2(p.x - 0.5f, p.y + 0.5f, 4.5f, 2.3f, leaf);
+            }
+            StandardBody(b, Rgb(150, 175, 100), 15f, 12f, 13f, 32f, 12f);
+            b.Line(0.7f, vine, V(20, 10), V(30, 14), V(38, 20), V(44, 22));
+            b.Ellipse(26f, 13f, 2f, 1.3f, leaf);
+            b.Ellipse(40f, 21f, 2f, 1.3f, leaf);
+            b.Line(0.7f, vine, V(32, 43), V(34, 48), V(31, 51));
+            b.Ellipse(34f, 51f, 2.5f, 1.5f, leaf);
+            b.Face(CenterX, 31f, 4.5f, EyeStyle.Round);
+        }
     }
 }

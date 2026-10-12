@@ -14,6 +14,8 @@ namespace PenguinMonster.Battle.Tests
         // 24体での見直しで等倍にした（ひ が受けで強すぎたため）
         [TestCase(Dark, Fire, 1f)]
         [TestCase(Aurora, Fire, 1f)]
+        // 50体での見直しで、オーロラ が勝ちすぎたため ばつぐん を足した
+        [TestCase(Thunder, Aurora, 2f)]
         public void SingleType(MonsterType attack, MonsterType defense, float expected)
         {
             Assert.AreEqual(expected, TypeChart.GetMultiplier(attack, defense));

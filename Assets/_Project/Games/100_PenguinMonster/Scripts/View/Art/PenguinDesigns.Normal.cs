@@ -56,5 +56,37 @@ namespace PenguinMonster.View.Art
             b.Face(CenterX, 31f, 6f, EyeStyle.Dot);
             b.Ellipse2(12f, 20f, 3.5f, 6f, fluffShade);
         }
+
+        /// <summary>No.31 マジシャンペン: シルクハットとマント。手に星のステッキ</summary>
+        private static void Magician(PenguinBrush b)
+        {
+            var cape = Rgb(70, 50, 120);
+            var lining = Rgb(200, 50, 70);
+            var hat = Rgb(40, 40, 56);
+            b.Triangle(V(32, 34), V(6, 2), V(58, 2), cape);
+            b.Triangle(V(32, 30), V(12, 3), V(52, 3), lining);
+            b.Line(0.7f, Rgb(120, 90, 60), V(46, 18), V(55, 30));
+            b.Star(56f, 32f, 4.5f, 2f, PenguinPalette.Gold);
+            StandardBody(b, Rgb(220, 220, 230), 15f, 12f, 12f, 31f, 12f);
+            b.Rect(19, 41, 26, 3, hat);
+            b.Rect(23, 44, 18, 12, hat);
+            b.Rect(23, 45, 18, 2, lining);
+            b.Face(CenterX, 30f, 4.5f, EyeStyle.Cross);
+        }
+
+        /// <summary>No.32 ボクサーペン: 大きな赤いグローブを構え、はちまきの端がなびく</summary>
+        private static void Boxer(PenguinBrush b)
+        {
+            var glove = Rgb(220, 50, 50);
+            var band = Rgb(240, 240, 240);
+            StandardBody(b, Rgb(60, 70, 110), 15f, 14f, 13f, 32f, 12f);
+            b.Rect(20, 38, 24, 3, band);
+            b.Line(0.8f, band, V(44, 39), V(50, 42), V(55, 40));
+            b.Line(0.8f, band, V(44, 39), V(49, 37), V(54, 35));
+            b.Shaded2(14f, 20f, 6f, 6f, glove);
+            b.Rect(10, 13, 9, 2, band);
+            b.Rect(45, 13, 9, 2, band);
+            b.Face(CenterX, 31f, 4.5f, EyeStyle.Sharp);
+        }
     }
 }

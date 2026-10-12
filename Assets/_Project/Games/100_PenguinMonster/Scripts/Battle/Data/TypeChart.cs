@@ -4,7 +4,8 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// タイプ相性表（仕様書 §3.4）。行が攻撃する技のタイプ、列が受けるペンモンのタイプ。
-    /// 24体での見直しで、ひ が受けで強すぎたため「やみ・オーロラ → ひ」の いまひとつ を外した
+    /// 24体での見直しで、ひ が受けで強すぎたため「やみ・オーロラ → ひ」の いまひとつ を外した。
+    /// 50体での見直しで、オーロラ が弱点1つ・ノーマル無効で勝ちすぎたため「かみなり → オーロラ」を ばつぐん にした
     /// </summary>
     public static class TypeChart
     {
@@ -21,7 +22,7 @@ namespace PenguinMonster.Battle
             /* こおり   */ { X, H, H, H, X, S, X, S, X, X },
             /* うみ     */ { X, X, H, S, X, H, S, X, X, X },
             /* ひ       */ { X, S, H, H, X, S, H, X, X, X },
-            /* かみなり */ { X, X, S, X, H, H, N, S, X, X },
+            /* かみなり */ { X, X, S, X, H, H, N, S, X, S },
             /* こけ     */ { X, X, S, H, X, H, S, H, X, X },
             /* いわ     */ { X, S, X, S, X, H, X, S, X, X },
             /* とり     */ { X, X, X, X, H, S, H, X, S, X },

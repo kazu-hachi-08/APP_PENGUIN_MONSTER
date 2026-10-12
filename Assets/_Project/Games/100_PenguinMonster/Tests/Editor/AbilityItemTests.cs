@@ -173,7 +173,47 @@ namespace PenguinMonster.Battle.Tests
             AssertModifier(attacker, defender, Strike, BattleBalance.LastStandMultiplier);
         }
 
+        [Test]
+        public void 力持ちは物理技だけダメージ2倍()
+        {
+            var strong = With(Create("攻", 50, Strike), Ability.HugePower);
+            var defender = Create("守", 50, Strike);
+
+            AssertModifier(strong, defender, Strike, BattleBalance.HugePowerMultiplier);
+            AssertModifier(strong, defender, FireStrike, 1f);
+        }
+
+        [Test]
+        public void 仇討ちは瀕死の味方1体ごとに強くなる()
+        {
+            var avenger = With(Create("仇", 50, Strike), Ability.Avenger);
+            var plain = Create("味方", 50, Strike);
+            var state = new BattleState(new[] { plain, plain, avenger }, Party(Slow()));
+            var party = state.Sides[0].Party;
+            var defender = Create("守", 50, Strike);
+            AssertModifier(party[2], defender, Strike, 1f);
+
+            party[0].TakeDamage(party[0].MaxHp);
+            AssertModifier(party[2], defender, Strike, BattleBalance.AvengerMultiplierPerFainted);
+
+            party[1].TakeDamage(party[1].MaxHp);
+            AssertModifier(party[2], defender, Strike,
+                BattleBalance.AvengerMultiplierPerFainted * BattleBalance.AvengerMultiplierPerFainted);
+        }
+
         // ---- 持ち物 ----
+
+        [Test]
+        public void ヒナの綿毛は防御と特防が1点5倍で_急所でも消えない()
+        {
+            var chick = new BattleMonster(Slow(item: HeldItem.ChickDown));
+            int defense = (int)(chick.Stats.Defense * BattleBalance.ChickDownDefenseMultiplier);
+            int spDefense = (int)(chick.Stats.SpDefense * BattleBalance.ChickDownDefenseMultiplier);
+
+            Assert.AreEqual(defense, chick.DefenseStat(true, false));
+            Assert.AreEqual(spDefense, chick.DefenseStat(false, false));
+            Assert.AreEqual(defense, chick.DefenseStat(true, true));
+        }
 
         [Test]
         public void ほしざかなはターン終わりに16分の1回復()

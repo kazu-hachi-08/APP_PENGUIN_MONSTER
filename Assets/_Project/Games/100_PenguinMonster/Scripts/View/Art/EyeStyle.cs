@@ -10,5 +10,8 @@ namespace PenguinMonster.View.Art
         Smile,  // にっこり目（^ ^）
         Sleepy, // ねむそう目: のんびり・夜の子
         Sharp,  // キリッ目: 強そうな子
+        Sparkle, // きらきら目: 光を2つ入れた大きめの目。ヒナ用
+        Cross,  // 星目: 十字のきらめき。派手な子・オーロラの子
+        Line,   // 糸目: 細い1本線。おだやかな子
     }
 }

@@ -4,18 +4,18 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// ボスの定義表（7戦目・14戦目・21戦目。その先は最初のボスからくり返す）。
-    /// それぞれ得意なタイプでそろえ、種族値の合計が高めのペンモンを入れている
+    /// それぞれ得意なタイプでそろえ、エースと切り札の伝説を1体ずつ入れている
     /// </summary>
     public static class BossTable
     {
         public static readonly IReadOnlyList<BossDefinition> All = new[]
         {
             new BossDefinition("氷山の ユキオ", "この 氷の 壁を 越えられるかな？",
-                Team(1, 7, 8, 9, 10, 12)),
+                Team(7, 9, 10, 26, 45, 48), Monster(48)),
             new BossDefinition("嵐の ライカ", "雷と 風で 吹き飛ばしてあげる！",
-                Team(4, 17, 18, 20, 21, 3)),
+                Team(4, 17, 20, 44, 47, 49), Monster(49)),
             new BossDefinition("極夜の ヨミ", "長い 夜の 始まりだ……",
-                Team(22, 23, 24, 8, 15, 9)),
+                Team(22, 23, 33, 35, 46, 50), Monster(50)),
         };
 
         /// <summary>何戦目のボスか。ボス戦でない戦数を渡したときは呼ばないこと</summary>
@@ -31,9 +31,11 @@ namespace PenguinMonster.Battle
             var team = new MonsterDefinition[numbers.Length];
             for (int i = 0; i < numbers.Length; i++)
             {
-                team[i] = MonsterTable.All[numbers[i] - 1];
+                team[i] = Monster(numbers[i]);
             }
             return team;
         }
+
+        private static MonsterDefinition Monster(int no) => MonsterTable.All[no - 1];
     }
 }

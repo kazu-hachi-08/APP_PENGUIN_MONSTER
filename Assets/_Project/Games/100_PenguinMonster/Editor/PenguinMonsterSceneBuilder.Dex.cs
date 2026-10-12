@@ -24,10 +24,11 @@ namespace PenguinMonster.Editor
         private const float DexBodyBottom = 40f;
         private const float DexListLeft = 40f;
         private const float DexListWidth = 870f;
-        private const int DexListColumns = 6;
-        private static readonly Vector2 DexCellSize = new Vector2(132f, 132f);
-        private const float DexCellSpacing = 12f;
-        private const float DexCellIconPadding = 6f;
+        // 50 体が枠（高さ 1080 - 上 230 - 下 40）に収まるように、8 列 x 7 行にする
+        private const int DexListColumns = 8;
+        private static readonly Vector2 DexCellSize = new Vector2(100f, 100f);
+        private const float DexCellSpacing = 10f;
+        private const float DexCellIconPadding = 4f;
 
         private const float DexDetailLeft = 940f;
         private const float DexDetailRight = 40f;

@@ -104,5 +104,36 @@ namespace PenguinMonster.View.Art
             b.White(CenterX, 37f, 8f, 6.5f);
             b.Face(CenterX, 37f, 4f, EyeStyle.Sleepy);
         }
+
+        /// <summary>No.25 ツララペン: 頭の氷のぼうしと、ヒレの先からつららが垂れる</summary>
+        private static void Tsurara(PenguinBrush b)
+        {
+            StandardBody(b, Rgb(150, 205, 235), 15f, 14f, 13f, 32f, 13f);
+            b.Triangle2(V(17, 12), V(21, 12), V(18, 4), IceLight);
+            b.Ellipse(CenterX, 42f, 12f, 4.5f, IceShade);
+            b.Ellipse(31f, 43f, 10.5f, 3.5f, IceLight);
+            b.Triangle2(V(20, 40), V(24, 40), V(21, 33), IceLight);
+            b.Triangle2(V(24, 39), V(27, 39), V(25.5f, 35), IceShade);
+            b.Face(CenterX, 31f, 5f, EyeStyle.Line);
+        }
+
+        /// <summary>No.26 カマクラペン: 体が雪のかまくら。入口の奥に火が灯り、てっぺんから顔を出す</summary>
+        private static void Kamakura(PenguinBrush b)
+        {
+            var snow = Rgb(236, 242, 250);
+            var snowShade = Rgb(180, 196, 220);
+            b.Shaded(CenterX, 40f, 11f, 11f, Rgb(240, 150, 90));
+            b.White(CenterX, 39f, 8f, 6.5f);
+            b.Face(CenterX, 39f, 4f, EyeStyle.Smile);
+            b.Ellipse(CenterX, 6f, 26f, 26f, snowShade);
+            b.Ellipse(CenterX - 1f, 7f, 24.5f, 24.5f, snow);
+            b.Erase(CenterX, -1f, 40f, 3f);
+            b.Line(0.6f, snowShade, V(12, 16), V(24, 18), V(40, 18), V(52, 16));
+            b.Line(0.6f, snowShade, V(9, 9), V(20, 10));
+            b.Line(0.6f, snowShade, V(44, 10), V(55, 9));
+            b.Ellipse(CenterX, 2f, 8f, 9f, Rgb(60, 50, 70));
+            b.Ellipse(CenterX, 5f, 3.5f, 4.5f, FlameOuter);
+            b.Ellipse(CenterX, 4f, 2f, 2.5f, FlameInner);
+        }
     }
 }

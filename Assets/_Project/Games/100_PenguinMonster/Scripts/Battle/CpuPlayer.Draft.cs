@@ -23,16 +23,29 @@ namespace PenguinMonster.Battle
             return pickStrong ? StrongestIndex(offer) : _random.Next(offer.Count);
         }
 
-        /// <summary>候補からバトルに出す数をランダムに選ぶ。並びがそのまま出す順（先頭が1番目）</summary>
-        public List<MonsterDefinition> ChooseTeam(IReadOnlyList<MonsterDefinition> candidates)
+        /// <summary>
+        /// 候補からバトルに出す数をランダムに選ぶ。並びがそのまま出す順（先頭が1番目）。
+        /// trumpCard を渡すと必ず入れて最後に出す（ボスの切り札。仕様書 §2.3）
+        /// </summary>
+        public List<MonsterDefinition> ChooseTeam(IReadOnlyList<MonsterDefinition> candidates, MonsterDefinition trumpCard = null)
         {
             var rest = new List<MonsterDefinition>(candidates);
             var team = new List<MonsterDefinition>();
-            while (team.Count < BattleBalance.PartySize)
+            int randomCount = BattleBalance.PartySize;
+            if (trumpCard != null)
+            {
+                rest.Remove(trumpCard);
+                randomCount--;
+            }
+            while (team.Count < randomCount)
             {
                 int index = _random.Next(rest.Count);
                 team.Add(rest[index]);
                 rest.RemoveAt(index);
+            }
+            if (trumpCard != null)
+            {
+                team.Add(trumpCard);
             }
             return team;
         }

@@ -165,6 +165,10 @@ namespace PenguinMonster.View.Art
         private static readonly string[] SleepyEye = { "####", ".##." };
         // 上の辺が顔の内側へ下がると、キリッとした目つきになる
         private static readonly string[] SharpEye = { "##..", "####", ".##." };
+        // ヒナは目を少し大きくして光を2つ入れ、幼さを出す
+        private static readonly string[] SparkleEye = { "o##", "###", "#o#" };
+        private static readonly string[] CrossEye = { ".#.", "###", ".#." };
+        private static readonly string[] LineEye = { "####" };
 
         private static string[] EyePattern(EyeStyle eyes)
         {
@@ -173,6 +177,9 @@ namespace PenguinMonster.View.Art
                 case EyeStyle.Round: return RoundEye;
                 case EyeStyle.Sleepy: return SleepyEye;
                 case EyeStyle.Sharp: return SharpEye;
+                case EyeStyle.Sparkle: return SparkleEye;
+                case EyeStyle.Cross: return CrossEye;
+                case EyeStyle.Line: return LineEye;
                 default: return DotEye;
             }
         }

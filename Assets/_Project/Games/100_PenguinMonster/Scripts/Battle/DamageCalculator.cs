@@ -96,6 +96,14 @@ namespace PenguinMonster.Battle
                 modifier *= BattleBalance.LastStandMultiplier;
             }
             bool isPhysical = move.Category == MoveCategory.Physical;
+            if (isPhysical && attacker.HasAbility(Ability.HugePower))
+            {
+                modifier *= BattleBalance.HugePowerMultiplier;
+            }
+            if (attacker.HasAbility(Ability.Avenger))
+            {
+                modifier *= (float)Math.Pow(BattleBalance.AvengerMultiplierPerFainted, attacker.FaintedAllies);
+            }
             if ((isPhysical && attacker.HasItem(HeldItem.BraveFeather)) || (!isPhysical && attacker.HasItem(HeldItem.WiseFeather)))
             {
                 modifier *= BattleBalance.FeatherMultiplier;

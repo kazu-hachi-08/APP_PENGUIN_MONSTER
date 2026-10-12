@@ -64,5 +64,52 @@ namespace PenguinMonster.View.Art
             b.Ellipse(CenterX, 16f, 10f, 8f, FlameInner);
             b.Face(CenterX, 18f, 5f, EyeStyle.Smile);
         }
+
+        /// <summary>No.27 オンセンペン: 温泉の桶に浸かってのんびり。頭に手ぬぐい、湯気がのぼる</summary>
+        private static void Onsen(PenguinBrush b)
+        {
+            var body = Rgb(200, 110, 90);
+            var wood = Rgb(190, 140, 90);
+            var hoop = Rgb(110, 80, 60);
+            var steam = Rgb(235, 240, 248);
+            b.Shaded2(19f, 22f, 3f, 5f, PenguinPalette.Shade(body));
+            b.Shaded(CenterX, 22f, 12f, 9f, body);
+            b.Shaded(CenterX, 35f, 12f, 12f, body);
+            b.White(CenterX, 34f, 9f, 7f);
+            b.Face(CenterX, 34f, 4.5f, EyeStyle.Sleepy);
+            b.Rect(25, 45, 14, 3, PenguinPalette.Belly);
+            b.Rect(27, 48, 10, 2, PenguinPalette.Belly);
+            b.Rect(26, 46, 12, 1, Rgb(120, 170, 230));
+            b.Ellipse(CenterX, 19f, 22f, 3f, Water);
+            b.Rect(10, 2, 44, 17, PenguinPalette.Shade(wood));
+            b.Rect(11, 3, 41, 15, wood);
+            b.Rect(10, 6, 44, 2, hoop);
+            b.Rect(10, 13, 44, 2, hoop);
+            b.Line(0.6f, steam, V(14, 26), V(12, 30), V(14, 34), V(12, 38));
+            b.Line(0.6f, steam, V(50, 27), V(52, 31), V(50, 35), V(52, 39));
+            b.Line(0.6f, steam, V(46, 44), V(48, 48), V(46, 52));
+        }
+
+        /// <summary>No.28 ハナビペン: 頭の上で花火が開き、体に火花が散る</summary>
+        private static void Hanabi(PenguinBrush b)
+        {
+            var colors = new[] { Rgb(255, 120, 160), Rgb(255, 220, 80), Rgb(120, 220, 255) };
+            const int Rays = 12;
+            const float BurstY = 54f;
+            for (int i = 0; i < Rays; i++)
+            {
+                float angle = i * Mathf.PI * 2f / Rays;
+                var color = colors[i % colors.Length];
+                var tip = V(CenterX + Mathf.Cos(angle) * 9f, BurstY + Mathf.Sin(angle) * 8f);
+                b.Line(0.5f, color, V(CenterX + Mathf.Cos(angle) * 3f, BurstY + Mathf.Sin(angle) * 3f), tip);
+                b.Ellipse(tip.x, tip.y, 1.2f, 1.2f, color);
+            }
+            StandardBody(b, Rgb(235, 100, 70), 15f, 13f, 13f, 32f, 12f);
+            b.Sparkle(12, 30, colors[1]);
+            b.Sparkle(52, 22, colors[0]);
+            b.Sparkle(10, 14, colors[2]);
+            b.Sparkle(54, 38, colors[1]);
+            b.Face(CenterX, 31f, 4.5f, EyeStyle.Cross);
+        }
     }
 }

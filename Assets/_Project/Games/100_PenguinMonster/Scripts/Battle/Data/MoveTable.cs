@@ -7,7 +7,7 @@ using static PenguinMonster.Battle.StatusCondition;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 技の定義表（24体ぶん・48個）。技名は原作と被らないオリジナル（仕様書 §1.2）。
+    /// 技の定義表（50体ぶん）。技名は原作と被らないオリジナル（仕様書 §1.2）。
     /// 変化技の威力は 0、自分にかける変化技の命中は使わない（必ず決まる）
     /// </summary>
     public static class MoveTable
@@ -27,6 +27,8 @@ namespace PenguinMonster.Battle
             effects: new[] { FoeStat(Attack, -2) });
         public static readonly MoveDefinition Fluff = new MoveDefinition("膨らむ", Normal, Status, 0, Sure,
             effects: new[] { SelfStat(Defense, 2) });
+        public static readonly MoveDefinition FeatherRelay = new MoveDefinition("羽リレー", Normal, Status, 0, Sure,
+            effects: new[] { Relay() });
 
         // こおり
         public static readonly MoveDefinition IcicleBeak = new MoveDefinition("氷柱クチバシ", Ice, Physical, 75, Sure,
@@ -37,6 +39,9 @@ namespace PenguinMonster.Battle
         public static readonly MoveDefinition IcebergDrop = new MoveDefinition("氷山落とし", Ice, Physical, 100, 80);
         public static readonly MoveDefinition ColdBreath = new MoveDefinition("冷たい息", Ice, Special, 55, 95,
             effects: new[] { FoeStat(Speed, -1) });
+        // 伝説 ナンキョクペン の専用技
+        public static readonly MoveDefinition GreatGlacier = new MoveDefinition("大氷河", Ice, Physical, 120, 85,
+            effects: new[] { Ailment(Freeze, 10) });
 
         // うみ
         public static readonly MoveDefinition BigWave = new MoveDefinition("大波", Sea, Special, 80, Sure);
@@ -46,6 +51,8 @@ namespace PenguinMonster.Battle
             effects: new[] { FoeStat(Speed, -1, 30) });
         public static readonly MoveDefinition Splash = new MoveDefinition("水かけ", Sea, Status, 0, Sure,
             effects: new[] { FoeStat(Accuracy, -1) });
+        public static readonly MoveDefinition HotSpring = new MoveDefinition("温泉しぶき", Sea, Special, 80, Sure,
+            effects: new[] { Ailment(Burn, 30) });
 
         // ひ
         public static readonly MoveDefinition FlameDive = new MoveDefinition("火の粉ダイブ", Fire, Physical, 75, Sure,
@@ -68,6 +75,9 @@ namespace PenguinMonster.Battle
             effects: new[] { Ailment(Paralysis, 30) });
         public static readonly MoveDefinition NumbWave = new MoveDefinition("痺れの波動", Thunder, Status, 0, 90,
             effects: new[] { Ailment(Paralysis) });
+        // 伝説 ライテイペン の専用技
+        public static readonly MoveDefinition HeavenlyThunder = new MoveDefinition("天の雷", Thunder, Special, 110, 90,
+            effects: new[] { Ailment(Paralysis, 20) });
 
         // こけ
         public static readonly MoveDefinition MossWhip = new MoveDefinition("苔ムチ", Moss, Physical, 70, Sure);
@@ -106,6 +116,9 @@ namespace PenguinMonster.Battle
             effects: new[] { Confusion() });
         public static readonly MoveDefinition SharpGlare = new MoveDefinition("鋭い目つき", Dark, Status, 0, Sure,
             effects: new[] { FoeStat(Defense, -2) });
+        // 伝説 キョクヤペン の専用技
+        public static readonly MoveDefinition EndlessNight = new MoveDefinition("明けない夜", Dark, Special, 100, Sure,
+            effects: new[] { FoeStat(SpDefense, -1, 30) });
 
         // オーロラ
         public static readonly MoveDefinition AuroraWave = new MoveDefinition("オーロラウェーブ", Aurora, Special, 80, Sure,

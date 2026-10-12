@@ -5,7 +5,7 @@ using static PenguinMonster.Battle.Tests.TestMonsters;
 namespace PenguinMonster.Battle.Tests
 {
     /// <summary>
-    /// 能力変化（仕様書 §4.5）。倍率・上限・交代で戻ること・急所での無視
+    /// 能力変化（仕様書 §4.5）。倍率・上限・交代で戻ること・急所での無視・羽リレーでの引き継ぎ（§4.2）
     /// </summary>
     public class StatStageTests
     {
@@ -60,6 +60,37 @@ namespace PenguinMonster.Battle.Tests
             engine.ResolveTurn(BattleAction.SwitchTo(1), BattleAction.UseMove(0));
 
             Assert.AreEqual(0, user.GetStage(StatKind.Attack));
+        }
+
+        [Test]
+        public void 羽リレーはランクを引き継いで控えの先頭と交代する()
+        {
+            var relayer = Create("リレー", 90, new[] { AttackUp, MoveTable.FeatherRelay, Wait, Wait }, MonsterType.Normal);
+            var party = new[] { relayer, Create("次", 50, Wait), Create("最後", 50, Wait) };
+            var engine = new BattleEngine(new BattleState(party, Party(Create("遅", 30, Wait))), new System.Random(1));
+            var side = engine.State.Sides[0];
+            var user = side.Active;
+            engine.ResolveTurn(BattleAction.UseMove(0), BattleAction.UseMove(0));
+
+            var events = engine.ResolveTurn(BattleAction.UseMove(1), BattleAction.UseMove(0));
+
+            Assert.AreEqual(1, side.ActivePartyIndex);
+            Assert.AreEqual(2, side.Active.GetStage(StatKind.Attack));
+            Assert.AreEqual(0, user.GetStage(StatKind.Attack));
+            Assert.IsTrue(events.Any(e => e.Kind == BattleEventKind.Withdrawn && e.Monster == user));
+            Assert.IsTrue(events.Any(e => e.Kind == BattleEventKind.SentOut && e.Monster == side.Active));
+        }
+
+        [Test]
+        public void 羽リレーは控えがいないと決まらない()
+        {
+            var relayer = Create("リレー", 90, MoveTable.FeatherRelay);
+            var engine = new BattleEngine(new BattleState(new[] { relayer }, Party(Create("遅", 30, Wait))), new System.Random(1));
+
+            var events = engine.ResolveTurn(BattleAction.UseMove(0), BattleAction.UseMove(0));
+
+            Assert.IsTrue(events.Any(e => e.Kind == BattleEventKind.Failed && e.Side == 0));
+            Assert.AreEqual(0, engine.State.Sides[0].ActivePartyIndex);
         }
 
         [Test]

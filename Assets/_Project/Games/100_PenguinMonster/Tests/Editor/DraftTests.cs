@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -71,11 +72,52 @@ namespace PenguinMonster.Battle.Tests
         [Test]
         public void 全ペンモンが提示されうる()
         {
-            var offered = Enumerable.Range(0, Trials)
-                .SelectMany(seed => new Draft(MonsterTable.All, new Random(seed)).Offer)
-                .Distinct();
+            var offered = Enumerable.Range(0, Trials).SelectMany(seed => AllOffers(new Random(seed))).Distinct();
 
             Assert.AreEqual(MonsterTable.All.Count, offered.Count());
+        }
+
+        [Test]
+        public void 伝説はチームに1体までで_取ったあとは提示に出ない()
+        {
+            for (int seed = 0; seed < Trials * 5; seed++)
+            {
+                var draft = new Draft(MonsterTable.All, new Random(seed));
+                while (!draft.IsDone)
+                {
+                    bool hasLegend = draft.Picked.Any(m => m.Rank == MonsterRank.Legend);
+                    Assert.IsFalse(hasLegend && draft.Offer.Any(m => m.Rank == MonsterRank.Legend));
+                    // 伝説が出たら必ず取って、上限が効くかを見る
+                    int legend = draft.Offer.ToList().FindIndex(m => m.Rank == MonsterRank.Legend);
+                    draft.Pick(Math.Max(0, legend));
+                }
+                Assert.That(draft.Picked.Count(m => m.Rank == MonsterRank.Legend),
+                    Is.LessThanOrEqualTo(BattleBalance.MaxLegendsPerTeam));
+            }
+        }
+
+        [Test]
+        public void 伝説はふつうより出にくい()
+        {
+            var offers = Enumerable.Range(0, Trials).SelectMany(seed => AllOffers(new Random(seed))).ToList();
+            double PerMonster(MonsterRank rank)
+                => offers.Count(m => m.Rank == rank) / (double)MonsterTable.All.Count(m => m.Rank == rank);
+
+            Assert.That(PerMonster(MonsterRank.Legend), Is.LessThan(PerMonster(MonsterRank.Ace)));
+            Assert.That(PerMonster(MonsterRank.Ace), Is.LessThan(PerMonster(MonsterRank.Normal)));
+        }
+
+        /// <summary>先頭を取りながら最後まで進め、出てきた提示を全部集める</summary>
+        private static IEnumerable<MonsterDefinition> AllOffers(Random random)
+        {
+            var draft = new Draft(MonsterTable.All, random);
+            var offers = new List<MonsterDefinition>();
+            while (!draft.IsDone)
+            {
+                offers.AddRange(draft.Offer);
+                draft.Pick(0);
+            }
+            return offers;
         }
 
         [Test]

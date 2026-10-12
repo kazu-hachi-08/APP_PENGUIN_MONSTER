@@ -36,19 +36,20 @@ namespace PenguinMonster.Battle.Tests
         [Test]
         public void 技の数字は分類と威力と命中_変化技の威力は棒()
         {
-            Assert.AreEqual("ぶつり　いりょく 50　めいちゅう 100", MoveTable.Tackle.Numbers());
-            Assert.AreEqual("へんか　いりょく -　めいちゅう 90", MoveTable.NumbWave.Numbers());
+            Assert.AreEqual("物理　威力 50　命中 100", MoveTable.Tackle.Numbers());
+            Assert.AreEqual("変化　威力 -　命中 90", MoveTable.NumbWave.Numbers());
         }
 
         [Test]
         public void 技の効果は先制と確率と中身を出す()
         {
             Assert.AreEqual("", MoveTable.Tackle.Effects());
-            Assert.AreEqual("せんせい", MoveTable.BellySlide.Effects());
-            Assert.AreEqual("30%で あいてを まひに する", MoveTable.PenguinPress.Effects());
-            Assert.AreEqual("10%で あいてを こんらんさせる", MoveTable.Shout.Effects());
-            Assert.AreEqual("じぶんの こうげきを 2だん あげる", MoveTable.FlapDance.Effects());
-            Assert.AreEqual("あいての すばやさを 1だん さげる", MoveTable.ColdBreath.Effects());
+            Assert.AreEqual("先制", MoveTable.BellySlide.Effects());
+            Assert.AreEqual("30%で 相手を 麻痺に する", MoveTable.PenguinPress.Effects());
+            Assert.AreEqual("10%で 相手を 混乱させる", MoveTable.Shout.Effects());
+            Assert.AreEqual("自分の 攻撃を 2段階 上げる", MoveTable.FlapDance.Effects());
+            Assert.AreEqual("相手の 素早さを 1段階 下げる", MoveTable.ColdBreath.Effects());
+            Assert.AreEqual("能力の 変化を 引き継いで 控えの 先頭と 交代する", MoveTable.FeatherRelay.Effects());
         }
 
         [Test]

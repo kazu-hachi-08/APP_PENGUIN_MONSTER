@@ -27,12 +27,25 @@ namespace PenguinMonster.Battle
         public BattleSide(int index, IReadOnlyList<MonsterDefinition> party, int activeCount)
         {
             Index = index;
-            Party = party.Select(d => new BattleMonster(d)).ToList();
+            Party = party.Select(d => new BattleMonster(d) { Side = this }).ToList();
             // 選出の先頭から順に場へ出す
             _activePartyIndices = Enumerable.Range(0, activeCount).ToArray();
         }
 
         public bool IsActive(int partyIndex) => _activePartyIndices.Contains(partyIndex);
+
+        /// <summary>選出の順で一番前の、出せる控え。いなければ -1（羽リレーの交代先）</summary>
+        public int FirstBenchIndex()
+        {
+            for (int i = 0; i < Party.Count; i++)
+            {
+                if (CanSwitchTo(i))
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
 
         public bool CanSwitchTo(int partyIndex)
         {
