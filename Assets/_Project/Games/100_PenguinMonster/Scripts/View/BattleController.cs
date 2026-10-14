@@ -34,9 +34,6 @@ namespace PenguinMonster.View
         [Tooltip("特性が働いたときの帯。陣営ごとに1つ")]
         [SerializeField] private AbilityBanner _playerBanner;
         [SerializeField] private AbilityBanner _enemyBanner;
-        [Tooltip("選出の残りを見せるタマゴの列。陣営ごとに1つ")]
-        [SerializeField] private PartyEggTray _playerTray;
-        [SerializeField] private PartyEggTray _enemyTray;
         [Tooltip("繰り出すときにタマゴを投げる演出。場全体に重ねた層")]
         [SerializeField] private EggThrowView _eggThrow;
         [Header("窓")]
@@ -87,8 +84,6 @@ namespace PenguinMonster.View
             _weather.Hide();
             _playerBanner.Hide();
             _enemyBanner.Hide();
-            _playerTray.Hide();
-            _enemyTray.Hide();
             foreach (var view in AllViews())
             {
                 view.Hide();
@@ -152,14 +147,6 @@ namespace PenguinMonster.View
             _engine = new BattleEngine(new BattleState(playerParty, opponentParty, format.ActiveCount()), random);
             _state = _engine.State;
             _choiceSeconds = choiceSeconds;
-            ShowTrays();
-        }
-
-        /// <summary>試合の始めに、両陣営の選出ぶんのタマゴを並べる</summary>
-        private void ShowTrays()
-        {
-            _playerTray.Show(Player, _eggs[PlayerSide]);
-            _enemyTray.Show(Opponent, _eggs[OpponentSide]);
         }
 
         /// <summary>空いた場を前から1つずつ埋める。自分が先、CPU が後</summary>

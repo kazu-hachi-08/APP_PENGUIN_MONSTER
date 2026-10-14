@@ -39,7 +39,7 @@ namespace PenguinMonster.View.Art
     }
 
     /// <summary>
-    /// タマゴの絵（16x16 のドット絵）を種類ごとに作って使い回す。残りの数の表示と、繰り出すときに投げる絵の両方で使う
+    /// タマゴの絵（16x16 のドット絵）を種類ごとに作って使い回す。繰り出すときに投げる絵に使う
     /// </summary>
     public static class EggSprites
     {
