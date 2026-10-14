@@ -86,7 +86,7 @@ namespace PenguinMonster.Editor
             var root = UIDialogBuilder.CreateUIObject("Battle", canvas);
             UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
 
-            // 一番奥のタップ領域 → 場 → 下の窓 → 交代の画面、の順に重ねる
+            // 一番奥のタップ領域 → 場 → 下の窓 → 交代の画面 → ランクの一覧、の順に重ねる
             var fieldTapArea = CreateFieldTapArea(root.transform);
             BuildField(root.transform, out var playerView, out var enemyView, out var playerInfo, out var enemyInfo);
             BuildDoubleField(root.transform, out var playerViews, out var enemyViews, out var playerInfos, out var enemyInfos);
@@ -98,6 +98,9 @@ namespace PenguinMonster.Editor
             var movePanel = CreateMovePanel(root.transform);
             var targetPanel = CreateTargetPanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
+            // 一覧は枠をタップしたときだけ出る。暗幕で場と窓を覆うよう、窓より手前に置く
+            var stagePanel = CreateStatStagePanel(root.transform);
+            LinkStatStagePanel(stagePanel, playerInfos.Concat(enemyInfos).Append(playerInfo).Append(enemyInfo).ToArray());
             // 交代の画面の上にも見えるよう、最後に重ねる
             var turnTimer = CreateCountdown(root.transform, TopCenter, BattleCountdownPosition);
 

@@ -122,6 +122,14 @@ namespace PenguinMonster.Battle.Tests
                 {
                     Assert.AreEqual(original.Party[i].CurrentHp, copy.Party[i].CurrentHp);
                     Assert.AreEqual(original.Party[i].Status, copy.Party[i].Status);
+                    if (original.IsActive(i))
+                    {
+                        // ランクは名前の枠の一覧に出すので、場にいる子はずれないこと
+                        for (int stat = 0; stat < StatKindNames.Count; stat++)
+                        {
+                            Assert.AreEqual(original.Party[i].GetStage((StatKind)stat), copy.Party[i].GetStage((StatKind)stat));
+                        }
+                    }
                 }
             }
         }

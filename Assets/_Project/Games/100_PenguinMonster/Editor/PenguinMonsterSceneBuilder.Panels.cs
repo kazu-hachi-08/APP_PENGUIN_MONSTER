@@ -8,10 +8,22 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 下側の窓（メッセージ・コマンド・技選択・ダブルスの狙う相手）と、交代の画面
+    /// 下側の窓（メッセージ・コマンド・技選択・ダブルスの狙う相手）と、交代の画面・ランクの一覧
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
+        private static readonly Vector2 StageBoxSize = new Vector2(620f, 620f);
+        private const int StageTitleFontSize = 40;
+        private const int StageRowFontSize = 38;
+        private const int StageHintFontSize = 26;
+        // 箱の中を上から 見出し / 7行 / 「タップで 閉じる」 に分ける割合
+        private const float StageRowsTop = 0.83f;
+        private const float StageRowsBottom = 0.13f;
+        // 行の中を 能力名 / ▲の並び / 数字 の列に分ける割合
+        private const float StagePipsLeft = 0.36f;
+        private const float StageValuesLeft = 0.8f;
+        private static readonly Color StageHintColor = new Color(0.5f, 0.5f, 0.55f);
+
         private const float BottomAreaHeight = 300f;
         // 窓は画面の端から端まであるので、書き始めがスマホのカメラ穴に掛からないよう左右を広く空ける
         private const float MessagePaddingX = 100f;
@@ -257,6 +269,64 @@ namespace PenguinMonster.Editor
             so.ApplyModifiedProperties();
             frame.gameObject.SetActive(false);
             return panel;
+        }
+
+        /// <summary>名前の枠をタップして開くランクの一覧。暗幕ごとボタンにして、どこをタップしても閉じる</summary>
+        private static StatStagePanel CreateStatStagePanel(Transform parent)
+        {
+            var overlay = CreateImage(parent, "StatStagePanel", OverlayColor);
+            UIDialogBuilder.SetStretchAll(overlay.rectTransform);
+            var close = overlay.gameObject.AddComponent<Button>();
+            close.transition = Selectable.Transition.None;
+
+            var frame = CreateFramedBox(overlay.transform, "Box", InfoBoxColor, out var inner);
+            Place(frame.rectTransform, Center, Vector2.zero, StageBoxSize);
+            // 箱の上をタップしても閉じられるよう、箱はタップを受けない
+            frame.raycastTarget = false;
+
+            var title = CreateText(inner, "Title", "", StageTitleFontSize, BoxTextColor, TextAnchor.MiddleCenter);
+            title.fontStyle = FontStyle.Bold;
+            SetBand(title.rectTransform, StageRowsTop, 1f);
+            var names = CreateStageColumn(inner, "Names", 0f, StagePipsLeft, TextAnchor.MiddleLeft);
+            var pips = CreateStageColumn(inner, "Pips", StagePipsLeft, StageValuesLeft, TextAnchor.MiddleLeft);
+            var values = CreateStageColumn(inner, "Values", StageValuesLeft, 1f, TextAnchor.MiddleRight);
+            var hint = CreateText(inner, "Hint", "タップで 閉じる", StageHintFontSize, StageHintColor, TextAnchor.MiddleCenter);
+            SetBand(hint.rectTransform, 0f, StageRowsBottom);
+
+            var panel = overlay.gameObject.AddComponent<StatStagePanel>();
+            var so = new SerializedObject(panel);
+            so.FindProperty("_closeButton").objectReferenceValue = close;
+            so.FindProperty("_titleText").objectReferenceValue = title;
+            so.FindProperty("_namesText").objectReferenceValue = names;
+            so.FindProperty("_pipsText").objectReferenceValue = pips;
+            so.FindProperty("_valuesText").objectReferenceValue = values;
+            so.ApplyModifiedProperties();
+            overlay.gameObject.SetActive(false);
+            return panel;
+        }
+
+        /// <summary>一覧の1列（7行ぶんを改行でつなげて入れる）。列どうしの行の高さがそろうよう、同じ大きさの字で上下中央に置く</summary>
+        private static Text CreateStageColumn(RectTransform inner, string name, float left, float right, TextAnchor alignment)
+        {
+            var text = CreateText(inner, name, "", StageRowFontSize, BoxTextColor, alignment);
+            text.supportRichText = true;
+            var rect = text.rectTransform;
+            rect.anchorMin = new Vector2(left, StageRowsBottom);
+            rect.anchorMax = new Vector2(right, StageRowsTop);
+            rect.offsetMin = new Vector2(left == 0f ? InfoPadding : 0f, 0f);
+            rect.offsetMax = new Vector2(right == 1f ? -InfoPadding : 0f, 0f);
+            return text;
+        }
+
+        /// <summary>全部の名前の枠から、タップで同じ一覧を開けるようにする</summary>
+        private static void LinkStatStagePanel(StatStagePanel panel, params MonsterInfoBox[] infos)
+        {
+            foreach (var info in infos)
+            {
+                var so = new SerializedObject(info);
+                so.FindProperty("_stagePanel").objectReferenceValue = panel;
+                so.ApplyModifiedProperties();
+            }
         }
 
         private static Image CreatePartyIcon(Transform slot)

@@ -103,6 +103,7 @@ namespace PenguinMonster.Battle
             var stages = user.CopyStages();
             ExecuteSwitch(side, slot, next, events);
             battleSide.ActiveAt(slot).SetStages(stages);
+            events.Add(BattleEvent.StagesPassed(side, battleSide.ActiveAt(slot)));
         }
 
         /// <summary>回復の技。HP が満タンなら決まらない</summary>

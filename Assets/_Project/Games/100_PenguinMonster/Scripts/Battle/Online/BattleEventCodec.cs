@@ -64,8 +64,8 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// 表示に要る分だけ写しに入れる（HP・状態異常・場・勝敗・天候・追い風）。
-        /// ランクやこんらんの残りは画面に出さず、計算もホストがするので写さない
+        /// 表示に要る分だけ写しに入れる（HP・状態異常・ランク・場・勝敗・天候・追い風）。
+        /// こんらんの残りは画面に出さず、計算もホストがするので写さない
         /// </summary>
         private static void Apply(BattleState mirror, BattleEvent e, int partyIndex)
         {
@@ -89,6 +89,19 @@ namespace PenguinMonster.Battle
                 return;
             }
             e.Monster.Restore(e.Hp, e.Status);
+            if (e.Kind == BattleEventKind.StatChanged)
+            {
+                // Amount は上限で切った後の実際に変わった量なので、そのまま足せばホストとそろう
+                e.Monster.ChangeStage(e.Stat, e.Amount);
+            }
+            if (e.Kind == BattleEventKind.Withdrawn)
+            {
+                e.Monster.OnWithdrawn();
+            }
+            if (e.Kind == BattleEventKind.StagesPassed)
+            {
+                e.Monster.SetStages(e.PassedStages());
+            }
             if (e.Kind == BattleEventKind.SentOut)
             {
                 mirror.Sides[e.Side].SetActive(e.Slot, partyIndex);

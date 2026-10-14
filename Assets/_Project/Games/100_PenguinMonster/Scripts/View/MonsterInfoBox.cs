@@ -1,16 +1,17 @@
 using System.Collections;
-using System.Text;
 using PenguinMonster.Battle;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace PenguinMonster.View
 {
     /// <summary>
     /// 名前・Lv・HPバー・状態異常の印の枠。HP は緑→黄→赤で色が変わり、減るときは少しずつ縮む。
-    /// HP の数字は自分側だけ出す（相手は _hpText を空にしておく。ダイパと同じ）
+    /// HP の数字は自分側だけ出す（相手は _hpText を空にしておく。ダイパと同じ）。
+    /// ランクは枠に ▲▼ の印だけ出し、段数は枠をタップして開く一覧で見せる（原作と同じく枠を狭くしないため）
     /// </summary>
-    public class MonsterInfoBox : MonoBehaviour
+    public class MonsterInfoBox : MonoBehaviour, IPointerClickHandler
     {
         [SerializeField] private Text _nameText;
         [SerializeField] private Text _levelText;
@@ -19,8 +20,10 @@ namespace PenguinMonster.View
         [SerializeField] private Text _hpText;
         [SerializeField] private Image _statusBadge;
         [SerializeField] private Text _statusText;
-        [Tooltip("ランク変化（攻↑ 防↓↓ 等）を表示するテキスト。無ければ表示しない")]
-        [SerializeField] private Text _statIndicatorText;
+        [Tooltip("ランクが変わっているときに出す ▲▼ の印")]
+        [SerializeField] private Text _stageMarkText;
+        [Tooltip("タップで開くランクの一覧（全部の枠で1つを共有する）")]
+        [SerializeField] private StatStagePanel _stagePanel;
         [Tooltip("HP が満タンから0になるまでにかかる秒数。減った量に比例して短くなる")]
         [SerializeField] private float _fullDrainSeconds = 1.2f;
         [SerializeField] private float _hpYellowRatio = 0.5f;
@@ -31,11 +34,16 @@ namespace PenguinMonster.View
 
         private const string TypeSize = "28";
 
+        private const string UpMark = "<color=#4F7FE8>▲</color>";
+        private const string DownMark = "<color=#E85454>▼</color>";
+
+        private BattleMonster _monster;
         private int _maxHp;
         private float _shownHp;
 
         public void Show(BattleMonster monster, int hp, StatusCondition status)
         {
+            _monster = monster;
             _nameText.text = $"{monster.Name} <size={TypeSize}>{TypeLabel(monster)}</size>";
             _levelText.text = $"Lv{BattleBalance.Level}";
             _maxHp = monster.MaxHp;
@@ -59,6 +67,7 @@ namespace PenguinMonster.View
 
         public void Hide()
         {
+            _stagePanel.HideIfShowing(_monster);
             gameObject.SetActive(false);
         }
 
@@ -87,46 +96,28 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>ランク変化をコンパクトなテキストで表示する（ポケモンSV風）。ランク0の能力は隠す</summary>
+        /// <summary>上がった能力があれば ▲、下がった能力があれば ▼ を出す（両方なら ▲▼）。段数は一覧で見せる</summary>
         public void UpdateStatStages(BattleMonster monster)
         {
-            if (_statIndicatorText == null) return;
-            var sb = new StringBuilder();
+            bool anyUp = false;
+            bool anyDown = false;
             for (int i = 0; i < StatKindNames.Count; i++)
             {
                 int stage = monster.GetStage((StatKind)i);
-                if (stage == 0) continue;
-                string label = ShortStatName((StatKind)i);
-                string arrow = stage > 0 ? ArrowUp(stage) : ArrowDown(-stage);
-                string color = stage > 0 ? "#739BF2" : "#F26B6B";
-                if (sb.Length > 0) sb.Append(' ');
-                sb.Append($"<color={color}>{label}{arrow}</color>");
+                anyUp |= stage > 0;
+                anyDown |= stage < 0;
             }
-            bool hasAny = sb.Length > 0;
-            _statIndicatorText.gameObject.SetActive(hasAny);
-            if (hasAny) _statIndicatorText.text = sb.ToString();
+            _stageMarkText.gameObject.SetActive(anyUp || anyDown);
+            _stageMarkText.text = (anyUp ? UpMark : "") + (anyDown ? DownMark : "");
         }
 
-        private static string ShortStatName(StatKind stat)
+        public void OnPointerClick(PointerEventData eventData)
         {
-            switch (stat)
+            if (_monster != null)
             {
-                case StatKind.Attack:    return "攻";
-                case StatKind.Defense:   return "防";
-                case StatKind.SpAttack:  return "特攻";
-                case StatKind.SpDefense: return "特防";
-                case StatKind.Speed:     return "速";
-                case StatKind.Accuracy:  return "命中";
-                case StatKind.Evasion:   return "回避";
-                default:                 return "";
+                _stagePanel.Show(_monster);
             }
         }
-
-        private static string ArrowUp(int stages) =>
-            stages <= 3 ? new string('↑', stages) : "⤊";
-
-        private static string ArrowDown(int stages) =>
-            stages <= 3 ? new string('↓', stages) : "⤋";
 
         private static string TypeLabel(BattleMonster monster)
         {

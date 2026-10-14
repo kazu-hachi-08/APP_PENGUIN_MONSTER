@@ -91,6 +91,10 @@ namespace PenguinMonster.View
                     InfoOf(e).UpdateStatStages(e.Monster);
                     yield return _messageWindow.Play(message);
                     break;
+                case BattleEventKind.StagesPassed:
+                    // 羽リレーで引き継いだ。文は出さず、名前の枠の印だけ合わせる
+                    InfoOf(e).UpdateStatStages(e.Monster);
+                    break;
                 case BattleEventKind.WeatherStarted:
                     // 場の色が変わってから「吹雪が 吹き始めた！」
                     BattleSounds.Play(BattleSound.Status);

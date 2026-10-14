@@ -67,6 +67,8 @@ namespace PenguinMonster.Battle
         TailwindEnded,
         /// <summary>手助けを受けた。主語は受けた味方</summary>
         Helped,
+        /// <summary>羽リレーでランクを引き継いだ。主語は出てきた子。Amount に7つのランクを詰めてある（文は出さない）</summary>
+        StagesPassed,
     }
 
     /// <summary>
@@ -75,6 +77,10 @@ namespace PenguinMonster.Battle
     /// </summary>
     public sealed class BattleEvent
     {
+        // -6〜+6 を 0〜12 にずらして入れるので 4bit で足りる
+        private const int StageBits = 4;
+        private const int StageMask = (1 << StageBits) - 1;
+
         public BattleEventKind Kind { get; }
         /// <summary>主語になる陣営。BattleEnd のときは勝った陣営</summary>
         public int Side { get; }
@@ -126,6 +132,30 @@ namespace PenguinMonster.Battle
             => new BattleEvent(kind, side, monster, amount: (int)weather);
 
         public Weather Weather => (Weather)Amount;
+
+        /// <summary>
+        /// 羽リレーで引き継いだランク。オンラインのイベントは int 9個で送るので、7つのランク（-6〜+6）を 4bit ずつ Amount に詰める
+        /// </summary>
+        public static BattleEvent StagesPassed(int side, BattleMonster monster)
+        {
+            int packed = 0;
+            for (int i = 0; i < StatKindNames.Count; i++)
+            {
+                packed |= (monster.GetStage((StatKind)i) + BattleBalance.MaxStatStage) << (i * StageBits);
+            }
+            return new BattleEvent(BattleEventKind.StagesPassed, side, monster, amount: packed);
+        }
+
+        /// <summary>StagesPassed の Amount から7つのランクを取り出す</summary>
+        public int[] PassedStages()
+        {
+            var stages = new int[StatKindNames.Count];
+            for (int i = 0; i < stages.Length; i++)
+            {
+                stages[i] = ((Amount >> (i * StageBits)) & StageMask) - BattleBalance.MaxStatStage;
+            }
+            return stages;
+        }
 
         public static BattleEvent BattleEnd(int winner)
             => new BattleEvent(BattleEventKind.BattleEnd, winner, null);
