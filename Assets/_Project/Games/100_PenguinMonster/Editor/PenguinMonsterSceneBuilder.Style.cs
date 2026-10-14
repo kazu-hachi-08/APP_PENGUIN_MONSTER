@@ -15,12 +15,10 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 ButtonTextEdge = new Vector2(3f, -3f);
         private static readonly Color ButtonTextEdgeColor = new Color(0f, 0f, 0f, 0.5f);
 
-        // ロゴ（文字 180）と同じ重ね方を、見出しの大きさ（50〜100）に合わせて細くしたもの
-        private static readonly Vector2 HeadingInnerEdge = new Vector2(3f, -3f);
-        private static readonly Vector2 HeadingOuterEdge = new Vector2(6f, -6f);
-        private static readonly Vector2 HeadingShadow = new Vector2(6f, -9f);
-        // ロゴの「黄」と同じ色。クリーム色だと内側の白い縁取りと溶けて文字の形が読めなかったため
-        private static readonly Color HeadingColor = new Color(1f, 0.85f, 0.3f);
+        // 見出しは画数の多い漢字が 50〜100 の大きさで並ぶので、ロゴのような2重の縁取りだと線のすき間が埋まってつぶれる。
+        // 白い文字に紺の縁1重＋小さな影だけにして、読みやすさを優先する
+        private static readonly Vector2 HeadingEdge = new Vector2(4f, -4f);
+        private static readonly Vector2 HeadingShadow = new Vector2(3f, -5f);
 
         /// <summary>
         /// 画面いっぱいの夜空（NightSky）と、降る雪。中身はこの上に重ねる。
@@ -35,13 +33,12 @@ namespace PenguinMonster.Editor
             return back;
         }
 
-        /// <summary>見出しをロゴと同じ「白と紺の2重の縁取り＋影」にする。夜空の上でも目立たせるため</summary>
+        /// <summary>見出しを「白い文字＋ロゴと同じ紺の縁取り＋影」にする。夜空の上でも目立たせるため</summary>
         private static void StyleHeading(Text text)
         {
             text.fontStyle = FontStyle.Bold;
-            text.color = HeadingColor;
-            AddOutline(text, Color.white, HeadingInnerEdge);
-            AddOutline(text, TitleLogoEdgeColor, HeadingOuterEdge);
+            text.color = Color.white;
+            AddOutline(text, TitleLogoEdgeColor, HeadingEdge);
             var shadow = text.gameObject.AddComponent<Shadow>();
             shadow.effectColor = TitleLogoEdgeColor;
             shadow.effectDistance = HeadingShadow;
