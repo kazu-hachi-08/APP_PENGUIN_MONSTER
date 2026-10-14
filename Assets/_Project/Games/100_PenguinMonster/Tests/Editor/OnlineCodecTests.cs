@@ -35,6 +35,18 @@ namespace PenguinMonster.Battle.Tests
         }
 
         [Test]
+        public void MonstersRoundTripWithHeldItem()
+        {
+            var six = ItemDraw.Give(MonsterTable.All.Skip(10).Take(6).ToList(), 2, HeldItem.StarFish);
+
+            var decoded = OnlineCodec.DecodeMonsters(OnlineCodec.EncodeMonsters(six));
+
+            CollectionAssert.AreEqual(six.Select(m => m.No), decoded.Select(m => m.No));
+            CollectionAssert.AreEqual(six.Select(m => m.Item), decoded.Select(m => m.Item));
+            Assert.AreEqual(HeldItem.StarFish, decoded[2].Item);
+        }
+
+        [Test]
         public void DecodedEventsSwapSidesAndRestoreMoveNames()
         {
             var host = new BattleEngine(new BattleState(HostTeam, GuestTeam), new System.Random(1));

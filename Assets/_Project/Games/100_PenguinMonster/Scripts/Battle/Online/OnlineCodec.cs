@@ -40,23 +40,32 @@ namespace PenguinMonster.Battle
             return actions;
         }
 
-        /// <summary>ペンモンは No の列で送る（ドラフトの6体・選出の3体。どちらも同じペンモンは重ならない）</summary>
+        /// <summary>ペンモン1体は 2 int（No・持ち物）</summary>
+        public const int FieldsPerMonster = 2;
+
+        /// <summary>
+        /// ペンモンは「No と持ち物」の組の列で送る（ドラフトの6体・選出の3体。どちらも同じペンモンは重ならない）。
+        /// 持ち物はドラフトの後に配るので定義表には無く、送らないとホストの計算でゲストの持ち物が働かない
+        /// </summary>
         public static int[] EncodeMonsters(IReadOnlyList<MonsterDefinition> monsters)
         {
-            var nos = new int[monsters.Count];
-            for (int i = 0; i < nos.Length; i++)
+            var data = new int[monsters.Count * FieldsPerMonster];
+            for (int i = 0; i < monsters.Count; i++)
             {
-                nos[i] = monsters[i].No;
+                data[i * FieldsPerMonster] = monsters[i].No;
+                data[i * FieldsPerMonster + 1] = (int)monsters[i].Item;
             }
-            return nos;
+            return data;
         }
 
-        public static List<MonsterDefinition> DecodeMonsters(int[] nos)
+        public static List<MonsterDefinition> DecodeMonsters(int[] data)
         {
-            var monsters = new List<MonsterDefinition>(nos.Length);
-            foreach (int no in nos)
+            var monsters = new List<MonsterDefinition>(data.Length / FieldsPerMonster);
+            for (int offset = 0; offset + FieldsPerMonster <= data.Length; offset += FieldsPerMonster)
             {
-                monsters.Add(MonsterTable.ByNo(no));
+                var monster = MonsterTable.ByNo(data[offset]);
+                var item = (HeldItem)data[offset + 1];
+                monsters.Add(item == HeldItem.None ? monster : monster.WithItem(item));
             }
             return monsters;
         }
