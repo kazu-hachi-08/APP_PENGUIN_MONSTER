@@ -32,7 +32,7 @@ namespace PenguinMonster.View
         public void Show(BattleMonster monster)
         {
             _shown = monster;
-            _titleText.text = $"{monster.Name}の 能力変化";
+            _titleText.SetFitted($"{monster.Name}の 能力変化");
             var names = new StringBuilder();
             var pips = new StringBuilder();
             var values = new StringBuilder();

@@ -49,9 +49,9 @@ namespace PenguinMonster.View
         public void Show(MonsterDefinition monster)
         {
             _icon.sprite = MonsterSprites.Front(monster);
-            _name.text = monster.Name;
+            _name.SetFitted(monster.Name);
             TypeColors.PaintBadges(monster, _typeBadges, _typeLabels);
-            _traits.text = MonsterTexts.Traits(monster, TraitDescriptionSize, oneLine: true);
+            _traits.SetFitted(MonsterTexts.Traits(monster, TraitDescriptionSize, oneLine: true));
             ShowStats(monster.BaseStats);
             ShowMoves(monster);
             _pop.Play();

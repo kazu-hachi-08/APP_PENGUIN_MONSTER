@@ -225,6 +225,8 @@ namespace PenguinMonster.Editor
                 labels[i] = slot.GetComponentInChildren<Text>();
                 // 左に絵を置くぶん、名前は右へずらす
                 labels[i].rectTransform.offsetMin = new Vector2(PartyIconSize + 16f, 0f);
+                // 長い名前＋HP＋状態異常は1行に入り切らないことがあるので、折り返さずに縮める（TextFit）
+                labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
                 icons[i] = CreatePartyIcon(slot.transform);
             }
             var back = CreateButton(inner, "Btn_Back", "戻る", BackButtonSize, BackColor);
@@ -286,6 +288,7 @@ namespace PenguinMonster.Editor
 
             var title = CreateText(inner, "Title", "", StageTitleFontSize, BoxTextColor, TextAnchor.MiddleCenter);
             title.fontStyle = FontStyle.Bold;
+            title.horizontalOverflow = HorizontalWrapMode.Overflow;
             SetBand(title.rectTransform, StageRowsTop, 1f);
             var names = CreateStageColumn(inner, "Names", 0f, StagePipsLeft, TextAnchor.MiddleLeft);
             var pips = CreateStageColumn(inner, "Pips", StagePipsLeft, StageValuesLeft, TextAnchor.MiddleLeft);

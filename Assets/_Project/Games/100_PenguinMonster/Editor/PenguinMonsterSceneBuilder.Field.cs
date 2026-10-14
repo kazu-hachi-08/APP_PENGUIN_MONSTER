@@ -56,6 +56,9 @@ namespace PenguinMonster.Editor
         private const float EnemyStatBandTop = 0.27f;
 
         private const int NameFontSize = 40;
+        // 「Lv50」が入る幅と、名前との間
+        private const float LevelWidth = 100f;
+        private const float LevelGap = 12f;
         private const int HpLabelFontSize = 26;
         private const int HpFontSize = 32;
         private const int StatusFontSize = 28;
@@ -193,11 +196,18 @@ namespace PenguinMonster.Editor
             float nameBottom = showHpNumbers ? 0.6f : 0.55f;
             float barY = showHpNumbers ? 0.45f : 0.4f;
 
+            // 名前の帯は Lv の手前で止め、長い名前＋2タイプは折り返さずに縮めて1行に収める（TextFit）
             var nameText = CreateText(inner, "Name", "", NameFontSize, BoxTextColor, TextAnchor.MiddleLeft);
             SetBand(nameText.rectTransform, nameBottom, 1f, InfoPadding);
+            nameText.rectTransform.offsetMax = new Vector2(-(InfoPadding + LevelWidth + LevelGap), 0f);
             nameText.supportRichText = true;
+            nameText.horizontalOverflow = HorizontalWrapMode.Overflow;
             var levelText = CreateText(inner, "Level", "", NameFontSize, BoxTextColor, TextAnchor.MiddleRight);
             SetBand(levelText.rectTransform, nameBottom, 1f, InfoPadding);
+            levelText.rectTransform.anchorMin = new Vector2(1f, nameBottom);
+            levelText.rectTransform.offsetMin = new Vector2(-(InfoPadding + LevelWidth), 0f);
+            levelText.rectTransform.offsetMax = new Vector2(-InfoPadding, 0f);
+            levelText.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             var hpLabel = CreateText(inner, "HpLabel", "HP", HpLabelFontSize, HpLabelColor, TextAnchor.MiddleLeft);
             hpLabel.fontStyle = FontStyle.Bold;

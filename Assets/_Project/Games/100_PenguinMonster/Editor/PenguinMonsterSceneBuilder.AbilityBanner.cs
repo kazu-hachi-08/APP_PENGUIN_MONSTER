@@ -32,9 +32,12 @@ namespace PenguinMonster.Editor
 
             var owner = CreateText(inner, "Owner", "", BannerOwnerFontSize, BoxTextColor, TextAnchor.MiddleLeft);
             SetBand(owner.rectTransform, BannerSplit, 1f, InfoPadding);
+            // 枠が小さいので、長い名前や特性名は折り返さずに縮める（TextFit）
+            owner.horizontalOverflow = HorizontalWrapMode.Overflow;
             var ability = CreateText(inner, "Ability", "", BannerAbilityFontSize, BoxTextColor, TextAnchor.MiddleRight);
             ability.fontStyle = FontStyle.Bold;
             SetBand(ability.rectTransform, 0f, BannerSplit, InfoPadding);
+            ability.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             var banner = frame.gameObject.AddComponent<AbilityBanner>();
             var so = new SerializedObject(banner);

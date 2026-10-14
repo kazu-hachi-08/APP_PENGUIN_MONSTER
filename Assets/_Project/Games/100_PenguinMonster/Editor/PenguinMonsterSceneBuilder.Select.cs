@@ -141,6 +141,7 @@ namespace PenguinMonster.Editor
                 icons[i] = CreateTopIcon(entry.transform, OpponentIconSize);
                 labels[i] = CreateText(entry.transform, "Label", "", SelectNameFontSize, SelectTitleColor, TextAnchor.LowerCenter);
                 labels[i].supportRichText = true;
+                labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
             }
             return band.gameObject;
         }
@@ -170,6 +171,8 @@ namespace PenguinMonster.Editor
             label.fontSize = SelectNameFontSize;
             label.supportRichText = true;
             label.alignment = TextAnchor.LowerCenter;
+            // 長い名前は折り返すと上の絵に重なるので、1行のまま縮める（TextFit）
+            label.horizontalOverflow = HorizontalWrapMode.Overflow;
             label.rectTransform.offsetMin = new Vector2(4f, 10f);
 
             icon = CreateTopIcon(cell.transform, SelectIconSize);

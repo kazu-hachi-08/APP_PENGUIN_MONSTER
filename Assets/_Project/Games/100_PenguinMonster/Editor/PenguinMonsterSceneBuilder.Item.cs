@@ -107,6 +107,8 @@ namespace PenguinMonster.Editor
             name = cell.GetComponentInChildren<Text>();
             name.fontSize = SelectNameFontSize;
             name.alignment = TextAnchor.LowerCenter;
+            // 長い名前は折り返すと上の絵に重なるので、1行のまま縮める（TextFit）
+            name.horizontalOverflow = HorizontalWrapMode.Overflow;
             name.rectTransform.offsetMin = new Vector2(4f, 10f);
 
             icon = CreateTopIcon(cell.transform, SelectIconSize);

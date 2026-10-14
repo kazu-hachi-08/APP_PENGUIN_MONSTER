@@ -168,7 +168,7 @@ namespace PenguinMonster.View
         private void ShowCard(int card, MonsterDefinition monster)
         {
             _cardIcons[card].sprite = MonsterSprites.Front(monster);
-            _cardNames[card].text = monster.Name;
+            _cardNames[card].SetFitted(monster.Name);
             TypeColors.PaintBadges(monster, _typeBadges, _typeLabels, card * BadgesPerCard);
         }
     }

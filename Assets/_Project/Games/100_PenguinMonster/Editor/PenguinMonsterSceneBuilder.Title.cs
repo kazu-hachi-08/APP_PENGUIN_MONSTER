@@ -184,7 +184,10 @@ namespace PenguinMonster.Editor
             var badge = CreateFramedBox(parent, "BestBadge", TitleBestFillColor, out var inner);
             badge.raycastTarget = false;
             Place(badge.rectTransform, Center, TitleBestPosition, TitleBestSize);
-            return CreateText(inner, "Best", "", TitleBestFontSize, TitleLogoColor, TextAnchor.MiddleCenter);
+            var best = CreateText(inner, "Best", "", TitleBestFontSize, TitleLogoColor, TextAnchor.MiddleCenter);
+            // 連勝数の桁が増えても折り返さず、1行のまま縮める（TextFit）
+            best.horizontalOverflow = HorizontalWrapMode.Overflow;
+            return best;
         }
 
         private static void CreateSnowField(Transform parent)

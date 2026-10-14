@@ -66,12 +66,12 @@ namespace PenguinMonster.View
             for (int i = 0; i < _cellButtons.Length; i++)
             {
                 _cellIcons[i].sprite = MonsterSprites.Front(own[i]);
-                _cellLabels[i].text = Label(own[i], showItem: true);
+                _cellLabels[i].SetFitted(Label(own[i], showItem: true));
             }
             for (int i = 0; i < _opponentIcons.Length; i++)
             {
                 _opponentIcons[i].sprite = MonsterSprites.Front(opponent[i]);
-                _opponentLabels[i].text = Label(opponent[i], showItem: false);
+                _opponentLabels[i].SetFitted(Label(opponent[i], showItem: false));
             }
             Refresh();
             gameObject.SetActive(true);

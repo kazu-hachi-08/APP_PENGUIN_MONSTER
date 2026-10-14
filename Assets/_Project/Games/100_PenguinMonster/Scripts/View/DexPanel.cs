@@ -110,8 +110,8 @@ namespace PenguinMonster.View
             _nameText.text = $"<size={NoSize}>No.{monster.No}</size>  {monster.Name}";
             TypeColors.PaintBadges(monster, _typeBadges, _typeLabels);
             _statValues.text = MonsterTexts.StatValues(monster.BaseStats);
-            _movesText.text = Moves(monster);
-            _traitsText.text = MonsterTexts.Traits(monster, TraitDescriptionSize);
+            _movesText.SetFitted(Moves(monster));
+            _traitsText.SetFitted(MonsterTexts.Traits(monster, TraitDescriptionSize));
         }
 
         /// <summary>技1つにつき2行（名前とタイプ / 数字と効果）。タイプは札の代わりに色付きの文字にする</summary>

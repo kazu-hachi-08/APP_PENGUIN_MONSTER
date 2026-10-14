@@ -50,7 +50,7 @@ namespace PenguinMonster.View
                 bool isReserved = reserved != null && reserved.Contains(i);
                 string state = monster.IsFainted ? "瀕死" : side.IsActive(i) ? "戦闘中" : isReserved ? "交代先" : $"HP {monster.CurrentHp}/{monster.MaxHp}";
                 string status = monster.IsFainted ? "" : monster.Status.ToJapanese();
-                _slotLabels[i].text = $"{monster.Name}   {state}  {status}";
+                _slotLabels[i].SetFitted($"{monster.Name}   {state}  {status}");
                 _slotIcons[i].sprite = MonsterSprites.Front(monster.Definition);
                 _slotButtons[i].interactable = side.CanSwitchTo(i) && !isReserved;
             }

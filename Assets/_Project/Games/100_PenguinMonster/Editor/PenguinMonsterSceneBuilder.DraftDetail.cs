@@ -120,6 +120,8 @@ namespace PenguinMonster.Editor
 
             var name = CreateText(header.transform, "Name", "", DraftDetailNameFontSize, Color.white, TextAnchor.MiddleLeft);
             StyleHeading(name);
+            // 長い名前は折り返すと下のタイプの札に重なるので、1行のまま縮める（TextFit）
+            name.horizontalOverflow = HorizontalWrapMode.Overflow;
             PlaceBand(name.rectTransform, DraftDetailTextLeft, DraftDetailNameTop, DraftDetailNameHeight, DraftDetailTextRight);
 
             var row = UIDialogBuilder.CreateUIObject("Types", header.transform);
@@ -170,7 +172,7 @@ namespace PenguinMonster.Editor
             var section = CreateDraftSection(inner, "TraitsBox", "特性", DraftTraitsColor, out var content);
             PlaceBand(section, DraftDetailPadding, DraftTraitsTop, DraftTraitsHeight, DraftDetailPadding);
             var traits = CreateText(content, "Traits", "", DraftTraitsFontSize, BoxTextColor, TextAnchor.MiddleLeft);
-            // ヒナは綿毛の行が増えて4行になるので、枠から少しはみ出しても切らずに出す
+            // ヒナは綿毛の行が増える。入り切らないときは DraftDetailView が TextFit で縮めるので、切らずに出しておく
             traits.verticalOverflow = VerticalWrapMode.Overflow;
             so.FindProperty("_traits").objectReferenceValue = traits;
         }

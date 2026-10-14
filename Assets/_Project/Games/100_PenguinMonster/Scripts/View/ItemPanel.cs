@@ -46,7 +46,7 @@ namespace PenguinMonster.View
             for (int i = 0; i < _cellButtons.Length; i++)
             {
                 _cellIcons[i].sprite = MonsterSprites.Front(six[i]);
-                _cellNames[i].text = six[i].Name;
+                _cellNames[i].SetFitted(six[i].Name);
             }
             gameObject.SetActive(true);
             _itemPop.Play();

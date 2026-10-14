@@ -157,6 +157,8 @@ namespace PenguinMonster.Editor
             name.fontStyle = FontStyle.Bold;
             name.color = BoxTextColor;
             name.alignment = TextAnchor.MiddleLeft;
+            // 長い名前は折り返すと下のタイプの札に重なるので、1行のまま縮める（TextFit）
+            name.horizontalOverflow = HorizontalWrapMode.Overflow;
             PlaceBand(name.rectTransform, DraftCardTextLeft, DraftCardNameTop, DraftCardNameHeight);
 
             var badgeRow = UIDialogBuilder.CreateUIObject("Types", card.transform);

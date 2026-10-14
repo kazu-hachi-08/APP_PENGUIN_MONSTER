@@ -39,8 +39,8 @@ namespace PenguinMonster.View
         {
             // 続けて働いたとき（強面 → ひねくれ者 など）は、前の帯を引っ込めずに書き換える
             StopAllCoroutines();
-            _ownerText.text = owner;
-            _abilityText.text = ability;
+            _ownerText.SetFitted(owner);
+            _abilityText.SetFitted(ability);
             BattleSounds.Play(BattleSound.Ability);
             StartCoroutine(Animate());
             yield return new WaitForSeconds(_slideSeconds + _readSeconds);

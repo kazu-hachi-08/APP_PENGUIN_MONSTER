@@ -46,7 +46,7 @@ namespace PenguinMonster.View
         public void Show(BattleMonster monster, int hp, StatusCondition status)
         {
             _monster = monster;
-            _nameText.text = $"{monster.Name} <size={TypeSize}>{TypeLabel(monster)}</size>";
+            _nameText.SetFitted($"{monster.Name} <size={TypeSize}>{TypeLabel(monster)}</size>");
             _levelText.text = $"Lv{BattleBalance.Level}";
             _maxHp = monster.MaxHp;
             SetHp(hp);
