@@ -54,6 +54,7 @@ namespace PenguinMonster.View
             _engine = null;
             _state = new BattleState(ownParty, hostParty, format.ActiveCount());
             _choiceSeconds = BattleBalance.OnlineTurnSeconds;
+            ShowTrays();
 
             yield return ReceiveAndPlay(link);
             while (!_state.IsOver)

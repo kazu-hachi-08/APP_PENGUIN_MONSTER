@@ -34,6 +34,11 @@ namespace PenguinMonster.View
         [Tooltip("特性が働いたときの帯。陣営ごとに1つ")]
         [SerializeField] private AbilityBanner _playerBanner;
         [SerializeField] private AbilityBanner _enemyBanner;
+        [Tooltip("選出の残りを見せるタマゴの列。陣営ごとに1つ")]
+        [SerializeField] private PartyEggTray _playerTray;
+        [SerializeField] private PartyEggTray _enemyTray;
+        [Tooltip("繰り出すときにタマゴを投げる演出。場全体に重ねた層")]
+        [SerializeField] private EggThrowView _eggThrow;
         [Header("窓")]
         [SerializeField] private MessageWindow _messageWindow;
         [SerializeField] private CommandPanel _commandPanel;
@@ -50,11 +55,23 @@ namespace PenguinMonster.View
         private int _replacementIndex = -1;
         /// <summary>行動・入れ替えを選ぶ制限時間。0 なら制限なし（CPU 戦）</summary>
         private float _choiceSeconds;
+        /// <summary>陣営ごとのタマゴの種類。見た目だけなのでオンラインでも送らない</summary>
+        private readonly EggKind[] _eggs = { EggKind.Normal, EggKind.Normal };
 
         private BattleSide Player => _state.Sides[PlayerSide];
         private BattleSide Opponent => _state.Sides[OpponentSide];
 
         public bool PlayerWon => _state.Winner == PlayerSide;
+
+        /// <summary>
+        /// 次の試合から使うタマゴの種類。シングル・ダブルスは呼ばずに Normal のまま。
+        /// ストーリーの相手ごとにタマゴを変えるときは Run の前に呼ぶ
+        /// </summary>
+        public void SetEggs(EggKind player, EggKind opponent)
+        {
+            _eggs[PlayerSide] = player;
+            _eggs[OpponentSide] = opponent;
+        }
 
         private void Start()
         {
@@ -70,6 +87,8 @@ namespace PenguinMonster.View
             _weather.Hide();
             _playerBanner.Hide();
             _enemyBanner.Hide();
+            _playerTray.Hide();
+            _enemyTray.Hide();
             foreach (var view in AllViews())
             {
                 view.Hide();
@@ -133,6 +152,14 @@ namespace PenguinMonster.View
             _engine = new BattleEngine(new BattleState(playerParty, opponentParty, format.ActiveCount()), random);
             _state = _engine.State;
             _choiceSeconds = choiceSeconds;
+            ShowTrays();
+        }
+
+        /// <summary>試合の始めに、両陣営の選出ぶんのタマゴを並べる</summary>
+        private void ShowTrays()
+        {
+            _playerTray.Show(Player, _eggs[PlayerSide]);
+            _enemyTray.Show(Opponent, _eggs[OpponentSide]);
         }
 
         /// <summary>空いた場を前から1つずつ埋める。自分が先、CPU が後</summary>

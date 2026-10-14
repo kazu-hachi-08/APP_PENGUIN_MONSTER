@@ -24,10 +24,11 @@ namespace PenguinMonster.View
             switch (e.Kind)
             {
                 case BattleEventKind.SentOut:
-                    // 「ゆけっ！」の文を出してから登場させる
+                    // 「行けっ！」の文を出し、タマゴを投げて割れてから登場させる（登場の音はタマゴが割れたときに鳴る）
                     yield return _messageWindow.Show(message);
+                    yield return _eggThrow.Throw(_eggs[e.Side], ViewOf(e).Body, e.Side == PlayerSide);
                     InfoOf(e).Show(e.Monster, e.Hp, e.Status);
-                    BattleSounds.Play(BattleSound.SendOut);
+                    TrayOf(e.Side).SetStatus(PartyIndexOf(e), e.Status);
                     yield return ViewOf(e).Appear(SpriteOf(e.Side, e.Monster));
                     break;
                 case BattleEventKind.Withdrawn:
@@ -52,6 +53,7 @@ namespace PenguinMonster.View
                     BattleSounds.Play(BattleSound.Faint);
                     yield return ViewOf(e).Faint();
                     InfoOf(e).Hide();
+                    TrayOf(e.Side).SetFainted(PartyIndexOf(e));
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.StatusDamage:
@@ -134,6 +136,7 @@ namespace PenguinMonster.View
                 yield return ViewOf(e).Flash(StatusColors.Get(e.Status));
             }
             InfoOf(e).SetStatus(e.Status);
+            TrayOf(e.Side).SetStatus(PartyIndexOf(e), e.Status);
             yield return _messageWindow.Play(message);
         }
 
@@ -223,6 +226,22 @@ namespace PenguinMonster.View
                 return e.Side == PlayerSide ? _playerInfo : _enemyInfo;
             }
             return e.Side == PlayerSide ? _playerDoubleInfos[e.Slot] : _enemyDoubleInfos[e.Slot];
+        }
+
+        private PartyEggTray TrayOf(int side) => side == PlayerSide ? _playerTray : _enemyTray;
+
+        /// <summary>イベントの主語が選出の何番目か。タマゴの列は選出の順に並んでいる</summary>
+        private int PartyIndexOf(BattleEvent e)
+        {
+            var party = _state.Sides[e.Side].Party;
+            for (int i = 0; i < party.Count; i++)
+            {
+                if (party[i] == e.Monster)
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
 
         private bool IsDoubles => _state.Sides[PlayerSide].ActiveCount > 1;

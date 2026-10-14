@@ -457,6 +457,9 @@
 - 定義表にない No はふつうのペンギン（ペンタ）の絵で代用する
 - 背景は空（上ほど濃い青）と地面（緑）。ペンモンは楕円の台座の上に立つ
 - 名前の枠: 名前・タイプ・Lv50・HPバー・状態異常の印・ランクの印（▲▼。タップで一覧。§4.5）。HPバーは 50% 以下で黄、20% 以下で赤。数字は自分側だけ出す
+- 残りの数: 両陣営の選出ぶん（シングル3・ダブルス4）のタマゴを、選出の順に左から並べて試合中ずっと出す（ポケモンのボールの代わり。名前と見た目はオリジナル §1.2）。瀕死は暗くし、状態異常の子はタマゴの右下に印の色の点を付ける。自分は名前の枠の上・相手は名前の枠の下に右寄せで置く（相手の枠の下の左は状態異常の印があるため）
+  - 表示はイベントの再生に合わせて塗り替える（ホストは1ターンぶんの計算を先に済ませるので、状態から作ると倒れる前に暗くなるため）
+  - タマゴの種類（`EggKind`）は陣営ごとに持てる。いまはシングル・ダブルスとも「ふつう」だけ。色は View の `EggStyleTable`。見た目だけなのでオンラインでは送らない
 - アプリアイコン: 主役の No.1 ユキペンの正面の絵を、空と雪原の背景に乗せたドット絵。`Tools > PenguinMonster > App Icon` で生成して Player Settings に設定する（Windows・Android は全サイズ、ブラウザは WebGL テンプレートの favicon）
   - Android のアダプティブアイコンは背景と前景に分け、前景のペンギンは中央の安全域（108 のうち 66）に収めて、丸や角丸に切られても欠けないようにする
 
@@ -486,7 +489,7 @@
 | 場面 | 演出 |
 | --- | --- |
 | コマンドを選んでいる | 選んでいる自分側の1体が上下に揺れる（ダイパ風。なめらかにせず2段でカクカク切り替える）。決めたら止まる |
-| 出てくる | 足元から「ぽよん」と大きくなる |
+| 出てくる | 自分側は左下・相手側は右上の画面の外からタマゴが山なりに飛んできて（90度ずつカクカク回る）、絵の真ん中で光って割れ、登場の音と一緒に足元から「ぽよん」と大きくなる（EggThrowView。交代で出るときも同じ） |
 | もどる | 小さくなって消える |
 | 技を使う | 相手の方へ踏み込んで戻る |
 | 技が当たる | 受けた側に技の型のエフェクト（下の表）を出し、当たり切ったら当たった音 |
@@ -603,7 +606,7 @@ Scripts/
 │   ├── Balance/BalanceSimulator.cs  # バランス確認用。CPU どうしを大量に戦わせてペンモンごとの勝率を出す（Editor メニューから呼ぶ）
 │   ├── Survival/           # 勝ち抜き戦（SurvivalRun: 連勝数・賢さの切り替え・次の相手 / SurvivalOpponent）
 │   ├── Online/             # オンラインで送る中身と int 列の変換（BattleEventCodec: イベント＋ゲストの写しの更新 / OnlineCodec: 行動・ペンモンの並び）
-│   ├── Data/               # タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect・図鑑用の説明 MoveDescriptions）・特性（Ability）・持ち物（HeldItem）／ペンモンの定義・定義表（MoveTable / MonsterTable）・ボス（BossDefinition / BossTable）
+│   ├── Data/               # タマゴの種類（EggKind。見た目だけ）・タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect・図鑑用の説明 MoveDescriptions）・特性（Ability）・持ち物（HeldItem）／ペンモンの定義・定義表（MoveTable / MonsterTable）・ボス（BossDefinition / BossTable）
 │   ├── BattleBalance.cs    # 調整値（Lv・ダメージ式の定数・選出数など）
 │   ├── BattleFormat.cs     # シングル / ダブルス（場の数・選出の数）
 │   ├── BattleState / BattleSide / BattleMonster   # バトルの状態（場は配列で持ち、シングルは1）
@@ -627,14 +630,15 @@ Scripts/
     ├── WeatherView         # 場の天候の色と粒（場全体に重ねた層。§4.10）
     ├── MoveStyle / MoveStyleTable  # エフェクトの型と、ダメージ技ごとの型の表
     ├── MonsterInfoBox.cs   # 名前・Lv・HPバーの枠
+    ├── PartyEggTray / EggThrowView  # 残りの数のタマゴの列 / 繰り出すときにタマゴを投げる演出（場全体に重ねた層）
     ├── MessageWindow / CommandPanel / MovePanel / TargetPanel（ダブルスの狙う相手） / PartyPanel
     ├── BattleBackdrop.cs   # 背景の Image に生成した絵をはめる
     ├── BattleSounds(.Synth).cs  # 仮の効果音（コード生成）
     ├── GameMusic(.Synth/.Songs).cs  # 仮の BGM（楽譜からコード生成）
     ├── TypeColors.cs / StatusColors.cs  # 技ボタン・タイプの札の色 / 状態異常の印・光る色
-    └── Art/                # ドット絵の生成（PixelCanvas / PenguinBrush / EyeStyle（目の種類） / PenguinDesigns（タイプ別の partial に1体ずつ）/ PenguinPalette / MonsterSprites / MoveEffectSprites（技のエフェクトの粒。タイプの粒と、星・切り傷・牙の形の粒） / BackdropArt）
+    └── Art/                # ドット絵の生成（PixelCanvas / PenguinBrush / EyeStyle（目の種類） / PenguinDesigns（タイプ別の partial に1体ずつ）/ PenguinPalette / MonsterSprites / MoveEffectSprites（技のエフェクトの粒。タイプの粒と、星・切り傷・牙の形の粒） / EggSprites（タマゴの絵と種類ごとの色の表 EggStyleTable） / BackdropArt）
 Editor/
-├── PenguinMonsterSceneBuilder(.Field/.Panels/.Title/.Format/.Draft/.Item/.Intro/.Select/.Menus/.Dex/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
+├── PenguinMonsterSceneBuilder(.Field/.Eggs/.Panels/.Title/.Format/.Draft/.Item/.Intro/.Select/.Menus/.Dex/.Helpers).cs  # Tools > PenguinMonster > Rebuild でシーン生成
 └── BalanceReportMenu.cs  # Tools > PenguinMonster > Balance Report で勝率の表を Console に出す
 Scenes/
 └── PenguinMonsterScene.unity   # 生成物（手で編集しない）
@@ -645,3 +649,4 @@ Tests/Editor/               # EditMode テスト（PenguinMonster.Battle.Tests.a
 
 - ダブルスの見直し（遊んでから）: 味方を狙う技、ダブルス用の CPU の連携（守る・追い風・手助けを狙って使う）、勝ち抜き戦のダブルス専用ボス
 - ドラフトのカードにランクの札（伝説なら金の枠など）を出す
+- ストーリーモード（構想だけ）: 相手ごとにタマゴの種類を変える。`EggKind` と `EggStyleTable` に1行ずつ足し、試合の前に `BattleController.SetEggs` で渡す

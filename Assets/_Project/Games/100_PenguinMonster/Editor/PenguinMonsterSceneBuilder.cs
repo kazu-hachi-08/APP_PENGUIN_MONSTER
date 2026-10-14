@@ -90,9 +90,11 @@ namespace PenguinMonster.Editor
             var fieldTapArea = CreateFieldTapArea(root.transform);
             BuildField(root.transform, out var playerView, out var enemyView, out var playerInfo, out var enemyInfo);
             BuildDoubleField(root.transform, out var playerViews, out var enemyViews, out var playerInfos, out var enemyInfos);
+            BuildPartyTrays(root.transform, out var playerTray, out var enemyTray);
             // 天候とエフェクトはペンモンと名前の枠より手前、下の窓より奥
             var weather = CreateWeatherLayer(root.transform);
             var moveEffect = CreateMoveEffectLayer(root.transform);
+            var eggThrow = CreateEggThrowLayer(root.transform);
             // 特性の帯はエフェクトより手前（矢印の粒に隠れないように）、下の窓より奥
             var playerBanner = CreateAbilityBanner(root.transform, "PlayerAbilityBanner", PlayerBannerPosition, fromLeft: true);
             var enemyBanner = CreateAbilityBanner(root.transform, "EnemyAbilityBanner", EnemyBannerPosition, fromLeft: false);
@@ -121,6 +123,9 @@ namespace PenguinMonster.Editor
             so.FindProperty("_weather").objectReferenceValue = weather;
             so.FindProperty("_playerBanner").objectReferenceValue = playerBanner;
             so.FindProperty("_enemyBanner").objectReferenceValue = enemyBanner;
+            so.FindProperty("_playerTray").objectReferenceValue = playerTray;
+            so.FindProperty("_enemyTray").objectReferenceValue = enemyTray;
+            so.FindProperty("_eggThrow").objectReferenceValue = eggThrow;
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
