@@ -83,6 +83,11 @@ namespace PenguinMonster.View
                 case BattleEventKind.Confused:
                     BattleSounds.Play(BattleSound.Status);
                     yield return ViewOf(e).Flash(StatusColors.Confusion);
+                    InfoOf(e).SetConfused(true);
+                    yield return _messageWindow.Play(message);
+                    break;
+                case BattleEventKind.ConfusionEnded:
+                    InfoOf(e).SetConfused(false);
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.StatChanged:

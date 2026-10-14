@@ -20,6 +20,8 @@ namespace PenguinMonster.View
         [SerializeField] private Text _hpText;
         [SerializeField] private Image _statusBadge;
         [SerializeField] private Text _statusText;
+        [Tooltip("混乱中に出す印。状態異常と重なるので、状態異常の印とは別に持つ")]
+        [SerializeField] private GameObject _confusionBadge;
         [Tooltip("ランクが変わっているときに出す ▲▼ の印")]
         [SerializeField] private Text _stageMarkText;
         [Tooltip("タップで開くランクの一覧（全部の枠で1つを共有する）")]
@@ -49,6 +51,8 @@ namespace PenguinMonster.View
             _maxHp = monster.MaxHp;
             SetHp(hp);
             SetStatus(status);
+            // 混乱は交代で治るので、場に出た時点では必ず消えている
+            SetConfused(false);
             UpdateStatStages(monster);
             gameObject.SetActive(true);
         }
@@ -64,6 +68,8 @@ namespace PenguinMonster.View
                 _statusText.text = status.ToJapanese();
             }
         }
+
+        public void SetConfused(bool confused) => _confusionBadge.SetActive(confused);
 
         public void Hide()
         {

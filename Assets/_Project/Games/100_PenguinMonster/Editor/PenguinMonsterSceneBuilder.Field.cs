@@ -63,6 +63,8 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 StageMarkSize = new Vector2(90f, 44f);
         private static readonly Vector2 StatusBadgeSize = new Vector2(130f, 44f);
         private const float StatusBadgeGap = 6f;
+        // 状態異常と混乱の2つ
+        private const int BadgeSlotCount = 2;
         // 自分の枠の、状態異常の印とランクの印を並べる行の高さ（枠の中の高さに対する割合）
         private const float PlayerBadgeRowY = 0.15f;
 
@@ -224,7 +226,9 @@ namespace PenguinMonster.Editor
                 SetBand(hpText.rectTransform, 0f, 0.3f, InfoPadding);
             }
 
-            var badge = CreateStatusBadge(showHpNumbers ? inner : frame.rectTransform, showHpNumbers);
+            var badgeParent = showHpNumbers ? inner : frame.rectTransform;
+            var badge = CreateStatusBadge(badgeParent, showHpNumbers, 0, "StatusBadge", Color.gray, "");
+            var confusionBadge = CreateStatusBadge(badgeParent, showHpNumbers, 1, "ConfusionBadge", StatusColors.Confusion, "混乱");
 
             var stageMark = CreateStageMark(inner, showHpNumbers);
 
@@ -237,14 +241,15 @@ namespace PenguinMonster.Editor
             so.FindProperty("_hpText").objectReferenceValue = hpText;
             so.FindProperty("_statusBadge").objectReferenceValue = badge;
             so.FindProperty("_statusText").objectReferenceValue = badge.GetComponentInChildren<Text>();
+            so.FindProperty("_confusionBadge").objectReferenceValue = confusionBadge.gameObject;
             so.FindProperty("_stageMarkText").objectReferenceValue = stageMark;
             so.ApplyModifiedProperties();
             return box;
         }
 
         /// <summary>
-        /// ランクが変わっているときの ▲▼ の印。状態異常の印と被らないよう、自分側は印の右、
-        /// 相手側（状態異常の印は枠の外）は HP バーの下の行の左に置く。段数は枠をタップして一覧で見る
+        /// ランクが変わっているときの ▲▼ の印。状態異常・混乱の印と被らないよう、自分側は2つの印の右、
+        /// 相手側（印は枠の外）は HP バーの下の行の左に置く。段数は枠をタップして一覧で見る
         /// </summary>
         private static Text CreateStageMark(RectTransform inner, bool besideBadge)
         {
@@ -252,7 +257,7 @@ namespace PenguinMonster.Editor
             mark.supportRichText = true;
             var rect = mark.rectTransform;
             float y = besideBadge ? PlayerBadgeRowY : EnemyStatBandTop / 2f;
-            float x = besideBadge ? InfoPadding + StatusBadgeSize.x + StatusBadgeGap : InfoPadding;
+            float x = besideBadge ? BadgeX(BadgeSlotCount) : InfoPadding;
             rect.anchorMin = rect.anchorMax = new Vector2(0f, y);
             rect.pivot = new Vector2(0f, 0.5f);
             rect.anchoredPosition = new Vector2(x, 0f);
@@ -262,23 +267,25 @@ namespace PenguinMonster.Editor
         }
 
         /// <summary>
-        /// 状態異常の印（色付きの札に「まひ」など）。自分側は HP の数字の左の空き、
-        /// 相手側は枠の中に余白が無いので枠のすぐ下に置く
+        /// 状態異常・混乱の印（色付きの札に「麻痺」など）。slot 番目の位置に左から並べる。
+        /// 自分側は HP の数字の左の空き、相手側は枠の中に余白が無いので枠のすぐ下に置く
         /// </summary>
-        private static Image CreateStatusBadge(RectTransform parent, bool inside)
+        private static Image CreateStatusBadge(RectTransform parent, bool inside, int slot, string name, Color color, string text)
         {
-            var badge = CreateImage(parent, "StatusBadge", Color.gray);
+            var badge = CreateImage(parent, name, color);
             badge.raycastTarget = false;
             var rect = badge.rectTransform;
             rect.anchorMin = rect.anchorMax = inside ? new Vector2(0f, PlayerBadgeRowY) : Vector2.zero;
             rect.pivot = inside ? new Vector2(0f, 0.5f) : new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(InfoPadding, inside ? 0f : -StatusBadgeGap);
+            rect.anchoredPosition = new Vector2(BadgeX(slot), inside ? 0f : -StatusBadgeGap);
             rect.sizeDelta = StatusBadgeSize;
 
-            var label = CreateText(badge.transform, "Label", "", StatusFontSize, Color.white, TextAnchor.MiddleCenter);
+            var label = CreateText(badge.transform, "Label", text, StatusFontSize, Color.white, TextAnchor.MiddleCenter);
             label.fontStyle = FontStyle.Bold;
             badge.gameObject.SetActive(false);
             return badge;
         }
+
+        private static float BadgeX(int slot) => InfoPadding + slot * (StatusBadgeSize.x + StatusBadgeGap);
     }
 }
