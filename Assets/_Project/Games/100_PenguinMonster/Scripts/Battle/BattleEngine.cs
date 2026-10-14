@@ -6,7 +6,7 @@ namespace PenguinMonster.Battle
     /// <summary>
     /// ターンを進める（仕様書 §4.1）。状態を書き換え、起きたことを BattleEvent の列で返す。
     /// 行動順は .Order.cs、技の対象と命中・ダメージは .Moves.cs、状態異常・こんらん・ターン終わりは .Status.cs、
-    /// 技の効果は .Effects.cs、特性・持ち物は .Abilities.cs / .Items.cs、天候は .Weather.cs
+    /// 技の効果は .Effects.cs、特性・持ち物は .Abilities.cs / .Items.cs、天候は .Weather.cs、守る・追い風・手助けは .Field.cs
     /// </summary>
     public sealed partial class BattleEngine
     {
@@ -66,6 +66,7 @@ namespace PenguinMonster.Battle
             {
                 ApplyEndOfTurn(events);
             }
+            EndTurnGuards();
             return events;
         }
 

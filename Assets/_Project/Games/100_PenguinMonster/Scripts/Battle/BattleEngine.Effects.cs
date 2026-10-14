@@ -53,6 +53,18 @@ namespace PenguinMonster.Battle
             {
                 HealSelf(side, user, reportFailure, events);
             }
+            else if (effect.Protects)
+            {
+                TryProtect(side, user, reportFailure, events);
+            }
+            else if (effect.Tailwind)
+            {
+                TryStartTailwind(side, user, reportFailure, events);
+            }
+            else if (effect.HelpsAlly)
+            {
+                TryHelpAlly(side, user, reportFailure, events);
+            }
             else if (effect.Weather != Weather.None)
             {
                 if (!TryStartWeather(side, user, effect.Weather, events))

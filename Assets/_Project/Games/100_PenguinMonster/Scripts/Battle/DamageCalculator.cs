@@ -161,6 +161,10 @@ namespace PenguinMonster.Battle
             {
                 modifier *= BattleBalance.SharpGlassesMultiplier;
             }
+            if (attacker.IsHelped)
+            {
+                modifier *= BattleBalance.HelpingHandMultiplier;
+            }
             return modifier;
         }
 

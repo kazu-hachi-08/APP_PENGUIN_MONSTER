@@ -22,6 +22,12 @@ namespace PenguinMonster.Battle
         public int ConfusionTurns { get; private set; }
         /// <summary>1回だけの持ち物を使った。交代しても戻らない</summary>
         public bool ItemUsed { get; private set; }
+        /// <summary>このターン、守る が決まっていて相手の技を受けない</summary>
+        public bool IsProtecting { get; private set; }
+        /// <summary>前のターンに 守る が決まった。続けて使うと失敗する（守り続けるだけの試合にしないため）</summary>
+        public bool ProtectedLastTurn { get; private set; }
+        /// <summary>このターン、味方の 手助け を受けていて技が強くなる</summary>
+        public bool IsHelped { get; private set; }
 
         public string Name => Definition.Name;
         public int MaxHp => Stats.Hp;
@@ -56,7 +62,10 @@ namespace PenguinMonster.Battle
         /// <summary>場の天候。テストで単体で作ったときは None</summary>
         public Weather CurrentWeather => Side?.State?.Weather ?? Weather.None;
 
-        /// <summary>行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍。天候に乗る特性なら 2 倍</summary>
+        /// <summary>
+        /// 行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍。天候に乗る特性なら 2 倍。
+        /// 陣営に追い風が吹いていればさらに 2 倍
+        /// </summary>
         public int EffectiveSpeed
         {
             get
@@ -70,7 +79,11 @@ namespace PenguinMonster.Battle
                 {
                     speed = (int)(speed * BattleBalance.LightFeatherSpeedMultiplier);
                 }
-                return RidesWeather ? speed * BattleBalance.WeatherSpeedMultiplier : speed;
+                if (RidesWeather)
+                {
+                    speed *= BattleBalance.WeatherSpeedMultiplier;
+                }
+                return Side != null && Side.HasTailwind ? speed * BattleBalance.TailwindSpeedMultiplier : speed;
             }
         }
 
@@ -189,12 +202,27 @@ namespace PenguinMonster.Battle
 
         internal void SetStages(int[] stages) => Array.Copy(stages, _stages, _stages.Length);
 
+        internal void Protect() => IsProtecting = true;
+
+        internal void ReceiveHelp() => IsHelped = true;
+
+        /// <summary>ターンの最後に、そのターンだけの守る・手助けを消し、守ったかどうかを前のターンの記録へ移す</summary>
+        internal void EndTurn()
+        {
+            ProtectedLastTurn = IsProtecting;
+            IsProtecting = false;
+            IsHelped = false;
+        }
+
         /// <summary>交代でひっこめたとき、場にいる間だけの変化を戻す</summary>
         internal void OnWithdrawn()
         {
             Array.Clear(_stages, 0, _stages.Length);
             ConfusionTurns = 0;
             BadPoisonCount = 0;
+            IsProtecting = false;
+            ProtectedLastTurn = false;
+            IsHelped = false;
         }
     }
 }

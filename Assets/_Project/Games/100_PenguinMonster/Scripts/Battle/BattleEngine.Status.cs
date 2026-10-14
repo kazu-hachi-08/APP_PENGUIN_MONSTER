@@ -90,6 +90,7 @@ namespace PenguinMonster.Battle
         private void ApplyEndOfTurn(List<BattleEvent> events)
         {
             AdvanceWeather(events);
+            AdvanceTailwind(events);
             foreach (var position in ActivesBySpeed())
             {
                 if (_state.IsOver)

@@ -86,12 +86,25 @@ namespace PenguinMonster.Battle
                     return WeatherEnded(e.Weather);
                 case BattleEventKind.WeatherDamage:
                     return $"{subject}は 吹雪に 打たれている！";
+                case BattleEventKind.ProtectStarted:
+                    return $"{subject}は 守りの 体勢に 入った！";
+                case BattleEventKind.Protected:
+                    return $"{subject}は 攻撃から 身を 守った！";
+                case BattleEventKind.TailwindStarted:
+                    return $"{TeamName(isPlayer)}の 背中に 追い風が 吹き始めた！";
+                case BattleEventKind.TailwindEnded:
+                    return $"{TeamName(isPlayer)}の 追い風が 止んだ！";
+                case BattleEventKind.Helped:
+                    return $"{subject}は 声援を 受けて 張り切っている！";
                 default:
                     return null;
             }
         }
 
         private static string ItemName(BattleEvent e) => e.Monster.Definition.Item.ToJapanese();
+
+        /// <summary>陣営全体にかかる効果（追い風）の主語</summary>
+        private static string TeamName(bool isPlayer) => isPlayer ? "味方" : "相手";
 
         private static string WeatherStarted(Weather weather)
         {

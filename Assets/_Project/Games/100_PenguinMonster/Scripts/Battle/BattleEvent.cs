@@ -57,6 +57,16 @@ namespace PenguinMonster.Battle
         WeatherEnded,
         /// <summary>吹雪のターン終わりのダメージ</summary>
         WeatherDamage,
+        /// <summary>守る が決まった（「守りの 体勢に 入った！」）</summary>
+        ProtectStarted,
+        /// <summary>守っている相手に技が防がれた。主語は守った側</summary>
+        Protected,
+        /// <summary>追い風が吹き始めた。主語は始めたペンモン</summary>
+        TailwindStarted,
+        /// <summary>追い風が止んだ。Side が止んだ陣営、主語はいない</summary>
+        TailwindEnded,
+        /// <summary>手助けを受けた。主語は受けた味方</summary>
+        Helped,
     }
 
     /// <summary>

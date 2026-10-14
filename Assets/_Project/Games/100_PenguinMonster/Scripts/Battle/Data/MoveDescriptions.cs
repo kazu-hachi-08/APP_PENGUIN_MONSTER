@@ -90,6 +90,18 @@ namespace PenguinMonster.Battle
             {
                 return "自分の HPを 半分 回復する";
             }
+            if (effect.Protects)
+            {
+                return "その ターン 相手の 技を 防ぐ（続けて 使うと 失敗する）";
+            }
+            if (effect.Tailwind)
+            {
+                return $"{BattleBalance.TailwindTurns}ターン 味方の 素早さを {BattleBalance.TailwindSpeedMultiplier}倍に する";
+            }
+            if (effect.HelpsAlly)
+            {
+                return $"ダブルスで 味方の 技の ダメージを {BattleBalance.HelpingHandMultiplier.ToString(System.Globalization.CultureInfo.InvariantCulture)}倍に する";
+            }
             if (effect.Weather != Weather.None)
             {
                 return $"{BattleBalance.WeatherTurns}ターン {(effect.Weather == Weather.Sun ? "日差しを 強くする" : effect.Weather.ToJapanese() + "に する")}";

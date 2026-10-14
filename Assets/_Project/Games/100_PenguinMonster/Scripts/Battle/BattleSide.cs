@@ -21,6 +21,10 @@ namespace PenguinMonster.Battle
         public BattleMonster Active => ActiveAt(0);
         public int ActivePartyIndex => _activePartyIndices[0];
 
+        /// <summary>追い風が止むまでの残りターン。0 なら吹いていない（仕様書 §4.2）</summary>
+        public int TailwindTurns { get; private set; }
+        public bool HasTailwind => TailwindTurns > 0;
+
         public bool HasRemaining => Party.Any(m => !m.IsFainted);
 
         /// <summary>場のペンモンが瀕死で、控えに出せるペンモンがいる</summary>
@@ -85,6 +89,15 @@ namespace PenguinMonster.Battle
         internal void SetActive(int slot, int partyIndex)
         {
             _activePartyIndices[slot] = partyIndex;
+        }
+
+        /// <summary>追い風を吹かせる。0 なら止める（オンラインの写しもこれで合わせる）</summary>
+        internal void SetTailwind(int turns) => TailwindTurns = turns;
+
+        /// <summary>追い風の残りを1減らす。止んだら true</summary>
+        internal bool TickTailwind()
+        {
+            return HasTailwind && --TailwindTurns == 0;
         }
     }
 }

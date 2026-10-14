@@ -31,7 +31,7 @@ namespace PenguinMonster.Battle
             }
             else if (move.IsStatus)
             {
-                if (RollHitOrMiss(side, user, targets[0], move, events))
+                if (!BlockedByProtect(side, targets[0], events) && RollHitOrMiss(side, user, targets[0], move, events))
                 {
                     ApplyStatusMove(side, user, targets[0], move, events);
                 }
@@ -76,7 +76,8 @@ namespace PenguinMonster.Battle
                 {
                     break;
                 }
-                if (!RollHitOrMiss(side, user, target, move, events))
+                // 全体技は守っていない相手にだけ当たる（倍率は2体ぶんの 0.75 倍のまま。原作と同じ）
+                if (BlockedByProtect(side, target, events) || !RollHitOrMiss(side, user, target, move, events))
                 {
                     continue;
                 }

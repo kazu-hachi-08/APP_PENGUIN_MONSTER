@@ -64,7 +64,7 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// 表示に要る分だけ写しに入れる（HP・状態異常・場・勝敗・天候）。
+        /// 表示に要る分だけ写しに入れる（HP・状態異常・場・勝敗・天候・追い風）。
         /// ランクやこんらんの残りは画面に出さず、計算もホストがするので写さない
         /// </summary>
         private static void Apply(BattleState mirror, BattleEvent e, int partyIndex)
@@ -78,6 +78,11 @@ namespace PenguinMonster.Battle
             {
                 // 残りターンはホストが数えるので、写しは天候の種類だけ合わせる
                 mirror.SetWeather(e.Kind == BattleEventKind.WeatherStarted ? e.Weather : Weather.None, 0);
+            }
+            if (e.Kind == BattleEventKind.TailwindStarted || e.Kind == BattleEventKind.TailwindEnded)
+            {
+                // 天候と同じく、残りはホストが数えるので吹いているかどうかだけ合わせる
+                mirror.Sides[e.Side].SetTailwind(e.Kind == BattleEventKind.TailwindStarted ? BattleBalance.TailwindTurns : 0);
             }
             if (e.Monster == null)
             {

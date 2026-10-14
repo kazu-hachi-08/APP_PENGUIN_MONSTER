@@ -20,6 +20,9 @@ namespace PenguinMonster.Battle
         private const int MultiMin = 2;
         private const int MultiMax = 5;
         private const int Twice = 2;
+        // 守るは先制技より先に、手助けは守るよりさらに先に出る（原作と同じ並び。味方の技より先に掛かる必要があるため）
+        private const int ProtectPriority = 4;
+        private const int HelpPriority = 5;
 
         // ノーマル
         public static readonly MoveDefinition Tackle = new MoveDefinition("腹ばいタックル", Normal, Physical, 50, Sure);
@@ -50,6 +53,11 @@ namespace PenguinMonster.Battle
         // 伝説 ハジマリペン の専用技。自分の能力が下がるが、ひねくれ者なら上がる
         public static readonly MoveDefinition FirstRoar = new MoveDefinition("始まりの咆哮", Normal, Special, 120, 90,
             effects: new[] { SelfStat(SpAttack, -1), SelfStat(SpDefense, -1) });
+        // 戦況を変える技（守る・手助け）。ダブルスで読み合いと連携を生むために足した
+        public static readonly MoveDefinition FeatherWrap = new MoveDefinition("羽でくるまる", Normal, Status, 0, Sure,
+            priority: ProtectPriority, effects: new[] { Protect() });
+        public static readonly MoveDefinition Cheer = new MoveDefinition("声援", Normal, Status, 0, Sure,
+            priority: HelpPriority, effects: new[] { HelpAlly() });
 
         // こおり
         public static readonly MoveDefinition IcicleBeak = new MoveDefinition("氷柱クチバシ", Ice, Physical, 75, Sure,
@@ -187,6 +195,9 @@ namespace PenguinMonster.Battle
         // 伝説 アマツバサペン の専用技。空を飛べたペンギンだけが、羽ばたくほど速くなる
         public static readonly MoveDefinition SkySoar = new MoveDefinition("天翔ける翼", Bird, Physical, 100, Sure,
             effects: new[] { SelfStat(Speed, 1) });
+        // 味方全員を速くする追い風。素早さの遅い仲間と組ませる技
+        public static readonly MoveDefinition NorthWindCall = new MoveDefinition("北風の号令", Bird, Status, 0, Sure,
+            effects: new[] { SetTailwind() });
 
         // やみ
         public static readonly MoveDefinition OrcaBite = new MoveDefinition("シャチ噛み", Dark, Physical, 80, Sure,

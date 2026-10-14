@@ -162,5 +162,12 @@ namespace PenguinMonster.Battle
         public const int SnowDamageDenominator = 16;
         /// <summary>吹雪のとき、氷タイプが物理技を受ける防御の倍率</summary>
         public const float SnowIceDefenseMultiplier = 1.5f;
+
+        // 戦況を変える技（仕様書 §4.2）
+        /// <summary>追い風が続くターン（始めたターンも1と数える）</summary>
+        public const int TailwindTurns = 4;
+        public const int TailwindSpeedMultiplier = 2;
+        /// <summary>手助けを受けた味方の技のダメージ倍率</summary>
+        public const float HelpingHandMultiplier = 1.5f;
     }
 }
