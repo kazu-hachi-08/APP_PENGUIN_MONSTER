@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ドラフト画面（仕様書 §2.1）。提示された3体のカードから1体を押して取る × 6回。
+    /// ドラフト画面（仕様書 §2.1）。左の3枚のカードを押すと右の詳細が切り替わり、「これに 決めた！」で取る × 6回。
     /// 抽選は Draft に任せ、ここは表示と入力だけ。
     /// 演出: 提示のカードは1枚ずつ「ぽよん」と配り、取ったペンモンは下のマスへ飛んでいく
     /// </summary>
@@ -19,32 +19,22 @@ namespace PenguinMonster.View
         [SerializeField] private Button[] _cardButtons;
         [SerializeField] private Image[] _cardIcons;
         [SerializeField] private Text[] _cardNames;
-        [SerializeField] private Text[] _cardStats;
-        [Tooltip("種族値の見出しと数字をまとめた親。技を見ている間は隠す")]
-        [SerializeField] private GameObject[] _cardStatGroups;
-        [Tooltip("種族値と同じ場所に重ねた技の一覧。最初は隠れている")]
-        [SerializeField] private Text[] _cardMoves;
-        [Tooltip("全カードの 種族値 ⇄ 技 を切り替える。カードは押したらすぐ決定なので、カードの外に1つだけ置く")]
-        [SerializeField] private Button _viewToggle;
-        [SerializeField] private Text _viewToggleLabel;
-        [Tooltip("特性と持ち物（名前と説明を1行ずつ）")]
-        [SerializeField] private Text[] _cardTraits;
+        [Tooltip("選んでいるカードだけ付ける黄色の縁")]
+        [SerializeField] private Outline[] _cardOutlines;
         /// <summary>1枚につき2つ（2タイプ目が無ければ隠す）。カード i のタイプ k は [i * 2 + k]</summary>
         [SerializeField] private Image[] _typeBadges;
         [SerializeField] private Text[] _typeLabels;
+        [SerializeField] private DraftDetailView _detail;
+        [SerializeField] private Button _decideButton;
         [SerializeField] private Image[] _pickedIcons;
         [Tooltip("オンラインの1回ごとの制限時間。オフラインでは隠れたまま")]
         [SerializeField] private CountdownTimer _timer;
-        [Tooltip("取ったペンモンがカードから下のマスへ飛ぶ絵。ほかの部品より手前に置く")]
+        [Tooltip("取ったペンモンが下のマスへ飛ぶ絵。ほかの部品より手前に置く")]
         [SerializeField] private Image _flyer;
         [SerializeField] private float _dealInterval = 0.08f;
         [SerializeField] private float _flySeconds = 0.3f;
 
         private const int BadgesPerCard = TypeColors.BadgesPerMonster;
-        private const int TraitDescriptionSize = 20;
-        private const int MoveDetailSize = 22;
-        private const string ShowMovesLabel = "技を 見る";
-        private const string ShowStatsLabel = "種族値を 見る";
         private const string TitleFormat = "ドラフト {0}/{1}　欲しい ペンモンを 選んでください";
 
         private Draft _draft;
@@ -52,8 +42,7 @@ namespace PenguinMonster.View
         private float _secondsPerPick;
         private PopIn[] _cardPops;
         private Coroutine _flying;
-        // 次の提示や次のドラフトでも見たい方を見続けられるよう、Show で戻さない
-        private bool _showingMoves;
+        private int _selected;
 
         private void Awake()
         {
@@ -61,11 +50,10 @@ namespace PenguinMonster.View
             for (int i = 0; i < _cardButtons.Length; i++)
             {
                 int index = i;
-                _cardButtons[i].onClick.AddListener(() => Pick(index));
+                _cardButtons[i].onClick.AddListener(() => OnCardClicked(index));
                 _cardPops[i] = _cardButtons[i].GetComponent<PopIn>();
             }
-            _viewToggle.onClick.AddListener(ToggleView);
-            ApplyView();
+            _decideButton.onClick.AddListener(() => Pick(_selected));
         }
 
         /// <param name="secondsPerPick">1回の制限時間。0 なら制限なし（オフライン）</param>
@@ -80,11 +68,29 @@ namespace PenguinMonster.View
             Refresh();
         }
 
+        private void OnCardClicked(int index)
+        {
+            if (index == _selected) return;
+            BattleSounds.Play(BattleSound.Cursor);
+            Select(index);
+        }
+
+        private void Select(int index)
+        {
+            _selected = index;
+            for (int i = 0; i < _cardOutlines.Length; i++)
+            {
+                _cardOutlines[i].enabled = i == index;
+            }
+            _detail.Show(_draft.Offer[index]);
+        }
+
         private void Pick(int index)
         {
             BattleSounds.Play(BattleSound.Cursor);
-            // カードは Refresh で配り直して縮むので、飛び立つ位置はその前に覚える
-            var from = _cardIcons[index].rectTransform;
+            // Refresh で中身が次の提示に入れ替わるので、飛び立つ位置はその前に覚える。
+            // 時間切れで選んでいないカードが取られたときは、そのカードの絵から飛ばす
+            var from = index == _selected ? _detail.IconRect : _cardIcons[index].rectTransform;
             var fromPosition = from.position;
             var fromSize = from.rect.size;
             _draft.Pick(index);
@@ -106,6 +112,8 @@ namespace PenguinMonster.View
                 ShowCard(i, _draft.Offer[i]);
                 _cardPops[i].Play(i * _dealInterval);
             }
+            // 何も選んでいない空の詳細を見せないよう、配るたびに1枚目を選んだ状態から始める
+            Select(0);
             for (int i = 0; i < _pickedIcons.Length; i++)
             {
                 bool picked = i < _draft.Picked.Count;
@@ -116,7 +124,7 @@ namespace PenguinMonster.View
         }
 
         /// <summary>
-        /// 取ったカードの絵の位置から下のマスへ飛ばし、着いたらマスに絵を出す。
+        /// 取ったペンモンの絵の位置から下のマスへ飛ばし、着いたらマスに絵を出す。
         /// 続けてすぐ取ったときは前の飛行を打ち切る（そのマスは Refresh で表示済み）
         /// </summary>
         private void FlyToSlot(Vector3 fromPosition, Vector2 fromSize, int slot)
@@ -144,24 +152,7 @@ namespace PenguinMonster.View
             _flying = null;
         }
 
-        private void ToggleView()
-        {
-            BattleSounds.Play(BattleSound.Cursor);
-            _showingMoves = !_showingMoves;
-            ApplyView();
-        }
-
-        private void ApplyView()
-        {
-            for (int i = 0; i < _cardButtons.Length; i++)
-            {
-                _cardStatGroups[i].SetActive(!_showingMoves);
-                _cardMoves[i].gameObject.SetActive(_showingMoves);
-            }
-            _viewToggleLabel.text = _showingMoves ? ShowStatsLabel : ShowMovesLabel;
-        }
-
-        /// <summary>時間切れは3体からランダム（仕様書 §2.1）</summary>
+        /// <summary>時間切れは3体からランダム（仕様書 §2.1）。選びかけのカードは考えない</summary>
         private void PickRandom()
         {
             Pick(UnityEngine.Random.Range(0, _draft.Offer.Count));
@@ -178,9 +169,6 @@ namespace PenguinMonster.View
         {
             _cardIcons[card].sprite = MonsterSprites.Front(monster);
             _cardNames[card].text = monster.Name;
-            _cardStats[card].text = MonsterTexts.StatValues(monster.BaseStats);
-            _cardTraits[card].text = MonsterTexts.Traits(monster, TraitDescriptionSize);
-            _cardMoves[card].text = MonsterTexts.MoveList(monster, MoveDetailSize);
             TypeColors.PaintBadges(monster, _typeBadges, _typeLabels, card * BadgesPerCard);
         }
     }

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 5ec610a198bb02142992b7bf3bdcb732
+guid: 050ed8efa2d144240bd02429d334a4fc
 TrueTypeFontImporter:
   externalObjects: {}
   serializedVersion: 4
@@ -9,7 +9,7 @@ TrueTypeFontImporter:
   characterPadding: 1
   includeFontData: 1
   fontNames:
-  - Noto Sans JP
+  - Rounded Mplus 1c
   fallbackFontReferences: []
   customCharacters: 
   fontRenderingMode: 0

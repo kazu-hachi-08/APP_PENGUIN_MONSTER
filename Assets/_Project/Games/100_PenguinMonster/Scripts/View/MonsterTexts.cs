@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using PenguinMonster.Battle;
-using UnityEngine;
 
 namespace PenguinMonster.View
 {
@@ -11,6 +9,7 @@ namespace PenguinMonster.View
     {
         private const string StatusMoveText = "変化";
         private const string HasEffectsMark = "　＋効果";
+        private const string TraitInlineSeparator = "　";
 
         /// <summary>種族値を1行ずつ。見出し（HP・こうげき…）はシーン側の別の Text に並べてある</summary>
         public static string StatValues(Stats s)
@@ -22,40 +21,33 @@ namespace PenguinMonster.View
         /// 特性の名前と説明。持ち物を持っていればその行、ヒナなら綿毛の行も足す。
         /// 説明は小さめの文字にして名前を目立たせる
         /// </summary>
-        public static string Traits(MonsterDefinition monster, int descriptionSize)
+        /// <param name="oneLine">名前と説明を同じ行に並べる（横に広く縦に狭い欄で、ヒナの行が増えても枠に収めるため）</param>
+        public static string Traits(MonsterDefinition monster, int descriptionSize, bool oneLine = false)
         {
-            string text = Line("特性", monster.Ability.ToJapanese(), monster.Ability.Description(), descriptionSize);
+            string separator = oneLine ? TraitInlineSeparator : "\n";
+            string text = Line("特性", monster.Ability.ToJapanese(), monster.Ability.Description(), descriptionSize, separator);
             if (monster.Rank == MonsterRank.Hina)
             {
-                text += "\n" + Line("ヒナ", HeldItem.ChickDown.ToJapanese(), HeldItem.ChickDown.Description(), descriptionSize);
+                text += "\n" + Line("ヒナ", HeldItem.ChickDown.ToJapanese(), HeldItem.ChickDown.Description(), descriptionSize, separator);
             }
             if (monster.Item != HeldItem.None)
             {
-                text += "\n" + Line("持ち物", monster.Item.ToJapanese(), monster.Item.Description(), descriptionSize);
+                text += "\n" + Line("持ち物", monster.Item.ToJapanese(), monster.Item.Description(), descriptionSize, separator);
             }
             return text;
         }
 
-        /// <summary>
-        /// ドラフトのカード用の短い技の一覧。1つにつき2行（名前 / タイプ・威力）。
-        /// 効果の中身はカードに入り切らないので、バトルの技ボタンと同じく「＋効果」の印だけにする
-        /// </summary>
-        public static string MoveList(MonsterDefinition monster, int detailSize)
+        /// <summary>技の 分類・威力（変化技は「変化」）と「＋効果」の印。タイプはマスの色で見せるときに使う</summary>
+        public static string MoveDetail(MoveDefinition move)
         {
-            var lines = new List<string>();
-            foreach (var move in monster.Moves)
-            {
-                string color = ColorUtility.ToHtmlStringRGB(TypeColors.Get(move.Type));
-                string power = move.IsStatus ? StatusMoveText : $"{move.Category.CategoryName()} 威力 {move.Power}";
-                string mark = move.Effects().Length > 0 && !move.IsStatus ? HasEffectsMark : "";
-                lines.Add($"<b>{move.Name}</b>\n<size={detailSize}><b><color=#{color}>{move.Type.ToJapanese()}</color></b>　{power}{mark}</size>");
-            }
-            return string.Join("\n", lines);
+            if (move.IsStatus) return StatusMoveText;
+            string mark = move.Effects().Length > 0 ? HasEffectsMark : "";
+            return $"{move.Category.CategoryName()} 威力 {move.Power}{mark}";
         }
 
-        private static string Line(string label, string name, string description, int descriptionSize)
+        private static string Line(string label, string name, string description, int descriptionSize, string separator)
         {
-            return $"{label} <b>{name}</b>\n<size={descriptionSize}>{description}</size>";
+            return $"{label} <b>{name}</b>{separator}<size={descriptionSize}>{description}</size>";
         }
     }
 }
