@@ -19,6 +19,8 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 HeadingInnerEdge = new Vector2(3f, -3f);
         private static readonly Vector2 HeadingOuterEdge = new Vector2(6f, -6f);
         private static readonly Vector2 HeadingShadow = new Vector2(6f, -9f);
+        // ロゴの「黄」と同じ色。クリーム色だと内側の白い縁取りと溶けて文字の形が読めなかったため
+        private static readonly Color HeadingColor = new Color(1f, 0.85f, 0.3f);
 
         /// <summary>
         /// 画面いっぱいの夜空（NightSky）と、降る雪。中身はこの上に重ねる。
@@ -37,7 +39,7 @@ namespace PenguinMonster.Editor
         private static void StyleHeading(Text text)
         {
             text.fontStyle = FontStyle.Bold;
-            text.color = TitleLogoColor;
+            text.color = HeadingColor;
             AddOutline(text, Color.white, HeadingInnerEdge);
             AddOutline(text, TitleLogoEdgeColor, HeadingOuterEdge);
             var shadow = text.gameObject.AddComponent<Shadow>();

@@ -9,6 +9,7 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// ドラフトの画面。夜空と雪の上に、まん中に提示の3枚のカード（絵・名前・タイプ・特性と持ち物・種族値）、下の帯に取ったペンモンの6マス。
+    /// 右下の切り替えボタンで、カードの種族値の欄を技の一覧に差し替える（カードに両方は入り切らないため）。
     /// カードは配るたびに「ぽよん」と出し（PopIn）、取ったペンモンは一番手前の絵（Flyer）が下のマスへ運ぶ
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -33,6 +34,12 @@ namespace PenguinMonster.Editor
         private const float DraftStatsHeight = 290f;
         private const float DraftStatsPaddingX = 70f;
         private const float DraftStatsPaddingBottom = 24f;
+        // 技名は種族値の数字より横に長いので、左右の余白を詰めて広く使う
+        private const float DraftMovesPaddingX = 24f;
+        private static readonly Vector2 DraftToggleSize = new Vector2(300f, 90f);
+        // 下の帯の6マス（中央寄せ）の右側の空きに置く
+        private static readonly Vector2 DraftTogglePosition = new Vector2(-190f, DraftFooterHeight / 2f);
+        private static readonly Vector2 BottomRight = new Vector2(1f, 0f);
         private const float DraftFooterCaptionWidth = 300f;
         private const float DraftPickedSlotSize = 120f;
         private const float DraftFooterSpacing = 20f;
@@ -43,12 +50,14 @@ namespace PenguinMonster.Editor
         private const int DraftStatsFontSize = 30;
         private const int DraftTraitsFontSize = 26;
         private const int DraftCaptionFontSize = 36;
+        private const int DraftMovesFontSize = 28;
 
         private static readonly Vector2 PanelCountdownPosition = new Vector2(-480f, -55f);
         private static readonly Vector2 TopRight = new Vector2(1f, 1f);
 
         private static readonly Color DraftCardColor = new Color(0.97f, 0.97f, 0.9f);
         private static readonly Color DraftSlotColor = new Color(0.1f, 0.14f, 0.22f);
+        private static readonly Color DraftToggleColor = new Color(0.2f, 0.45f, 0.75f);
 
         private static DraftPanel CreateDraftPanel(Transform parent)
         {
@@ -65,16 +74,24 @@ namespace PenguinMonster.Editor
             var icons = new Image[cards];
             var names = new Text[cards];
             var stats = new Text[cards];
+            var statGroups = new GameObject[cards];
+            var moves = new Text[cards];
             var traits = new Text[cards];
             var badges = new Image[cards * TypesPerMonster];
             var badgeLabels = new Text[badges.Length];
             for (int i = 0; i < cards; i++)
             {
                 CreateDraftCard(row, i, out buttons[i], out icons[i], out names[i], out stats[i], out traits[i], badges, badgeLabels);
+                statGroups[i] = stats[i].transform.parent.gameObject;
+                moves[i] = CreateDraftMoves(buttons[i].transform);
             }
 
             var picked = CreatePickedSlots(back.transform);
             var timer = CreateCountdown(back.transform, TopRight, PanelCountdownPosition);
+            var toggle = CreateButton(back.transform, "Btn_ViewToggle", "", DraftToggleSize, DraftToggleColor);
+            Place(toggle.GetComponent<RectTransform>(), BottomRight, DraftTogglePosition, DraftToggleSize);
+            var toggleLabel = toggle.GetComponentInChildren<Text>();
+            AddOutline(toggleLabel, ButtonTextEdgeColor, ButtonTextEdge);
             var flyer = CreateDraftFlyer(back.transform);
 
             var panel = back.gameObject.AddComponent<DraftPanel>();
@@ -85,6 +102,10 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_cardNames"), names);
             SetArray(so.FindProperty("_cardStats"), stats);
             SetArray(so.FindProperty("_cardTraits"), traits);
+            SetArray(so.FindProperty("_cardStatGroups"), statGroups);
+            SetArray(so.FindProperty("_cardMoves"), moves);
+            so.FindProperty("_viewToggle").objectReferenceValue = toggle.GetComponent<Button>();
+            so.FindProperty("_viewToggleLabel").objectReferenceValue = toggleLabel;
             SetArray(so.FindProperty("_typeBadges"), badges);
             SetArray(so.FindProperty("_typeLabels"), badgeLabels);
             SetArray(so.FindProperty("_pickedIcons"), picked);
@@ -158,11 +179,24 @@ namespace PenguinMonster.Editor
             PlaceTopBand(traits.rectTransform, DraftTraitsTop, DraftTraitsHeight);
             traits.rectTransform.sizeDelta = new Vector2(-DraftTraitsPaddingX * 2f, DraftTraitsHeight);
 
-            var captions = CreateText(card.transform, "StatCaptions", StatCaptions, DraftStatsFontSize, BoxTextColor, TextAnchor.LowerLeft);
+            // 技の一覧と入れ替えるので、見出しと数字を1つの親にまとめて一緒に隠せるようにする
+            var statGroup = UIDialogBuilder.CreateUIObject("Stats", card.transform);
+            UIDialogBuilder.SetStretchAll(statGroup.GetComponent<RectTransform>());
+            var captions = CreateText(statGroup.transform, "StatCaptions", StatCaptions, DraftStatsFontSize, BoxTextColor, TextAnchor.LowerLeft);
             PlaceStatsArea(captions.rectTransform);
-            stats = CreateText(card.transform, "StatValues", "", DraftStatsFontSize, BoxTextColor, TextAnchor.LowerRight);
+            stats = CreateText(statGroup.transform, "StatValues", "", DraftStatsFontSize, BoxTextColor, TextAnchor.LowerRight);
             stats.fontStyle = FontStyle.Bold;
             PlaceStatsArea(stats.rectTransform);
+        }
+
+        /// <summary>種族値と同じ欄に重ねる技の一覧。最初は種族値を見せるので隠しておく（DraftPanel が切り替える）</summary>
+        private static Text CreateDraftMoves(Transform card)
+        {
+            var moves = CreateText(card, "Moves", "", DraftMovesFontSize, BoxTextColor, TextAnchor.MiddleLeft);
+            PlaceStatsArea(moves.rectTransform);
+            moves.rectTransform.sizeDelta = new Vector2(-DraftMovesPaddingX * 2f, DraftStatsHeight);
+            moves.gameObject.SetActive(false);
+            return moves;
         }
 
         /// <summary>親の上端から top 下がった所に、横いっぱい・高さ height で置く</summary>

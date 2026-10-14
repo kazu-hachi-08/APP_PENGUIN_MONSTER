@@ -1,12 +1,17 @@
+using System.Collections.Generic;
 using PenguinMonster.Battle;
+using UnityEngine;
 
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ドラフトのカードとずかんで共通の文面（種族値・特性と持ち物）
+    /// ドラフトのカードとずかんで共通の文面（種族値・特性と持ち物・技）
     /// </summary>
     public static class MonsterTexts
     {
+        private const string StatusMoveText = "変化";
+        private const string HasEffectsMark = "　＋効果";
+
         /// <summary>種族値を1行ずつ。見出し（HP・こうげき…）はシーン側の別の Text に並べてある</summary>
         public static string StatValues(Stats s)
         {
@@ -29,6 +34,25 @@ namespace PenguinMonster.View
                 text += "\n" + Line("持ち物", monster.Item.ToJapanese(), monster.Item.Description(), descriptionSize);
             }
             return text;
+        }
+
+        /// <summary>
+        /// ドラフトのカード用の短い技の一覧。1つにつき2行（名前 / タイプ・威力）。
+        /// 効果の中身はカードに入り切らないので、バトルの技ボタンと同じく「＋効果」の印だけにする
+        /// </summary>
+        public static string MoveList(MonsterDefinition monster, int detailSize)
+        {
+            var lines = new List<string>();
+            foreach (var move in monster.Moves)
+            {
+                string color = ColorUtility.ToHtmlStringRGB(TypeColors.Get(move.Type));
+                string power = move.IsStatus ? StatusMoveText : $"{move.Category.CategoryName()} 威力 {move.Power}";
+                string mark = move.Effects().Length > 0 && !move.IsStatus ? HasEffectsMark : "";
+                lines.Add($"<b>{move.Name}</b>
+<size={detailSize}><b><color=#{color}>{move.Type.ToJapanese()}</color></b>　{power}{mark}</size>");
+            }
+            return string.Join("
+", lines);
         }
 
         private static string Line(string label, string name, string description, int descriptionSize)

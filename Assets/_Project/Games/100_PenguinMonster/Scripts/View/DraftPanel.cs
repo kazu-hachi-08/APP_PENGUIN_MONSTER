@@ -20,6 +20,13 @@ namespace PenguinMonster.View
         [SerializeField] private Image[] _cardIcons;
         [SerializeField] private Text[] _cardNames;
         [SerializeField] private Text[] _cardStats;
+        [Tooltip("種族値の見出しと数字をまとめた親。技を見ている間は隠す")]
+        [SerializeField] private GameObject[] _cardStatGroups;
+        [Tooltip("種族値と同じ場所に重ねた技の一覧。最初は隠れている")]
+        [SerializeField] private Text[] _cardMoves;
+        [Tooltip("全カードの 種族値 ⇄ 技 を切り替える。カードは押したらすぐ決定なので、カードの外に1つだけ置く")]
+        [SerializeField] private Button _viewToggle;
+        [SerializeField] private Text _viewToggleLabel;
         [Tooltip("特性と持ち物（名前と説明を1行ずつ）")]
         [SerializeField] private Text[] _cardTraits;
         /// <summary>1枚につき2つ（2タイプ目が無ければ隠す）。カード i のタイプ k は [i * 2 + k]</summary>
@@ -35,6 +42,9 @@ namespace PenguinMonster.View
 
         private const int BadgesPerCard = TypeColors.BadgesPerMonster;
         private const int TraitDescriptionSize = 20;
+        private const int MoveDetailSize = 22;
+        private const string ShowMovesLabel = "技を 見る";
+        private const string ShowStatsLabel = "種族値を 見る";
         private const string TitleFormat = "ドラフト {0}/{1}　欲しい ペンモンを 選んでください";
 
         private Draft _draft;
@@ -42,6 +52,8 @@ namespace PenguinMonster.View
         private float _secondsPerPick;
         private PopIn[] _cardPops;
         private Coroutine _flying;
+        // 次の提示や次のドラフトでも見たい方を見続けられるよう、Show で戻さない
+        private bool _showingMoves;
 
         private void Awake()
         {
@@ -52,6 +64,8 @@ namespace PenguinMonster.View
                 _cardButtons[i].onClick.AddListener(() => Pick(index));
                 _cardPops[i] = _cardButtons[i].GetComponent<PopIn>();
             }
+            _viewToggle.onClick.AddListener(ToggleView);
+            ApplyView();
         }
 
         /// <param name="secondsPerPick">1回の制限時間。0 なら制限なし（オフライン）</param>
@@ -130,6 +144,23 @@ namespace PenguinMonster.View
             _flying = null;
         }
 
+        private void ToggleView()
+        {
+            BattleSounds.Play(BattleSound.Cursor);
+            _showingMoves = !_showingMoves;
+            ApplyView();
+        }
+
+        private void ApplyView()
+        {
+            for (int i = 0; i < _cardButtons.Length; i++)
+            {
+                _cardStatGroups[i].SetActive(!_showingMoves);
+                _cardMoves[i].gameObject.SetActive(_showingMoves);
+            }
+            _viewToggleLabel.text = _showingMoves ? ShowStatsLabel : ShowMovesLabel;
+        }
+
         /// <summary>時間切れは3体からランダム（仕様書 §2.1）</summary>
         private void PickRandom()
         {
@@ -149,6 +180,7 @@ namespace PenguinMonster.View
             _cardNames[card].text = monster.Name;
             _cardStats[card].text = MonsterTexts.StatValues(monster.BaseStats);
             _cardTraits[card].text = MonsterTexts.Traits(monster, TraitDescriptionSize);
+            _cardMoves[card].text = MonsterTexts.MoveList(monster, MoveDetailSize);
             TypeColors.PaintBadges(monster, _typeBadges, _typeLabels, card * BadgesPerCard);
         }
     }
