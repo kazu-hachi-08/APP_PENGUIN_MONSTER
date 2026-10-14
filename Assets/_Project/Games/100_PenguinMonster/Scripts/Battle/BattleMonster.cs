@@ -108,13 +108,16 @@ namespace PenguinMonster.Battle
             return StageMultiplier.ApplyStat(isPhysical ? Stats.Attack : Stats.SpAttack, isCritical ? Math.Max(0, stage) : stage);
         }
 
-        /// <summary>防御側の能力。急所のときは上がったランクを無視する。ヒナの綿毛は急所でも消えない（ランクではなく持ち物のため）</summary>
+        /// <summary>
+        /// 防御側の能力。急所のときは上がったランクを無視する。
+        /// ヒナの綿毛（ランク「ヒナ」全員の補正）は能力変化ではないので急所でも消えない
+        /// </summary>
         public int DefenseStat(bool isPhysical, bool isCritical)
         {
             var kind = isPhysical ? StatKind.Defense : StatKind.SpDefense;
             int stage = GetStage(kind);
             int defense = StageMultiplier.ApplyStat(isPhysical ? Stats.Defense : Stats.SpDefense, isCritical ? Math.Min(0, stage) : stage);
-            return HasItem(HeldItem.ChickDown) ? (int)(defense * BattleBalance.ChickDownDefenseMultiplier) : defense;
+            return Definition.Rank == MonsterRank.Hina ? (int)(defense * BattleBalance.ChickDownDefenseMultiplier) : defense;
         }
 
         public bool CanReceive(StatusCondition status)

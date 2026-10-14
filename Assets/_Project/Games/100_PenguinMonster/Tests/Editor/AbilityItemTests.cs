@@ -204,15 +204,26 @@ namespace PenguinMonster.Battle.Tests
         // ---- 持ち物 ----
 
         [Test]
-        public void ヒナの綿毛は防御と特防が1点5倍で_急所でも消えない()
+        public void ヒナの綿毛はランクがヒナなら防御と特防が1点5倍で_急所でも消えない()
         {
-            var chick = new BattleMonster(Slow(item: HeldItem.ChickDown));
+            var slow = Slow();
+            var chick = new BattleMonster(new MonsterDefinition(0, "ヒナ", slow.Types.ToArray(), slow.BaseStats, slow.Moves.ToArray(),
+                rank: MonsterRank.Hina));
             int defense = (int)(chick.Stats.Defense * BattleBalance.ChickDownDefenseMultiplier);
             int spDefense = (int)(chick.Stats.SpDefense * BattleBalance.ChickDownDefenseMultiplier);
 
             Assert.AreEqual(defense, chick.DefenseStat(true, false));
             Assert.AreEqual(spDefense, chick.DefenseStat(false, false));
             Assert.AreEqual(defense, chick.DefenseStat(true, true));
+        }
+
+        [Test]
+        public void ヒナ以外は綿毛の補正がない()
+        {
+            var normal = new BattleMonster(Slow());
+
+            Assert.AreEqual(normal.Stats.Defense, normal.DefenseStat(true, false));
+            Assert.AreEqual(normal.Stats.SpDefense, normal.DefenseStat(false, false));
         }
 
         [Test]
@@ -321,17 +332,14 @@ namespace PenguinMonster.Battle.Tests
         // ---- 定義表・文 ----
 
         [Test]
-        public void 定義表の全員が特性と持ち物を持ち_全種類が使われている()
+        public void 定義表の全員が特性を持ち_全種類が使われている()
         {
             foreach (var monster in MonsterTable.All)
             {
                 Assert.AreNotEqual(Ability.None, monster.Ability, monster.Name);
-                Assert.AreNotEqual(HeldItem.None, monster.Item, monster.Name);
             }
             CollectionAssert.IsSubsetOf(Enum.GetValues(typeof(Ability)).Cast<Ability>().Where(a => a != Ability.None),
                 MonsterTable.All.Select(m => m.Ability));
-            CollectionAssert.IsSubsetOf(Enum.GetValues(typeof(HeldItem)).Cast<HeldItem>().Where(i => i != HeldItem.None),
-                MonsterTable.All.Select(m => m.Item));
         }
 
         [Test]

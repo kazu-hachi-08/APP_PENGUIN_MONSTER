@@ -96,7 +96,7 @@ namespace PenguinMonster.View
             _selectPanel.Show(run.PlayerSix, opponent.Six, partySize, team => playerTeam = team);
             yield return new WaitUntil(() => playerTeam != null);
 
-            var cpuTeam = opponent.Cpu.ChooseTeam(opponent.Six, opponent.Boss?.TrumpCard, partySize);
+            var cpuTeam = opponent.Cpu.ChooseTeam(opponent.Six, opponent.TrumpCard, partySize);
             GameMusic.Play(MusicTrack.Battle);
             yield return _battle.Run(playerTeam, cpuTeam, random, opponent.Cpu, run.Format);
         }

@@ -108,8 +108,40 @@ namespace PenguinMonster.Battle.Tests
             var boss = run.NextOpponent();
             Assert.AreEqual(BattleBalance.BossInterval, run.BattleNumber);
             Assert.IsTrue(boss.IsBoss);
-            Assert.AreSame(BossTable.All[0].Team, boss.Six);
+            CollectionAssert.AreEqual(BossTable.All[0].Team.Select(m => m.No), boss.Six.Select(m => m.No));
             Assert.AreEqual(CpuLevel.Strong, boss.Cpu.Level);
+        }
+
+        [Test]
+        public void CPUの相手はちょうど1体が持ち物を持つ()
+        {
+            for (int seed = 0; seed < 20; seed++)
+            {
+                var run = new SurvivalRun(MonsterTable.All.Take(BattleBalance.DraftRounds).ToList(), new Random(seed));
+
+                var opponent = run.NextOpponent();
+
+                Assert.AreEqual(1, opponent.Six.Count(m => m.Item != HeldItem.None), $"seed {seed}");
+                Assert.IsNull(opponent.TrumpCard);
+            }
+        }
+
+        [Test]
+        public void ボスは切り札が持ち物を持ち_切り札は選出の最後に出る()
+        {
+            var run = new SurvivalRun(MonsterTable.All.Take(BattleBalance.DraftRounds).ToList(), new Random(3));
+            for (int i = 1; i < BattleBalance.BossInterval; i++)
+            {
+                run.RecordWin();
+            }
+
+            var boss = run.NextOpponent();
+
+            Assert.AreEqual(boss.Boss.TrumpCard.No, boss.TrumpCard.No);
+            CollectionAssert.Contains(boss.Six, boss.TrumpCard);
+            Assert.AreNotEqual(HeldItem.None, boss.TrumpCard.Item);
+            Assert.AreEqual(1, boss.Six.Count(m => m.Item != HeldItem.None));
+            Assert.AreSame(boss.TrumpCard, boss.Cpu.ChooseTeam(boss.Six, boss.TrumpCard).Last());
         }
     }
 }

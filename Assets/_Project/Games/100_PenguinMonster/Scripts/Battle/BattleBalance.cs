@@ -115,7 +115,12 @@ namespace PenguinMonster.Battle
         public const float SharpGlassesMultiplier = 1.2f;
         public const float LightFeatherSpeedMultiplier = 1.2f;
         public const float SnowCoatMultiplier = 0.75f;
+        /// <summary>ヒナの綿毛: ランク「ヒナ」全員の防御・特防に掛ける（持ち物ではなく種族の補正）</summary>
         public const float ChickDownDefenseMultiplier = 1.5f;
+        /// <summary>
+        /// 配る候補から外す持ち物。None は「持ち物なし」、ヒナの綿毛はヒナの補正に変えたので配らない
+        /// </summary>
+        public static readonly HeldItem[] UndrawableItems = { HeldItem.None, HeldItem.ChickDown };
         /// <summary>貝の首飾り: 与えたダメージのこの分の1を回復</summary>
         public const int ShellNecklaceHealDenominator = 8;
 
