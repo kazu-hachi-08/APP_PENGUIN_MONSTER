@@ -6,8 +6,8 @@ using UnityEngine.InputSystem.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 技ボタンの説明を出す合図。タッチは長押し（離すと消える）、マウスは乗せている間。
-    /// 長押しで出したときは、指を離しても技を選ばないよう WasLongPress で知らせる
+    /// 技ボタン・交代画面の枠の説明を出す合図。タッチは長押し（離すと消える）、マウスは乗せている間。
+    /// 長押しで出したときは、指を離しても技・交代を選ばないよう WasLongPress で知らせる
     /// </summary>
     public class MoveHoldHint : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
     {

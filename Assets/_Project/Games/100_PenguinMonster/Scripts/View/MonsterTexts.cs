@@ -3,13 +3,14 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ドラフトのカードとずかんで共通の文面（種族値・特性と持ち物・技）
+    /// ドラフトのカード・ずかん・バトルの交代画面で共通の文面（種族値・特性と持ち物・技）
     /// </summary>
     public static class MonsterTexts
     {
         private const string StatusMoveText = "変化";
         private const string HasEffectsMark = "　＋効果";
         private const string TraitInlineSeparator = "　";
+        private const string ItemUsedMark = "（使った）";
 
         /// <summary>種族値を1行ずつ。見出し（HP・こうげき…）はシーン側の別の Text に並べてある</summary>
         public static string StatValues(Stats s)
@@ -22,7 +23,8 @@ namespace PenguinMonster.View
         /// 説明は小さめの文字にして名前を目立たせる
         /// </summary>
         /// <param name="oneLine">名前と説明を同じ行に並べる（横に広く縦に狭い欄で、ヒナの行が増えても枠に収めるため）</param>
-        public static string Traits(MonsterDefinition monster, int descriptionSize, bool oneLine = false)
+        /// <param name="itemUsed">バトル中に1回だけの持ち物を使った。持っているように見せないよう印を付ける</param>
+        public static string Traits(MonsterDefinition monster, int descriptionSize, bool oneLine = false, bool itemUsed = false)
         {
             string separator = oneLine ? TraitInlineSeparator : "\n";
             string text = Line("特性", monster.Ability.ToJapanese(), monster.Ability.Description(), descriptionSize, separator);
@@ -32,7 +34,8 @@ namespace PenguinMonster.View
             }
             if (monster.Item != HeldItem.None)
             {
-                text += "\n" + Line("持ち物", monster.Item.ToJapanese(), monster.Item.Description(), descriptionSize, separator);
+                string itemName = monster.Item.ToJapanese() + (itemUsed ? ItemUsedMark : "");
+                text += "\n" + Line("持ち物", itemName, monster.Item.Description(), descriptionSize, separator);
             }
             return text;
         }

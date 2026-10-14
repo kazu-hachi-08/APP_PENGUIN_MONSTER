@@ -52,6 +52,9 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 PartySlotSize = new Vector2(760f, 130f);
         private const float PartySlotSpacing = 20f;
         private const float PartyIconSize = 112f;
+        // 一覧（幅 900 の中央寄せ）の右の空きに、画面の端から少し余白を残して収まる大きさ
+        private static readonly Vector2 PartyHintSize = new Vector2(440f, 640f);
+        private const float PartyHintGap = 16f;
         private static readonly Vector2 BackButtonSize = new Vector2(220f, 80f);
 
         private const int MessageFontSize = 46;
@@ -228,8 +231,10 @@ namespace PenguinMonster.Editor
                 // 長い名前＋HP＋状態異常は1行に入り切らないことがあるので、折り返さずに縮める（TextFit）
                 labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
                 icons[i] = CreatePartyIcon(slot.transform);
+                slot.AddComponent<MoveHoldHint>();
             }
             var back = CreateButton(inner, "Btn_Back", "戻る", BackButtonSize, BackColor);
+            var hintBox = CreatePartyHintBox(frame.transform, out var hintText);
 
             var panel = overlay.gameObject.AddComponent<PartyPanel>();
             var so = new SerializedObject(panel);
@@ -237,8 +242,28 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_slotLabels"), labels);
             SetArray(so.FindProperty("_slotIcons"), icons);
             so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
+            so.FindProperty("_hintBox").objectReferenceValue = hintBox;
+            so.FindProperty("_hintText").objectReferenceValue = hintText;
             so.ApplyModifiedProperties();
             return panel;
+        }
+
+        /// <summary>特性・持ち物の説明（枠の長押しで出す）。押している指で隠れないよう、一覧の右に置く</summary>
+        private static GameObject CreatePartyHintBox(Transform partyBox, out Text text)
+        {
+            var frame = CreateFramedBox(partyBox, "PartyHint", MessageBoxColor, out var inner);
+            frame.raycastTarget = false;
+            var rect = frame.rectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0.5f);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.anchoredPosition = new Vector2(PartyHintGap, 0f);
+            rect.sizeDelta = PartyHintSize;
+
+            text = CreateText(inner, "Text", "", MoveHintFontSize, BoxTextColor, TextAnchor.UpperLeft);
+            text.rectTransform.offsetMin = new Vector2(MoveHintPadding, MoveHintPadding);
+            text.rectTransform.offsetMax = new Vector2(-MoveHintPadding, -MoveHintPadding);
+            frame.gameObject.SetActive(false);
+            return frame.gameObject;
         }
 
         /// <summary>ダブルスの狙う相手。下の窓いっぱいに、相手の場の左右と同じ並びでボタン2つと「戻る」</summary>
