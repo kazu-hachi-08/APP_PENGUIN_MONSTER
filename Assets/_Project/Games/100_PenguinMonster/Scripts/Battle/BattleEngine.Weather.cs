@@ -22,6 +22,7 @@ namespace PenguinMonster.Battle
             int turns = source.HasItem(HeldItem.WeatherStone) ? BattleBalance.WeatherStoneTurns : BattleBalance.WeatherTurns;
             _state.SetWeather(weather, turns);
             events.Add(BattleEvent.WeatherChange(BattleEventKind.WeatherStarted, side, source, weather));
+            ShowWeatherRiders(events);
             return true;
         }
 

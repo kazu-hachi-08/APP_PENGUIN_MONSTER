@@ -35,6 +35,18 @@ namespace PenguinMonster.Battle.Tests
         }
 
         [Test]
+        public void MonstersRoundTripWithHeldItem()
+        {
+            var six = ItemDraw.Give(MonsterTable.All.Skip(10).Take(6).ToList(), 2, HeldItem.StarFish);
+
+            var decoded = OnlineCodec.DecodeMonsters(OnlineCodec.EncodeMonsters(six));
+
+            CollectionAssert.AreEqual(six.Select(m => m.No), decoded.Select(m => m.No));
+            CollectionAssert.AreEqual(six.Select(m => m.Item), decoded.Select(m => m.Item));
+            Assert.AreEqual(HeldItem.StarFish, decoded[2].Item);
+        }
+
+        [Test]
         public void DecodedEventsSwapSidesAndRestoreMoveNames()
         {
             var host = new BattleEngine(new BattleState(HostTeam, GuestTeam), new System.Random(1));
@@ -110,6 +122,14 @@ namespace PenguinMonster.Battle.Tests
                 {
                     Assert.AreEqual(original.Party[i].CurrentHp, copy.Party[i].CurrentHp);
                     Assert.AreEqual(original.Party[i].Status, copy.Party[i].Status);
+                    if (original.IsActive(i))
+                    {
+                        // ランクは名前の枠の一覧に出すので、場にいる子はずれないこと
+                        for (int stat = 0; stat < StatKindNames.Count; stat++)
+                        {
+                            Assert.AreEqual(original.Party[i].GetStage((StatKind)stat), copy.Party[i].GetStage((StatKind)stat));
+                        }
+                    }
                 }
             }
         }

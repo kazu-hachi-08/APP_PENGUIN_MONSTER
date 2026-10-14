@@ -62,6 +62,7 @@ namespace PenguinMonster.Common.Online
         {
             _session.OnPeerConnected += HandlePeerConnected;
             _session.OnPeerDisconnected += HandleLobbyDisconnected;
+            _session.OnConnectionLost += HandleLobbyDisconnected;
             _session.OnMemberCountChanged += HandleMemberCountChanged;
             _session.OnMatchStarted += HandleMatchStarted;
         }
@@ -70,6 +71,7 @@ namespace PenguinMonster.Common.Online
         {
             _session.OnPeerConnected -= HandlePeerConnected;
             _session.OnPeerDisconnected -= HandleLobbyDisconnected;
+            _session.OnConnectionLost -= HandleLobbyDisconnected;
             _session.OnMemberCountChanged -= HandleMemberCountChanged;
             _session.OnMatchStarted -= HandleMatchStarted;
         }
@@ -124,7 +126,8 @@ namespace PenguinMonster.Common.Online
                 }
                 else
                 {
-                    SetStatus($"参加コード\n<size=64>{code}</size>\n相手の参加を待っています");
+                    // チャットでコードを送りに行ったまま約10秒戻らないと、Relay に部屋ごと切られるため
+                    SetStatus($"参加コード\n<size=64>{code}</size>\n相手の参加を待っています\nコードを送ったら すぐ戻ってきてください");
                 }
             }
             catch (Exception e)

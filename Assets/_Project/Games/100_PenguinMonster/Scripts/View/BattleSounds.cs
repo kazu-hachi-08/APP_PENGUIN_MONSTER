@@ -18,6 +18,8 @@ namespace PenguinMonster.View
         StatUp,
         StatDown,
         Status,
+        /// <summary>特性の帯が出たとき</summary>
+        Ability,
     }
 
     /// <summary>
@@ -43,6 +45,7 @@ namespace PenguinMonster.View
             { BattleSound.StatUp, 0.4f },
             { BattleSound.StatDown, 0.4f },
             { BattleSound.Status, 0.45f },
+            { BattleSound.Ability, 0.4f },
         };
 
         public static void Play(BattleSound sound)
@@ -70,6 +73,7 @@ namespace PenguinMonster.View
                 case BattleSound.StatUp: return Sweep("Se_StatUp", 0.35f, 500f, 1600f);
                 case BattleSound.StatDown: return Sweep("Se_StatDown", 0.35f, 1200f, 300f);
                 case BattleSound.Status: return Impact("Se_Status", 0.25f, 330f);
+                case BattleSound.Ability: return Jingle("Se_Ability", new[] { 880f, 1320f });
                 default: return Jingle("Se_Lose", new[] { 392f, 311f, 262f });
             }
         }

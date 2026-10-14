@@ -50,6 +50,9 @@ namespace PenguinMonster.Battle.Tests
             Assert.AreEqual("自分の 攻撃を 2段階 上げる", MoveTable.FlapDance.Effects());
             Assert.AreEqual("相手 全員に 当たる・相手の 素早さを 1段階 下げる", MoveTable.ColdBreath.Effects());
             Assert.AreEqual("能力の 変化を 引き継いで 控えの 先頭と 交代する", MoveTable.FeatherRelay.Effects());
+            Assert.AreEqual("先制・その ターン 相手の 技を 防ぐ（続けて 使うと 失敗する）", MoveTable.FeatherWrap.Effects());
+            Assert.AreEqual("4ターン 味方の 素早さを 2倍に する", MoveTable.NorthWindCall.Effects());
+            Assert.AreEqual("先制・ダブルスで 味方の 技の ダメージを 1.5倍に する", MoveTable.Cheer.Effects());
         }
 
         [Test]

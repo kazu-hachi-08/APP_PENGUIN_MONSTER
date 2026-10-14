@@ -9,24 +9,36 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// 交代先を選ぶ画面。自分で交代するとき（もどれる）と、ひんしで出し直すとき（もどれない）に使う。
-    /// 枠はダブルスの4体ぶん作ってあり、シングルでは余った枠を隠す
+    /// 枠はダブルスの4体ぶん作ってあり、シングルでは余った枠を隠す。
+    /// 枠を長押し（マウスは乗せる）すると、横に特性・持ち物の説明を出す（技ボタンと同じ決まり）
     /// </summary>
     public class PartyPanel : MonoBehaviour
     {
+        private const int AbilityLineSize = 28;
+        private const int HintDescriptionSize = 28;
+
         [SerializeField] private Button[] _slotButtons;
         [SerializeField] private Text[] _slotLabels;
         [SerializeField] private Image[] _slotIcons;
         [SerializeField] private Button _backButton;
+        [SerializeField] private GameObject _hintBox;
+        [SerializeField] private Text _hintText;
 
+        private MoveHoldHint[] _hints;
+        private BattleSide _side;
         private Action<int> _onSelect;
         private Action _onBack;
 
         private void Awake()
         {
+            _hints = new MoveHoldHint[_slotButtons.Length];
             for (int i = 0; i < _slotButtons.Length; i++)
             {
                 int index = i;
-                _slotButtons[i].onClick.AddListener(() => Select(index));
+                _hints[i] = _slotButtons[i].GetComponent<MoveHoldHint>();
+                _hints[i].Shown += () => ShowHint(index);
+                _hints[i].Hidden += HideHint;
+                _slotButtons[i].onClick.AddListener(() => OnSlotClicked(index));
             }
             _backButton.onClick.AddListener(Back);
         }
@@ -35,6 +47,7 @@ namespace PenguinMonster.View
         /// <param name="reserved">ダブルスで同じターンにもう1体が選んだ子（選べなくする）</param>
         public void Show(BattleSide side, Action<int> onSelect, Action onBack, ICollection<int> reserved = null)
         {
+            _side = side;
             _onSelect = onSelect;
             _onBack = onBack;
 
@@ -50,17 +63,42 @@ namespace PenguinMonster.View
                 bool isReserved = reserved != null && reserved.Contains(i);
                 string state = monster.IsFainted ? "瀕死" : side.IsActive(i) ? "戦闘中" : isReserved ? "交代先" : $"HP {monster.CurrentHp}/{monster.MaxHp}";
                 string status = monster.IsFainted ? "" : monster.Status.ToJapanese();
-                _slotLabels[i].text = $"{monster.Name}   {state}  {status}";
+                _slotLabels[i].SetFitted($"{monster.Name}   {state}  {status}\n<size={AbilityLineSize}>特性 {monster.Definition.Ability.ToJapanese()}</size>");
                 _slotIcons[i].sprite = MonsterSprites.Front(monster.Definition);
                 _slotButtons[i].interactable = side.CanSwitchTo(i) && !isReserved;
             }
             _backButton.gameObject.SetActive(onBack != null);
+            HideHint();
             gameObject.SetActive(true);
+        }
+
+        /// <summary>選べない子（戦闘中・瀕死）も説明は見られる。Button が押せなくても長押しの合図は届くため</summary>
+        private void ShowHint(int index)
+        {
+            var monster = _side.Party[index];
+            _hintBox.SetActive(true);
+            _hintText.SetFitted($"<b>{monster.Name}</b>\n" + MonsterTexts.Traits(monster.Definition, HintDescriptionSize, itemUsed: monster.ItemUsed));
+        }
+
+        private void HideHint()
+        {
+            _hintBox.SetActive(false);
+        }
+
+        /// <summary>長押しで説明を見ただけのときは、指を離しても交代しない</summary>
+        private void OnSlotClicked(int index)
+        {
+            if (_hints[index].WasLongPress)
+            {
+                return;
+            }
+            Select(index);
         }
 
         private void Select(int index)
         {
             BattleSounds.Play(BattleSound.Cursor);
+            HideHint();
             gameObject.SetActive(false);
             _onSelect?.Invoke(index);
         }
@@ -68,6 +106,7 @@ namespace PenguinMonster.View
         private void Back()
         {
             BattleSounds.Play(BattleSound.Cursor);
+            HideHint();
             gameObject.SetActive(false);
             _onBack?.Invoke();
         }

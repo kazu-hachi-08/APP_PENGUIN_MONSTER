@@ -22,6 +22,12 @@ namespace PenguinMonster.Battle
         public int ConfusionTurns { get; private set; }
         /// <summary>1回だけの持ち物を使った。交代しても戻らない</summary>
         public bool ItemUsed { get; private set; }
+        /// <summary>このターン、守る が決まっていて相手の技を受けない</summary>
+        public bool IsProtecting { get; private set; }
+        /// <summary>前のターンに 守る が決まった。続けて使うと失敗する（守り続けるだけの試合にしないため）</summary>
+        public bool ProtectedLastTurn { get; private set; }
+        /// <summary>このターン、味方の 手助け を受けていて技が強くなる</summary>
+        public bool IsHelped { get; private set; }
 
         public string Name => Definition.Name;
         public int MaxHp => Stats.Hp;
@@ -56,7 +62,10 @@ namespace PenguinMonster.Battle
         /// <summary>場の天候。テストで単体で作ったときは None</summary>
         public Weather CurrentWeather => Side?.State?.Weather ?? Weather.None;
 
-        /// <summary>行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍。天候に乗る特性なら 2 倍</summary>
+        /// <summary>
+        /// 行動順に使うすばやさ。ランクを掛け、まひなら半分。かるいはね なら 1.2 倍。天候に乗る特性なら 2 倍。
+        /// 陣営に追い風が吹いていればさらに 2 倍
+        /// </summary>
         public int EffectiveSpeed
         {
             get
@@ -70,12 +79,16 @@ namespace PenguinMonster.Battle
                 {
                     speed = (int)(speed * BattleBalance.LightFeatherSpeedMultiplier);
                 }
-                return RidesWeather ? speed * BattleBalance.WeatherSpeedMultiplier : speed;
+                if (RidesWeather)
+                {
+                    speed *= BattleBalance.WeatherSpeedMultiplier;
+                }
+                return Side != null && Side.HasTailwind ? speed * BattleBalance.TailwindSpeedMultiplier : speed;
             }
         }
 
         /// <summary>雪滑り・波乗り・光合成 が、それぞれの天候で働いている</summary>
-        private bool RidesWeather
+        internal bool RidesWeather
         {
             get
             {
@@ -108,13 +121,16 @@ namespace PenguinMonster.Battle
             return StageMultiplier.ApplyStat(isPhysical ? Stats.Attack : Stats.SpAttack, isCritical ? Math.Max(0, stage) : stage);
         }
 
-        /// <summary>防御側の能力。急所のときは上がったランクを無視する。ヒナの綿毛は急所でも消えない（ランクではなく持ち物のため）</summary>
+        /// <summary>
+        /// 防御側の能力。急所のときは上がったランクを無視する。
+        /// ヒナの綿毛（ランク「ヒナ」全員の補正）は能力変化ではないので急所でも消えない
+        /// </summary>
         public int DefenseStat(bool isPhysical, bool isCritical)
         {
             var kind = isPhysical ? StatKind.Defense : StatKind.SpDefense;
             int stage = GetStage(kind);
             int defense = StageMultiplier.ApplyStat(isPhysical ? Stats.Defense : Stats.SpDefense, isCritical ? Math.Min(0, stage) : stage);
-            return HasItem(HeldItem.ChickDown) ? (int)(defense * BattleBalance.ChickDownDefenseMultiplier) : defense;
+            return Definition.Rank == MonsterRank.Hina ? (int)(defense * BattleBalance.ChickDownDefenseMultiplier) : defense;
         }
 
         public bool CanReceive(StatusCondition status)
@@ -186,12 +202,27 @@ namespace PenguinMonster.Battle
 
         internal void SetStages(int[] stages) => Array.Copy(stages, _stages, _stages.Length);
 
+        internal void Protect() => IsProtecting = true;
+
+        internal void ReceiveHelp() => IsHelped = true;
+
+        /// <summary>ターンの最後に、そのターンだけの守る・手助けを消し、守ったかどうかを前のターンの記録へ移す</summary>
+        internal void EndTurn()
+        {
+            ProtectedLastTurn = IsProtecting;
+            IsProtecting = false;
+            IsHelped = false;
+        }
+
         /// <summary>交代でひっこめたとき、場にいる間だけの変化を戻す</summary>
         internal void OnWithdrawn()
         {
             Array.Clear(_stages, 0, _stages.Length);
             ConfusionTurns = 0;
             BadPoisonCount = 0;
+            IsProtecting = false;
+            ProtectedLastTurn = false;
+            IsHelped = false;
         }
     }
 }

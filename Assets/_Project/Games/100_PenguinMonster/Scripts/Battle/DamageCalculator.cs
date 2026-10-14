@@ -7,12 +7,18 @@ namespace PenguinMonster.Battle
         public readonly int Damage;
         public readonly bool IsCritical;
         public readonly float Effectiveness;
+        /// <summary>使った側の特性がダメージを変えた（力持ちなど）。特性の帯を出すのに使う</summary>
+        public readonly bool AttackerAbility;
+        /// <summary>受けた側の特性がダメージを変えた・急所を防いだ（ふかふか脂肪・硬い羽など）</summary>
+        public readonly bool DefenderAbility;
 
-        public DamageResult(int damage, bool isCritical, float effectiveness)
+        public DamageResult(int damage, bool isCritical, float effectiveness, bool attackerAbility = false, bool defenderAbility = false)
         {
             Damage = damage;
             IsCritical = isCritical;
             Effectiveness = effectiveness;
+            AttackerAbility = attackerAbility;
+            DefenderAbility = defenderAbility;
         }
     }
 
@@ -33,7 +39,9 @@ namespace PenguinMonster.Battle
             }
 
             // かたいはね でも急所の乱数は引く（特性で乱数の消費が変わらないようにする）
-            bool isCritical = random.Next(BattleBalance.CriticalChanceDenominator) == 0 && !defender.HasAbility(Ability.HardFeathers);
+            bool criticalRolled = random.Next(BattleBalance.CriticalChanceDenominator) == 0;
+            bool criticalBlocked = criticalRolled && defender.HasAbility(Ability.HardFeathers);
+            bool isCritical = criticalRolled && !criticalBlocked;
             int randomPercent = RollRandomPercent(random);
             bool isPhysical = move.Category == MoveCategory.Physical;
             int attack = attacker.AttackStat(isPhysical, isCritical);
@@ -42,7 +50,9 @@ namespace PenguinMonster.Battle
 
             int damage = Compute(move.Power, attack, defense, isCritical, randomPercent, isStab, effectiveness,
                 IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier);
-            return new DamageResult(damage, isCritical, effectiveness);
+            return new DamageResult(damage, isCritical, effectiveness,
+                AttackerAbilityMultiplier(attacker, move) != 1f,
+                criticalBlocked || DefenderAbilityMultiplier(defender, move) != 1f);
         }
 
         /// <summary>
@@ -126,29 +136,8 @@ namespace PenguinMonster.Battle
 
         private static float AttackerModifier(BattleMonster attacker, MoveDefinition move, float effectiveness)
         {
-            float modifier = 1f;
-            if (attacker.HasAbility(Ability.LastStand) && attacker.Definition.HasType(move.Type)
-                && attacker.CurrentHp <= attacker.MaxHp / BattleBalance.LastStandHpDenominator)
-            {
-                modifier *= BattleBalance.LastStandMultiplier;
-            }
+            float modifier = AttackerAbilityMultiplier(attacker, move);
             bool isPhysical = move.Category == MoveCategory.Physical;
-            if (isPhysical && attacker.HasAbility(Ability.HugePower))
-            {
-                modifier *= BattleBalance.HugePowerMultiplier;
-            }
-            if (attacker.HasAbility(Ability.Technician) && move.Power <= BattleBalance.TechnicianPowerMax)
-            {
-                modifier *= BattleBalance.TechnicianMultiplier;
-            }
-            if (attacker.HasAbility(Ability.Reckless) && move.Recoils)
-            {
-                modifier *= BattleBalance.RecklessMultiplier;
-            }
-            if (attacker.HasAbility(Ability.Avenger))
-            {
-                modifier *= (float)Math.Pow(BattleBalance.AvengerMultiplierPerFainted, attacker.FaintedAllies);
-            }
             if ((isPhysical && attacker.HasItem(HeldItem.BraveFeather)) || (!isPhysical && attacker.HasItem(HeldItem.WiseFeather)))
             {
                 modifier *= BattleBalance.FeatherMultiplier;
@@ -161,21 +150,55 @@ namespace PenguinMonster.Battle
             {
                 modifier *= BattleBalance.SharpGlassesMultiplier;
             }
+            if (attacker.IsHelped)
+            {
+                modifier *= BattleBalance.HelpingHandMultiplier;
+            }
             return modifier;
+        }
+
+        /// <summary>
+        /// 使った側の特性の倍率。1 以外なら特性が働いたとして帯を出す（持ち物・手助けとは分けておく）。
+        /// 特性は1体に1つなので、当てはまるのはどれか1つ
+        /// </summary>
+        private static float AttackerAbilityMultiplier(BattleMonster attacker, MoveDefinition move)
+        {
+            switch (attacker.Definition.Ability)
+            {
+                case Ability.LastStand:
+                    bool pinched = attacker.CurrentHp <= attacker.MaxHp / BattleBalance.LastStandHpDenominator;
+                    return pinched && attacker.Definition.HasType(move.Type) ? BattleBalance.LastStandMultiplier : 1f;
+                case Ability.HugePower:
+                    return move.Category == MoveCategory.Physical ? BattleBalance.HugePowerMultiplier : 1f;
+                case Ability.Technician:
+                    return move.Power <= BattleBalance.TechnicianPowerMax ? BattleBalance.TechnicianMultiplier : 1f;
+                case Ability.Reckless:
+                    return move.Recoils ? BattleBalance.RecklessMultiplier : 1f;
+                case Ability.Avenger:
+                    return (float)Math.Pow(BattleBalance.AvengerMultiplierPerFainted, attacker.FaintedAllies);
+                default:
+                    return 1f;
+            }
+        }
+
+        /// <summary>受けた側の特性の倍率。1 以外なら特性が働いたとして帯を出す</summary>
+        private static float DefenderAbilityMultiplier(BattleMonster defender, MoveDefinition move)
+        {
+            switch (defender.Definition.Ability)
+            {
+                case Ability.ThickFat:
+                    return move.Type == MonsterType.Ice || move.Type == MonsterType.Fire ? BattleBalance.ThickFatMultiplier : 1f;
+                case Ability.Multiscale:
+                    // 連続技は2発目から満タンでなくなるので、1発目だけ軽くなる
+                    return defender.IsFullHp ? BattleBalance.MultiscaleMultiplier : 1f;
+                default:
+                    return 1f;
+            }
         }
 
         private static float DefenderModifier(BattleMonster defender, MoveDefinition move, float effectiveness)
         {
-            float modifier = 1f;
-            if (defender.HasAbility(Ability.ThickFat) && (move.Type == MonsterType.Ice || move.Type == MonsterType.Fire))
-            {
-                modifier *= BattleBalance.ThickFatMultiplier;
-            }
-            // 連続技は2発目から満タンでなくなるので、1発目だけ軽くなる
-            if (defender.HasAbility(Ability.Multiscale) && defender.IsFullHp)
-            {
-                modifier *= BattleBalance.MultiscaleMultiplier;
-            }
+            float modifier = DefenderAbilityMultiplier(defender, move);
             if (effectiveness > 1f && defender.HasItem(HeldItem.SnowCoat))
             {
                 modifier *= BattleBalance.SnowCoatMultiplier;

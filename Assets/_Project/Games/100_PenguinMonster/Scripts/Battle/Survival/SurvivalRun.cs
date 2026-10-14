@@ -28,17 +28,35 @@ namespace PenguinMonster.Battle
 
         public void RecordWin() => Wins++;
 
-        /// <summary>次の相手。ボスは固定のチーム、それ以外は CPU が連勝数に応じた強さでドラフトする</summary>
+        /// <summary>
+        /// 次の相手。ボスは固定のチーム、それ以外は CPU が連勝数に応じた強さでドラフトする。
+        /// どちらも持ち物を1個引き、CPU はランダムな1体、ボスは切り札に持たせる
+        /// </summary>
         public SurvivalOpponent NextOpponent()
         {
             var cpu = new CpuPlayer(_random, LevelFor(Wins, IsBossBattle));
+            var item = ItemDraw.Draw(_random);
             if (IsBossBattle)
             {
                 var boss = BossTable.ForBattle(BattleNumber);
-                return new SurvivalOpponent(boss.Team, cpu, boss);
+                int trumpIndex = IndexOf(boss.Team, boss.TrumpCard);
+                var bossSix = ItemDraw.Give(boss.Team, trumpIndex, item);
+                return new SurvivalOpponent(bossSix, cpu, boss, bossSix[trumpIndex]);
             }
             var six = cpu.RunDraft(new Draft(MonsterTable.All, _random), StrongPickPercent(Wins));
-            return new SurvivalOpponent(six, cpu);
+            return new SurvivalOpponent(ItemDraw.Give(six, _random.Next(six.Count), item), cpu);
+        }
+
+        private static int IndexOf(IReadOnlyList<MonsterDefinition> team, MonsterDefinition monster)
+        {
+            for (int i = 0; i < team.Count; i++)
+            {
+                if (team[i] == monster)
+                {
+                    return i;
+                }
+            }
+            throw new ArgumentException($"{monster.Name} がチームにいない", nameof(monster));
         }
 
         public static bool IsBoss(int battleNumber) => battleNumber % BattleBalance.BossInterval == 0;

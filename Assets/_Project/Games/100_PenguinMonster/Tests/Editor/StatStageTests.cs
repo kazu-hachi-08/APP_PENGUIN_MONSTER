@@ -79,6 +79,19 @@ namespace PenguinMonster.Battle.Tests
             Assert.AreEqual(0, user.GetStage(StatKind.Attack));
             Assert.IsTrue(events.Any(e => e.Kind == BattleEventKind.Withdrawn && e.Monster == user));
             Assert.IsTrue(events.Any(e => e.Kind == BattleEventKind.SentOut && e.Monster == side.Active));
+            var passed = events.Single(e => e.Kind == BattleEventKind.StagesPassed);
+            Assert.AreEqual(2, passed.PassedStages()[(int)StatKind.Attack]);
+        }
+
+        [Test]
+        public void 引き継いだランクは上限と下限も詰めて戻せる()
+        {
+            var monster = new BattleMonster(Create("詰め", 50, Wait));
+            monster.SetStages(new[] { 6, -6, 0, 1, -1, 3, -3 });
+
+            var passed = BattleEvent.StagesPassed(0, monster);
+
+            CollectionAssert.AreEqual(new[] { 6, -6, 0, 1, -1, 3, -3 }, passed.PassedStages());
         }
 
         [Test]

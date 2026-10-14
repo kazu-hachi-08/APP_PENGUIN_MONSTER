@@ -31,6 +31,11 @@ namespace PenguinMonster.View
         [SerializeField] private MoveEffectView _moveEffect;
         [Tooltip("場の天候の色と粒。場全体に重ねた層")]
         [SerializeField] private WeatherView _weather;
+        [Tooltip("特性が働いたときの帯。陣営ごとに1つ")]
+        [SerializeField] private AbilityBanner _playerBanner;
+        [SerializeField] private AbilityBanner _enemyBanner;
+        [Tooltip("繰り出すときにタマゴを投げる演出。場全体に重ねた層")]
+        [SerializeField] private EggThrowView _eggThrow;
         [Header("窓")]
         [SerializeField] private MessageWindow _messageWindow;
         [SerializeField] private CommandPanel _commandPanel;
@@ -47,11 +52,23 @@ namespace PenguinMonster.View
         private int _replacementIndex = -1;
         /// <summary>行動・入れ替えを選ぶ制限時間。0 なら制限なし（CPU 戦）</summary>
         private float _choiceSeconds;
+        /// <summary>陣営ごとのタマゴの種類。見た目だけなのでオンラインでも送らない</summary>
+        private readonly EggKind[] _eggs = { EggKind.Normal, EggKind.Normal };
 
         private BattleSide Player => _state.Sides[PlayerSide];
         private BattleSide Opponent => _state.Sides[OpponentSide];
 
         public bool PlayerWon => _state.Winner == PlayerSide;
+
+        /// <summary>
+        /// 次の試合から使うタマゴの種類。シングル・ダブルスは呼ばずに Normal のまま。
+        /// ストーリーの相手ごとにタマゴを変えるときは Run の前に呼ぶ
+        /// </summary>
+        public void SetEggs(EggKind player, EggKind opponent)
+        {
+            _eggs[PlayerSide] = player;
+            _eggs[OpponentSide] = opponent;
+        }
 
         private void Start()
         {
@@ -65,6 +82,8 @@ namespace PenguinMonster.View
         {
             HideChoices();
             _weather.Hide();
+            _playerBanner.Hide();
+            _enemyBanner.Hide();
             foreach (var view in AllViews())
             {
                 view.Hide();

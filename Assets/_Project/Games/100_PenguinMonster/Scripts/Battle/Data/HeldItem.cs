@@ -1,7 +1,8 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 持ち物（仕様書 §4.6）。ペンモンごとに1つ固定。「1回だけ」のものは使うとそのバトル中は無くなる（試合ごとに戻る）。
+    /// 持ち物（仕様書 §4.6）。ドラフトの後に1チーム1個もらい、6体の中の1体に持たせる（ItemDraw）。
+    /// 「1回だけ」のものは使うとそのバトル中は無くなる（試合ごとに戻る）。
     /// 効果の中身は BattleEngine.Items.cs と DamageCalculator（ダメージの倍率）・BattleMonster（すばやさ）
     /// </summary>
     public enum HeldItem
@@ -28,7 +29,10 @@ namespace PenguinMonster.Battle
         LightFeather,
         /// <summary>ばつぐんの技で受けるダメージ 0.75 倍</summary>
         SnowCoat,
-        /// <summary>防御・特防 1.5 倍。ヒナだけが持ち、小さいのにやけに倒れない子にする</summary>
+        /// <summary>
+        /// 防御・特防 1.5 倍。持ち物としては配らず、ランク「ヒナ」全員の補正として働く（BattleMonster.DefenseStat）。
+        /// 名前と説明を図鑑で出すために残している
+        /// </summary>
         ChickDown,
         /// <summary>自分が始めた天候が 8 ターン続く</summary>
         WeatherStone,

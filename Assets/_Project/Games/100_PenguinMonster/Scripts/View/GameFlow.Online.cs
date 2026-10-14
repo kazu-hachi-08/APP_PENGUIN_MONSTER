@@ -8,13 +8,14 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// オンライン対戦の流れ（仕様書 §8）: 部屋を作る / コードで参加 → シングル / ダブルス（ホストが選ぶ）→ ドラフト → 見せ合い・選出 → バトル → 結果 → タイトル。
+    /// オンライン対戦の流れ（仕様書 §8）: 部屋を作る / コードで参加 → シングル / ダブルス（ホストが選ぶ）→ ドラフト → 持ち物 → 見せ合い・選出 → バトル → 結果 → タイトル。
     /// ドラフトの抽選はホストが決めた種でゲストの端末が引く（提示はお互い別々で、相手の取り方に左右されないため）。
     /// 相手が抜けたら、どこにいても勝ち扱いで終わる
     /// </summary>
     public partial class GameFlow
     {
         private const string DisconnectedDetail = "相手が 切断しました";
+        private const string ConnectionLostDetail = "通信が 切れました";
         private const string OnlineQuitMessage = "相手の 勝ちに なります";
         private const string ChoosingRulesText = "相手が ルールを 選んでいます…";
 
@@ -49,11 +50,15 @@ namespace PenguinMonster.View
             GameMusic.Play(MusicTrack.Draft);
             _draftPanel.Show(new Draft(MonsterTable.All, draftRandom), six => ownSix = six, BattleBalance.OnlineDraftSeconds);
             yield return new WaitUntil(() => ownSix != null);
+            // 持ち物も各自の端末で引く。結果は Six で送るので、種をそろえる必要はない（仕様書 §2.1.1）
+            List<MonsterDefinition> withItem = null;
+            _itemPanel.Show(ownSix, ItemDraw.Draw(draftRandom), six => withItem = six, BattleBalance.OnlineDraftSeconds);
+            yield return new WaitUntil(() => withItem != null);
             List<MonsterDefinition> opponentSix = null;
-            yield return Exchange(LinkMessage.Six, ownSix, received => opponentSix = received);
+            yield return Exchange(LinkMessage.Six, withItem, received => opponentSix = received);
 
             List<MonsterDefinition> ownTeam = null;
-            _selectPanel.Show(ownSix, opponentSix, format.PartySize(), team => ownTeam = team, BattleBalance.OnlineSelectSeconds);
+            _selectPanel.Show(withItem, opponentSix, format.PartySize(), team => ownTeam = team, BattleBalance.OnlineSelectSeconds);
             yield return new WaitUntil(() => ownTeam != null);
             List<MonsterDefinition> opponentTeam = null;
             yield return Exchange(LinkMessage.Team, ownTeam, received => opponentTeam = received);
@@ -100,7 +105,9 @@ namespace PenguinMonster.View
         {
             _link = new OnlineLink();
             _link.Open();
+            _link.OnTimedOut += HandleConnectionLost;
             _session.OnPeerDisconnected += HandleDisconnected;
+            _session.OnConnectionLost += HandleConnectionLost;
         }
 
         private void CloseLink()
@@ -110,22 +117,41 @@ namespace PenguinMonster.View
                 return;
             }
             _session.OnPeerDisconnected -= HandleDisconnected;
+            _session.OnConnectionLost -= HandleConnectionLost;
+            _link.OnTimedOut -= HandleConnectionLost;
             _link.Close();
             _link = null;
         }
 
-        /// <summary>相手が抜けたら、ドラフト・選出・バトルのどこでも止めて勝ち扱い（仕様書 §2.4）</summary>
+        /// <summary>相手が抜けたら、ドラフト・持ち物・選出・バトルのどこでも止めて勝ち扱い（仕様書 §2.4）</summary>
         private void HandleDisconnected()
+        {
+            StopOnline();
+            ShowResult(true, "", DisconnectedDetail);
+        }
+
+        /// <summary>
+        /// 自分の端末が裏で止まっていた／相手の返事が来ないまま止まった。どちらに原因があるか分からないので負け扱いにし、
+        /// 部屋を抜けて相手には切断として伝える（仕様書 §8）
+        /// </summary>
+        private void HandleConnectionLost()
+        {
+            StopOnline();
+            _session.Leave();
+            ShowResult(false, "", ConnectionLostDetail);
+        }
+
+        private void StopOnline()
         {
             CloseLink();
             StopAllCoroutines();
             _formatPanel.Hide();
             _draftPanel.Hide();
+            _itemPanel.Hide();
             _selectPanel.Hide();
             _battle.Abort();
             GameMusic.Stop();
             _quitButton.Hide();
-            ShowResult(true, "", DisconnectedDetail);
         }
 
         private void ShowOnlineResult(bool won)

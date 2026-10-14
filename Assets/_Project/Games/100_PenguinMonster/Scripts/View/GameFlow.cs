@@ -8,7 +8,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 画面の流れ（仕様書 §2 / §2.3）: タイトル → シングル / ダブルス → ドラフト →
+    /// 画面の流れ（仕様書 §2 / §2.3）: タイトル → シングル / ダブルス → ドラフト → 持ち物 →
     /// [何戦目か・ボス登場 → 見せ合い・選出 → バトル → 結果] を負けるまでくり返す → タイトル。
     /// 各画面は自分の表示と入力だけを持ち、次へ進む順番はここで決める。
     /// 結果の文面は GameFlow.Result.cs、オンライン対戦の流れは GameFlow.Online.cs
@@ -23,6 +23,7 @@ namespace PenguinMonster.View
         [SerializeField] private TitlePanel _titlePanel;
         [SerializeField] private FormatPanel _formatPanel;
         [SerializeField] private DraftPanel _draftPanel;
+        [SerializeField] private ItemPanel _itemPanel;
         [SerializeField] private BattleIntroPanel _introPanel;
         [SerializeField] private SelectPanel _selectPanel;
         [SerializeField] private BattleController _battle;
@@ -64,9 +65,13 @@ namespace PenguinMonster.View
             GameMusic.Play(MusicTrack.Draft);
             _draftPanel.Show(new Draft(MonsterTable.All, random), six => playerSix = six);
             yield return new WaitUntil(() => playerSix != null);
+            // 持ち物は最初の1回だけ。チームを途中で変えないので、持ち主も最後まで同じ（仕様書 §2.1.1）
+            List<MonsterDefinition> withItem = null;
+            _itemPanel.Show(playerSix, ItemDraw.Draw(random), six => withItem = six);
+            yield return new WaitUntil(() => withItem != null);
 
             // 途中経過は保存しない（仕様書 §9）。アプリを閉じたらその回はおしまい
-            var run = new SurvivalRun(playerSix, random, format.Value);
+            var run = new SurvivalRun(withItem, random, format.Value);
             while (true)
             {
                 var opponent = run.NextOpponent();
@@ -96,7 +101,7 @@ namespace PenguinMonster.View
             _selectPanel.Show(run.PlayerSix, opponent.Six, partySize, team => playerTeam = team);
             yield return new WaitUntil(() => playerTeam != null);
 
-            var cpuTeam = opponent.Cpu.ChooseTeam(opponent.Six, opponent.Boss?.TrumpCard, partySize);
+            var cpuTeam = opponent.Cpu.ChooseTeam(opponent.Six, opponent.TrumpCard, partySize);
             GameMusic.Play(MusicTrack.Battle);
             yield return _battle.Run(playerTeam, cpuTeam, random, opponent.Cpu, run.Format);
         }

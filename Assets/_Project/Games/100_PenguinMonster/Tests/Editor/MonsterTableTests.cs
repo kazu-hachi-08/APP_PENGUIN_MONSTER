@@ -34,11 +34,11 @@ namespace PenguinMonster.Battle.Tests
         }
 
         [Test]
-        public void ヒナの綿毛はヒナだけが持つ()
+        public void 持ち物はドラフトの後に配るので_定義表では誰も持たない()
         {
-            foreach (var monster in MonsterTable.All.Where(m => m.Item == HeldItem.ChickDown))
+            foreach (var monster in MonsterTable.All)
             {
-                Assert.AreEqual(MonsterRank.Hina, monster.Rank, monster.Name);
+                Assert.AreEqual(HeldItem.None, monster.Item, monster.Name);
             }
         }
 

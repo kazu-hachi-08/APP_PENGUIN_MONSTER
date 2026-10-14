@@ -42,6 +42,12 @@ namespace PenguinMonster.Battle
         public const int OnlineSelectSeconds = 60;
         public const int OnlineTurnSeconds = 30;
 
+        /// <summary>
+        /// バトル中に相手の返事をこれ以上待ったら、通信が止まったとみなす（仕様書 §8）。
+        /// 普通は制限時間（ダブルスで2体×30秒）＋再生の差で収まるので、それより十分長くする
+        /// </summary>
+        public const int OnlineReplyTimeoutSeconds = 180;
+
         /// <summary>1陣営あたりの場の数。シングルは1、ダブルスは2</summary>
         public const int SingleActiveCount = 1;
         public const int DoublesActiveCount = 2;
@@ -115,7 +121,12 @@ namespace PenguinMonster.Battle
         public const float SharpGlassesMultiplier = 1.2f;
         public const float LightFeatherSpeedMultiplier = 1.2f;
         public const float SnowCoatMultiplier = 0.75f;
+        /// <summary>ヒナの綿毛: ランク「ヒナ」全員の防御・特防に掛ける（持ち物ではなく種族の補正）</summary>
         public const float ChickDownDefenseMultiplier = 1.5f;
+        /// <summary>
+        /// 配る候補から外す持ち物。None は「持ち物なし」、ヒナの綿毛はヒナの補正に変えたので配らない
+        /// </summary>
+        public static readonly HeldItem[] UndrawableItems = { HeldItem.None, HeldItem.ChickDown };
         /// <summary>貝の首飾り: 与えたダメージのこの分の1を回復</summary>
         public const int ShellNecklaceHealDenominator = 8;
 
@@ -157,5 +168,12 @@ namespace PenguinMonster.Battle
         public const int SnowDamageDenominator = 16;
         /// <summary>吹雪のとき、氷タイプが物理技を受ける防御の倍率</summary>
         public const float SnowIceDefenseMultiplier = 1.5f;
+
+        // 戦況を変える技（仕様書 §4.2）
+        /// <summary>追い風が続くターン（始めたターンも1と数える）</summary>
+        public const int TailwindTurns = 4;
+        public const int TailwindSpeedMultiplier = 2;
+        /// <summary>手助けを受けた味方の技のダメージ倍率</summary>
+        public const float HelpingHandMultiplier = 1.5f;
     }
 }

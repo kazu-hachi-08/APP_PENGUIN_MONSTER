@@ -29,6 +29,15 @@ namespace PenguinMonster.Battle
             Rank = rank;
         }
 
+        /// <summary>
+        /// 持ち物だけ違う写し。ドラフトの後に配った持ち物をここで持たせる。
+        /// 持ち物を定義に持たせておけば、バトル側（HasItem など）は今のまま動く
+        /// </summary>
+        public MonsterDefinition WithItem(HeldItem item)
+        {
+            return new MonsterDefinition(No, Name, (MonsterType[])Types, BaseStats, (MoveDefinition[])Moves, Ability, item, Rank);
+        }
+
         public bool HasType(MonsterType type)
         {
             foreach (var own in Types)

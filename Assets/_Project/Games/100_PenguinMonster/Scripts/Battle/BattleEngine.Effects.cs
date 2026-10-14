@@ -53,6 +53,18 @@ namespace PenguinMonster.Battle
             {
                 HealSelf(side, user, reportFailure, events);
             }
+            else if (effect.Protects)
+            {
+                TryProtect(side, user, reportFailure, events);
+            }
+            else if (effect.Tailwind)
+            {
+                TryStartTailwind(side, user, reportFailure, events);
+            }
+            else if (effect.HelpsAlly)
+            {
+                TryHelpAlly(side, user, reportFailure, events);
+            }
             else if (effect.Weather != Weather.None)
             {
                 if (!TryStartWeather(side, user, effect.Weather, events))
@@ -91,6 +103,7 @@ namespace PenguinMonster.Battle
             var stages = user.CopyStages();
             ExecuteSwitch(side, slot, next, events);
             battleSide.ActiveAt(slot).SetStages(stages);
+            events.Add(BattleEvent.StagesPassed(side, battleSide.ActiveAt(slot)));
         }
 
         /// <summary>回復の技。HP が満タンなら決まらない</summary>
@@ -109,6 +122,11 @@ namespace PenguinMonster.Battle
         {
             if (!receiver.CanReceive(status))
             {
+                if (status == StatusCondition.Sleep && receiver.Status == StatusCondition.None && receiver.HasAbility(Ability.NightOwl))
+                {
+                    // 決まらなかった理由が特性だと分かるよう、帯を出す
+                    ShowAbility(side, receiver, events);
+                }
                 AddFailed(side, receiver, reportFailure, events);
                 return;
             }
@@ -141,6 +159,11 @@ namespace PenguinMonster.Battle
             int changed = receiver.ChangeStage(stat, stages);
             if (changed != 0)
             {
+                if (receiver.HasAbility(Ability.Contrary))
+                {
+                    // 下がるはずが上がった理由として、帯を先に出す
+                    ShowAbility(side, receiver, events);
+                }
                 events.Add(BattleEvent.StatChange(BattleEventKind.StatChanged, side, receiver, stat, changed));
             }
             else if (reportFailure)

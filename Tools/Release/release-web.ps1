@@ -5,14 +5,14 @@
 #   .\Tools\Release\release-web.ps1 -Message "v0.2 を公開"
 #
 # 前提:
-#   - UnityでWeb向けに -BuildDir（既定は <repo>\..\APP_PENGUIN_MONSTER_WEB）へビルド済みであること
+#   - UnityでWeb向けに -PagesDir（既定は <repo>\..\penguin-monster-web）へ直接ビルド済みであること
 #   - gh CLI がインストール済みで `gh auth login` 済みであること
 #
-# 初回は公開用リポジトリの作成・clone・GitHub Pages の有効化までまとめて行う。
+# ビルド先と公開用リポジトリの clone を同じフォルダにして、コピーの手間とフォルダの二重管理をなくしている。
+# 初回（フォルダがまだ無いとき）は公開用リポジトリの作成・clone だけ行うので、そのあとビルドしてもう一度実行する。
 # ゲーム本体のリポジトリに数十MBのビルドを積まないよう、公開物は別リポジトリに置く。
 
 param(
-    [string]$BuildDir,
     [string]$PagesDir,
     [string]$Repo = "kazu-hachi-08/penguin-monster-web",
     [string]$Message = "WebGL版を更新 " + (Get-Date -Format "yyyy-MM-dd HH:mm")
@@ -31,19 +31,15 @@ function Test-Quietly([scriptblock]$Command) {
 # スクリプトの置き場所から辿ることで、どのフォルダで実行しても同じ結果にする
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "../..")
 $parentDir = Split-Path $repoRoot
-if ([string]::IsNullOrEmpty($BuildDir)) { $BuildDir = Join-Path $parentDir "APP_PENGUIN_MONSTER_WEB" }
 if ([string]::IsNullOrEmpty($PagesDir)) { $PagesDir = Join-Path $parentDir ($Repo.Split("/")[1]) }
 $pagesUrl = "https://" + $Repo.Split("/")[0] + ".github.io/" + $Repo.Split("/")[1] + "/"
 
-if (-not (Test-Path (Join-Path $BuildDir "index.html"))) {
-    Write-Error "$BuildDir に index.html がありません。先にUnityで Web ビルドを出力してください。"
-}
 if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
     Write-Error "gh CLI が見つかりません。インストールして gh auth login してください。"
 }
 
-# 初回だけ公開用リポジトリを作って clone する
-if (-not (Test-Path (Join-Path $PagesDir ".git"))) {
+# 初回だけ公開用リポジトリを作って clone する（ビルドより先に clone しておかないと、中身のあるフォルダには clone できない）
+if (-not (Test-Path $PagesDir)) {
     if (-not (Test-Quietly { gh repo view $Repo })) {
         Write-Host "公開用リポジトリを作成: $Repo"
         gh repo create $Repo --public --description "ペンモン ブラウザ版"
@@ -51,11 +47,16 @@ if (-not (Test-Path (Join-Path $PagesDir ".git"))) {
     }
     git clone "https://github.com/$Repo.git" $PagesDir
     if ($LASTEXITCODE -ne 0) { Write-Error "clone に失敗しました。" }
+    Write-Host "準備できました。Unity で $PagesDir に Web ビルドしてから、もう一度実行してください。"
+    return
+}
+if (-not (Test-Path (Join-Path $PagesDir ".git"))) {
+    Write-Error "$PagesDir が git リポジトリではありません。フォルダを消してからもう一度実行してください（clone し直します）。"
+}
+if (-not (Test-Path (Join-Path $PagesDir "index.html"))) {
+    Write-Error "$PagesDir に index.html がありません。先にUnityで Web ビルドを出力してください。"
 }
 
-# 前回のビルドのファイル名が残ると古いデータを読みに行くことがあるので、.git 以外は入れ替える
-Get-ChildItem -Path $PagesDir -Force | Where-Object { $_.Name -ne ".git" } | Remove-Item -Recurse -Force
-Copy-Item -Path (Join-Path $BuildDir "*") -Destination $PagesDir -Recurse -Force
 # GitHub Pages の Jekyll は _ で始まるファイルを無視するため、そのまま配信させる
 New-Item -ItemType File -Path (Join-Path $PagesDir ".nojekyll") -Force | Out-Null
 

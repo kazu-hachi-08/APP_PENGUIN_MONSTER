@@ -33,7 +33,7 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 PlayerLungeDirection = new Vector2(1f, 0.5f);
 
         private static readonly Vector2 EnemyInfoPosition = new Vector2(-500f, 400f);
-        // 相手の枠は下の行にランク変化（攻↑ 等）を入れるぶん、縦に伸ばしてある
+        // 相手の枠は下の行にランクの印（▲▼）を入れるぶん、縦に伸ばしてある
         private static readonly Vector2 EnemyInfoSize = new Vector2(700f, 190f);
         private static readonly Vector2 PlayerInfoPosition = new Vector2(500f, -110f);
         private static readonly Vector2 PlayerInfoSize = new Vector2(700f, 190f);
@@ -52,16 +52,24 @@ namespace PenguinMonster.Editor
         private const float InfoPadding = 28f;
         private const float HpBarHeight = 22f;
         private const float HpFillInset = 3f;
-        // 相手の枠の、ランク変化を出す下の行の上端（枠の中の高さに対する割合）
+        // 相手の枠の、ランクの印を出す下の行の上端（枠の中の高さに対する割合）
         private const float EnemyStatBandTop = 0.27f;
 
         private const int NameFontSize = 40;
+        // 「Lv50」が入る幅と、名前との間
+        private const float LevelWidth = 100f;
+        private const float LevelGap = 12f;
         private const int HpLabelFontSize = 26;
         private const int HpFontSize = 32;
         private const int StatusFontSize = 28;
-        private const int StatIndicatorFontSize = 24;
+        private const int StageMarkFontSize = 30;
+        private static readonly Vector2 StageMarkSize = new Vector2(90f, 44f);
         private static readonly Vector2 StatusBadgeSize = new Vector2(130f, 44f);
         private const float StatusBadgeGap = 6f;
+        // 状態異常と混乱の2つ
+        private const int BadgeSlotCount = 2;
+        // 自分の枠の、状態異常の印とランクの印を並べる行の高さ（枠の中の高さに対する割合）
+        private const float PlayerBadgeRowY = 0.15f;
 
         private static readonly Color HpLabelColor = new Color(0.95f, 0.6f, 0.15f);
         private static readonly Color HpBackColor = new Color(0.25f, 0.27f, 0.3f);
@@ -184,15 +192,22 @@ namespace PenguinMonster.Editor
             var frame = CreateFramedBox(parent, name, InfoBoxColor, out var inner);
             Place(frame.rectTransform, Center, position, size);
 
-            // 数字が無い相手側は、下の行（0〜EnemyStatBandTop）をランク変化に使い、その上に名前とHPバーを置く
+            // 数字が無い相手側は、下の行（0〜EnemyStatBandTop）をランクの印に使い、その上に名前とHPバーを置く
             float nameBottom = showHpNumbers ? 0.6f : 0.55f;
             float barY = showHpNumbers ? 0.45f : 0.4f;
 
+            // 名前の帯は Lv の手前で止め、長い名前＋2タイプは折り返さずに縮めて1行に収める（TextFit）
             var nameText = CreateText(inner, "Name", "", NameFontSize, BoxTextColor, TextAnchor.MiddleLeft);
             SetBand(nameText.rectTransform, nameBottom, 1f, InfoPadding);
+            nameText.rectTransform.offsetMax = new Vector2(-(InfoPadding + LevelWidth + LevelGap), 0f);
             nameText.supportRichText = true;
+            nameText.horizontalOverflow = HorizontalWrapMode.Overflow;
             var levelText = CreateText(inner, "Level", "", NameFontSize, BoxTextColor, TextAnchor.MiddleRight);
             SetBand(levelText.rectTransform, nameBottom, 1f, InfoPadding);
+            levelText.rectTransform.anchorMin = new Vector2(1f, nameBottom);
+            levelText.rectTransform.offsetMin = new Vector2(-(InfoPadding + LevelWidth), 0f);
+            levelText.rectTransform.offsetMax = new Vector2(-InfoPadding, 0f);
+            levelText.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             var hpLabel = CreateText(inner, "HpLabel", "HP", HpLabelFontSize, HpLabelColor, TextAnchor.MiddleLeft);
             hpLabel.fontStyle = FontStyle.Bold;
@@ -221,24 +236,11 @@ namespace PenguinMonster.Editor
                 SetBand(hpText.rectTransform, 0f, 0.3f, InfoPadding);
             }
 
-            var badge = CreateStatusBadge(showHpNumbers ? inner : frame.rectTransform, showHpNumbers);
+            var badgeParent = showHpNumbers ? inner : frame.rectTransform;
+            var badge = CreateStatusBadge(badgeParent, showHpNumbers, 0, "StatusBadge", Color.gray, "");
+            var confusionBadge = CreateStatusBadge(badgeParent, showHpNumbers, 1, "ConfusionBadge", StatusColors.Confusion, "混乱");
 
-            // ランク変化インジケーター（攻↑ 防↓↓ 等）。枠の外だと空の上に文字が浮いて見えるので、両側とも枠の中に置く
-            var statIndicator = CreateText(inner, "StatIndicator", "", StatIndicatorFontSize, BoxTextColor, TextAnchor.MiddleLeft);
-            statIndicator.supportRichText = true;
-            var statRect = statIndicator.rectTransform;
-            if (showHpNumbers)
-            {
-                // 自分側: HP数字と同じ行の左半分に置く
-                SetBand(statRect, 0f, 0.3f, InfoPadding);
-                statRect.anchorMax = new Vector2(0.65f, 0.3f);
-            }
-            else
-            {
-                // 相手側: HPバーの下の行
-                SetBand(statRect, 0f, EnemyStatBandTop, InfoPadding);
-            }
-            statIndicator.gameObject.SetActive(false);
+            var stageMark = CreateStageMark(inner, showHpNumbers);
 
             var box = frame.gameObject.AddComponent<MonsterInfoBox>();
             var so = new SerializedObject(box);
@@ -249,29 +251,51 @@ namespace PenguinMonster.Editor
             so.FindProperty("_hpText").objectReferenceValue = hpText;
             so.FindProperty("_statusBadge").objectReferenceValue = badge;
             so.FindProperty("_statusText").objectReferenceValue = badge.GetComponentInChildren<Text>();
-            so.FindProperty("_statIndicatorText").objectReferenceValue = statIndicator;
+            so.FindProperty("_confusionBadge").objectReferenceValue = confusionBadge.gameObject;
+            so.FindProperty("_stageMarkText").objectReferenceValue = stageMark;
             so.ApplyModifiedProperties();
             return box;
         }
 
         /// <summary>
-        /// 状態異常の印（色付きの札に「まひ」など）。自分側は HP の数字の左の空き、
-        /// 相手側は枠の中に余白が無いので枠のすぐ下に置く
+        /// ランクが変わっているときの ▲▼ の印。状態異常・混乱の印と被らないよう、自分側は2つの印の右、
+        /// 相手側（印は枠の外）は HP バーの下の行の左に置く。段数は枠をタップして一覧で見る
         /// </summary>
-        private static Image CreateStatusBadge(RectTransform parent, bool inside)
+        private static Text CreateStageMark(RectTransform inner, bool besideBadge)
         {
-            var badge = CreateImage(parent, "StatusBadge", Color.gray);
+            var mark = CreateText(inner, "StageMark", "", StageMarkFontSize, BoxTextColor, TextAnchor.MiddleLeft);
+            mark.supportRichText = true;
+            var rect = mark.rectTransform;
+            float y = besideBadge ? PlayerBadgeRowY : EnemyStatBandTop / 2f;
+            float x = besideBadge ? BadgeX(BadgeSlotCount) : InfoPadding;
+            rect.anchorMin = rect.anchorMax = new Vector2(0f, y);
+            rect.pivot = new Vector2(0f, 0.5f);
+            rect.anchoredPosition = new Vector2(x, 0f);
+            rect.sizeDelta = StageMarkSize;
+            mark.gameObject.SetActive(false);
+            return mark;
+        }
+
+        /// <summary>
+        /// 状態異常・混乱の印（色付きの札に「麻痺」など）。slot 番目の位置に左から並べる。
+        /// 自分側は HP の数字の左の空き、相手側は枠の中に余白が無いので枠のすぐ下に置く
+        /// </summary>
+        private static Image CreateStatusBadge(RectTransform parent, bool inside, int slot, string name, Color color, string text)
+        {
+            var badge = CreateImage(parent, name, color);
             badge.raycastTarget = false;
             var rect = badge.rectTransform;
-            rect.anchorMin = rect.anchorMax = inside ? new Vector2(0f, 0.15f) : Vector2.zero;
+            rect.anchorMin = rect.anchorMax = inside ? new Vector2(0f, PlayerBadgeRowY) : Vector2.zero;
             rect.pivot = inside ? new Vector2(0f, 0.5f) : new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(InfoPadding, inside ? 0f : -StatusBadgeGap);
+            rect.anchoredPosition = new Vector2(BadgeX(slot), inside ? 0f : -StatusBadgeGap);
             rect.sizeDelta = StatusBadgeSize;
 
-            var label = CreateText(badge.transform, "Label", "", StatusFontSize, Color.white, TextAnchor.MiddleCenter);
+            var label = CreateText(badge.transform, "Label", text, StatusFontSize, Color.white, TextAnchor.MiddleCenter);
             label.fontStyle = FontStyle.Bold;
             badge.gameObject.SetActive(false);
             return badge;
         }
+
+        private static float BadgeX(int slot) => InfoPadding + slot * (StatusBadgeSize.x + StatusBadgeGap);
     }
 }

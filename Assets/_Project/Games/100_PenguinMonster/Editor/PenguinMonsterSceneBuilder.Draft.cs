@@ -8,7 +8,8 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// ドラフトの画面。夜空と雪の上に、まん中に提示の3枚のカード（絵・名前・タイプ・特性と持ち物・種族値）、下の帯に取ったペンモンの6マス。
+    /// ドラフトの画面。夜空と雪の上に、左に提示の3枚の小さいカード（絵・名前・タイプ）、右に選んでいる1体の大きな詳細と
+    /// 「これに 決めた！」、下の帯に取ったペンモンの6マス。文字とボタンはセーフエリアの内側に置く（スマホのカメラ穴で切れないように）。
     /// カードは配るたびに「ぽよん」と出し（PopIn）、取ったペンモンは一番手前の絵（Flyer）が下のマスへ運ぶ
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -16,65 +17,62 @@ namespace PenguinMonster.Editor
         private const string StatCaptions = "HP\n攻撃\n防御\n特攻\n特防\n素早さ\n合計";
         private const int TypesPerMonster = 2;
 
-        // カード（高さ 780）の上下に 25 ずつ余白が残るよう、タイトルと下の帯は細めにする
-        private const float DraftTitleHeight = 100f;
-        private const float DraftFooterHeight = 150f;
-        private static readonly Vector2 DraftCardSize = new Vector2(500f, 780f);
-        private const float DraftCardSpacing = 60f;
-        private const float DraftCardIconSize = 180f;
-        private const float DraftNameTop = 192f;
-        private const float DraftNameHeight = 60f;
-        private const float DraftBadgeTop = 256f;
-        private static readonly Vector2 DraftBadgeSize = new Vector2(170f, 52f);
-        private const float DraftBadgeSpacing = 16f;
-        private const float DraftTraitsTop = 318f;
-        private const float DraftTraitsHeight = 140f;
-        private const float DraftTraitsPaddingX = 20f;
-        private const float DraftStatsHeight = 290f;
-        private const float DraftStatsPaddingX = 70f;
-        private const float DraftStatsPaddingBottom = 24f;
+        private const float DraftTitleHeight = 110f;
+        private const float DraftFooterHeight = 140f;
+        private const float DraftSideMargin = 40f;
+        private const float DraftColumnGap = 30f;
+        // 見出しは左に寄せ、右上の残り秒数と「やめる」に被らない所で止める
+        private const float DraftTitleRightMargin = 640f;
+        private const float DraftCardWidth = 500f;
+        private static readonly Vector2 DraftCardSize = new Vector2(DraftCardWidth, 250f);
+        private const float DraftCardSpacing = 25f;
+        private const float DraftCardIconSize = 210f;
+        private const float DraftCardPadding = 20f;
+        private const float DraftCardTextLeft = DraftCardPadding + DraftCardIconSize + 15f;
+        private const float DraftCardNameTop = 40f;
+        private const float DraftCardNameHeight = 80f;
+        private const float DraftCardBadgeTop = 140f;
+        private static readonly Vector2 DraftCardBadgeSize = new Vector2(112f, 52f);
+        private const float DraftCardBadgeSpacing = 12f;
+        private static readonly Vector2 DraftSelectedEdge = new Vector2(8f, -8f);
         private const float DraftFooterCaptionWidth = 300f;
-        private const float DraftPickedSlotSize = 120f;
+        private const float DraftPickedSlotSize = 110f;
         private const float DraftFooterSpacing = 20f;
 
-        private const int DraftTitleFontSize = 48;
-        private const int DraftNameFontSize = 46;
-        private const int DraftBadgeFontSize = 30;
-        private const int DraftStatsFontSize = 30;
-        private const int DraftTraitsFontSize = 26;
-        private const int DraftCaptionFontSize = 36;
+        private const int DraftTitleFontSize = 46;
+        private const int DraftCardNameFontSize = 44;
+        private const int DraftCardBadgeFontSize = 28;
+        private const int DraftCaptionFontSize = 34;
 
         private static readonly Vector2 PanelCountdownPosition = new Vector2(-480f, -55f);
         private static readonly Vector2 TopRight = new Vector2(1f, 1f);
 
         private static readonly Color DraftCardColor = new Color(0.97f, 0.97f, 0.9f);
+        private static readonly Color DraftSelectedColor = new Color(1f, 0.85f, 0.2f);
         private static readonly Color DraftSlotColor = new Color(0.1f, 0.14f, 0.22f);
 
         private static DraftPanel CreateDraftPanel(Transform parent)
         {
             var back = CreateNightBack(parent, "DraftPanel");
+            var safe = CreateSafeContent(back.transform);
+            var title = CreateDraftTitle(safe);
 
-            var title = CreateText(back.transform, "Title", "", DraftTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            title.rectTransform.anchorMin = new Vector2(0f, 1f);
-            title.rectTransform.offsetMin = new Vector2(0f, -DraftTitleHeight);
-
-            var row = CreateDraftRow(back.transform);
+            var column = CreateDraftCardColumn(safe);
             int cards = BattleBalance.DraftOfferCount;
             var buttons = new Button[cards];
             var icons = new Image[cards];
             var names = new Text[cards];
-            var stats = new Text[cards];
-            var traits = new Text[cards];
+            var outlines = new Outline[cards];
             var badges = new Image[cards * TypesPerMonster];
             var badgeLabels = new Text[badges.Length];
             for (int i = 0; i < cards; i++)
             {
-                CreateDraftCard(row, i, out buttons[i], out icons[i], out names[i], out stats[i], out traits[i], badges, badgeLabels);
+                CreateDraftCard(column, i, out buttons[i], out icons[i], out names[i], out outlines[i], badges, badgeLabels);
             }
 
-            var picked = CreatePickedSlots(back.transform);
-            var timer = CreateCountdown(back.transform, TopRight, PanelCountdownPosition);
+            var detail = CreateDraftDetail(safe, out var decide);
+            var picked = CreatePickedSlots(safe);
+            var timer = CreateCountdown(safe, TopRight, PanelCountdownPosition);
             var flyer = CreateDraftFlyer(back.transform);
 
             var panel = back.gameObject.AddComponent<DraftPanel>();
@@ -83,10 +81,11 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_cardButtons"), buttons);
             SetArray(so.FindProperty("_cardIcons"), icons);
             SetArray(so.FindProperty("_cardNames"), names);
-            SetArray(so.FindProperty("_cardStats"), stats);
-            SetArray(so.FindProperty("_cardTraits"), traits);
+            SetArray(so.FindProperty("_cardOutlines"), outlines);
             SetArray(so.FindProperty("_typeBadges"), badges);
             SetArray(so.FindProperty("_typeLabels"), badgeLabels);
+            so.FindProperty("_detail").objectReferenceValue = detail;
+            so.FindProperty("_decideButton").objectReferenceValue = decide;
             SetArray(so.FindProperty("_pickedIcons"), picked);
             so.FindProperty("_timer").objectReferenceValue = timer;
             so.FindProperty("_flyer").objectReferenceValue = flyer;
@@ -94,6 +93,16 @@ namespace PenguinMonster.Editor
 
             back.gameObject.SetActive(false);
             return panel;
+        }
+
+        private static Text CreateDraftTitle(Transform parent)
+        {
+            var title = CreateText(parent, "Title", "", DraftTitleFontSize, Color.white, TextAnchor.MiddleLeft);
+            StyleHeading(title);
+            title.rectTransform.anchorMin = new Vector2(0f, 1f);
+            title.rectTransform.offsetMin = new Vector2(DraftSideMargin, -DraftTitleHeight);
+            title.rectTransform.offsetMax = new Vector2(-DraftTitleRightMargin, 0f);
+            return title;
         }
 
         /// <summary>取ったペンモンを運ぶ絵。位置と大きさは飛ぶたびに DraftPanel が決めるので、ここでは隠しておくだけ</summary>
@@ -107,62 +116,81 @@ namespace PenguinMonster.Editor
             return flyer;
         }
 
-        private static Transform CreateDraftRow(Transform parent)
+        /// <summary>左の列。見出しと下の帯の間に、カード3枚を縦に並べる</summary>
+        private static Transform CreateDraftCardColumn(Transform parent)
         {
-            var row = UIDialogBuilder.CreateUIObject("Cards", parent);
-            var rect = row.GetComponent<RectTransform>();
-            UIDialogBuilder.SetStretchAll(rect);
-            rect.offsetMin = new Vector2(0f, DraftFooterHeight);
-            rect.offsetMax = new Vector2(0f, -DraftTitleHeight);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
+            var column = UIDialogBuilder.CreateUIObject("Cards", parent);
+            var rect = column.GetComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.offsetMin = new Vector2(DraftSideMargin, DraftFooterHeight);
+            rect.offsetMax = new Vector2(DraftSideMargin + DraftCardWidth, -DraftTitleHeight);
+            var layout = column.AddComponent<VerticalLayoutGroup>();
             layout.spacing = DraftCardSpacing;
             layout.childAlignment = TextAnchor.MiddleCenter;
             layout.childControlWidth = false;
             layout.childControlHeight = false;
-            return row.transform;
+            return column.transform;
         }
 
-        /// <summary>カード1枚 = 絵 → 名前 → タイプの札 → 特性と持ち物 → 種族値（見出しは左、数字は右）。カード全体が押せる</summary>
-        private static void CreateDraftCard(Transform row, int index, out Button button, out Image icon, out Text name, out Text stats,
-            out Text traits, Image[] badges, Text[] badgeLabels)
+        /// <summary>カード1枚 = 左に絵、右に名前とタイプの札。押すと右の詳細に出る（決定はしない）</summary>
+        private static void CreateDraftCard(Transform column, int index, out Button button, out Image icon, out Text name, out Outline outline,
+            Image[] badges, Text[] badgeLabels)
         {
-            var card = CreateButton(row, $"Btn_Card{index}", "", DraftCardSize, DraftCardColor, sinkLabel: false);
+            var card = CreateButton(column, $"Btn_Card{index}", "", DraftCardSize, DraftCardColor, sinkLabel: false);
             button = card.GetComponent<Button>();
             AddPopIn(card);
 
-            icon = CreateTopIcon(card.transform, DraftCardIconSize);
+            // 選んでいる1枚だけ太い黄色の縁で囲む（DraftPanel が付け外しする）
+            outline = card.AddComponent<Outline>();
+            outline.effectColor = DraftSelectedColor;
+            outline.effectDistance = DraftSelectedEdge;
+            outline.enabled = false;
+
+            icon = CreateImage(card.transform, "Icon", Color.white);
+            icon.preserveAspect = true;
+            icon.raycastTarget = false;
+            Place(icon.rectTransform, new Vector2(0f, 0.5f), new Vector2(DraftCardPadding + DraftCardIconSize / 2f, 0f), Vector2.one * DraftCardIconSize);
 
             name = card.GetComponentInChildren<Text>();
-            name.fontSize = DraftNameFontSize;
+            name.fontSize = DraftCardNameFontSize;
+            name.fontStyle = FontStyle.Bold;
             name.color = BoxTextColor;
-            PlaceTopBand(name.rectTransform, DraftNameTop, DraftNameHeight);
+            name.alignment = TextAnchor.MiddleLeft;
+            // 長い名前は折り返すと下のタイプの札に重なるので、1行のまま縮める（TextFit）
+            name.horizontalOverflow = HorizontalWrapMode.Overflow;
+            PlaceBand(name.rectTransform, DraftCardTextLeft, DraftCardNameTop, DraftCardNameHeight);
 
             var badgeRow = UIDialogBuilder.CreateUIObject("Types", card.transform);
-            PlaceTopBand(badgeRow.GetComponent<RectTransform>(), DraftBadgeTop, DraftBadgeSize.y);
+            PlaceBand(badgeRow.GetComponent<RectTransform>(), DraftCardTextLeft, DraftCardBadgeTop, DraftCardBadgeSize.y);
             var layout = badgeRow.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = DraftBadgeSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.spacing = DraftCardBadgeSpacing;
+            layout.childAlignment = TextAnchor.MiddleLeft;
             layout.childControlWidth = false;
             layout.childControlHeight = false;
             for (int k = 0; k < TypesPerMonster; k++)
             {
                 int badge = index * TypesPerMonster + k;
-                badges[badge] = CreateImage(badgeRow.transform, $"Type{k}", Color.gray);
-                badges[badge].raycastTarget = false;
-                badges[badge].rectTransform.sizeDelta = DraftBadgeSize;
-                badgeLabels[badge] = CreateText(badges[badge].transform, "Label", "", DraftBadgeFontSize, Color.white, TextAnchor.MiddleCenter);
-                badgeLabels[badge].fontStyle = FontStyle.Bold;
+                CreateTypeBadge(badgeRow.transform, k, DraftCardBadgeSize, DraftCardBadgeFontSize, out badges[badge], out badgeLabels[badge]);
             }
+        }
 
-            traits = CreateText(card.transform, "Traits", "", DraftTraitsFontSize, BoxTextColor, TextAnchor.UpperLeft);
-            PlaceTopBand(traits.rectTransform, DraftTraitsTop, DraftTraitsHeight);
-            traits.rectTransform.sizeDelta = new Vector2(-DraftTraitsPaddingX * 2f, DraftTraitsHeight);
+        private static void CreateTypeBadge(Transform row, int index, Vector2 size, int fontSize, out Image badge, out Text label)
+        {
+            badge = CreateImage(row, $"Type{index}", Color.gray);
+            badge.raycastTarget = false;
+            badge.rectTransform.sizeDelta = size;
+            label = CreateText(badge.transform, "Label", "", fontSize, Color.white, TextAnchor.MiddleCenter);
+            label.fontStyle = FontStyle.Bold;
+        }
 
-            var captions = CreateText(card.transform, "StatCaptions", StatCaptions, DraftStatsFontSize, BoxTextColor, TextAnchor.LowerLeft);
-            PlaceStatsArea(captions.rectTransform);
-            stats = CreateText(card.transform, "StatValues", "", DraftStatsFontSize, BoxTextColor, TextAnchor.LowerRight);
-            stats.fontStyle = FontStyle.Bold;
-            PlaceStatsArea(stats.rectTransform);
+        /// <summary>親の上端から top 下がった所に、左から left・右から right 空けて、高さ height で置く</summary>
+        private static void PlaceBand(RectTransform rect, float left, float top, float height, float right = DraftCardPadding)
+        {
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(1f, 1f);
+            rect.offsetMin = new Vector2(left, -top - height);
+            rect.offsetMax = new Vector2(-right, -top);
         }
 
         /// <summary>親の上端から top 下がった所に、横いっぱい・高さ height で置く</summary>
@@ -175,21 +203,12 @@ namespace PenguinMonster.Editor
             rect.sizeDelta = new Vector2(0f, height);
         }
 
-        /// <summary>種族値の欄はカードの下側。見出しと数字の Text を同じ場所に重ね、左寄せ / 右寄せで2列に見せる</summary>
-        private static void PlaceStatsArea(RectTransform rect)
-        {
-            rect.anchorMin = new Vector2(0f, 0f);
-            rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(0.5f, 0f);
-            rect.anchoredPosition = new Vector2(0f, DraftStatsPaddingBottom);
-            rect.sizeDelta = new Vector2(-DraftStatsPaddingX * 2f, DraftStatsHeight);
-        }
-
-        /// <summary>下の帯に「とった ペンモン」の見出しと6マス。マスの中の絵を返す</summary>
+        /// <summary>下の帯に「取った ペンモン」の見出しと6マス。マスの中の絵を返す</summary>
         private static Image[] CreatePickedSlots(Transform parent)
         {
             var footer = CreateFooter(parent, DraftFooterHeight, DraftFooterSpacing);
             var caption = CreateText(footer, "Caption", "取った ペンモン", DraftCaptionFontSize, Color.white, TextAnchor.MiddleCenter);
+            StyleHeading(caption);
             caption.rectTransform.sizeDelta = new Vector2(DraftFooterCaptionWidth, DraftPickedSlotSize);
 
             var icons = new Image[BattleBalance.DraftRounds];

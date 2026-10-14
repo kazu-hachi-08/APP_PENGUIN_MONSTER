@@ -15,7 +15,7 @@ namespace PenguinMonster.Editor
     /// <summary>
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
     /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、
-    /// タイトルは .Title.cs、ドラフトは .Draft.cs、「やめる」は .Quit.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
+    /// タイトルは .Title.cs、ドラフトは .Draft.cs、持ち物は .Item.cs、「やめる」は .Quit.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
     /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs、
     /// 結果は .Result.cs、オンラインの部屋は .Room.cs、画面をまたいでそろえる見た目（夜空・見出し・ボタン）は .Style.cs
     /// </summary>
@@ -86,18 +86,25 @@ namespace PenguinMonster.Editor
             var root = UIDialogBuilder.CreateUIObject("Battle", canvas);
             UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
 
-            // 一番奥のタップ領域 → 場 → 下の窓 → 交代の画面、の順に重ねる
+            // 一番奥のタップ領域 → 場 → 下の窓 → 交代の画面 → ランクの一覧、の順に重ねる
             var fieldTapArea = CreateFieldTapArea(root.transform);
             BuildField(root.transform, out var playerView, out var enemyView, out var playerInfo, out var enemyInfo);
             BuildDoubleField(root.transform, out var playerViews, out var enemyViews, out var playerInfos, out var enemyInfos);
             // 天候とエフェクトはペンモンと名前の枠より手前、下の窓より奥
             var weather = CreateWeatherLayer(root.transform);
             var moveEffect = CreateMoveEffectLayer(root.transform);
+            var eggThrow = CreateEggThrowLayer(root.transform);
+            // 特性の帯はエフェクトより手前（矢印の粒に隠れないように）、下の窓より奥
+            var playerBanner = CreateAbilityBanner(root.transform, "PlayerAbilityBanner", PlayerBannerPosition, fromLeft: true);
+            var enemyBanner = CreateAbilityBanner(root.transform, "EnemyAbilityBanner", EnemyBannerPosition, fromLeft: false);
             var messageWindow = CreateMessageWindow(root.transform, fieldTapArea);
             var commandPanel = CreateCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
             var targetPanel = CreateTargetPanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
+            // 一覧は枠をタップしたときだけ出る。暗幕で場と窓を覆うよう、窓より手前に置く
+            var stagePanel = CreateStatStagePanel(root.transform);
+            LinkStatStagePanel(stagePanel, playerInfos.Concat(enemyInfos).Append(playerInfo).Append(enemyInfo).ToArray());
             // 交代の画面の上にも見えるよう、最後に重ねる
             var turnTimer = CreateCountdown(root.transform, TopCenter, BattleCountdownPosition);
 
@@ -113,6 +120,9 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_enemyDoubleInfos"), enemyInfos);
             so.FindProperty("_moveEffect").objectReferenceValue = moveEffect;
             so.FindProperty("_weather").objectReferenceValue = weather;
+            so.FindProperty("_playerBanner").objectReferenceValue = playerBanner;
+            so.FindProperty("_enemyBanner").objectReferenceValue = enemyBanner;
+            so.FindProperty("_eggThrow").objectReferenceValue = eggThrow;
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
@@ -124,7 +134,7 @@ namespace PenguinMonster.Editor
         }
 
         /// <summary>
-        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
+        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → 持ち物 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
         /// 結果は共通基盤の ResultDialog を見た目だけ作り直して使う。「もう一度遊ぶ」は勝ち抜き戦の「次の 戦いへ」に使う
         /// </summary>
         private static void BuildFlow(Transform canvas, BattleController battle)
@@ -135,6 +145,7 @@ namespace PenguinMonster.Editor
             var resultDialog = CreateResultPanel(root.transform, out var resultBanner);
             var selectPanel = CreateSelectPanel(root.transform);
             var introPanel = CreateIntroPanel(root.transform);
+            var itemPanel = CreateItemPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
             var formatPanel = CreateFormatPanel(root.transform);
             var quitButton = CreateQuitButton(root.transform);
@@ -148,6 +159,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_titlePanel").objectReferenceValue = titlePanel;
             so.FindProperty("_formatPanel").objectReferenceValue = formatPanel;
             so.FindProperty("_draftPanel").objectReferenceValue = draftPanel;
+            so.FindProperty("_itemPanel").objectReferenceValue = itemPanel;
             so.FindProperty("_introPanel").objectReferenceValue = introPanel;
             so.FindProperty("_selectPanel").objectReferenceValue = selectPanel;
             so.FindProperty("_battle").objectReferenceValue = battle;

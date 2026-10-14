@@ -7,7 +7,7 @@ namespace PenguinMonster.Battle
     }
 
     /// <summary>
-    /// 技の効果1つ（状態異常にする / こんらんさせる / ランクを変える / 羽リレー / 回復 / 天候）。
+    /// 技の効果1つ（状態異常にする / こんらんさせる / ランクを変える / 羽リレー / 回復 / 天候 / 守る / 追い風 / 手助け）。
     /// 攻撃技では当たった後に Chance% で起きる追加効果、変化技では技そのものの効果になる
     /// </summary>
     public sealed class MoveEffect
@@ -28,10 +28,20 @@ namespace PenguinMonster.Battle
         public bool Heals { get; }
         /// <summary>場をこの天候にする。None なら天候は変えない</summary>
         public Weather Weather { get; }
+        /// <summary>そのターン、相手の技を防ぐ</summary>
+        public bool Protects { get; }
+        /// <summary>自分の陣営に追い風を吹かせる（素早さ2倍）</summary>
+        public bool Tailwind { get; }
+        /// <summary>ダブルスで、隣の味方のそのターンの技を強くする</summary>
+        public bool HelpsAlly { get; }
 
         private MoveEffect(EffectTarget target, int chance, StatusCondition status, bool confuses, StatKind stat, int stages,
-            bool relays = false, bool heals = false, Weather weather = Weather.None)
+            bool relays = false, bool heals = false, Weather weather = Weather.None, bool protects = false, bool tailwind = false,
+            bool helpsAlly = false)
         {
+            Protects = protects;
+            Tailwind = tailwind;
+            HelpsAlly = helpsAlly;
             Heals = heals;
             Weather = weather;
             Target = target;
@@ -64,5 +74,15 @@ namespace PenguinMonster.Battle
         /// <summary>場全体にかかるが、相手の回避で外れないよう自分にかける技として扱う</summary>
         public static MoveEffect SetWeather(Weather weather)
             => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, weather: weather);
+
+        // 守る・追い風・手助けも、相手の回避で外れないよう自分にかける技として扱う（ダブルスで狙いも選ばせずに済む）
+        public static MoveEffect Protect()
+            => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, protects: true);
+
+        public static MoveEffect SetTailwind()
+            => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, tailwind: true);
+
+        public static MoveEffect HelpAlly()
+            => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, helpsAlly: true);
     }
 }

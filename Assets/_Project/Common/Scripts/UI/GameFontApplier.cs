@@ -6,14 +6,13 @@ using UnityScene = UnityEngine.SceneManagement.Scene;
 namespace PenguinMonster.Common.UI
 {
     /// <summary>
-    /// ブラウザ版だけ、Unity標準フォントの Text を日本語フォントに差し替える。
-    /// 標準フォント(LegacyRuntime)は日本語を持たず、スマホ版はOSのフォントで補われるが、
-    /// ブラウザ版はOSのフォントを使えないため日本語が表示されない。
+    /// Unity標準フォントの Text を、同梱の丸ゴシック（M PLUS Rounded 1c）に差し替える。
+    /// 標準フォント(LegacyRuntime)は日本語を持たず、スマホ版はOSの細いフォントで、ブラウザ版は何も出ないため、全プラットフォームで同じ字にそろえる。
     /// 各シーンのTextを書き換えるとSceneBuilderで作り直したときに戻るので、実行時に差し替える。
     /// </summary>
-    public static class WebFontApplier
+    public static class GameFontApplier
     {
-        private const string FontPath = "Fonts/NotoSansJP-Regular";
+        private const string FontPath = "Fonts/MPLUSRounded1c-Medium";
         private const string BuiltinFontName = "LegacyRuntime";
 
         private static Font _font;
@@ -21,11 +20,6 @@ namespace PenguinMonster.Common.UI
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         private static void Initialize()
         {
-            if (Application.platform != RuntimePlatform.WebGLPlayer)
-            {
-                return;
-            }
-
             _font = Resources.Load<Font>(FontPath);
             SceneManager.sceneLoaded -= OnSceneLoaded;
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -52,6 +46,13 @@ namespace PenguinMonster.Common.UI
                 if (text.font != null && text.font.name == BuiltinFontName)
                 {
                     text.font = _font;
+                    // このフォントは行の高さが文字の大きさの約1.45倍と高く、枠の高さぎりぎりの Text は
+                    // Truncate だと1行も入らず丸ごと消える。はみ出しても出すようにする。
+                    // 自動で縮める Text は高さの制限で縮み具合を決めるので、そのままにする
+                    if (!text.resizeTextForBestFit)
+                    {
+                        text.verticalOverflow = VerticalWrapMode.Overflow;
+                    }
                 }
             }
         }
