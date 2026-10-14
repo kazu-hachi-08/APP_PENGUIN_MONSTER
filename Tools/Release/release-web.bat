@@ -1,6 +1,6 @@
 @echo off
 rem Double-click to publish the Web build to GitHub Pages (penguin-monster-web).
-rem Build folder is expected next to the repo: <repo>\..\APP_PENGUIN_MONSTER_WEB
+rem Build Web directly into the pages clone next to the repo: <repo>\..\penguin-monster-web
 rem ASCII only: cmd.exe misparses UTF-8 Japanese in .bat files.
 
 rem gh may be missing from PATH right after install until re-login
