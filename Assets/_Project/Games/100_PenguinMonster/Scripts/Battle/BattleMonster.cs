@@ -88,7 +88,7 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>雪滑り・波乗り・光合成 が、それぞれの天候で働いている</summary>
-        private bool RidesWeather
+        internal bool RidesWeather
         {
             get
             {

@@ -93,6 +93,9 @@ namespace PenguinMonster.Editor
             // 天候とエフェクトはペンモンと名前の枠より手前、下の窓より奥
             var weather = CreateWeatherLayer(root.transform);
             var moveEffect = CreateMoveEffectLayer(root.transform);
+            // 特性の帯はエフェクトより手前（矢印の粒に隠れないように）、下の窓より奥
+            var playerBanner = CreateAbilityBanner(root.transform, "PlayerAbilityBanner", PlayerBannerPosition, fromLeft: true);
+            var enemyBanner = CreateAbilityBanner(root.transform, "EnemyAbilityBanner", EnemyBannerPosition, fromLeft: false);
             var messageWindow = CreateMessageWindow(root.transform, fieldTapArea);
             var commandPanel = CreateCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
@@ -116,6 +119,8 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_enemyDoubleInfos"), enemyInfos);
             so.FindProperty("_moveEffect").objectReferenceValue = moveEffect;
             so.FindProperty("_weather").objectReferenceValue = weather;
+            so.FindProperty("_playerBanner").objectReferenceValue = playerBanner;
+            so.FindProperty("_enemyBanner").objectReferenceValue = enemyBanner;
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;

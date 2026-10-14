@@ -60,8 +60,6 @@ namespace PenguinMonster.Battle
                     return $"{subject}の {e.Stat.ToJapanese()}が {StatChanged(e.Amount)}";
                 case BattleEventKind.StatUnchanged:
                     return $"{subject}の {e.Stat.ToJapanese()}は もう {(e.Amount > 0 ? "上がらない！" : "下がらない！")}";
-                case BattleEventKind.AbilityActivated:
-                    return $"{subject}の {e.Monster.Definition.Ability.ToJapanese()}！";
                 case BattleEventKind.AbilityDamage:
                     return $"{subject}は 傷ついた！";
                 case BattleEventKind.ItemHealed:

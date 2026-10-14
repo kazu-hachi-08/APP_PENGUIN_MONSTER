@@ -10,6 +10,8 @@ namespace PenguinMonster.View.Art
         Star,
         Slash,
         Fang,
+        /// <summary>能力が上がる・下がるときの矢印（上向き。下がるときは逆さにして出す）</summary>
+        Arrow,
     }
 
     /// <summary>
@@ -50,6 +52,7 @@ namespace PenguinMonster.View.Art
             {
                 case EffectShape.Slash: PaintSlash(canvas); break;
                 case EffectShape.Fang: PaintFang(canvas); break;
+                case EffectShape.Arrow: PaintArrow(canvas); break;
                 default: PaintImpact(canvas); break;
             }
             sprite = canvas.ToSprite($"MoveEffect_{shape}", MiddlePivot);
@@ -173,6 +176,15 @@ namespace PenguinMonster.View.Art
             c.FillTriangle(new Vector2(5.5f, 11), new Vector2(10.5f, 11), new Vector2(8, 2), tooth);
             c.FillTriangle(new Vector2(10, 11), new Vector2(14.5f, 11), new Vector2(12.5f, 4), tooth);
             c.Outline(Rgb(90, 90, 100));
+        }
+
+        /// <summary>能力の矢印: 白で描き、上がる青・下がる赤の色は出すときに付ける</summary>
+        private static void PaintArrow(PixelCanvas c)
+        {
+            var white = Rgb(255, 255, 255);
+            c.FillTriangle(new Vector2(2, 8), new Vector2(14, 8), new Vector2(8, 14.5f), white);
+            c.FillRect(5, 1, 6, 7, white);
+            c.Outline(Rgb(70, 70, 90));
         }
 
         private static void PaintSparkle(PixelCanvas c)

@@ -86,10 +86,11 @@ namespace PenguinMonster.View
                     yield return _messageWindow.Play(message);
                     break;
                 case BattleEventKind.StatChanged:
-                    BattleSounds.Play(e.Amount > 0 ? BattleSound.StatUp : BattleSound.StatDown);
-                    yield return ViewOf(e).Flash(e.Amount > 0 ? StatusColors.StatUp : StatusColors.StatDown);
-                    InfoOf(e).UpdateStatStages(e.Monster);
-                    yield return _messageWindow.Play(message);
+                    yield return PlayStatChange(e, message);
+                    break;
+                case BattleEventKind.AbilityActivated:
+                    // 文は出さず、特性の帯を出してから続きの演出（能力が下がる など）へ進む。帯は続きの間も出しておく
+                    yield return BannerOf(e.Side).Show(OwnerOf(e), e.Monster.Definition.Ability.ToJapanese());
                     break;
                 case BattleEventKind.StagesPassed:
                     // 羽リレーで引き継いだ。文は出さず、名前の枠の印だけ合わせる
@@ -129,6 +130,26 @@ namespace PenguinMonster.View
             }
             InfoOf(e).SetStatus(e.Status);
             yield return _messageWindow.Play(message);
+        }
+
+        /// <summary>能力が上がる・下がる。色が光るのと同時に、上がると ▲ が立ちのぼり、下がると ▼ が流れ落ちる</summary>
+        private IEnumerator PlayStatChange(BattleEvent e, string message)
+        {
+            bool up = e.Amount > 0;
+            BattleSounds.Play(up ? BattleSound.StatUp : BattleSound.StatDown);
+            var arrows = StartCoroutine(_moveEffect.PlayStatArrows(up, ViewOf(e).Body));
+            yield return ViewOf(e).Flash(up ? StatusColors.StatUp : StatusColors.StatDown);
+            yield return arrows;
+            InfoOf(e).UpdateStatStages(e.Monster);
+            yield return _messageWindow.Play(message);
+        }
+
+        private AbilityBanner BannerOf(int side) => side == PlayerSide ? _playerBanner : _enemyBanner;
+
+        /// <summary>帯の上の段。相手側は文と同じく「相手の」を付ける</summary>
+        private static string OwnerOf(BattleEvent e)
+        {
+            return e.Side == PlayerSide ? $"{e.Monster.Name}の" : $"相手の {e.Monster.Name}の";
         }
 
         /// <summary>

@@ -5,7 +5,8 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// 特性の発動（仕様書 §4.6）。場に出たとき・攻撃のあと・ターン終わりに呼ぶ。
-    /// ダメージの倍率になる特性（せとぎわ・ふかふかしぼう・かたいはね）は DamageCalculator、よふかし は StatusImmunity
+    /// ダメージの倍率になる特性（せとぎわ・ふかふかしぼう・かたいはね）は DamageCalculator、よふかし は StatusImmunity。
+    /// 特性が働いたら必ず AbilityActivated を出し、画面に特性の帯を出す（文はその後の効果の文に任せる）
     /// </summary>
     public sealed partial class BattleEngine
     {
@@ -59,12 +60,62 @@ namespace PenguinMonster.Battle
             TryStartWeather(side, monster, weather, events);
         }
 
-        /// <summary>ひと休み: 交代で引っ込むと回復する。引っ込めた後なので文は出さない（Withdrawn の HP に回復後の値が乗る）</summary>
-        private static void RestOnWithdraw(BattleMonster leaving)
+        /// <summary>
+        /// ひと休み: 交代で引っ込むと回復する。「戻れ！」の前に帯だけ出す（Withdrawn の HP に回復後の値が乗る）。
+        /// 満タンなら何も起きないので帯も出さない
+        /// </summary>
+        private static void RestOnWithdraw(int side, BattleMonster leaving, List<BattleEvent> events)
         {
-            if (leaving.HasAbility(Ability.Rest) && !leaving.IsFainted)
+            if (leaving.HasAbility(Ability.Rest) && !leaving.IsFainted && !leaving.IsFullHp)
             {
+                ShowAbility(side, leaving, events);
                 leaving.Heal(leaving.MaxHp / BattleBalance.RestHealDenominator);
+            }
+        }
+
+        /// <summary>特性の帯を出す。帯だけで、効果の文はその後のイベントが出す（倍率の特性は文なし）</summary>
+        private static void ShowAbility(int side, BattleMonster monster, List<BattleEvent> events)
+        {
+            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
+        }
+
+        /// <summary>
+        /// ダメージを変えた特性の帯を、ダメージの前に出す。使った側は1回の技で1回、受けた側は1体につき1回だけ
+        /// （連続技で毎回出るとくどいため）。連打名人もここで出す
+        /// </summary>
+        private static void ShowDamageAbilities(int side, BattleMonster user, BattleMonster target, MoveDefinition move,
+            DamageResult result, ref bool attackerShown, ref bool defenderShown, List<BattleEvent> events)
+        {
+            if (result.Effectiveness == 0f)
+            {
+                return;
+            }
+            bool skillLink = user.HasAbility(Ability.SkillLink) && move.MinHits != move.MaxHits;
+            if (!attackerShown && (result.AttackerAbility || skillLink))
+            {
+                ShowAbility(side, user, events);
+                attackerShown = true;
+            }
+            if (!defenderShown && result.DefenderAbility)
+            {
+                ShowAbility(1 - side, target, events);
+                defenderShown = true;
+            }
+        }
+
+        /// <summary>天候が始まったとき、その天候で速くなる子（雪滑り・波乗り・光合成）の帯を出す</summary>
+        private void ShowWeatherRiders(List<BattleEvent> events)
+        {
+            foreach (var battleSide in _state.Sides)
+            {
+                foreach (int slot in battleSide.AliveSlots())
+                {
+                    var monster = battleSide.ActiveAt(slot);
+                    if (monster.RidesWeather)
+                    {
+                        ShowAbility(battleSide.Index, monster, events);
+                    }
+                }
             }
         }
 

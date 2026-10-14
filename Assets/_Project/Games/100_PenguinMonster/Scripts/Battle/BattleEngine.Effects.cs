@@ -122,6 +122,11 @@ namespace PenguinMonster.Battle
         {
             if (!receiver.CanReceive(status))
             {
+                if (status == StatusCondition.Sleep && receiver.Status == StatusCondition.None && receiver.HasAbility(Ability.NightOwl))
+                {
+                    // 決まらなかった理由が特性だと分かるよう、帯を出す
+                    ShowAbility(side, receiver, events);
+                }
                 AddFailed(side, receiver, reportFailure, events);
                 return;
             }
@@ -154,6 +159,11 @@ namespace PenguinMonster.Battle
             int changed = receiver.ChangeStage(stat, stages);
             if (changed != 0)
             {
+                if (receiver.HasAbility(Ability.Contrary))
+                {
+                    // 下がるはずが上がった理由として、帯を先に出す
+                    ShowAbility(side, receiver, events);
+                }
                 events.Add(BattleEvent.StatChange(BattleEventKind.StatChanged, side, receiver, stat, changed));
             }
             else if (reportFailure)

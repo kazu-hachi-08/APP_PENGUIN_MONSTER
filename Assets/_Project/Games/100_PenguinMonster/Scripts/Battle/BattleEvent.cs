@@ -31,7 +31,7 @@ namespace PenguinMonster.Battle
         StatChanged,
         /// <summary>ランクがもう変わらない。Amount の符号が上げようとしたか下げようとしたか</summary>
         StatUnchanged,
-        /// <summary>特性が働いた（「〇〇の こわもて！」）。続くイベントがその効果</summary>
+        /// <summary>特性が働いた。文は出さず、画面に特性の帯（「〇〇の / 強面」）を出す。続くイベントがその効果</summary>
         AbilityActivated,
         /// <summary>特性 とげとげはだ で受けたダメージ</summary>
         AbilityDamage,

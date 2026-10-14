@@ -31,6 +31,9 @@ namespace PenguinMonster.View
         [SerializeField] private MoveEffectView _moveEffect;
         [Tooltip("場の天候の色と粒。場全体に重ねた層")]
         [SerializeField] private WeatherView _weather;
+        [Tooltip("特性が働いたときの帯。陣営ごとに1つ")]
+        [SerializeField] private AbilityBanner _playerBanner;
+        [SerializeField] private AbilityBanner _enemyBanner;
         [Header("窓")]
         [SerializeField] private MessageWindow _messageWindow;
         [SerializeField] private CommandPanel _commandPanel;
@@ -65,6 +68,8 @@ namespace PenguinMonster.View
         {
             HideChoices();
             _weather.Hide();
+            _playerBanner.Hide();
+            _enemyBanner.Hide();
             foreach (var view in AllViews())
             {
                 view.Hide();

@@ -24,6 +24,11 @@ namespace PenguinMonster.Battle
             }
 
             var move = user.Definition.Moves[action.Index];
+            if (move.IsStatus && user.HasAbility(Ability.Prankster))
+            {
+                // 先に動けた理由が分かるよう、技名の前に帯を出す
+                ShowAbility(side, user, events);
+            }
             events.Add(BattleEvent.MoveUsed(side, user, move));
             if (move.TargetsSelfOnly)
             {
@@ -68,6 +73,8 @@ namespace PenguinMonster.Battle
         {
             float targetMultiplier = targets.Count > 1 ? BattleBalance.SpreadMultiplier : 1f;
             bool hitAny = false;
+            // 全体技でも、使った側の帯は1回だけ出す
+            bool attackerShown = false;
             int totalDealt = 0;
             foreach (var target in targets)
             {
@@ -81,7 +88,7 @@ namespace PenguinMonster.Battle
                 {
                     continue;
                 }
-                if (!Strike(side, user, target, move, targetMultiplier, events, out int dealt))
+                if (!Strike(side, user, target, move, targetMultiplier, ref attackerShown, events, out int dealt))
                 {
                     continue;
                 }
@@ -106,15 +113,17 @@ namespace PenguinMonster.Battle
         /// 効かなかったら false。dealt は実際に減ったHPの合計（吸収・反動に使う）
         /// </summary>
         private bool Strike(int side, BattleMonster user, BattleMonster target, MoveDefinition move, float targetMultiplier,
-            List<BattleEvent> events, out int dealt)
+            ref bool attackerShown, List<BattleEvent> events, out int dealt)
         {
             dealt = 0;
             int hits = RollHitCount(user, move);
             int landed = 0;
+            bool defenderShown = false;
             while (true)
             {
                 int hpBefore = target.CurrentHp;
                 var result = DamageCalculator.Calculate(user, target, move, _random, targetMultiplier);
+                ShowDamageAbilities(side, user, target, move, result, ref attackerShown, ref defenderShown, events);
                 // 連続技の相性の文は1回目だけ（毎回「効果は 抜群だ！」が出るとくどいため）
                 ApplyDamage(1 - side, target, result, events, reportEffectiveness: landed == 0);
                 if (result.Effectiveness == 0f)
@@ -176,7 +185,12 @@ namespace PenguinMonster.Battle
                 user.Heal(Math.Max(1, dealt / BattleBalance.DrainDenominator));
                 events.Add(BattleEvent.Of(BattleEventKind.Drained, side, user));
             }
-            if (move.Recoils && !user.HasAbility(Ability.RockHead))
+            if (move.Recoils && user.HasAbility(Ability.RockHead))
+            {
+                // 反動が来なかった理由として帯だけ出す
+                ShowAbility(side, user, events);
+            }
+            else if (move.Recoils)
             {
                 ApplyDirectDamage(side, user, Math.Max(1, dealt / BattleBalance.RecoilDenominator), BattleEventKind.Recoil, events);
             }

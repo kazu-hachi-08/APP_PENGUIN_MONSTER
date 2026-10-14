@@ -83,8 +83,15 @@ namespace PenguinMonster.Battle
             }
 
             battleSide.SetActive(slot, partyIndex);
-            var events = new List<BattleEvent> { BattleEvent.Of(BattleEventKind.SentOut, side, battleSide.ActiveAt(slot)) };
+            var entering = battleSide.ActiveAt(slot);
+            var events = new List<BattleEvent> { BattleEvent.Of(BattleEventKind.SentOut, side, entering) };
             OnSentOut(side, slot, events);
+            // 吹雪などの中へ出てきたときも、速くなったことが分かるよう帯を出す。
+            // バトル開始時は天候がまだ無く、天候が始まったときに ShowWeatherRiders で出すのでここだけでよい
+            if (entering.RidesWeather && !entering.IsFainted)
+            {
+                ShowAbility(side, entering, events);
+            }
             return events;
         }
 
@@ -106,7 +113,7 @@ namespace PenguinMonster.Battle
         {
             var leaving = _state.Sides[side].ActiveAt(slot);
             leaving.OnWithdrawn();
-            RestOnWithdraw(leaving);
+            RestOnWithdraw(side, leaving, events);
             events.Add(BattleEvent.Of(BattleEventKind.Withdrawn, side, leaving));
             events.AddRange(Replace(side, slot, partyIndex));
         }
