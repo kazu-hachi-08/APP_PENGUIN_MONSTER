@@ -48,11 +48,9 @@ namespace PenguinMonster.View
                 string color = ColorUtility.ToHtmlStringRGB(TypeColors.Get(move.Type));
                 string power = move.IsStatus ? StatusMoveText : $"{move.Category.CategoryName()} 威力 {move.Power}";
                 string mark = move.Effects().Length > 0 && !move.IsStatus ? HasEffectsMark : "";
-                lines.Add($"<b>{move.Name}</b>
-<size={detailSize}><b><color=#{color}>{move.Type.ToJapanese()}</color></b>　{power}{mark}</size>");
+                lines.Add($"<b>{move.Name}</b>\n<size={detailSize}><b><color=#{color}>{move.Type.ToJapanese()}</color></b>　{power}{mark}</size>");
             }
-            return string.Join("
-", lines);
+            return string.Join("\n", lines);
         }
 
         private static string Line(string label, string name, string description, int descriptionSize)
