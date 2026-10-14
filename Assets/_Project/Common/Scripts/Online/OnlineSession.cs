@@ -39,11 +39,26 @@ namespace PenguinMonster.Common.Online
         /// </summary>
         private const float NameWaitSeconds = 3f;
 
+        /// <summary>
+        /// Relay はこの秒数だけ通信が無いと切断する。スマホでアプリを裏に回す・ブラウザのタブを隠すと
+        /// Unity ごと止まって通信も止まるので、これ以上止まっていたら戻ってきても続けられない
+        /// </summary>
+        private const double RelayIdleSeconds = 10;
+
+        /// <summary>
+        /// 相手が落ちたと気づくまでの時間。既定の30秒だと「固まった」と思われてアプリを落とされるので、
+        /// Relay の無通信切断と同じくらいにする
+        /// </summary>
+        private const int DisconnectTimeoutMs = 10000;
+
         /// <summary>接続完了（相手が揃い、1対1では名前交換も済んだ）。引数は自分がホストかどうか</summary>
         public event Action<bool> OnPeerConnected;
 
         /// <summary>試合中に相手との接続が切れた</summary>
         public event Action OnPeerDisconnected;
+
+        /// <summary>自分の端末が裏に回って止まっていたため、部屋から抜けた（相手には切断が届く）</summary>
+        public event Action OnConnectionLost;
 
         /// <summary>3人以上の部屋のホストのみ：参加人数（ホスト自身を含む）が変わった</summary>
         public event Action<int> OnMemberCountChanged;
@@ -69,6 +84,9 @@ namespace PenguinMonster.Common.Online
         private bool _peerConnected;
         private int _maxPlayers = DefaultMaxPlayers;
         private bool _matchStarted;
+
+        /// <summary>前のフレームの時刻。止まっていた間も進む壁時計で測る（Time は止まっている間を数えない端末があるため）</summary>
+        private DateTime _lastFrameUtc = DateTime.UtcNow;
 
         private bool IsMultiRoom => _maxPlayers > DefaultMaxPlayers;
 
@@ -178,6 +196,23 @@ namespace PenguinMonster.Common.Online
             Leave();
         }
 
+        /// <summary>
+        /// 裏から戻った最初のフレームで、止まっていた時間を見る。
+        /// OnApplicationPause / Focus は機種やブラウザで来方が違い、Windows では裏でも動き続けるので、
+        /// 実際にフレームが止まっていた時間で判断する
+        /// </summary>
+        private void Update()
+        {
+            DateTime now = DateTime.UtcNow;
+            double frozenSeconds = (now - _lastFrameUtc).TotalSeconds;
+            _lastFrameUtc = now;
+            if (_session == null || frozenSeconds < RelayIdleSeconds) return;
+
+            Debug.LogWarning($"[OnlineSession] {frozenSeconds:F0}秒止まっていたので Relay に切られたとみなして抜けます");
+            Leave();
+            OnConnectionLost?.Invoke();
+        }
+
         /// <summary>1対1なので、ホストから見た相手は唯一の接続クライアント、クライアントから見た相手はホスト</summary>
         public static bool TryGetPeerId(out ulong peerId)
         {
@@ -238,6 +273,7 @@ namespace PenguinMonster.Common.Online
             var obj = new GameObject("NetworkManager");
             var transport = obj.AddComponent<UnityTransport>();
             transport.UseWebSockets = IsBrowser;
+            transport.DisconnectTimeoutMS = DisconnectTimeoutMs;
             var manager = obj.AddComponent<NetworkManager>();
             manager.NetworkConfig = new NetworkConfig
             {

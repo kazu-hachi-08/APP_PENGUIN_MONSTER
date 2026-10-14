@@ -42,6 +42,12 @@ namespace PenguinMonster.Battle
         public const int OnlineSelectSeconds = 60;
         public const int OnlineTurnSeconds = 30;
 
+        /// <summary>
+        /// バトル中に相手の返事をこれ以上待ったら、通信が止まったとみなす（仕様書 §8）。
+        /// 普通は制限時間（ダブルスで2体×30秒）＋再生の差で収まるので、それより十分長くする
+        /// </summary>
+        public const int OnlineReplyTimeoutSeconds = 180;
+
         /// <summary>1陣営あたりの場の数。シングルは1、ダブルスは2</summary>
         public const int SingleActiveCount = 1;
         public const int DoublesActiveCount = 2;

@@ -15,6 +15,7 @@ namespace PenguinMonster.View
     public partial class GameFlow
     {
         private const string DisconnectedDetail = "相手が 切断しました";
+        private const string ConnectionLostDetail = "通信が 切れました";
         private const string OnlineQuitMessage = "相手の 勝ちに なります";
         private const string ChoosingRulesText = "相手が ルールを 選んでいます…";
 
@@ -104,7 +105,9 @@ namespace PenguinMonster.View
         {
             _link = new OnlineLink();
             _link.Open();
+            _link.OnTimedOut += HandleConnectionLost;
             _session.OnPeerDisconnected += HandleDisconnected;
+            _session.OnConnectionLost += HandleConnectionLost;
         }
 
         private void CloseLink()
@@ -114,12 +117,31 @@ namespace PenguinMonster.View
                 return;
             }
             _session.OnPeerDisconnected -= HandleDisconnected;
+            _session.OnConnectionLost -= HandleConnectionLost;
+            _link.OnTimedOut -= HandleConnectionLost;
             _link.Close();
             _link = null;
         }
 
         /// <summary>相手が抜けたら、ドラフト・持ち物・選出・バトルのどこでも止めて勝ち扱い（仕様書 §2.4）</summary>
         private void HandleDisconnected()
+        {
+            StopOnline();
+            ShowResult(true, "", DisconnectedDetail);
+        }
+
+        /// <summary>
+        /// 自分の端末が裏で止まっていた／相手の返事が来ないまま止まった。どちらに原因があるか分からないので負け扱いにし、
+        /// 部屋を抜けて相手には切断として伝える（仕様書 §8）
+        /// </summary>
+        private void HandleConnectionLost()
+        {
+            StopOnline();
+            _session.Leave();
+            ShowResult(false, "", ConnectionLostDetail);
+        }
+
+        private void StopOnline()
         {
             CloseLink();
             StopAllCoroutines();
@@ -130,7 +152,6 @@ namespace PenguinMonster.View
             _battle.Abort();
             GameMusic.Stop();
             _quitButton.Hide();
-            ShowResult(true, "", DisconnectedDetail);
         }
 
         private void ShowOnlineResult(bool won)

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using PenguinMonster.Common.Online;
 using Unity.Collections;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace PenguinMonster.Online
 {
@@ -73,12 +74,32 @@ namespace PenguinMonster.Online
             messaging.SendNamedMessage(MessageName, peerId, writer, NetworkDelivery.ReliableFragmentedSequenced);
         }
 
-        /// <summary>指定の種類が届くまで待ってから渡す（コルーチン用）</summary>
+        /// <summary>
+        /// Wait が上限まで待っても届かなかった。接続は生きていても、お互いが相手の返事を待ち合って止まっているので、
+        /// 受け取った側で試合を終える（onReceived は呼ばれない）
+        /// </summary>
+        public event Action OnTimedOut;
+
+        /// <summary>指定の種類が届くまで待ってから渡す（コルーチン用）。上限なし（相手が人の操作で決めるのを待つとき用）</summary>
         public IEnumerator Wait(LinkMessage kind, Action<int[]> onReceived)
         {
+            return Wait(kind, onReceived, float.PositiveInfinity);
+        }
+
+        /// <summary>指定の種類が届くまで、最大 timeoutSeconds 秒待ってから渡す。過ぎたら OnTimedOut を出す</summary>
+        public IEnumerator Wait(LinkMessage kind, Action<int[]> onReceived, float timeoutSeconds)
+        {
             var queue = QueueOf(kind);
+            // アプリが裏で止まっていた分は OnlineSession が別に扱うので、ここは実時間でよい
+            float deadline = Time.realtimeSinceStartup + timeoutSeconds;
             while (queue.Count == 0)
             {
+                if (Time.realtimeSinceStartup >= deadline)
+                {
+                    Debug.LogWarning($"[OnlineLink] {kind} が {timeoutSeconds} 秒届かないので、通信が止まったとみなします");
+                    OnTimedOut?.Invoke();
+                    yield break;
+                }
                 yield return null;
             }
             onReceived(queue.Dequeue());

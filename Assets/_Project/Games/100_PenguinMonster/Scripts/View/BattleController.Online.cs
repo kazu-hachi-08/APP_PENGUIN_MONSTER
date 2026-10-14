@@ -14,6 +14,12 @@ namespace PenguinMonster.View
     {
         private const string WaitingText = "相手を 待っています…";
 
+        /// <summary>
+        /// ホストとゲストは別々の状態から「次に何を待つか」を決めるので、ずれると待ち合って止まる。
+        /// 接続が生きていると切断も来ないため、上限を付けて抜けられるようにする
+        /// </summary>
+        private const float ReplyTimeout = BattleBalance.OnlineReplyTimeoutSeconds;
+
         /// <summary>ドラフト・選出の後など、相手がそろうまでの間に出しておく</summary>
         public void ShowWaiting(string text = WaitingText)
         {
@@ -38,7 +44,7 @@ namespace PenguinMonster.View
                 yield return WaitForPlayerActions();
                 List<BattleAction> guestActions = null;
                 _messageWindow.SetText(WaitingText);
-                yield return link.Wait(LinkMessage.Action, data => guestActions = OnlineCodec.DecodeActions(data));
+                yield return link.Wait(LinkMessage.Action, data => guestActions = OnlineCodec.DecodeActions(data), ReplyTimeout);
                 yield return SendAndPlay(_engine.ResolveTurn(_playerActions, guestActions), link);
                 if (!_state.IsOver)
                 {
@@ -85,7 +91,7 @@ namespace PenguinMonster.View
             if (guest)
             {
                 _messageWindow.SetText(WaitingText);
-                yield return link.Wait(LinkMessage.Replace, data => guestChoices = data);
+                yield return link.Wait(LinkMessage.Replace, data => guestChoices = data, ReplyTimeout);
             }
 
             var events = new List<BattleEvent>();
@@ -144,7 +150,8 @@ namespace PenguinMonster.View
         private IEnumerator ReceiveAndPlay(OnlineLink link)
         {
             List<BattleEvent> events = null;
-            yield return link.Wait(LinkMessage.Events, data => events = BattleEventCodec.Decode(data, _state, swapSides: true));
+            yield return link.Wait(LinkMessage.Events, data => events = BattleEventCodec.Decode(data, _state, swapSides: true),
+                ReplyTimeout);
             yield return Play(events);
         }
     }
