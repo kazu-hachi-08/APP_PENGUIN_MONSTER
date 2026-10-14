@@ -10,7 +10,7 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// 見せ合い・選出の画面（仕様書 §2.2）。上に相手の6体を見せ、下の自分の6体から3体（ダブルスは4体）を選ぶ。
-    /// 選んだ順が出す順（1番目が先頭）。もう一度押すと外せる。
+    /// 選んだ順が出す順（1番目が先頭）。もう一度押すと外せる。持ち物は自分のマスにだけ出す（相手のはバトルで働くまで隠す）。
     /// 演出: 開いたら相手の帯は右から、自分の列は左から滑り込み、あいだに「VS」を出す
     /// </summary>
     public class SelectPanel : MonoBehaviour
@@ -34,6 +34,8 @@ namespace PenguinMonster.View
         [SerializeField] private Color _pickedColor = new Color(0.95f, 0.6f, 0.2f);
 
         private const string Title = "バトルに 出す ペンモンを 選んでください";
+        // 青・オレンジのどちらのマスの上でも目立つよう、明るい黄色にする
+        private const string ItemColor = "#FFF080";
 
         private readonly List<int> _picked = new List<int>();
         private IReadOnlyList<MonsterDefinition> _monsters;
@@ -64,12 +66,12 @@ namespace PenguinMonster.View
             for (int i = 0; i < _cellButtons.Length; i++)
             {
                 _cellIcons[i].sprite = MonsterSprites.Front(own[i]);
-                _cellLabels[i].text = Label(own[i]);
+                _cellLabels[i].text = Label(own[i], showItem: true);
             }
             for (int i = 0; i < _opponentIcons.Length; i++)
             {
                 _opponentIcons[i].sprite = MonsterSprites.Front(opponent[i]);
-                _opponentLabels[i].text = Label(opponent[i]);
+                _opponentLabels[i].text = Label(opponent[i], showItem: false);
             }
             Refresh();
             gameObject.SetActive(true);
@@ -141,10 +143,15 @@ namespace PenguinMonster.View
             _decideButton.interactable = _picked.Count == _partySize;
         }
 
-        private static string Label(MonsterDefinition monster)
+        private static string Label(MonsterDefinition monster, bool showItem)
         {
             string types = string.Join("/", monster.Types.Select(t => t.ToJapanese()));
-            return $"{monster.Name}\n<size=22>{types}</size>";
+            string label = $"{monster.Name}\n<size=22>{types}</size>";
+            if (showItem && monster.Item != HeldItem.None)
+            {
+                label += $"\n<size=22><color={ItemColor}>{monster.Item.ToJapanese()}</color></size>";
+            }
+            return label;
         }
     }
 }

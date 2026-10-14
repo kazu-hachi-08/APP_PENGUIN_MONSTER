@@ -15,7 +15,7 @@ namespace PenguinMonster.Editor
     /// <summary>
     /// ペンモンのシーンをコードから生成する。シーンは生成物なので手で編集せず、ここを直して Rebuild する。
     /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、
-    /// タイトルは .Title.cs、ドラフトは .Draft.cs、「やめる」は .Quit.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
+    /// タイトルは .Title.cs、ドラフトは .Draft.cs、持ち物は .Item.cs、「やめる」は .Quit.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
     /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs、
     /// 結果は .Result.cs、オンラインの部屋は .Room.cs、画面をまたいでそろえる見た目（夜空・見出し・ボタン）は .Style.cs
     /// </summary>
@@ -124,7 +124,7 @@ namespace PenguinMonster.Editor
         }
 
         /// <summary>
-        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
+        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → 持ち物 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
         /// 結果は共通基盤の ResultDialog を見た目だけ作り直して使う。「もう一度遊ぶ」は勝ち抜き戦の「次の 戦いへ」に使う
         /// </summary>
         private static void BuildFlow(Transform canvas, BattleController battle)
@@ -135,6 +135,7 @@ namespace PenguinMonster.Editor
             var resultDialog = CreateResultPanel(root.transform, out var resultBanner);
             var selectPanel = CreateSelectPanel(root.transform);
             var introPanel = CreateIntroPanel(root.transform);
+            var itemPanel = CreateItemPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
             var formatPanel = CreateFormatPanel(root.transform);
             var quitButton = CreateQuitButton(root.transform);
@@ -148,6 +149,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_titlePanel").objectReferenceValue = titlePanel;
             so.FindProperty("_formatPanel").objectReferenceValue = formatPanel;
             so.FindProperty("_draftPanel").objectReferenceValue = draftPanel;
+            so.FindProperty("_itemPanel").objectReferenceValue = itemPanel;
             so.FindProperty("_introPanel").objectReferenceValue = introPanel;
             so.FindProperty("_selectPanel").objectReferenceValue = selectPanel;
             so.FindProperty("_battle").objectReferenceValue = battle;
