@@ -5,11 +5,14 @@ namespace PenguinMonster.Battle
     /// </summary>
     public static class BattleBalance
     {
+        /// <summary>ドラフト・勝ち抜き戦・オンラインのレベル。レベルを渡さないときの既定</summary>
         public const int Level = 50;
 
-        // Lv50・個体値31・努力値0 で計算したときの上乗せ分
-        public const int HpBonus = 75;
-        public const int StatBonus = 20;
+        // 能力値の式（本家の式で個体値31・努力値0）。Lv50 なら HP＝種族値＋75、ほか＝種族値＋20 になる
+        public const int IndividualValue = 31;
+        public const int StatLevelDivisor = 100;
+        public const int HpFlatBonus = 10;
+        public const int StatFlatBonus = 5;
 
         /// <summary>選出する数（3vs3）</summary>
         public const int PartySize = 3;
@@ -69,8 +72,8 @@ namespace PenguinMonster.Battle
         /// <summary>命中率の上限（%）。技の命中がこれ以上なら必ず当たる</summary>
         public const int AccuracyPercentMax = 100;
 
-        /// <summary>ダメージ式の「2×Lv÷5＋2」の部分。Lv固定なので定数で持つ</summary>
-        public const int LevelFactor = 2 * Level / 5 + 2;
+        /// <summary>ダメージ式の「2×Lv÷5＋2」の部分。攻撃する側のレベルで出す</summary>
+        public static int LevelFactor(int level) => 2 * level / 5 + 2;
 
         // 能力変化（仕様書 §4.5）。倍率は 能力 (2+n)/2、命中・回避 (3+n)/3（下がるときは分母に足す）
         public const int MaxStatStage = 6;

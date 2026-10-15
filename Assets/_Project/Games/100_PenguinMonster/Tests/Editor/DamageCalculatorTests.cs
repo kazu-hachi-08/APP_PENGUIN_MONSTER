@@ -61,6 +61,38 @@ namespace PenguinMonster.Battle.Tests
         }
 
         [Test]
+        public void Level50_SameAsDefault()
+        {
+            Assert.AreEqual(44, DamageCalculator.Compute(Power, Attack, Defense, false, 100, false, 1f, level: 50));
+        }
+
+        [Test]
+        public void Level_ChangesLevelFactor()
+        {
+            // Lv100: 42×80×120÷100 = 4032 → ÷50 = 80 → +2 = 82 / Lv5: 4×80×120÷100 = 384 → ÷50 = 7 → +2 = 9
+            Assert.AreEqual(82, DamageCalculator.Compute(Power, Attack, Defense, false, 100, false, 1f, level: 100));
+            Assert.AreEqual(9, DamageCalculator.Compute(Power, Attack, Defense, false, 100, false, 1f, level: 5));
+        }
+
+        [Test]
+        public void Calculate_UsesAttackerLevel()
+        {
+            var attacker = new BattleMonster(TestMonsters.Create("A", 50, TestMonsters.Strike)
+                .WithLoadout(10, new[] { TestMonsters.Strike }, HeldItem.None));
+            var defender = new BattleMonster(TestMonsters.Create("B", 50, TestMonsters.Strike));
+
+            var expectedRandom = new System.Random(1234);
+            bool isCritical = expectedRandom.Next(BattleBalance.CriticalChanceDenominator) == 0;
+            int roll = expectedRandom.Next(BattleBalance.DamageRandomMinPercent, BattleBalance.DamageRandomMaxPercent + 1);
+            int expected = DamageCalculator.Compute(50, attacker.AttackStat(true, isCritical), defender.DefenseStat(true, isCritical),
+                isCritical, roll, true, 1f, level: 10);
+
+            var result = DamageCalculator.Calculate(attacker, defender, TestMonsters.Strike, new System.Random(1234));
+
+            Assert.AreEqual(expected, result.Damage);
+        }
+
+        [Test]
         public void Calculate_WithSeededRandom_MatchesCompute()
         {
             var attacker = new BattleMonster(TestMonsters.Create("A", 50, TestMonsters.Strike, attack: 100));

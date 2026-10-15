@@ -102,8 +102,18 @@ namespace PenguinMonster.Battle
         public BattleMonster(MonsterDefinition definition)
         {
             Definition = definition;
-            Stats = Stats.FromBase(definition.BaseStats);
+            Stats = Stats.FromBase(definition.BaseStats, definition.Level);
             CurrentHp = Stats.Hp;
+        }
+
+        /// <summary>
+        /// 途中の HP・状態異常から始める。ストーリーで前の戦いの傷を持ち越すため。
+        /// HP は 1〜最大HP に収める（瀕死の子は出さない前提）
+        /// </summary>
+        public BattleMonster(MonsterDefinition definition, int startHp, StatusCondition startStatus) : this(definition)
+        {
+            CurrentHp = Math.Max(1, Math.Min(MaxHp, startHp));
+            Status = startStatus;
         }
 
         public int GetStage(StatKind stat) => _stages[(int)stat];

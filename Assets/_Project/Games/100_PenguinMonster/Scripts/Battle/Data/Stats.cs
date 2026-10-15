@@ -26,18 +26,26 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// 種族値から Lv50 の実数値を出す（仕様書 §3.2）。
-        /// 育成が無いので、個体値31・努力値0 相当の固定値を足すだけでよい
+        /// 種族値とレベルから実数値を出す（仕様書 §3.2）。
+        /// 努力値の育成は無いので、本家の式の個体値31・努力値0 で固定する。Lv50 なら今までの値（種族値＋75 / ＋20）と同じ
         /// </summary>
-        public static Stats FromBase(Stats baseStats)
+        public static Stats FromBase(Stats baseStats, int level = BattleBalance.Level)
         {
             return new Stats(
-                baseStats.Hp + BattleBalance.HpBonus,
-                baseStats.Attack + BattleBalance.StatBonus,
-                baseStats.Defense + BattleBalance.StatBonus,
-                baseStats.SpAttack + BattleBalance.StatBonus,
-                baseStats.SpDefense + BattleBalance.StatBonus,
-                baseStats.Speed + BattleBalance.StatBonus);
+                LevelPart(baseStats.Hp, level) + level + BattleBalance.HpFlatBonus,
+                OtherStat(baseStats.Attack, level),
+                OtherStat(baseStats.Defense, level),
+                OtherStat(baseStats.SpAttack, level),
+                OtherStat(baseStats.SpDefense, level),
+                OtherStat(baseStats.Speed, level));
+        }
+
+        private static int OtherStat(int baseStat, int level) => LevelPart(baseStat, level) + BattleBalance.StatFlatBonus;
+
+        /// <summary>⌊(2×種族値＋個体値)×Lv÷100⌋。HP とほかで共通の部分</summary>
+        private static int LevelPart(int baseStat, int level)
+        {
+            return (2 * baseStat + BattleBalance.IndividualValue) * level / BattleBalance.StatLevelDivisor;
         }
     }
 }
