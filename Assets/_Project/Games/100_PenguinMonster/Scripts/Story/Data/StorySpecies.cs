@@ -9,13 +9,18 @@ namespace PenguinMonster.Story
     public sealed class StorySpecies
     {
         public MonsterDefinition Definition { get; }
+        public GrowthRate GrowthRate { get; }
+        /// <summary>倒されたときの経験値の基礎値（本家の「基礎経験値」）</summary>
+        public int BaseExp { get; }
 
         public int No => Definition.No;
         public string Name => Definition.Name;
 
-        public StorySpecies(MonsterDefinition definition)
+        public StorySpecies(MonsterDefinition definition, GrowthRate growthRate, int baseExp)
         {
             Definition = definition;
+            GrowthRate = growthRate;
+            BaseExp = baseExp;
         }
     }
 }

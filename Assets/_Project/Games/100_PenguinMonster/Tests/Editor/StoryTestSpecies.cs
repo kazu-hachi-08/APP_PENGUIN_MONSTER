@@ -9,9 +9,9 @@ namespace PenguinMonster.Story.Tests
     {
         public static readonly MoveDefinition Peck = new MoveDefinition("テストつつく", MonsterType.Normal, MoveCategory.Physical, 40, 100);
 
-        public static readonly StorySpecies Chick = new StorySpecies(Definition(901, "テストヒナ", new Stats(45, 49, 49, 65, 65, 45)));
-        public static readonly StorySpecies Junior = new StorySpecies(Definition(902, "テストワカ", new Stats(60, 62, 63, 80, 80, 60)));
-        public static readonly StorySpecies Adult = new StorySpecies(Definition(903, "テストオトナ", new Stats(80, 82, 83, 100, 100, 80)));
+        public static readonly StorySpecies Chick = new StorySpecies(Definition(901, "テストヒナ", new Stats(45, 49, 49, 65, 65, 45)), GrowthRate.MediumFast, 64);
+        public static readonly StorySpecies Junior = new StorySpecies(Definition(902, "テストワカ", new Stats(60, 62, 63, 80, 80, 60)), GrowthRate.MediumFast, 142);
+        public static readonly StorySpecies Adult = new StorySpecies(Definition(903, "テストオトナ", new Stats(80, 82, 83, 100, 100, 80)), GrowthRate.MediumFast, 236);
 
         private static MonsterDefinition Definition(int no, string name, Stats baseStats)
         {
