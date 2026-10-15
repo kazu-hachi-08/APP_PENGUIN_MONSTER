@@ -11,7 +11,7 @@ namespace PenguinMonster.View
     /// 画面の流れ（仕様書 §2 / §2.3）: タイトル → シングル / ダブルス → ドラフト → 持ち物 →
     /// [何戦目か・ボス登場 → 見せ合い・選出 → バトル → 結果] を負けるまでくり返す → タイトル。
     /// 各画面は自分の表示と入力だけを持ち、次へ進む順番はここで決める。
-    /// 結果の文面は GameFlow.Result.cs、オンライン対戦の流れは GameFlow.Online.cs
+    /// 結果の文面は GameFlow.Result.cs、オンライン対戦の流れは GameFlow.Online.cs、ストーリーの流れは GameFlow.Story.cs
     /// </summary>
     public partial class GameFlow : MonoBehaviour
     {
@@ -38,15 +38,23 @@ namespace PenguinMonster.View
 
         private IEnumerator Run()
         {
+            bool story = false;
             bool survival = false;
             bool online = false;
             // 図鑑・設定などタイトルから開く画面と、シングル / ダブルスを選ぶまではタイトルの曲のまま
             GameMusic.Play(MusicTrack.Title);
             _titlePanel.Show(BestScore.Get(BestWinsKey), BestScore.Get(BestDoubleWinsKey),
-                onSurvival: () => survival = true, onOnline: () => online = true);
-            yield return new WaitUntil(() => survival || online);
+                onStory: () => story = true, onSurvival: () => survival = true, onOnline: () => online = true);
+            yield return new WaitUntil(() => story || survival || online);
 
-            yield return online ? RunOnline() : RunSurvival();
+            if (story)
+            {
+                yield return RunStory();
+            }
+            else
+            {
+                yield return online ? RunOnline() : RunSurvival();
+            }
         }
 
         private static string BestKey(BattleFormat format) => format == BattleFormat.Double ? BestDoubleWinsKey : BestWinsKey;

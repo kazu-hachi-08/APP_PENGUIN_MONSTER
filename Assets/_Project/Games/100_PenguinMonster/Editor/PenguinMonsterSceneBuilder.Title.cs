@@ -8,11 +8,12 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// タイトル画面。夜空に雪が降り、下の雪原をペンモンが歩く。
-    /// 上にロゴと飾りのペンモン、まん中に大きな「遊ぶ」ボタン2つと最高記録、下に小さなメニューの列
+    /// 上にロゴと飾りのペンモン、まん中に大きな「遊ぶ」ボタン3つと最高記録、下に小さなメニューの列
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
-        // 仕様書 §2 のメニュー。勝ち抜き戦・オンライン対戦を大きく出し、SubMenuLabels（ずかん〜設定）は下の列に並べる
+        // 仕様書 §2 のメニュー。ストーリー・勝ち抜き戦・オンライン対戦を大きく出し、SubMenuLabels（ずかん〜設定）は下の列に並べる
+        private const string StoryMenu = "ストーリー";
         private const string SurvivalMenu = "勝ち抜き戦";
         private const string OnlineMenu = "オンライン対戦";
         private const int TitleMascotCount = 2;
@@ -35,7 +36,8 @@ namespace PenguinMonster.Editor
         private const float TitleMascotSize = 240f;
 
         private static readonly Vector2 TitleMainMenuPosition = new Vector2(0f, 20f);
-        private static readonly Vector2 TitleMainButtonSize = new Vector2(620f, 200f);
+        // 3つ並べても基準の横幅 1920 に収まる幅（「オンライン対戦」の7文字が入る）
+        private static readonly Vector2 TitleMainButtonSize = new Vector2(560f, 200f);
         private const float TitleMainSpacing = 40f;
         private static readonly Vector2 TitleBestPosition = new Vector2(0f, -150f);
         // シングルとダブルスの2つの記録が1行に入る幅
@@ -72,6 +74,7 @@ namespace PenguinMonster.Editor
         private static readonly Color TitleSnowFieldColor = new Color(0.86f, 0.92f, 1f);
         private static readonly Color TitleFlakeColor = new Color(1f, 1f, 1f, 0.85f);
         // ボタンの絵は面が白より少し暗い（ButtonArt）ので、そのぶん明るめの色を掛ける
+        private static readonly Color StoryColor = new Color(1f, 0.72f, 0.25f);
         private static readonly Color SurvivalColor = new Color(1f, 0.42f, 0.38f);
         private static readonly Color OnlineColor = new Color(0.3f, 0.72f, 0.5f);
         private static readonly Color MenuColor = new Color(0.45f, 0.6f, 0.85f);
@@ -91,6 +94,7 @@ namespace PenguinMonster.Editor
             var mascots = CreateTitleMascots(content);
 
             var mainRow = CreateCenteredRow(content, "MainMenu", Center, TitleMainMenuPosition, TitleMainButtonSize.y, TitleMainSpacing);
+            var story = CreateTitleMenuButton(mainRow, StoryMenu, StoryColor, TitleMainButtonSize, TitleMainFontSize);
             var survival = CreateTitleMenuButton(mainRow, SurvivalMenu, SurvivalColor, TitleMainButtonSize, TitleMainFontSize);
             var online = CreateTitleMenuButton(mainRow, OnlineMenu, OnlineColor, TitleMainButtonSize, TitleMainFontSize);
             var best = CreateTitleBest(content);
@@ -104,6 +108,7 @@ namespace PenguinMonster.Editor
 
             var panel = back.gameObject.AddComponent<TitlePanel>();
             var so = new SerializedObject(panel);
+            so.FindProperty("_storyButton").objectReferenceValue = story;
             so.FindProperty("_survivalButton").objectReferenceValue = survival;
             so.FindProperty("_onlineButton").objectReferenceValue = online;
             SetArray(so.FindProperty("_subMenuButtons"), subMenuButtons);
