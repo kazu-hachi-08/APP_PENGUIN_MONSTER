@@ -21,10 +21,12 @@ namespace PenguinMonster.Story
             { 'R', TileKind.Roof },
             { 'D', TileKind.Door },
             { '_', TileKind.Floor },
+            { 'S', TileKind.Sign },
         };
 
         private readonly TileKind[,] _tiles;
         private readonly Dictionary<GridPos, Warp> _warps = new Dictionary<GridPos, Warp>();
+        private readonly Dictionary<GridPos, string[]> _signs = new Dictionary<GridPos, string[]>();
 
         public string Id { get; }
         public int Width { get; }
@@ -73,5 +75,20 @@ namespace PenguinMonster.Story
 
         /// <summary>そのマスの出入口。無ければ null</summary>
         public Warp WarpAt(GridPos pos) => _warps.TryGetValue(pos, out var warp) ? warp : null;
+
+        /// <summary>看板のマスに文を書く。表と続けて書けるよう、自分を返す</summary>
+        public FieldMap WithSign(GridPos pos, params string[] lines)
+        {
+            // 看板の文字の無いマスに書くと読めないまま残るので、作った時点で止める
+            if (!Contains(pos) || TileAt(pos) != TileKind.Sign)
+            {
+                throw new ArgumentException($"{Id}: {pos} は看板のマスではない");
+            }
+            _signs.Add(pos, lines);
+            return this;
+        }
+
+        /// <summary>看板の文。そのマスに看板が無ければ null</summary>
+        public IReadOnlyList<string> SignAt(GridPos pos) => _signs.TryGetValue(pos, out var lines) ? lines : null;
     }
 }

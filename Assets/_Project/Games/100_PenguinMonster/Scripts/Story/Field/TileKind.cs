@@ -13,6 +13,8 @@ namespace PenguinMonster.Story
         Roof,
         Door,
         Floor,
+        /// <summary>看板。通れず、前から A で読む</summary>
+        Sign,
     }
 
     public static class TileKindExtensions
@@ -25,6 +27,7 @@ namespace PenguinMonster.Story
                 case TileKind.Water:
                 case TileKind.HouseWall:
                 case TileKind.Roof:
+                case TileKind.Sign:
                     return false;
                 default:
                     return true;

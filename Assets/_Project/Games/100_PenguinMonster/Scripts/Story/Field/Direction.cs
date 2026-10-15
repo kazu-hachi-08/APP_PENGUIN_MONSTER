@@ -22,5 +22,17 @@ namespace PenguinMonster.Story
                 default: return new GridPos(0, 1);
             }
         }
+
+        /// <summary>話しかけられた人が、話しかけた側を向くための逆向き</summary>
+        public static Direction Opposite(this Direction direction)
+        {
+            switch (direction)
+            {
+                case Direction.Up: return Direction.Down;
+                case Direction.Left: return Direction.Right;
+                case Direction.Right: return Direction.Left;
+                default: return Direction.Up;
+            }
+        }
     }
 }

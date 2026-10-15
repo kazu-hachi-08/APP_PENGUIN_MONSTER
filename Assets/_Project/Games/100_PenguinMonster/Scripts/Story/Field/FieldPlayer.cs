@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace PenguinMonster.Story
 {
     /// <summary>1歩の結果。向きはどちらでも変わる</summary>
@@ -9,12 +11,13 @@ namespace PenguinMonster.Story
     }
 
     /// <summary>
-    /// フィールドの主人公の位置と向き。1マスずつ歩き、出入口に乗ったらマップを移る。
+    /// フィールドの主人公の位置と向き。1マスずつ歩き、出入口に乗ったらマップを移る。人の立っているマスは通れない。
     /// 歩く動き・暗転は View が受け持ち、ここはマスの上の位置だけを決める
     /// </summary>
     public sealed class FieldPlayer
     {
         private readonly FieldWorld _world;
+        private readonly FieldPeople _people;
 
         public FieldMap Map { get; private set; }
         public GridPos Position { get; private set; }
@@ -23,9 +26,17 @@ namespace PenguinMonster.Story
         /// <summary>今いるマスの出入口。View は歩き終えたらこれを見て、暗転してから Enter を呼ぶ</summary>
         public Warp WarpHere => Map.WarpAt(Position);
 
-        public FieldPlayer(FieldWorld world, FieldSpot start)
+        /// <summary>向いている1マス先（A で調べるマス）</summary>
+        public GridPos Ahead => Position + Facing.Offset();
+
+        /// <summary>向いている先に立っている人。居なければ null</summary>
+        public PlacedNpc? PersonAhead => _people?.At(Map.Id, Ahead);
+
+        /// <param name="people">人の居ないマップ（テスト）では省く</param>
+        public FieldPlayer(FieldWorld world, FieldSpot start, FieldPeople people = null)
         {
             _world = world;
+            _people = people;
             MoveTo(start);
         }
 
@@ -33,12 +44,24 @@ namespace PenguinMonster.Story
         {
             Facing = direction;
             var next = Position + direction.Offset();
-            if (!Map.IsWalkable(next))
+            if (!Map.IsWalkable(next) || _people?.At(Map.Id, next) != null)
             {
                 return StepResult.Blocked;
             }
             Position = next;
             return StepResult.Moved;
+        }
+
+        /// <summary>A で調べたときの台本。人が居ればその人の、看板ならその文。何も無ければ null</summary>
+        public IReadOnlyList<EventStep> ScriptAhead()
+        {
+            var person = PersonAhead;
+            if (person != null)
+            {
+                return person.Value.Placement.Script;
+            }
+            var sign = Map.SignAt(Ahead);
+            return sign != null ? EventStep.Lines(sign) : null;
         }
 
         public void Enter(Warp warp)

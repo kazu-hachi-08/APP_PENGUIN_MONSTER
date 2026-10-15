@@ -11,6 +11,12 @@ namespace PenguinMonster.Story
         /// <summary>覚えていられる技の数。これ以上は1つ忘れて入れ替える</summary>
         public const int MaxMoves = 4;
 
+        /// <summary>手持ちの数（本家と同じ）</summary>
+        public const int MaxPartySize = 6;
+
+        /// <summary>博士からもらう最初の1体のレベル（本家と同じ）</summary>
+        public const int StarterLevel = 5;
+
         // 倒したときの経験値（本家の第5世代の簡略版）＝ 基礎値 × 相手の Lv ÷ 5。トレーナー戦は 1.5 倍
         public const int ExpYieldLevelDivisor = 5;
         // 1.5 倍を整数で掛けるため分子・分母に分ける（小数の誤差で1ずれないように）

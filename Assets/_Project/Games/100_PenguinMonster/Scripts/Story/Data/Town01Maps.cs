@@ -1,9 +1,9 @@
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2）。今は歩けるか確かめるための仮のハツユキ村と、家・研究所の中だけ。
+    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2）。今は仮のハツユキ村と、家・研究所の中だけ。
     /// 本番の中身はフェーズ8で作り直す。
-    /// 文字: . 雪 / , 草むら / = 道 / T 木 / ~ 水 / W 家の壁 / R 屋根 / D 扉 / _ 床
+    /// 文字: . 雪 / , 草むら / = 道 / T 木 / ~ 水 / W 家の壁 / R 屋根 / D 扉 / _ 床 / S 看板
     /// </summary>
     public static class Town01Maps
     {
@@ -17,8 +17,13 @@ namespace PenguinMonster.Story
         private static readonly GridPos RivalHouseDoor = new GridPos(13, 4);
         private static readonly GridPos LabDoor = new GridPos(6, 10);
 
-        /// <summary>「ストーリー」を始めたときに立つ場所（目覚める家の中はフェーズ4で物語と一緒に作る）</summary>
-        public static readonly FieldSpot Start = new FieldSpot(Village, new GridPos(4, 5), Direction.Down);
+        /// <summary>村の北の出口（1番道路はまだ無いので行き止まり）。最初の1体をもらうまで母が手前でふさぐ</summary>
+        public static readonly GridPos NorthExit = new GridPos(9, 0);
+        private static readonly GridPos ExitSign = new GridPos(10, 1);
+        private static readonly GridPos VillageSign = new GridPos(8, 7);
+
+        /// <summary>「ストーリー」を始めたときに立つ場所。自分の家の中で目覚める</summary>
+        public static readonly FieldSpot Start = new FieldSpot(PlayerHouse, new GridPos(2, 2), Direction.Down);
 
         public static FieldWorld CreateWorld()
         {
@@ -29,14 +34,14 @@ namespace PenguinMonster.Story
         {
             var rows = new[]
             {
-                "TTTTTTTTTTTTTTTTTTTT",
-                "T..................T",
-                "T..RRRR....RRRR....T",
-                "T..RRRR....RRRR....T",
-                "T..WDWW....WWDW....T",
-                "T...=........=.....T",
+                "TTTTTTTTT=TTTTTTTTTT",
+                "T........=S........T",
+                "T..RRRR..=.RRRR....T",
+                "T..RRRR..=.RRRR....T",
+                "T..WDWW..=.WWDW....T",
+                "T...=....=...=.....T",
                 "T...==========.....T",
-                "T........=.....,,,.T",
+                "T.......S=.....,,,.T",
                 "T..RRRRRR=.....,,,.T",
                 "T..RRRRRR=.....,,,.T",
                 "T..WWWDWW=.........T",
@@ -49,7 +54,9 @@ namespace PenguinMonster.Story
             return new FieldMap(Village, rows,
                 Inside(PlayerHouseDoor, PlayerHouse, HouseArrival),
                 Inside(RivalHouseDoor, RivalHouse, HouseArrival),
-                Inside(LabDoor, Lab, LabArrival));
+                Inside(LabDoor, Lab, LabArrival))
+                .WithSign(ExitSign, "この先 1番道路", "（まだ 準備中です）")
+                .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村");
         }
 
         // 中の扉と、入ったときに立つ扉の前のマス

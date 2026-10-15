@@ -137,18 +137,24 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
-        public void Town01_EnterHouseAndComeBack_ReturnsInFrontOfDoor()
+        public void Town01_LeaveHouseAndComeBack_ArrivesInFrontOfDoors()
         {
+            // 自分の家の中で目覚め、扉 (3,5) から村へ出て、また入る
             var player = new FieldPlayer(Town01Maps.CreateWorld(), Town01Maps.Start);
+            Assert.AreEqual(Town01Maps.PlayerHouse, player.Map.Id);
+
+            player.Step(Direction.Right);
+            player.Step(Direction.Down);
+            player.Step(Direction.Down);
+            player.Step(Direction.Down);
+            player.Enter(player.WarpHere);
+            Assert.AreEqual(Town01Maps.Village, player.Map.Id);
+            Assert.AreEqual(new GridPos(4, 5), player.Position);
 
             player.Step(Direction.Up);
             player.Enter(player.WarpHere);
             Assert.AreEqual(Town01Maps.PlayerHouse, player.Map.Id);
-
-            player.Step(Direction.Down);
-            player.Enter(player.WarpHere);
-            Assert.AreEqual(Town01Maps.Village, player.Map.Id);
-            Assert.AreEqual(Town01Maps.Start.Position, player.Position);
+            Assert.AreEqual(new GridPos(3, 4), player.Position);
         }
     }
 }
