@@ -73,12 +73,5 @@ namespace PenguinMonster.Story.Tests
             Assert.AreEqual(Experience.ForLevel(GrowthRate.MediumFast, 100), owned.Exp);
             Assert.AreEqual(0, owned.GainExp(100).Count);
         }
-
-        private static void Hurt(OwnedMonster owned, int damage)
-        {
-            var fighter = owned.ToBattle();
-            fighter.TakeDamage(damage);
-            owned.ApplyBattleResult(fighter);
-        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using PenguinMonster.Battle;
 
 namespace PenguinMonster.Story
@@ -12,15 +13,34 @@ namespace PenguinMonster.Story
         public GrowthRate GrowthRate { get; }
         /// <summary>倒されたときの経験値の基礎値（本家の「基礎経験値」）</summary>
         public int BaseExp { get; }
+        /// <summary>覚える技の表。レベルの低い順に並べる</summary>
+        public IReadOnlyList<LevelMove> Learnset { get; }
+        /// <summary>進化しない種は null</summary>
+        public Evolution Evolution { get; }
 
         public int No => Definition.No;
         public string Name => Definition.Name;
 
-        public StorySpecies(MonsterDefinition definition, GrowthRate growthRate, int baseExp)
+        public StorySpecies(MonsterDefinition definition, GrowthRate growthRate, int baseExp, LevelMove[] learnset,
+            Evolution evolution = null)
         {
             Definition = definition;
             GrowthRate = growthRate;
             BaseExp = baseExp;
+            Learnset = learnset;
+            Evolution = evolution;
+        }
+
+        /// <summary>ちょうどそのレベルで覚える技（表の順）</summary>
+        public IEnumerable<MoveDefinition> MovesLearnedAt(int level)
+        {
+            foreach (var entry in Learnset)
+            {
+                if (entry.Level == level)
+                {
+                    yield return entry.Move;
+                }
+            }
         }
     }
 }
