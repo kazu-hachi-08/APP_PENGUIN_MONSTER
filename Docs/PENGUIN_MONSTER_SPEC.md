@@ -661,4 +661,4 @@ Tests/Editor/               # EditMode テスト（PenguinMonster.Battle.Tests.a
 
 - ダブルスの見直し（遊んでから）: 味方を狙う技、ダブルス用の CPU の連携（守る・追い風・手助けを狙って使う）、勝ち抜き戦のダブルス専用ボス
 - ドラフトのカードにランクの札（伝説なら金の枠など）を出す
-- ストーリーモード（構想だけ）: 相手ごとにタマゴの種類を変える。`EggKind` と `EggStyleTable` に1行ずつ足し、試合の前に `BattleController.SetEggs` で渡す
+- ストーリーモード（計画中）: 全体の方針は `STORY_ROADMAP.md`、区切りごとの計画は `PLAN_STORY_TOWNxx.md`。実装したらこの仕様書に反映する。相手ごとにタマゴの種類を変える。`EggKind` と `EggStyleTable` に1行ずつ足し、試合の前に `BattleController.SetEggs` で渡す
