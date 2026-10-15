@@ -55,7 +55,14 @@ namespace PenguinMonster.View
             }
         }
 
-        private IEnumerator Type(string message)
+        /// <summary>フィールドの A ボタンなど、タップ以外で送る</summary>
+        public void RequestAdvance()
+        {
+            _advanceRequested = true;
+        }
+
+        /// <summary>送り表示だけして待たない。「はい / いいえ」のように、続けて選択肢を出す文に使う</summary>
+        public IEnumerator Type(string message)
         {
             _nextIndicator.SetActive(false);
             _advanceRequested = false;

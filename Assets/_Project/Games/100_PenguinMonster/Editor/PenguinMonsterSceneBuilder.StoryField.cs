@@ -32,10 +32,11 @@ namespace PenguinMonster.Editor
         private static readonly Color AButtonColor = new Color(1f, 0.42f, 0.38f, 0.8f);
         private static readonly Color BButtonColor = new Color(1f, 0.72f, 0.25f, 0.8f);
 
-        private static FieldController BuildStoryField(Camera camera, FieldInput input, FadeController fade)
+        private static FieldController BuildStoryField(Camera camera, FieldInput input, FadeController fade, FieldEventPlayer events)
         {
             var root = new GameObject("StoryField", typeof(Grid));
             var mapView = CreateFieldMap(root.transform);
+            var people = CreatePeople(root.transform);
             var avatar = CreateHero(root.transform);
             var fieldCamera = CreateFieldCamera(camera);
 
@@ -43,6 +44,8 @@ namespace PenguinMonster.Editor
             var so = new SerializedObject(controller);
             so.FindProperty("_mapView").objectReferenceValue = mapView;
             so.FindProperty("_avatar").objectReferenceValue = avatar;
+            so.FindProperty("_peopleView").objectReferenceValue = people;
+            so.FindProperty("_events").objectReferenceValue = events;
             so.FindProperty("_camera").objectReferenceValue = fieldCamera;
             so.FindProperty("_input").objectReferenceValue = input;
             so.FindProperty("_fade").objectReferenceValue = fade;
@@ -67,6 +70,18 @@ namespace PenguinMonster.Editor
             var view = tiles.AddComponent<FieldMapView>();
             var so = new SerializedObject(view);
             so.FindProperty("_tilemap").objectReferenceValue = tiles.GetComponent<Tilemap>();
+            so.ApplyModifiedProperties();
+            return view;
+        }
+
+        /// <summary>村の人の絵の置き場。絵（SpriteRenderer）はマップに立つ人数ぶん FieldPeopleView が実行時に作る</summary>
+        private static FieldPeopleView CreatePeople(Transform parent)
+        {
+            var people = new GameObject("People");
+            people.transform.SetParent(parent, false);
+            var view = people.AddComponent<FieldPeopleView>();
+            var so = new SerializedObject(view);
+            so.FindProperty("_sortingOrder").intValue = HeroSortingOrder;
             so.ApplyModifiedProperties();
             return view;
         }

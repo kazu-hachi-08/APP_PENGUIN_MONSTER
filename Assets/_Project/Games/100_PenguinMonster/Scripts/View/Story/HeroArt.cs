@@ -9,7 +9,8 @@ namespace PenguinMonster.View.Story
     /// <summary>
     /// 主人公（雪国の子ども。赤い毛糸の帽子に青い上着）の絵。4方向 × 2コマ（立ち・歩き）。
     /// 16x16 は図形を組み合わせるより1ドットずつ書くほうが形を決めやすいので、文字の絵で描く。
-    /// 右向きは左向きの左右反転。歩きのコマも反転すると、もう片方の足を出した絵になる
+    /// 右向きは左向きの左右反転。歩きのコマも反転すると、もう片方の足を出した絵になる。
+    /// 村の人も同じ形の色違いで描く（NpcArt）
     /// </summary>
     public static class HeroArt
     {
@@ -18,6 +19,7 @@ namespace PenguinMonster.View.Story
         // 足元がマスの下端に来るよう、下の中央を基準にする
         private static readonly Vector2 FeetPivot = new Vector2(0.5f, 0f);
 
+        // 文字ごとの色: o 縁 / r 帽子 / w 帽子の縁取り / h 髪 / s 肌 / e 目 / b 上着 / B 上着の裾 / k 靴
         private static readonly Dictionary<char, Color32> Palette = new Dictionary<char, Color32>
         {
             { 'o', new Color32(36, 40, 72, 255) },
@@ -100,30 +102,34 @@ namespace PenguinMonster.View.Story
         /// </param>
         public static Sprite Get(Direction facing, int frame, bool mirrorStep = false)
         {
-            _sprites ??= CreateAll();
+            _sprites ??= CreateAll("Hero", Palette);
             bool canMirror = facing == Direction.Down || facing == Direction.Up;
             int column = frame == 0 ? 0 : (mirrorStep && canMirror ? 2 : 1);
             return _sprites[(int)facing, column];
         }
 
-        private static Sprite[,] CreateAll()
+        /// <summary>主人公の色の一部を差し替えた色の表（村の人の色違い）</summary>
+        public static Dictionary<char, Color32> Recolor(IReadOnlyDictionary<char, Color32> changes)
+        {
+            var palette = new Dictionary<char, Color32>(Palette);
+            foreach (var change in changes)
+            {
+                palette[change.Key] = change.Value;
+            }
+            return palette;
+        }
+
+        /// <summary>[向き, コマ（0 立ち / 1 歩き / 2 歩きの反転）] の絵を全部作る</summary>
+        public static Sprite[,] CreateAll(string name, IReadOnlyDictionary<char, Color32> palette)
         {
             var front = new[] { Head, FrontFace, FrontBody };
             var back = new[] { Head, BackHair, BackBody };
             var sprites = new Sprite[4, 3];
-            Fill(sprites, Direction.Down, Join(front, FrontLegs), Join(front, FrontStep), flip: false);
-            Fill(sprites, Direction.Up, Join(back, FrontLegs), Join(back, FrontStep), flip: false);
-            Fill(sprites, Direction.Left, Join(new[] { Side }, SideLegs), Join(new[] { Side }, SideStep), flip: false);
-            Fill(sprites, Direction.Right, Join(new[] { Side }, SideLegs), Join(new[] { Side }, SideStep), flip: true);
+            Fill(sprites, name, palette, Direction.Down, Join(front, FrontLegs), Join(front, FrontStep), flip: false);
+            Fill(sprites, name, palette, Direction.Up, Join(back, FrontLegs), Join(back, FrontStep), flip: false);
+            Fill(sprites, name, palette, Direction.Left, Join(new[] { Side }, SideLegs), Join(new[] { Side }, SideStep), flip: false);
+            Fill(sprites, name, palette, Direction.Right, Join(new[] { Side }, SideLegs), Join(new[] { Side }, SideStep), flip: true);
             return sprites;
-        }
-
-        /// <param name="flip">横向きの絵は左向きで書いてあるので、右向きは反転する</param>
-        private static void Fill(Sprite[,] sprites, Direction facing, string[] stand, string[] step, bool flip)
-        {
-            sprites[(int)facing, 0] = Paint(stand, flip).ToSprite($"Hero_{facing}_Stand", FeetPivot);
-            sprites[(int)facing, 1] = Paint(step, flip).ToSprite($"Hero_{facing}_Step", FeetPivot);
-            sprites[(int)facing, 2] = Paint(step, !flip).ToSprite($"Hero_{facing}_StepMirror", FeetPivot);
         }
 
         private static string[] Join(string[][] parts, string[] legs)
@@ -137,23 +143,32 @@ namespace PenguinMonster.View.Story
             return rows.ToArray();
         }
 
+        /// <param name="flip">横向きの絵は左向きで書いてあるので、右向きは反転する</param>
+        private static void Fill(Sprite[,] sprites, string name, IReadOnlyDictionary<char, Color32> palette, Direction facing,
+            string[] stand, string[] step, bool flip)
+        {
+            sprites[(int)facing, 0] = Paint(stand, palette, flip).ToSprite($"{name}_{facing}_Stand", FeetPivot);
+            sprites[(int)facing, 1] = Paint(step, palette, flip).ToSprite($"{name}_{facing}_Step", FeetPivot);
+            sprites[(int)facing, 2] = Paint(step, palette, !flip).ToSprite($"{name}_{facing}_StepMirror", FeetPivot);
+        }
+
         /// <summary>文字の絵を塗る。1行目が一番上（PixelCanvas は下が y=0 なので上下を入れ替える）</summary>
-        private static PixelCanvas Paint(string[] rows, bool flip)
+        private static PixelCanvas Paint(string[] rows, IReadOnlyDictionary<char, Color32> palette, bool flip)
         {
             if (rows.Length != Size)
             {
-                throw new ArgumentException($"主人公の絵の行数が {rows.Length}（{Size} のはず）");
+                throw new ArgumentException($"人の絵の行数が {rows.Length}（{Size} のはず）");
             }
             var canvas = new PixelCanvas(Size, Size);
             for (int row = 0; row < Size; row++)
             {
                 if (rows[row].Length != Size)
                 {
-                    throw new ArgumentException($"主人公の絵の {row} 行目の長さが {rows[row].Length}");
+                    throw new ArgumentException($"人の絵の {row} 行目の長さが {rows[row].Length}");
                 }
                 for (int x = 0; x < Size; x++)
                 {
-                    if (Palette.TryGetValue(rows[row][x], out var color))
+                    if (palette.TryGetValue(rows[row][x], out var color))
                     {
                         canvas.Set(x, Size - 1 - row, color);
                     }

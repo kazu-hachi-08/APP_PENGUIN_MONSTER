@@ -18,7 +18,8 @@ namespace PenguinMonster.Editor
     /// タイトルは .Title.cs、ドラフトは .Draft.cs、持ち物は .Item.cs、「やめる」は .Quit.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
     /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs、
     /// 結果は .Result.cs、オンラインの部屋は .Room.cs、画面をまたいでそろえる見た目（夜空・見出し・ボタン）は .Style.cs、
-    /// ストーリーのフィールド（マップ・主人公・十字キー）は .StoryField.cs、画面の暗転は .Fade.cs
+    /// ストーリーのフィールド（マップ・主人公・十字キー）は .StoryField.cs、会話窓・はい / いいえ・最初の3体を選ぶ画面は .StoryEvents.cs、
+    /// 画面の暗転は .Fade.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -44,10 +45,12 @@ namespace PenguinMonster.Editor
             var canvas = CreateCanvas();
             var battle = BuildBattleUI(canvas.transform);
             var fieldInput = CreateFieldControls(canvas.transform);
+            // 会話の層は十字キーより手前（会話の間は十字キーを隠すが、窓のタップを取られないように）
+            var fieldEvents = CreateFieldEvents(canvas.transform, fieldInput);
             var flow = BuildFlow(canvas.transform, battle);
             // 暗転は全部の画面より手前に重ねる
             var fade = CreateFade(canvas.transform);
-            var field = BuildStoryField(camera, fieldInput, fade);
+            var field = BuildStoryField(camera, fieldInput, fade, fieldEvents);
             LinkStory(flow, field, fade);
 
             EditorSceneManager.SaveScene(scene, ScenePath);

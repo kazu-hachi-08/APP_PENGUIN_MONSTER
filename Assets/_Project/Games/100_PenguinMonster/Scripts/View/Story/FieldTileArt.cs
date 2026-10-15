@@ -38,6 +38,9 @@ namespace PenguinMonster.View.Story
         private static readonly Color32 DoorKnob = new Color32(240, 200, 80, 255);
         private static readonly Color32 FloorBase = new Color32(216, 186, 142, 255);
         private static readonly Color32 FloorLine = new Color32(186, 150, 110, 255);
+        private static readonly Color32 SignBoard = new Color32(176, 128, 82, 255);
+        private static readonly Color32 SignEdge = new Color32(98, 64, 42, 255);
+        private static readonly Color32 SignLetters = new Color32(236, 220, 188, 255);
 
         public static Tile Get(TileKind kind)
         {
@@ -66,6 +69,7 @@ namespace PenguinMonster.View.Story
                 case TileKind.Roof: PaintRoof(canvas); break;
                 case TileKind.Door: PaintDoor(canvas); break;
                 case TileKind.Floor: PaintFloor(canvas); break;
+                case TileKind.Sign: PaintSign(canvas); break;
                 default: PaintSnow(canvas); break;
             }
             return canvas;
@@ -157,6 +161,18 @@ namespace PenguinMonster.View.Story
             PaintWall(canvas);
             canvas.FillRect(3, 0, 10, 14, DoorBase);
             canvas.FillRect(10, 6, 2, 2, DoorKnob);
+        }
+
+        /// <summary>雪の上に立てた木の看板。板に字の代わりの線を引いて、調べられる物だと分かるようにする</summary>
+        private static void PaintSign(PixelCanvas canvas)
+        {
+            PaintSnow(canvas);
+            canvas.FillRect(7, 0, 2, 6, SignEdge);
+            canvas.FillRect(2, 5, 12, 9, SignEdge);
+            canvas.FillRect(3, 6, 10, 7, SignBoard);
+            canvas.FillRect(4, 10, 8, 1, SignLetters);
+            canvas.FillRect(4, 8, 6, 1, SignLetters);
+            canvas.FillRect(2, 14, 12, 1, SnowCap);
         }
 
         private static void PaintFloor(PixelCanvas canvas)

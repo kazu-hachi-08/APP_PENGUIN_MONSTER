@@ -22,7 +22,13 @@ namespace PenguinMonster.View.Story
 
         private void OnEnable()
         {
-            _touchControls.SetActive(Touchscreen.current != null);
+            SetPadVisible(true);
+        }
+
+        /// <summary>会話の間は十字キーを隠す（下の会話窓と重なるのと、窓をタップすれば送れるため）</summary>
+        public void SetPadVisible(bool visible)
+        {
+            _touchControls.SetActive(visible && Touchscreen.current != null);
         }
 
         /// <summary>押しっぱなしの向き。同時押しは上・下・左・右の順に優先する</summary>

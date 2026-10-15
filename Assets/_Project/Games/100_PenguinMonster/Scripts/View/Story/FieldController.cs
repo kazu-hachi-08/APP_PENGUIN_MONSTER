@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using PenguinMonster.Common.Scene;
 using PenguinMonster.Story;
 using UnityEngine;
@@ -6,13 +7,16 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// フィールドの進行役（PLAN_STORY_TOWN01.md フェーズ3）。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
+    /// フィールドの進行役（PLAN_STORY_TOWN01.md フェーズ3・4）。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
+    /// A で向いている先の人・看板を調べ、台本を FieldEventPlayer で見せる。
     /// B を押したら Run を抜ける（今はタイトルへ戻る。フェーズ6でメニューにする）
     /// </summary>
     public class FieldController : MonoBehaviour
     {
         [SerializeField] private FieldMapView _mapView;
         [SerializeField] private FieldAvatar _avatar;
+        [SerializeField] private FieldPeopleView _peopleView;
+        [SerializeField] private FieldEventPlayer _events;
         [SerializeField] private FieldCamera _camera;
         [SerializeField] private FieldInput _input;
         [SerializeField] private FadeController _fade;
@@ -21,10 +25,14 @@ namespace PenguinMonster.View.Story
         [SerializeField] private float _doorFadeSeconds = 0.25f;
 
         private FieldPlayer _player;
+        private FieldPeople _people;
+        private StoryState _state;
 
-        public IEnumerator Run(FieldWorld world, FieldSpot start)
+        public IEnumerator Run(FieldWorld world, FieldSpot start, StoryState state, IReadOnlyList<FieldNpc> npcs)
         {
-            _player = new FieldPlayer(world, start);
+            _state = state;
+            _people = new FieldPeople(npcs, state.Flags);
+            _player = new FieldPlayer(world, start, _people);
             gameObject.SetActive(true);
             _input.gameObject.SetActive(true);
             ShowCurrentMap();
@@ -32,7 +40,11 @@ namespace PenguinMonster.View.Story
             while (!_input.IsBDown)
             {
                 var direction = _input.HeldDirection;
-                if (direction.HasValue)
+                if (_input.IsADown)
+                {
+                    yield return Inspect();
+                }
+                else if (direction.HasValue)
                 {
                     yield return Step(direction.Value);
                 }
@@ -69,6 +81,28 @@ namespace PenguinMonster.View.Story
             }
         }
 
+        /// <summary>向いている先の人・看板の台本を流す。人は話しかけた側を向く</summary>
+        private IEnumerator Inspect()
+        {
+            var script = _player.ScriptAhead();
+            if (script == null)
+            {
+                // 何も無い所で A を押したときも1フレーム進める（同じフレームの A をまた見て止まらないように）
+                yield return null;
+                yield break;
+            }
+            var person = _player.PersonAhead;
+            if (person != null)
+            {
+                _peopleView.Face(person.Value.Npc, _player.Facing.Opposite());
+            }
+            yield return _events.Play(new EventRunner(_state, script));
+            // フラグで人が動いたかもしれないので並べ直す
+            DrawPeople();
+            // 最後の文を送った A で、すぐまた話しかけないよう1フレーム空ける
+            yield return null;
+        }
+
         private IEnumerator Enter(Warp warp)
         {
             yield return _fade.FadeOutCoroutine(_doorFadeSeconds);
@@ -80,8 +114,14 @@ namespace PenguinMonster.View.Story
         private void ShowCurrentMap()
         {
             _mapView.Draw(_player.Map);
+            DrawPeople();
             _avatar.Place(_mapView.FeetPosition(_player.Position), _player.Facing);
             _camera.Follow(_avatar.transform, _player.Map.Width, _player.Map.Height);
+        }
+
+        private void DrawPeople()
+        {
+            _peopleView.Draw(_people.On(_player.Map.Id), _mapView);
         }
     }
 }
