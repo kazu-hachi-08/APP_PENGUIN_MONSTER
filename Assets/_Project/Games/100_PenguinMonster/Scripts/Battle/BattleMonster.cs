@@ -108,11 +108,11 @@ namespace PenguinMonster.Battle
 
         /// <summary>
         /// 途中の HP・状態異常から始める。ストーリーで前の戦いの傷を持ち越すため。
-        /// HP は 1〜最大HP に収める（瀕死の子は出さない前提）
+        /// HP は 0〜最大HP に収める。0 の子は手持ちに並ぶだけで場には出ない（BattleSide が元気な子から出す）
         /// </summary>
         public BattleMonster(MonsterDefinition definition, int startHp, StatusCondition startStatus) : this(definition)
         {
-            CurrentHp = Math.Max(1, Math.Min(MaxHp, startHp));
+            CurrentHp = Math.Max(0, Math.Min(MaxHp, startHp));
             Status = startStatus;
         }
 

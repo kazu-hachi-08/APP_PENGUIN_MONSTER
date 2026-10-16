@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / ChooseStarter）で止まり、View が見せ終えたら
-    /// Advance / Answer / Choose で先へ送る。フラグを立てる・手持ちに足すのはここで行い、View は表示だけを受け持つ
+    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / ChooseStarter / Battle / Heal）で止まり、View が見せ終えたら
+    /// Advance / Answer / Choose / FinishBattle で先へ送る。フラグ・手持ち・お金・回復はここで行い、View は表示だけを受け持つ
     /// </summary>
     public sealed class EventRunner
     {
@@ -29,10 +29,10 @@ namespace PenguinMonster.Story
             RunUntilShown();
         }
 
-        /// <summary>Say・Give を読み終えた</summary>
+        /// <summary>Say・Give・Heal を読み終えた</summary>
         public void Advance()
         {
-            Expect(EventStepKind.Say, EventStepKind.Give);
+            Expect(EventStepKind.Say, EventStepKind.Give, EventStepKind.Heal);
             Next();
         }
 
@@ -53,8 +53,31 @@ namespace PenguinMonster.Story
         public void Choose(StorySpecies species)
         {
             Expect(EventStepKind.ChooseStarter);
+            var chosenFlag = EventStep.ChosenFlag(Current.Flag, species);
             _steps[_index] = EventStep.Give(species, Current.Level);
+            _steps.Insert(_index + 1, EventStep.SetFlag(chosenFlag));
             RunUntilShown();
+        }
+
+        /// <summary>
+        /// Battle の決着。勝てば賞金をもらってフラグを立てる。負けたら、負けてもよい戦いならフラグを立てて続け、
+        /// そうでなければ残りの台本を流さずに終わる（全滅して戻すのは View が StoryState.BlackOut で行う）
+        /// </summary>
+        public void FinishBattle(bool won)
+        {
+            Expect(EventStepKind.Battle);
+            var step = Current;
+            if (won)
+            {
+                _state.EarnMoney(step.Trainer.Prize);
+            }
+            else if (!step.CanLose)
+            {
+                _steps.RemoveRange(_index, _steps.Count - _index);
+                return;
+            }
+            _state.Flags.Set(step.Trainer.DefeatedFlag);
+            Next();
         }
 
         private void Next()
@@ -77,6 +100,10 @@ namespace PenguinMonster.Story
                     case EventStepKind.Give:
                         // 手持ちがいっぱいのときの あずかり箱はフェーズ6で足す（区切り1の最初の1体では起きない）
                         _state.Party.Add(OwnedMonster.Create(Current.Species, Current.Level));
+                        return;
+                    case EventStepKind.Heal:
+                        _state.Party.HealAll();
+                        _state.LastHealSpot = Current.HealSpot;
                         return;
                     default:
                         return;

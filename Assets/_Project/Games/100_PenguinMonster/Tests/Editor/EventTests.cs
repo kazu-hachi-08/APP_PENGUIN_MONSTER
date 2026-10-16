@@ -11,7 +11,7 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void Say_StopsUntilAdvanced()
         {
-            var runner = new EventRunner(new StoryState(), new[] { EventStep.Say("1つめ"), EventStep.Say("2つめ") });
+            var runner = new EventRunner(new StoryState(Town01Maps.Start), new[] { EventStep.Say("1つめ"), EventStep.Say("2つめ") });
 
             Assert.AreEqual("1つめ", runner.Message);
             runner.Advance();
@@ -23,7 +23,7 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void SetFlag_IsDoneWithoutStopping()
         {
-            var state = new StoryState();
+            var state = new StoryState(Town01Maps.Start);
 
             var runner = new EventRunner(state, new[] { EventStep.SetFlag(Flag), EventStep.Say("立てた") });
 
@@ -34,7 +34,7 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void Ask_Yes_ContinuesScript()
         {
-            var runner = new EventRunner(new StoryState(), new[] { EventStep.Ask("いい？", EventStep.Say("残念")), EventStep.Say("やった") });
+            var runner = new EventRunner(new StoryState(Town01Maps.Start), new[] { EventStep.Ask("いい？", EventStep.Say("残念")), EventStep.Say("やった") });
 
             runner.Answer(true);
 
@@ -44,7 +44,7 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void Ask_No_RunsOnNoInsteadOfRest()
         {
-            var state = new StoryState();
+            var state = new StoryState(Town01Maps.Start);
             var runner = new EventRunner(state, new[]
             {
                 EventStep.Ask("いい？", EventStep.Say("残念")), EventStep.SetFlag(Flag), EventStep.Say("やった"),
@@ -61,8 +61,8 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void ChooseStarter_GivesChosenAtLevel()
         {
-            var state = new StoryState();
-            var runner = new EventRunner(state, new[] { EventStep.ChooseStarter(new[] { Chick, Junior, Adult }, 5), EventStep.SetFlag(Flag) });
+            var state = new StoryState(Town01Maps.Start);
+            var runner = new EventRunner(state, new[] { EventStep.ChooseStarter(new[] { Chick, Junior, Adult }, 5, "test.starter."), EventStep.SetFlag(Flag) });
             Assert.AreEqual(EventStepKind.ChooseStarter, runner.Current.Kind);
 
             runner.Choose(Junior);
@@ -80,7 +80,7 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void WrongAnswer_Throws()
         {
-            var runner = new EventRunner(new StoryState(), new[] { EventStep.Say("話すだけ") });
+            var runner = new EventRunner(new StoryState(Town01Maps.Start), new[] { EventStep.Say("話すだけ") });
 
             Assert.Throws<InvalidOperationException>(() => runner.Answer(true));
             Assert.Throws<InvalidOperationException>(() => runner.Choose(Chick));

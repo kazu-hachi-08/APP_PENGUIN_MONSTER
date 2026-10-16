@@ -9,6 +9,9 @@ namespace PenguinMonster.Story
         Professor,
         Assistant,
         Villager,
+        Rival,
+        /// <summary>道路のトレーナー</summary>
+        Youngster,
     }
 
     /// <summary>
@@ -22,6 +25,8 @@ namespace PenguinMonster.Story
 
         public FieldSpot Spot { get; }
         public IReadOnlyList<EventStep> Script { get; }
+        /// <summary>台本で戦うトレーナー。目が合ったら近づいてくる（SightRange が 0 なら来ない）。戦わない置き場所なら null</summary>
+        public TrainerDefinition Trainer { get; }
 
         private NpcPlacement(FieldSpot spot, EventStep[] script, string requiredFlag, string missingFlag)
         {
@@ -29,6 +34,19 @@ namespace PenguinMonster.Story
             Script = script;
             _requiredFlag = requiredFlag;
             _missingFlag = missingFlag;
+            Trainer = FindTrainer(script);
+        }
+
+        private static TrainerDefinition FindTrainer(EventStep[] script)
+        {
+            foreach (var step in script)
+            {
+                if (step.Kind == EventStepKind.Battle)
+                {
+                    return step.Trainer;
+                }
+            }
+            return null;
         }
 
         public static NpcPlacement Always(FieldSpot spot, params EventStep[] script) => new NpcPlacement(spot, script, null, null);
@@ -38,6 +56,12 @@ namespace PenguinMonster.Story
 
         /// <summary>フラグが立つまで</summary>
         public static NpcPlacement Until(string flag, FieldSpot spot, params EventStep[] script) => new NpcPlacement(spot, script, null, flag);
+
+        /// <summary>required が立っていて、missing がまだ立っていない間</summary>
+        public static NpcPlacement Between(string required, string missing, FieldSpot spot, params EventStep[] script)
+        {
+            return new NpcPlacement(spot, script, required, missing);
+        }
 
         public bool Matches(StoryFlags flags)
         {

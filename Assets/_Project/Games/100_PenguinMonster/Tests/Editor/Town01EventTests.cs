@@ -15,7 +15,7 @@ namespace PenguinMonster.Story.Tests
         [SetUp]
         public void SetUp()
         {
-            _state = new StoryState();
+            _state = new StoryState(Town01Maps.Start);
             _world = Town01Maps.CreateWorld();
             _people = new FieldPeople(Town01People.Create(), _state.Flags);
         }
@@ -144,6 +144,92 @@ namespace PenguinMonster.Story.Tests
                     var map = _world.Get(placement.Spot.MapId);
                     Assert.IsTrue(map.IsWalkable(placement.Spot.Position), $"{npc.Id} {placement.Spot.Position}");
                     Assert.IsNull(map.WarpAt(placement.Spot.Position), $"{npc.Id} {placement.Spot.Position}");
+                }
+            }
+        }
+
+        [Test]
+        public void Rival_AfterStarter_SpotsPlayerAtProfessor()
+        {
+            TalkToProfessor();
+
+            var sighting = PlayerAt(Town01Maps.Lab, new GridPos(4, 3), Direction.Up).SpottedBy();
+
+            Assert.IsNotNull(sighting);
+            Assert.AreEqual(NpcLook.Rival, sighting.Value.Trainer.Npc.Look);
+            Assert.AreEqual(1, sighting.Value.Steps);
+        }
+
+        [Test]
+        public void Rival_ChoosesStarterStrongAgainstPlayers()
+        {
+            var sea = Town01Starters.All[0];
+            TalkToProfessor(sea);
+
+            var trainer = PlayerAt(Town01Maps.Lab, new GridPos(4, 3), Direction.Up).SpottedBy().Value.Trainer.Placement.Trainer;
+
+            Assert.AreEqual(MonsterType.Moss, trainer.Party[0].Species.Definition.Types[0]);
+        }
+
+        [Test]
+        public void Rival_AfterBattle_IsGone()
+        {
+            TalkToProfessor();
+            _state.Flags.Set(Town01Trainers.RivalBeaten);
+
+            Assert.IsFalse(_people.On(Town01Maps.Lab).Any(placed => placed.Npc.Look == NpcLook.Rival));
+        }
+
+        [Test]
+        public void NorthExit_LeadsToRoute01AndBack()
+        {
+            _state.Flags.Set(Town01Flags.GotStarter);
+            var player = PlayerAt(Town01Maps.Village, Town01Maps.NorthExit + Direction.Down.Offset(), Direction.Up);
+
+            player.Step(Direction.Up);
+            player.Enter(player.WarpHere);
+            Assert.AreEqual(Town01Maps.Route01, player.Map.Id);
+
+            player.Step(Direction.Down);
+            player.Enter(player.WarpHere);
+            Assert.AreEqual(Town01Maps.Village, player.Map.Id);
+        }
+
+        [Test]
+        public void Mom_AtHome_HealsAndSetsHomeAsReturnSpot()
+        {
+            _state.Flags.Set(Town01Flags.GotStarter);
+            _state.Party.Add(OwnedMonster.Create(Town01Starters.All[0], StoryBalance.StarterLevel));
+            var owned = _state.Party.Members[0];
+            var fighter = owned.ToBattle();
+            fighter.TakeDamage(5);
+            owned.ApplyBattleResult(fighter);
+
+            var script = PlayerAt(Town01Maps.PlayerHouse, new GridPos(4, 2), Direction.Right).ScriptAhead();
+            var runner = new EventRunner(_state, script);
+            while (!runner.IsDone)
+            {
+                runner.Advance();
+            }
+
+            Assert.AreEqual(owned.MaxHp, owned.CurrentHp);
+            Assert.AreEqual(Town01Maps.PlayerHouse, _state.LastHealSpot.MapId);
+        }
+
+        [Test]
+        public void Species_EvolutionsAndEncountersAreDefined()
+        {
+            foreach (var starter in Town01Starters.All)
+            {
+                var evolved = Town01Species.ByNo(starter.Evolution.IntoNo);
+                Assert.IsNotNull(evolved, starter.Name);
+                Assert.AreEqual(starter.Definition.Types[0], evolved.Definition.Types[0], starter.Name);
+            }
+            foreach (var map in _world.Maps.Where(map => map.Encounters != null))
+            {
+                foreach (var slot in map.Encounters.Slots)
+                {
+                    Assert.AreEqual(slot.Species, Town01Species.ByNo(slot.Species.No), map.Id);
                 }
             }
         }

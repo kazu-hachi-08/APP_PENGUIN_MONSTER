@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1の人と台本（PLAN_STORY_TOWN01.md フェーズ4）。今は仮のハツユキ村の分だけ。
+    /// 区切り1の人と台本（PLAN_STORY_TOWN01.md フェーズ4・5）。今は仮のハツユキ村と試しの1番道路の分だけ。
     /// 名前（博士・ライバルなど）はまだ決めていないので役割で呼ぶ。本番の物語はフェーズ8c で書き直す
     /// </summary>
     public static class Town01People
@@ -13,7 +13,7 @@ namespace PenguinMonster.Story
 
         public static IReadOnlyList<FieldNpc> Create()
         {
-            return new[] { Mom(), Professor(), Assistant(), Villager(), RivalFamily() };
+            return new[] { Mom(), Professor(), Assistant(), Villager(), RivalFamily(), Rival(), Route01Kid() };
         }
 
         private static FieldNpc Mom()
@@ -23,7 +23,9 @@ namespace PenguinMonster.Story
                     EventStep.Say("あら、どこへ 行くの？"),
                     EventStep.Say("博士の 研究所で ペンモンを もらってから に しなさい")),
                 NpcPlacement.Always(new FieldSpot(Town01Maps.PlayerHouse, new GridPos(5, 2), Direction.Left),
-                    EventStep.Say("ペンモンを もらったのね！"),
+                    EventStep.Say("おかえり！ 少し 休んで いきなさい"),
+                    // ぬくもり小屋（フェーズ6）ができるまでの仮の回復。全滅したら この家に戻る
+                    EventStep.Heal("ペンモンたちは すっかり 元気に なった！", Town01Maps.Start),
                     EventStep.Say("村の 外に 行くときは 気を つけるのよ")));
         }
 
@@ -36,7 +38,7 @@ namespace PenguinMonster.Story
                     EventStep.Ask("ペンモンを 1体 もらって くれるかね？",
                         EventStep.Say("そうか…… 気が 変わったら また 来なさい")),
                     EventStep.Say("ここに 3つの タマゴが ある。好きな 子を 選ぶと いい！"),
-                    EventStep.ChooseStarter(Town01Starters.All, StoryBalance.StarterLevel),
+                    EventStep.ChooseStarter(Town01Starters.All, StoryBalance.StarterLevel, Town01Flags.StarterPrefix),
                     EventStep.SetFlag(Town01Flags.GotStarter),
                     EventStep.Say("その子を 大事に 育てて おくれ")),
                 NpcPlacement.Always(spot,
@@ -59,6 +61,52 @@ namespace PenguinMonster.Story
             return new FieldNpc("villager", NpcLook.Villager,
                 NpcPlacement.Always(new FieldSpot(Town01Maps.Village, new GridPos(15, 11), Direction.Down),
                     EventStep.Say("ハツユキ村は 一年中 雪が 降るんだ")));
+        }
+
+        /// <summary>研究所の出口の前で、最初の1体をもらった主人公を待ち構える。こちらの子に強い子を選んでいる</summary>
+        private static readonly FieldSpot RivalAtLabExit = new FieldSpot(Town01Maps.Lab, new GridPos(4, 5), Direction.Up);
+
+        /// <summary>ライバル。もらう前は博士のそばで待ち、もらったら出口の前から目が合って勝負を挑む。戦い終えたら先へ行って居なくなる</summary>
+        private static FieldNpc Rival()
+        {
+            var placements = new List<NpcPlacement>
+            {
+                NpcPlacement.Until(Town01Flags.GotStarter, new FieldSpot(Town01Maps.Lab, new GridPos(2, 2), Direction.Down),
+                    EventStep.Say("おそいぞ！ 博士が 待ちくたびれてるぜ")),
+            };
+            foreach (var starter in Town01Starters.All)
+            {
+                placements.Add(NpcPlacement.Between(EventStep.ChosenFlag(Town01Flags.StarterPrefix, starter), Town01Trainers.RivalBeaten,
+                    RivalAtLabExit, RivalBattle(Town01Trainers.Rival(starter))));
+            }
+            return new FieldNpc("rival", NpcLook.Rival, placements.ToArray());
+        }
+
+        /// <summary>本家と同じく、最初のライバル戦は負けても話が進む。終わったら博士が回復してくれる</summary>
+        private static EventStep[] RivalBattle(TrainerDefinition rival)
+        {
+            return new[]
+            {
+                EventStep.Say("待てよ！ せっかく ペンモンを もらったんだ"),
+                EventStep.Say("おれと 勝負 しようぜ！"),
+                EventStep.Battle(rival, canLose: true),
+                EventStep.Say("ふう…… いい 勝負 だったな！"),
+                EventStep.Heal("博士が ペンモンを 元気に してくれた！", Town01Maps.Start),
+                EventStep.Say("おれは 先に 行くぜ！ じゃあな！"),
+            };
+        }
+
+        /// <summary>試しの1番道路のトレーナー。道を歩いてくる主人公を横から見張る</summary>
+        private static FieldNpc Route01Kid()
+        {
+            var spot = new FieldSpot(Town01Maps.Route01, new GridPos(8, 6), Direction.Left);
+            var trainer = Town01Trainers.Route01Kid;
+            return new FieldNpc("route01Kid", NpcLook.Youngster,
+                NpcPlacement.Until(trainer.DefeatedFlag, spot,
+                    EventStep.Say("目が 合ったら 勝負だ！"),
+                    EventStep.Battle(trainer)),
+                NpcPlacement.Always(spot,
+                    EventStep.Say("草むらで 戦って 鍛え直しだ！")));
         }
 
         private static FieldNpc RivalFamily()

@@ -11,6 +11,31 @@ namespace PenguinMonster.Story
         public int Count => _members.Count;
         public bool IsFull => _members.Count >= StoryBalance.MaxPartySize;
 
+        /// <summary>戦える子が1体でもいる（いなければ野生に出会わない）</summary>
+        public bool CanFight
+        {
+            get
+            {
+                foreach (var member in _members)
+                {
+                    if (!member.IsFainted)
+                    {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+
+        /// <summary>全員の HP を満タンにし、状態異常を治す（母・ぬくもり小屋・全滅）</summary>
+        public void HealAll()
+        {
+            foreach (var member in _members)
+            {
+                member.HealFully();
+            }
+        }
+
         /// <summary>手持ちに足す。いっぱいなら足さずに false</summary>
         public bool Add(OwnedMonster monster)
         {

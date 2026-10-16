@@ -1,7 +1,7 @@
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2）。今は仮のハツユキ村と、家・研究所の中だけ。
+    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2）。今は仮のハツユキ村と、家・研究所の中、試しの1番道路だけ。
     /// 本番の中身はフェーズ8で作り直す。
     /// 文字: . 雪 / , 草むら / = 道 / T 木 / ~ 水 / W 家の壁 / R 屋根 / D 扉 / _ 床 / S 看板
     /// </summary>
@@ -11,13 +11,14 @@ namespace PenguinMonster.Story
         public const string PlayerHouse = "PlayerHouse";
         public const string RivalHouse = "RivalHouse";
         public const string Lab = "Lab";
+        public const string Route01 = "Route01";
 
         // 村の扉と、外へ出たときに立つ扉の前のマス
         private static readonly GridPos PlayerHouseDoor = new GridPos(4, 4);
         private static readonly GridPos RivalHouseDoor = new GridPos(13, 4);
         private static readonly GridPos LabDoor = new GridPos(6, 10);
 
-        /// <summary>村の北の出口（1番道路はまだ無いので行き止まり）。最初の1体をもらうまで母が手前でふさぐ</summary>
+        /// <summary>村の北の出口（1番道路へ）。最初の1体をもらうまで母が手前でふさぐ</summary>
         public static readonly GridPos NorthExit = new GridPos(9, 0);
         private static readonly GridPos ExitSign = new GridPos(10, 1);
         private static readonly GridPos VillageSign = new GridPos(8, 7);
@@ -27,7 +28,10 @@ namespace PenguinMonster.Story
 
         public static FieldWorld CreateWorld()
         {
-            return new FieldWorld(new[] { CreateVillage(), CreateHouse(PlayerHouse, PlayerHouseDoor), CreateHouse(RivalHouse, RivalHouseDoor), CreateLab() });
+            return new FieldWorld(new[]
+            {
+                CreateVillage(), CreateHouse(PlayerHouse, PlayerHouseDoor), CreateHouse(RivalHouse, RivalHouseDoor), CreateLab(), CreateRoute01(),
+            });
         }
 
         private static FieldMap CreateVillage()
@@ -54,8 +58,9 @@ namespace PenguinMonster.Story
             return new FieldMap(Village, rows,
                 Inside(PlayerHouseDoor, PlayerHouse, HouseArrival),
                 Inside(RivalHouseDoor, RivalHouse, HouseArrival),
-                Inside(LabDoor, Lab, LabArrival))
-                .WithSign(ExitSign, "この先 1番道路", "（まだ 準備中です）")
+                Inside(LabDoor, Lab, LabArrival),
+                new Warp(NorthExit, new FieldSpot(Route01, Route01Exit + Direction.Up.Offset(), Direction.Up)))
+                .WithSign(ExitSign, "この先 1番道路", "草むらでは 野生の ペンモンが 飛び出して くるぞ")
                 .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村");
         }
 
@@ -93,6 +98,46 @@ namespace PenguinMonster.Story
                 "WWWWDWWWWW",
             };
             return new FieldMap(Lab, rows, Outside(LabExit, LabDoor));
+        }
+
+        // 試しの1番道路の南の出口（村へ）と、北の行き止まりの看板
+        private static readonly GridPos Route01Exit = new GridPos(6, 17);
+        private static readonly GridPos Route01Sign = new GridPos(5, 1);
+        /// <summary>草むらを1歩進むごとに野生に出会う確率（％）。本家の草むら（おおよそ 1割）に合わせる</summary>
+        private const int Route01EncounterPercent = 10;
+
+        /// <summary>
+        /// 試しの1番道路（フェーズ5で野生・トレーナーと戦うため）。本番の 16x30 の道路はフェーズ8b で作り直す
+        /// </summary>
+        private static FieldMap CreateRoute01()
+        {
+            var rows = new[]
+            {
+                "TTTTTTTTTTTT",
+                "T....S=....T",
+                "T,,,,.=,,,,T",
+                "T,,,,.=,,,,T",
+                "T,,,,.=,,,,T",
+                "T.....=....T",
+                "T.....=....T",
+                "TTT...=..TTT",
+                "T.....=....T",
+                "T..,,,=,,,.T",
+                "T..,,,=,,,.T",
+                "T..,,,=,,,.T",
+                "T.....=....T",
+                "T.....=....T",
+                "T~~...=....T",
+                "T~~...=....T",
+                "T.....=....T",
+                "TTTTTT=TTTTT",
+            };
+            var toVillage = new Warp(Route01Exit, new FieldSpot(Village, NorthExit + Direction.Down.Offset(), Direction.Down));
+            return new FieldMap(Route01, rows, toVillage)
+                .WithSign(Route01Sign, "この先 ツララ町", "（まだ 準備中です）")
+                .WithEncounters(new EncounterTable(Route01EncounterPercent,
+                    new EncounterSlot(Town01Species.WildBird, 2, 4, 50),
+                    new EncounterSlot(Town01Species.WildNormal, 2, 4, 50)));
         }
 
         /// <summary>村の扉から建物の中へ。中では扉の前で奥（上）を向いて立つ</summary>

@@ -28,6 +28,18 @@ namespace PenguinMonster.Battle
             };
         }
 
+        /// <summary>
+        /// 途中の HP・状態異常から始めるバトル（ストーリー）。手持ちの写しをそのまま使い、瀕死の子は場に出さない
+        /// </summary>
+        public BattleState(IReadOnlyList<BattleMonster> party0, IReadOnlyList<BattleMonster> party1)
+        {
+            Sides = new[]
+            {
+                new BattleSide(0, party0, BattleBalance.SingleActiveCount) { State = this },
+                new BattleSide(1, party1, BattleBalance.SingleActiveCount) { State = this },
+            };
+        }
+
         public BattleSide Opponent(int side) => Sides[1 - side];
 
         internal void Finish(int winner)

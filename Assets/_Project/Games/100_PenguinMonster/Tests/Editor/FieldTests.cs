@@ -127,7 +127,9 @@ namespace PenguinMonster.Story.Tests
             {
                 foreach (var warp in map.Warps)
                 {
-                    Assert.AreEqual(TileKind.Door, map.TileAt(warp.From), $"{map.Id} {warp.From}");
+                    // 出入口は扉か、マップの端の道（道路への出口）
+                    bool onEdge = warp.From.X == 0 || warp.From.Y == 0 || warp.From.X == map.Width - 1 || warp.From.Y == map.Height - 1;
+                    Assert.IsTrue(map.TileAt(warp.From) == TileKind.Door || onEdge, $"{map.Id} {warp.From}");
                     Assert.IsTrue(world.Contains(warp.To.MapId), $"{map.Id} → {warp.To.MapId}");
                     var target = world.Get(warp.To.MapId);
                     Assert.IsTrue(target.IsWalkable(warp.To.Position), $"{map.Id} → {target.Id} {warp.To.Position}");

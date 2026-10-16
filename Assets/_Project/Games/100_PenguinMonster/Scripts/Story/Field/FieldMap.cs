@@ -32,6 +32,8 @@ namespace PenguinMonster.Story
         public int Width { get; }
         public int Height { get; }
         public IEnumerable<Warp> Warps => _warps.Values;
+        /// <summary>草むらの出現表。野生の出ないマップは null</summary>
+        public EncounterTable Encounters { get; private set; }
 
         public FieldMap(string id, string[] rows, params Warp[] warps)
         {
@@ -85,6 +87,13 @@ namespace PenguinMonster.Story
                 throw new ArgumentException($"{Id}: {pos} は看板のマスではない");
             }
             _signs.Add(pos, lines);
+            return this;
+        }
+
+        /// <summary>草むらの出現表を付ける。表と続けて書けるよう、自分を返す</summary>
+        public FieldMap WithEncounters(EncounterTable table)
+        {
+            Encounters = table;
             return this;
         }
 

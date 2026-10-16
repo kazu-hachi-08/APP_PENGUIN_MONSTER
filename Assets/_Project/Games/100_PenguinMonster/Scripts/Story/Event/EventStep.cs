@@ -14,6 +14,10 @@ namespace PenguinMonster.Story
         Give,
         /// <summary>最初の3体を選ぶ画面を出す。選んだ子が Give になる</summary>
         ChooseStarter,
+        /// <summary>トレーナーと戦う。負けたら（負けてもよい戦いでなければ）残りの台本は流さない</summary>
+        Battle,
+        /// <summary>手持ちを全回復し、全滅したときの戻り先をここにして、文を出す</summary>
+        Heal,
     }
 
     /// <summary>
@@ -27,7 +31,7 @@ namespace PenguinMonster.Story
         public EventStepKind Kind { get; }
         /// <summary>Say / Ask の文</summary>
         public string Text { get; }
-        /// <summary>SetFlag のフラグ</summary>
+        /// <summary>SetFlag のフラグ。ChooseStarter では、選んだ子の No を後ろに付けて立てるフラグの頭</summary>
         public string Flag { get; }
         /// <summary>Give でもらう子</summary>
         public StorySpecies Species { get; }
@@ -37,9 +41,16 @@ namespace PenguinMonster.Story
         public int Level { get; }
         /// <summary>Ask でいいえを選んだときに流す台本</summary>
         public IReadOnlyList<EventStep> OnNo { get; }
+        /// <summary>Battle の相手</summary>
+        public TrainerDefinition Trainer { get; }
+        /// <summary>Battle で負けても台本を続ける（最初のライバル戦。本家と同じく負けても話が進む）</summary>
+        public bool CanLose { get; }
+        /// <summary>Heal で全滅したときの戻り先にする場所</summary>
+        public FieldSpot HealSpot { get; }
 
         private EventStep(EventStepKind kind, string text = null, string flag = null, StorySpecies species = null,
-            IReadOnlyList<StorySpecies> choices = null, int level = 0, IReadOnlyList<EventStep> onNo = null)
+            IReadOnlyList<StorySpecies> choices = null, int level = 0, IReadOnlyList<EventStep> onNo = null,
+            TrainerDefinition trainer = null, bool canLose = false, FieldSpot healSpot = default)
         {
             Kind = kind;
             Text = text;
@@ -48,6 +59,9 @@ namespace PenguinMonster.Story
             Choices = choices;
             Level = level;
             OnNo = onNo ?? None;
+            Trainer = trainer;
+            CanLose = canLose;
+            HealSpot = healSpot;
         }
 
         public static EventStep Say(string text) => new EventStep(EventStepKind.Say, text);
@@ -58,9 +72,24 @@ namespace PenguinMonster.Story
 
         public static EventStep Give(StorySpecies species, int level) => new EventStep(EventStepKind.Give, species: species, level: level);
 
-        public static EventStep ChooseStarter(IReadOnlyList<StorySpecies> choices, int level)
+        /// <param name="chosenFlagPrefix">選んだ子の No を後ろに付けて立てるフラグ（ライバルが相性のいい子を選ぶのに使う）</param>
+        public static EventStep ChooseStarter(IReadOnlyList<StorySpecies> choices, int level, string chosenFlagPrefix)
         {
-            return new EventStep(EventStepKind.ChooseStarter, choices: choices, level: level);
+            return new EventStep(EventStepKind.ChooseStarter, flag: chosenFlagPrefix, choices: choices, level: level);
+        }
+
+        /// <summary>選んだ最初の1体のフラグ（ChooseStarter のフラグの頭 ＋ No）</summary>
+        public static string ChosenFlag(string prefix, StorySpecies species) => prefix + species.No;
+
+        public static EventStep Battle(TrainerDefinition trainer, bool canLose = false)
+        {
+            return new EventStep(EventStepKind.Battle, trainer: trainer, canLose: canLose);
+        }
+
+        /// <param name="returnSpot">これから全滅したときに戻る場所</param>
+        public static EventStep Heal(string text, FieldSpot returnSpot)
+        {
+            return new EventStep(EventStepKind.Heal, text, healSpot: returnSpot);
         }
 
         /// <summary>話すだけの台本（村の人・看板）</summary>

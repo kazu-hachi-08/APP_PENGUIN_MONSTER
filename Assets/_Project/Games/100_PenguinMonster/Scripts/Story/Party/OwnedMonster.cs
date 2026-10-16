@@ -56,6 +56,12 @@ namespace PenguinMonster.Story
             return new BattleMonster(definition, CurrentHp, Status);
         }
 
+        public void HealFully()
+        {
+            CurrentHp = MaxHp;
+            Status = StatusCondition.None;
+        }
+
         /// <summary>戦いの後の HP・状態異常を持ち帰る（ストーリーでは傷が残る）</summary>
         public void ApplyBattleResult(BattleMonster fought)
         {
