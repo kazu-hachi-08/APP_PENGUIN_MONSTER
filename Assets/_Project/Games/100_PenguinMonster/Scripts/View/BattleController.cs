@@ -9,7 +9,7 @@ namespace PenguinMonster.View
     /// <summary>
     /// 1試合の進行役（シングル 3vs3 / ダブルス 4vs4）。ターンの計算は BattleEngine に任せ、ここは入力待ちと表示の順番だけを持つ。
     /// チームは GameFlow から渡される（ドラフト・選出・結果はバトルの外）。
-    /// 行動の選び方は BattleController.Commands.cs、イベントの再生は .Playback.cs、オンライン対戦は .Online.cs
+    /// 行動の選び方は BattleController.Commands.cs、イベントの再生は .Playback.cs、オンライン対戦は .Online.cs、ストーリーの1戦は .Story.cs
     /// </summary>
     public partial class BattleController : MonoBehaviour
     {
@@ -39,6 +39,8 @@ namespace PenguinMonster.View
         [Header("窓")]
         [SerializeField] private MessageWindow _messageWindow;
         [SerializeField] private CommandPanel _commandPanel;
+        [Tooltip("ストーリーの「戦う / バッグ / ペンモン / 逃げる」")]
+        [SerializeField] private CommandPanel _storyCommandPanel;
         [SerializeField] private MovePanel _movePanel;
         [SerializeField] private TargetPanel _targetPanel;
         [SerializeField] private PartyPanel _partyPanel;
@@ -115,6 +117,7 @@ namespace PenguinMonster.View
         {
             _turnTimer.Stop();
             _commandPanel.Hide();
+            _storyCommandPanel.Hide();
             _movePanel.gameObject.SetActive(false);
             _targetPanel.gameObject.SetActive(false);
             _partyPanel.gameObject.SetActive(false);

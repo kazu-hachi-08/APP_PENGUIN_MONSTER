@@ -32,13 +32,18 @@ namespace PenguinMonster.Editor
         private static readonly Color AButtonColor = new Color(1f, 0.42f, 0.38f, 0.8f);
         private static readonly Color BButtonColor = new Color(1f, 0.72f, 0.25f, 0.8f);
 
-        private static FieldController BuildStoryField(Camera camera, FieldInput input, FadeController fade, FieldEventPlayer events)
+        private static FieldController BuildStoryField(Camera camera, FieldInput input, FadeController fade, FieldEventPlayer events,
+            BattleController battle)
         {
             var root = new GameObject("StoryField", typeof(Grid));
             var mapView = CreateFieldMap(root.transform);
             var people = CreatePeople(root.transform);
             var avatar = CreateHero(root.transform);
             var fieldCamera = CreateFieldCamera(camera);
+            var battles = CreateStoryBattleScreen(root, battle, fade);
+            var eventsSo = new SerializedObject(events);
+            eventsSo.FindProperty("_battles").objectReferenceValue = battles;
+            eventsSo.ApplyModifiedProperties();
 
             var controller = root.AddComponent<FieldController>();
             var so = new SerializedObject(controller);
@@ -49,6 +54,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_camera").objectReferenceValue = fieldCamera;
             so.FindProperty("_input").objectReferenceValue = input;
             so.FindProperty("_fade").objectReferenceValue = fade;
+            so.FindProperty("_battles").objectReferenceValue = battles;
             so.ApplyModifiedProperties();
 
             root.SetActive(false);

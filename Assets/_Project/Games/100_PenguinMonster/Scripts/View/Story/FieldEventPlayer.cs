@@ -18,6 +18,12 @@ namespace PenguinMonster.View.Story
         [SerializeField] private YesNoWindow _yesNo;
         [SerializeField] private StarterPanel _starters;
         [SerializeField] private FieldInput _input;
+        [SerializeField] private StoryBattleScreen _battles;
+
+        private Action _beforeReturn;
+
+        /// <summary>台本のバトルに負けて全滅した（残りの台本は流さずに終わっている）。呼ぶ側が最後に回復した場所へ戻す</summary>
+        public bool BlackedOut { get; private set; }
 
         private void Update()
         {
@@ -27,24 +33,30 @@ namespace PenguinMonster.View.Story
             }
         }
 
-        public IEnumerator Play(EventRunner runner)
+        /// <param name="beforeReturn">台本のバトルの後、フィールドへ明ける前に呼ぶ（人の並べ直し）</param>
+        public IEnumerator Play(EventRunner runner, StoryState state, System.Random random, Action beforeReturn = null)
         {
+            _beforeReturn = beforeReturn;
+            BlackedOut = false;
             _input.SetPadVisible(false);
             _yesNo.gameObject.SetActive(false);
             _window.SetText("");
             gameObject.SetActive(true);
             while (!runner.IsDone)
             {
-                yield return PlayStep(runner);
+                yield return PlayStep(runner, state, random);
             }
             gameObject.SetActive(false);
             _input.SetPadVisible(true);
         }
 
-        private IEnumerator PlayStep(EventRunner runner)
+        private IEnumerator PlayStep(EventRunner runner, StoryState state, System.Random random)
         {
             switch (runner.Current.Kind)
             {
+                case EventStepKind.Battle:
+                    yield return Fight(runner, state, random);
+                    break;
                 case EventStepKind.Ask:
                     yield return _window.Type(runner.Message);
                     bool yes = false;
@@ -66,6 +78,24 @@ namespace PenguinMonster.View.Story
                     runner.Advance();
                     break;
             }
+        }
+
+        /// <summary>トレーナーと戦う。会話窓はバトルの間だけ隠し、全滅でなければ明けてから台本の続きへ</summary>
+        private IEnumerator Fight(EventRunner runner, StoryState state, System.Random random)
+        {
+            var step = runner.Current;
+            gameObject.SetActive(false);
+            yield return _battles.Fight(state, step.Trainer.CreateParty(), step.Trainer, step.CanLose, random);
+            runner.FinishBattle(_battles.PlayerWon);
+            if (_battles.BlackedOut)
+            {
+                BlackedOut = true;
+                yield break;
+            }
+            _window.SetText("");
+            gameObject.SetActive(true);
+            _beforeReturn?.Invoke();
+            yield return _battles.ReturnToField();
         }
 
         /// <summary>3つのタマゴから選び、「〇〇に しますか？」で はい と答えるまで選び直す（もらった後は替えられないので確かめる）</summary>

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using PenguinMonster.Story;
+using PenguinMonster.View.Art;
 using UnityEngine;
 
 namespace PenguinMonster.View.Story
@@ -34,15 +35,39 @@ namespace PenguinMonster.View.Story
 
         private static readonly Dictionary<NpcLook, Sprite[,]> Cache = new Dictionary<NpcLook, Sprite[,]>();
 
-        /// <summary>立ちの絵（村の人はまだ歩かない）</summary>
-        public static Sprite Get(NpcLook look, Direction facing)
+        // 「！」の吹き出し（トレーナーと目が合ったとき）。人の絵と同じ 16 ドット幅
+        private const int MarkSize = 16;
+        private static readonly Color32 MarkFill = new Color32(255, 255, 255, 255);
+        private static readonly Color32 MarkLine = new Color32(40, 40, 52, 255);
+        private static readonly Color32 MarkRed = new Color32(220, 50, 50, 255);
+        private static Sprite _exclamation;
+
+        /// <param name="frame">0 が立ち、1 が歩き（目が合ったトレーナーが近づくときだけ歩く）</param>
+        public static Sprite Get(NpcLook look, Direction facing, int frame = 0)
         {
             if (!Cache.TryGetValue(look, out var sprites) || sprites[0, 0] == null)
             {
                 sprites = HeroArt.CreateAll($"Npc_{look}", HeroArt.Recolor(Changes[look]));
                 Cache[look] = sprites;
             }
-            return sprites[(int)facing, 0];
+            return sprites[(int)facing, frame];
+        }
+
+        /// <summary>頭の上に出す「！」。下の真ん中を足元にして、人の絵の上に重ねる</summary>
+        public static Sprite Exclamation()
+        {
+            if (_exclamation != null)
+            {
+                return _exclamation;
+            }
+            var canvas = new PixelCanvas(MarkSize, MarkSize);
+            canvas.FillRoundedRect(3, 3, 10, 12, 3f, MarkFill);
+            canvas.FillTriangle(new Vector2(6f, 3f), new Vector2(10f, 3f), new Vector2(7f, 0f), MarkFill);
+            canvas.Outline(MarkLine);
+            canvas.FillRect(7, 8, 2, 5, MarkRed);
+            canvas.FillRect(7, 5, 2, 2, MarkRed);
+            _exclamation = canvas.ToSprite("Npc_Exclamation", new Vector2(0.5f, 0f));
+            return _exclamation;
         }
 
         private static Dictionary<char, Color32> Colors(Color32 hat, Color32 trim, Color32 hair, Color32 coat, Color32 hem)

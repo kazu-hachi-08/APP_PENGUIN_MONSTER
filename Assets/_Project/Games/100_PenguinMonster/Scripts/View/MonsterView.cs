@@ -51,6 +51,12 @@ namespace PenguinMonster.View
             Rect.localScale = Vector3.one;
         }
 
+        /// <summary>出ている絵だけ差し替える（進化の演出で前と後の絵を行き来する）</summary>
+        public void SetSprite(Sprite sprite)
+        {
+            _image.sprite = sprite;
+        }
+
         public IEnumerator Withdraw()
         {
             yield return Tween(_withdrawSeconds, t => Rect.localScale = Vector3.one * (1f - t));

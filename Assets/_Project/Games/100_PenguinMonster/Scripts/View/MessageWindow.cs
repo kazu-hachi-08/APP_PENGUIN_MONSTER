@@ -78,7 +78,8 @@ namespace PenguinMonster.View
             _text.text = message;
         }
 
-        private IEnumerator WaitForTap()
+        /// <summary>文はそのまま、タップされるまで待つ（レベルアップの窓を次の段へ送るときなど）</summary>
+        public IEnumerator WaitForTap()
         {
             _advanceRequested = false;
             float elapsed = 0f;

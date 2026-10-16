@@ -19,6 +19,7 @@ namespace PenguinMonster.Editor
     /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs、
     /// 結果は .Result.cs、オンラインの部屋は .Room.cs、画面をまたいでそろえる見た目（夜空・見出し・ボタン）は .Style.cs、
     /// ストーリーのフィールド（マップ・主人公・十字キー）は .StoryField.cs、会話窓・はい / いいえ・最初の3体を選ぶ画面は .StoryEvents.cs、
+    /// ストーリーのバトルのコマンドは .StoryBattle.cs、
     /// 画面の暗転は .Fade.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -50,7 +51,7 @@ namespace PenguinMonster.Editor
             var flow = BuildFlow(canvas.transform, battle);
             // 暗転は全部の画面より手前に重ねる
             var fade = CreateFade(canvas.transform);
-            var field = BuildStoryField(camera, fieldInput, fade, fieldEvents);
+            var field = BuildStoryField(camera, fieldInput, fade, fieldEvents, battle);
             LinkStory(flow, field, fade);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -109,9 +110,11 @@ namespace PenguinMonster.Editor
             var enemyBanner = CreateAbilityBanner(root.transform, "EnemyAbilityBanner", EnemyBannerPosition, fromLeft: false);
             var messageWindow = CreateMessageWindow(root.transform, fieldTapArea);
             var commandPanel = CreateCommandPanel(root.transform);
+            var storyCommandPanel = CreateStoryCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
             var targetPanel = CreateTargetPanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
+            var levelUpWindow = CreateLevelUpWindow(root.transform);
             // 一覧は枠をタップしたときだけ出る。暗幕で場と窓を覆うよう、窓より手前に置く
             var stagePanel = CreateStatStagePanel(root.transform);
             LinkStatStagePanel(stagePanel, playerInfos.Concat(enemyInfos).Append(playerInfo).Append(enemyInfo).ToArray());
@@ -135,9 +138,11 @@ namespace PenguinMonster.Editor
             so.FindProperty("_eggThrow").objectReferenceValue = eggThrow;
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
+            so.FindProperty("_storyCommandPanel").objectReferenceValue = storyCommandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
             so.FindProperty("_targetPanel").objectReferenceValue = targetPanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
+            so.FindProperty("_levelUpWindow").objectReferenceValue = levelUpWindow;
             so.FindProperty("_turnTimer").objectReferenceValue = turnTimer;
             so.ApplyModifiedProperties();
             return controller;

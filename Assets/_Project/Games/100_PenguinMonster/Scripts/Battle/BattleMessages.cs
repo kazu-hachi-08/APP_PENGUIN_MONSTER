@@ -6,15 +6,21 @@ namespace PenguinMonster.Battle
     public static class BattleMessages
     {
         private const string EnemyPrefix = "相手の ";
+        private const string WildPrefix = "野生の ";
 
         /// <param name="playerSide">画面の手前にいる陣営。相手側の主語に「相手の」を付けるのに使う</param>
-        public static string Format(BattleEvent e, int playerSide)
+        /// <param name="foeIsWild">ストーリーの野生との戦い。相手の主語を「野生の」にし、勝っても「勝負に 勝った！」は出さない</param>
+        public static string Format(BattleEvent e, int playerSide, bool foeIsWild = false)
         {
             bool isPlayer = e.Side == playerSide;
-            string subject = isPlayer ? e.Monster?.Name : EnemyPrefix + e.Monster?.Name;
+            string subject = isPlayer ? e.Monster?.Name : (foeIsWild ? WildPrefix : EnemyPrefix) + e.Monster?.Name;
 
             switch (e.Kind)
             {
+                case BattleEventKind.SentOut when foeIsWild && !isPlayer:
+                    return $"あっ！ 野生の {e.Monster.Name}が 飛び出してきた！";
+                case BattleEventKind.BattleEnd when foeIsWild:
+                    return isPlayer ? null : "勝負に 負けた…";
                 case BattleEventKind.SentOut:
                     return isPlayer ? $"行けっ！ {e.Monster.Name}！" : $"相手は {e.Monster.Name}を 繰り出した！";
                 case BattleEventKind.Withdrawn:

@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using PenguinMonster.Story;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace PenguinMonster.View.Story
     {
         [Tooltip("主人公と同じ高さに描く（マップのタイルより手前）")]
         [SerializeField] private int _sortingOrder = 1;
+        [Tooltip("「！」を人の足元からどれだけ上に出すか（マス）。頭の少し上")]
+        [SerializeField] private float _markHeight = 1.05f;
 
         private readonly List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
         private readonly Dictionary<string, SpriteRenderer> _byId = new Dictionary<string, SpriteRenderer>();
@@ -41,6 +44,59 @@ namespace PenguinMonster.View.Story
             {
                 renderer.sprite = NpcArt.Get(npc.Look, facing);
             }
+        }
+
+        /// <summary>トレーナーと目が合った。頭の上に「！」を出して、少し待ってから消す</summary>
+        public IEnumerator Exclaim(FieldNpc npc, float seconds)
+        {
+            if (!_byId.TryGetValue(npc.Id, out var renderer))
+            {
+                yield break;
+            }
+            var mark = MarkRenderer();
+            mark.transform.position = renderer.transform.position + Vector3.up * _markHeight;
+            mark.enabled = true;
+            yield return new WaitForSeconds(seconds);
+            mark.enabled = false;
+        }
+
+        /// <summary>目が合ったトレーナーが1マス歩く。前半は足を出したコマ、後半は立ちのコマ（主人公と同じ）</summary>
+        public IEnumerator Walk(FieldNpc npc, Vector3 to, Direction facing, float seconds)
+        {
+            if (!_byId.TryGetValue(npc.Id, out var renderer))
+            {
+                yield break;
+            }
+            var from = renderer.transform.position;
+            renderer.sprite = NpcArt.Get(npc.Look, facing, 1);
+            for (float t = 0f; t < seconds; t += Time.deltaTime)
+            {
+                float progress = t / seconds;
+                renderer.transform.position = Vector3.Lerp(from, to, progress);
+                if (progress >= 0.5f)
+                {
+                    renderer.sprite = NpcArt.Get(npc.Look, facing);
+                }
+                yield return null;
+            }
+            renderer.transform.position = to;
+            renderer.sprite = NpcArt.Get(npc.Look, facing);
+        }
+
+        private SpriteRenderer _mark;
+
+        private SpriteRenderer MarkRenderer()
+        {
+            if (_mark == null)
+            {
+                var obj = new GameObject("Exclamation");
+                obj.transform.SetParent(transform, false);
+                _mark = obj.AddComponent<SpriteRenderer>();
+                _mark.sprite = NpcArt.Exclamation();
+                // 人の絵より手前に出す
+                _mark.sortingOrder = _sortingOrder + 1;
+            }
+            return _mark;
         }
 
         private SpriteRenderer RendererAt(int index)

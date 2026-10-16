@@ -57,6 +57,11 @@ namespace PenguinMonster.View
         private void ShowCommands(int slot, List<int> reserved)
         {
             _messageWindow.SetText($"{Player.ActiveAt(slot).Name}は どうする？");
+            if (_story != null)
+            {
+                ShowStoryCommands(slot, reserved);
+                return;
+            }
             _commandPanel.Show(Player, reserved,
                 onFight: () => ShowMoveSelect(slot, reserved),
                 onParty: () => ShowSwitchSelect(slot, reserved));

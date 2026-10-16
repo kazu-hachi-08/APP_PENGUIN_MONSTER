@@ -53,6 +53,13 @@ namespace PenguinMonster.View
 
             for (int i = 0; i < _moveButtons.Length; i++)
             {
+                // ストーリーの子は技が4つ未満のことがあるので、無い枠は隠す
+                bool exists = i < _moves.Count;
+                _moveButtons[i].gameObject.SetActive(exists);
+                if (!exists)
+                {
+                    continue;
+                }
                 var move = _moves[i];
                 string tag = CommonTag(move, targets);
                 string typeHex = ColorUtility.ToHtmlStringRGB(TypeColors.Get(move.Type));
