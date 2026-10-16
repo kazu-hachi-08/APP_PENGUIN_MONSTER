@@ -17,18 +17,21 @@ namespace PenguinMonster.Story
         public IReadOnlyList<LevelMove> Learnset { get; }
         /// <summary>進化しない種は null</summary>
         public Evolution Evolution { get; }
+        /// <summary>捕まえやすさ（本家と同じ 3〜255。大きいほど捕まえやすい）</summary>
+        public int CatchRate { get; }
 
         public int No => Definition.No;
         public string Name => Definition.Name;
 
         public StorySpecies(MonsterDefinition definition, GrowthRate growthRate, int baseExp, LevelMove[] learnset,
-            Evolution evolution = null)
+            Evolution evolution = null, int catchRate = StoryBalance.CaptureMaxOdds)
         {
             Definition = definition;
             GrowthRate = growthRate;
             BaseExp = baseExp;
             Learnset = learnset;
             Evolution = evolution;
+            CatchRate = catchRate;
         }
 
         /// <summary>ちょうどそのレベルで覚える技（表の順）</summary>

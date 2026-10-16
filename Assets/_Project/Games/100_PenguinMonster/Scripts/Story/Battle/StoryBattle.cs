@@ -39,6 +39,10 @@ namespace PenguinMonster.Story
         public IReadOnlyList<OwnedMonster> Foes => _foes;
 
         public bool PlayerWon => State.Winner == PlayerSide;
+        /// <summary>捕獲タマゴで捕まえた子。捕まえたらそこでバトルは終わる。捕まえていなければ null</summary>
+        public OwnedMonster Caught { get; private set; }
+        /// <summary>人の ペンモンは 捕まえられない（トレーナー戦では捕獲タマゴを投げられない）</summary>
+        public bool CanThrowEgg => !IsTrainer;
 
         public StoryBattle(Party party, IReadOnlyList<OwnedMonster> foes, bool isTrainer)
         {
@@ -91,6 +95,52 @@ namespace PenguinMonster.Story
             }
             int odds = own * StoryBalance.FleeSpeedScale / wild + StoryBalance.FleeAttemptBonus * _fleeAttempts;
             return random.Next(StoryBalance.FleeRoll) < odds;
+        }
+
+        /// <summary>この手持ちの子に、回復・状態異常を治す道具が効く</summary>
+        public bool CanTreat(StoryItem item, int partyIndex)
+        {
+            var medicine = StoryItems.Get(item);
+            var target = State.Sides[PlayerSide].Party[partyIndex];
+            return medicine.IsMedicine && medicine.CanTreat(target.CurrentHp, target.MaxHp, target.Status);
+        }
+
+        /// <summary>
+        /// バトル中に手持ちの子へ道具を使う（ターンの行動の代わりで、相手だけが動く）。効かなければ使わずに false。
+        /// 使ったのはバトルの写しなので、手持ちへは ApplyResults で持ち帰る
+        /// </summary>
+        public bool UseMedicine(Bag bag, StoryItem item, int partyIndex)
+        {
+            if (!CanTreat(item, partyIndex) || !bag.Remove(item))
+            {
+                return false;
+            }
+            var medicine = StoryItems.Get(item);
+            var target = State.Sides[PlayerSide].Party[partyIndex];
+            target.ApplyMedicine(medicine.HealAmount, medicine.CuresStatus(target.Status));
+            return true;
+        }
+
+        /// <summary>
+        /// 場の野生に捕獲タマゴを投げる（タマゴを1個使う）。捕まえたら Caught に、その時の HP・状態異常のまま入る。
+        /// 外れたらターンの行動の代わりで、相手だけが動く
+        /// </summary>
+        public CaptureResult ThrowEgg(Bag bag, Random random)
+        {
+            if (!CanThrowEgg || !bag.Remove(StoryItem.CaptureEgg))
+            {
+                throw new InvalidOperationException("トレーナー戦か、捕獲タマゴを持っていない");
+            }
+            var foeSide = State.Sides[FoeSide];
+            var wild = foeSide.Active;
+            var owned = _foes[foeSide.ActivePartyIndex];
+            var result = Capture.Roll(Capture.Odds(wild.MaxHp, wild.CurrentHp, owned.Species.CatchRate, wild.Status), random);
+            if (result.Caught)
+            {
+                owned.ApplyBattleResult(wild);
+                Caught = owned;
+            }
+            return result;
         }
 
         /// <summary>

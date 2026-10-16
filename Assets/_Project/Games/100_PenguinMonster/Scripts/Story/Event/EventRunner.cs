@@ -4,23 +4,41 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / ChooseStarter / Battle / Heal）で止まり、View が見せ終えたら
+    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / GiveItem / ChooseStarter / Battle / Heal）で止まり、View が見せ終えたら
     /// Advance / Answer / Choose / FinishBattle で先へ送る。フラグ・手持ち・お金・回復はここで行い、View は表示だけを受け持つ
     /// </summary>
     public sealed class EventRunner
     {
         private const string ReceivedFormat = "{0}を もらった！";
+        private const string SentToBoxFormat = "{0}を もらった！\n手持ちが いっぱいなので あずかり箱へ 送られた";
+        private const string ReceivedItemFormat = "{0}を {1}個 もらった！";
 
         private readonly StoryState _state;
         private readonly List<EventStep> _steps;
         private int _index;
+        /// <summary>今の Give で、手持ちがいっぱいで あずかり箱へ送った</summary>
+        private bool _sentToBox;
 
         /// <summary>今 View に見せてほしい行。台本を最後まで進めたら null</summary>
         public EventStep Current => _index < _steps.Count ? _steps[_index] : null;
         public bool IsDone => Current == null;
 
         /// <summary>今の行で窓に出す文</summary>
-        public string Message => Current?.Kind == EventStepKind.Give ? string.Format(ReceivedFormat, Current.Species.Name) : Current?.Text;
+        public string Message
+        {
+            get
+            {
+                switch (Current?.Kind)
+                {
+                    case EventStepKind.Give:
+                        return string.Format(_sentToBox ? SentToBoxFormat : ReceivedFormat, Current.Species.Name);
+                    case EventStepKind.GiveItem:
+                        return string.Format(ReceivedItemFormat, StoryItems.Get(Current.Item).Name, Current.Count);
+                    default:
+                        return Current?.Text;
+                }
+            }
+        }
 
         public EventRunner(StoryState state, IEnumerable<EventStep> steps)
         {
@@ -29,10 +47,10 @@ namespace PenguinMonster.Story
             RunUntilShown();
         }
 
-        /// <summary>Say・Give・Heal を読み終えた</summary>
+        /// <summary>Say・Give・GiveItem・Heal を読み終えた</summary>
         public void Advance()
         {
-            Expect(EventStepKind.Say, EventStepKind.Give, EventStepKind.Heal);
+            Expect(EventStepKind.Say, EventStepKind.Give, EventStepKind.GiveItem, EventStepKind.Heal);
             Next();
         }
 
@@ -98,8 +116,10 @@ namespace PenguinMonster.Story
                         _index++;
                         break;
                     case EventStepKind.Give:
-                        // 手持ちがいっぱいのときの あずかり箱はフェーズ6で足す（区切り1の最初の1体では起きない）
-                        _state.Party.Add(OwnedMonster.Create(Current.Species, Current.Level));
+                        _sentToBox = !_state.Receive(OwnedMonster.Create(Current.Species, Current.Level));
+                        return;
+                    case EventStepKind.GiveItem:
+                        _state.Bag.Add(Current.Item, Current.Count);
                         return;
                     case EventStepKind.Heal:
                         _state.Party.HealAll();

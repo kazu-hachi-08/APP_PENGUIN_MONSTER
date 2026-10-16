@@ -62,6 +62,18 @@ namespace PenguinMonster.Story
             Status = StatusCondition.None;
         }
 
+        /// <summary>傷薬・毒消しなどを使う。効くかどうかは呼ぶ側が StoryItemDefinition.CanTreat で確かめておく</summary>
+        public void Treat(StoryItemDefinition medicine)
+        {
+            CurrentHp = System.Math.Min(MaxHp, CurrentHp + medicine.HealAmount);
+            if (medicine.CuresStatus(Status))
+            {
+                Status = StatusCondition.None;
+            }
+        }
+
+        public bool CanBeTreatedWith(StoryItemDefinition medicine) => medicine.CanTreat(CurrentHp, MaxHp, Status);
+
         /// <summary>戦いの後の HP・状態異常を持ち帰る（ストーリーでは傷が残る）</summary>
         public void ApplyBattleResult(BattleMonster fought)
         {

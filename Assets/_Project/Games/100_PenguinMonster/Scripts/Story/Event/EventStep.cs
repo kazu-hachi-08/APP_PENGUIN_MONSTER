@@ -18,6 +18,8 @@ namespace PenguinMonster.Story
         Battle,
         /// <summary>手持ちを全回復し、全滅したときの戻り先をここにして、文を出す</summary>
         Heal,
+        /// <summary>バッグに道具を足し、「〇〇を N個 もらった！」を出す</summary>
+        GiveItem,
     }
 
     /// <summary>
@@ -47,10 +49,15 @@ namespace PenguinMonster.Story
         public bool CanLose { get; }
         /// <summary>Heal で全滅したときの戻り先にする場所</summary>
         public FieldSpot HealSpot { get; }
+        /// <summary>GiveItem でもらう道具</summary>
+        public StoryItem Item { get; }
+        /// <summary>GiveItem でもらう数</summary>
+        public int Count { get; }
 
         private EventStep(EventStepKind kind, string text = null, string flag = null, StorySpecies species = null,
             IReadOnlyList<StorySpecies> choices = null, int level = 0, IReadOnlyList<EventStep> onNo = null,
-            TrainerDefinition trainer = null, bool canLose = false, FieldSpot healSpot = default)
+            TrainerDefinition trainer = null, bool canLose = false, FieldSpot healSpot = default, StoryItem item = default,
+            int count = 0)
         {
             Kind = kind;
             Text = text;
@@ -62,6 +69,8 @@ namespace PenguinMonster.Story
             Trainer = trainer;
             CanLose = canLose;
             HealSpot = healSpot;
+            Item = item;
+            Count = count;
         }
 
         public static EventStep Say(string text) => new EventStep(EventStepKind.Say, text);
@@ -90,6 +99,11 @@ namespace PenguinMonster.Story
         public static EventStep Heal(string text, FieldSpot returnSpot)
         {
             return new EventStep(EventStepKind.Heal, text, healSpot: returnSpot);
+        }
+
+        public static EventStep GiveItem(StoryItem item, int count)
+        {
+            return new EventStep(EventStepKind.GiveItem, item: item, count: count);
         }
 
         /// <summary>話すだけの台本（村の人・看板）</summary>

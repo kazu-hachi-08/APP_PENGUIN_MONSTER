@@ -9,6 +9,9 @@ namespace PenguinMonster.Story
     public static class Town01People
     {
         /// <summary>最初の1体をもらうまで、村の北の出口をふさぐ場所</summary>
+        /// <summary>最初の1体と一緒に博士がくれる捕獲タマゴの数（本家の最初のボールと同じ 5個）</summary>
+        public const int StarterCaptureEggs = 5;
+
         public static readonly FieldSpot MomAtExit = new FieldSpot(Town01Maps.Village, Town01Maps.NorthExit + Direction.Down.Offset(), Direction.Down);
 
         public static IReadOnlyList<FieldNpc> Create()
@@ -40,7 +43,10 @@ namespace PenguinMonster.Story
                     EventStep.Say("ここに 3つの タマゴが ある。好きな 子を 選ぶと いい！"),
                     EventStep.ChooseStarter(Town01Starters.All, StoryBalance.StarterLevel, Town01Flags.StarterPrefix),
                     EventStep.SetFlag(Town01Flags.GotStarter),
-                    EventStep.Say("その子を 大事に 育てて おくれ")),
+                    EventStep.Say("その子を 大事に 育てて おくれ"),
+                    EventStep.Say("それと これも 持って いきなさい"),
+                    EventStep.GiveItem(StoryItem.CaptureEgg, StarterCaptureEggs),
+                    EventStep.Say("弱った 野生の ペンモンに 投げれば 捕まえられるぞ")),
                 NpcPlacement.Always(spot,
                     EventStep.Say("ペンモンは 元気かね？"),
                     EventStep.Say("草むらには 野生の ペンモンが おるから 気を つけるんじゃぞ")));

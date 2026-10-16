@@ -160,6 +160,16 @@ namespace PenguinMonster.Battle
 
         internal void UseItem() => ItemUsed = true;
 
+        /// <summary>ストーリーでバッグの道具（傷薬・毒消しなど）を使った。HP は最大HPまで。治すかどうかは道具の側が決める</summary>
+        public void ApplyMedicine(int healAmount, bool cureStatus)
+        {
+            Heal(healAmount);
+            if (cureStatus)
+            {
+                CureStatus();
+            }
+        }
+
         /// <summary>ランクを変える。-6〜+6 に収め、実際に変わった量を返す（0 なら もう変わらない）</summary>
         internal int ChangeStage(StatKind stat, int delta)
         {

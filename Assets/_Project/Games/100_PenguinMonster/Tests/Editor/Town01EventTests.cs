@@ -58,6 +58,14 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void Professor_GivesCaptureEggsWithStarter()
+        {
+            TalkToProfessor();
+
+            Assert.AreEqual(Town01People.StarterCaptureEggs, _state.Bag.CountOf(StoryItem.CaptureEgg));
+        }
+
+        [Test]
         public void Professor_Declined_GivesNothing()
         {
             TalkToProfessor(accept: false);

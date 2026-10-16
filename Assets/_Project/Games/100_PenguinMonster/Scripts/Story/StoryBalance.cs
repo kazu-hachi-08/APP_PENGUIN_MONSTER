@@ -33,5 +33,24 @@ namespace PenguinMonster.Story
         public const int FleeSpeedScale = 128;
         public const int FleeAttemptBonus = 30;
         public const int FleeRoll = 256;
+
+        public const int Percent = 100;
+
+        /// <summary>よろず屋で売ると 買う値段を この数で割った額（本家と同じく半分）</summary>
+        public const int SellPriceDivisor = 2;
+
+        // 捕獲（本家の第3〜4世代の簡略版）: 値 ＝ (3×最大HP − 2×今の HP) × 捕まえやすさ ÷ (3×最大HP) × 状態異常の倍率。
+        // 255 以上なら必ず捕まえる。それより下なら 4回の揺れの判定を引く
+        public const int CaptureMaxHpWeight = 3;
+        public const int CaptureHpWeight = 2;
+        public const int CaptureMaxOdds = 255;
+        public const int CaptureSleepBonusPercent = 200;
+        public const int CaptureStatusBonusPercent = 150;
+        public const int CaptureChecks = 4;
+        /// <summary>捕まえたときに見せる揺れの回数（4回目の判定は揺らさずに捕まえる）</summary>
+        public const int CaptureShownShakes = 3;
+        public const int CaptureShakeRoll = 65536;
+        public const double CaptureShakeNumerator = 1048560.0;
+        public const double CaptureShakeDivisor = 16711680.0;
     }
 }

@@ -17,6 +17,9 @@ namespace PenguinMonster.Story
         private const int StarterBaseExp = 62;
         private const int EvolvedBaseExp = 142;
         private const int WildBaseExp = 50;
+        // 捕まえやすさも本家に合わせる（最初の3体は 45、序盤の野生は 255）
+        private const int StarterCatchRate = 45;
+        private const int WildCatchRate = 255;
 
         // 仮の最初の3体（ウキワヒナペン・マッチヒナペン・フタバヒナペン）と進化先（ナミペン・ヒノペン・ノリペン）
         public static readonly StorySpecies SeaStarter = Starter(128, 2);
@@ -46,7 +49,7 @@ namespace PenguinMonster.Story
         {
             var source = MonsterTable.ByNo(no);
             return new StorySpecies(Copy(source, MonsterRank.Young), GrowthRate.MediumSlow, StarterBaseExp,
-                StarterLearnset(source, MonsterTable.ByNo(evolvedNo)), new Evolution(EvolveLevel, evolvedNo));
+                StarterLearnset(source, MonsterTable.ByNo(evolvedNo)), new Evolution(EvolveLevel, evolvedNo), StarterCatchRate);
         }
 
         /// <summary>定義表の4つを最初から覚えていて、Lv8 で進化先の1つ目の技を覚える</summary>
@@ -62,14 +65,16 @@ namespace PenguinMonster.Story
         {
             var source = MonsterTable.ByNo(starter.Evolution.IntoNo);
             var learnset = new List<LevelMove>(starter.Learnset) { new LevelMove(EvolveLevel, source.Moves[1]) };
-            var evolved = new StorySpecies(Copy(source, source.Rank), GrowthRate.MediumSlow, EvolvedBaseExp, learnset.ToArray());
+            var evolved = new StorySpecies(Copy(source, source.Rank), GrowthRate.MediumSlow, EvolvedBaseExp, learnset.ToArray(),
+                catchRate: StarterCatchRate);
             ByNumber[evolved.No] = evolved;
         }
 
         private static StorySpecies Wild(int no)
         {
             var source = MonsterTable.ByNo(no);
-            return new StorySpecies(Copy(source, MonsterRank.Young), GrowthRate.MediumFast, WildBaseExp, FirstMoves(source).ToArray());
+            return new StorySpecies(Copy(source, MonsterRank.Young), GrowthRate.MediumFast, WildBaseExp, FirstMoves(source).ToArray(),
+                catchRate: WildCatchRate);
         }
 
         private static List<LevelMove> FirstMoves(MonsterDefinition source)

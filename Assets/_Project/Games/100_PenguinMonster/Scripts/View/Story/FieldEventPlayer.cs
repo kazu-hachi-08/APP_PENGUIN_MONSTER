@@ -69,6 +69,7 @@ namespace PenguinMonster.View.Story
                     runner.Choose(chosen);
                     break;
                 case EventStepKind.Give:
+                case EventStepKind.GiveItem:
                     BattleSounds.Play(BattleSound.Win);
                     yield return _window.Play(runner.Message);
                     runner.Advance();
