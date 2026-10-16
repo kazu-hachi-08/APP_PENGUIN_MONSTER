@@ -31,6 +31,12 @@ namespace PenguinMonster.View.Story
             // 道路のトレーナー: 橙の帽子に水色の上着（雪あそびの子）
             { NpcLook.Youngster, Colors(hat: new Color32(240, 130, 50, 255), trim: new Color32(248, 248, 252, 255), hair: new Color32(60, 44, 34, 255),
                 coat: new Color32(110, 190, 230, 255), hem: new Color32(70, 140, 190, 255)) },
+            // ぬくもり小屋の受付: 桃色の帽子に白い上着（温かい小屋の人に見えるように）
+            { NpcLook.HutKeeper, Colors(hat: new Color32(240, 120, 150, 255), trim: new Color32(248, 248, 252, 255), hair: new Color32(150, 80, 60, 255),
+                coat: new Color32(248, 236, 240, 255), hem: new Color32(240, 120, 150, 255)) },
+            // よろず屋の店員: 紺の帽子に青い前掛け
+            { NpcLook.Clerk, Colors(hat: new Color32(40, 60, 110, 255), trim: new Color32(248, 248, 252, 255), hair: new Color32(60, 44, 34, 255),
+                coat: new Color32(70, 120, 200, 255), hem: new Color32(40, 80, 150, 255)) },
         };
 
         private static readonly Dictionary<NpcLook, Sprite[,]> Cache = new Dictionary<NpcLook, Sprite[,]>();

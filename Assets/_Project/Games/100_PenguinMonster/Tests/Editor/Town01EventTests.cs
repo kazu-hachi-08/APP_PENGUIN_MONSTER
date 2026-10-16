@@ -224,6 +224,78 @@ namespace PenguinMonster.Story.Tests
             Assert.AreEqual(Town01Maps.PlayerHouse, _state.LastHealSpot.MapId);
         }
 
+        /// <summary>小屋・店の受付の前に立って話しかけ、Ask には answer で答え、通った行の種類を返す</summary>
+        private List<EventStepKind> TalkAtCounter(string mapId, bool answer)
+        {
+            var script = PlayerAt(mapId, new GridPos(3, 2), Direction.Up).ScriptAhead();
+            var runner = new EventRunner(_state, script);
+            var kinds = new List<EventStepKind>();
+            while (!runner.IsDone)
+            {
+                kinds.Add(runner.Current.Kind);
+                if (runner.Current.Kind == EventStepKind.Ask)
+                {
+                    runner.Answer(answer);
+                }
+                else
+                {
+                    runner.Advance();
+                }
+            }
+            return kinds;
+        }
+
+        [Test]
+        public void HutAndShopDoors_LeadInsideAndBack()
+        {
+            foreach (var (door, mapId) in new[] { (new GridPos(11, 14), Town01Maps.WarmHut), (new GridPos(16, 14), Town01Maps.Shop) })
+            {
+                var player = PlayerAt(Town01Maps.Village, door, Direction.Up);
+                player.Step(Direction.Up);
+                player.Enter(player.WarpHere);
+                Assert.AreEqual(mapId, player.Map.Id);
+
+                player.Step(Direction.Down);
+                player.Enter(player.WarpHere);
+                Assert.AreEqual(Town01Maps.Village, player.Map.Id);
+                Assert.AreEqual(door, player.Position);
+            }
+        }
+
+        [Test]
+        public void HutKeeper_HealsSetsReturnSpotAndOpensBox()
+        {
+            _state.Party.Add(OwnedMonster.Create(Town01Starters.All[0], StoryBalance.StarterLevel));
+            var owned = _state.Party.Members[0];
+            var fighter = owned.ToBattle();
+            fighter.TakeDamage(5);
+            owned.ApplyBattleResult(fighter);
+
+            var kinds = TalkAtCounter(Town01Maps.WarmHut, answer: true);
+
+            Assert.AreEqual(owned.MaxHp, owned.CurrentHp);
+            Assert.AreEqual(Town01Maps.WarmHut, _state.LastHealSpot.MapId);
+            CollectionAssert.Contains(kinds, EventStepKind.Storage);
+        }
+
+        [Test]
+        public void HutKeeper_DecliningRest_StillOffersBox()
+        {
+            var kinds = TalkAtCounter(Town01Maps.WarmHut, answer: false);
+
+            CollectionAssert.DoesNotContain(kinds, EventStepKind.Heal);
+            Assert.AreEqual(Town01Maps.Start.MapId, _state.LastHealSpot.MapId);
+        }
+
+        [Test]
+        public void Clerk_OpensShopWithAllTown01Items()
+        {
+            var script = PlayerAt(Town01Maps.Shop, new GridPos(3, 2), Direction.Up).ScriptAhead();
+
+            var shop = script.Single(step => step.Kind == EventStepKind.Shop);
+            Assert.AreEqual(StoryItems.Count, shop.ShopItems.Count);
+        }
+
         [Test]
         public void Species_EvolutionsAndEncountersAreDefined()
         {

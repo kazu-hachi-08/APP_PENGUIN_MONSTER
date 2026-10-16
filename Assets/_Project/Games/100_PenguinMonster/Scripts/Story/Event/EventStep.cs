@@ -20,6 +20,10 @@ namespace PenguinMonster.Story
         Heal,
         /// <summary>バッグに道具を足し、「〇〇を N個 もらった！」を出す</summary>
         GiveItem,
+        /// <summary>よろず屋の売り買いの画面を出す。売るものは ShopItems</summary>
+        Shop,
+        /// <summary>あずかり箱の画面を出す（ぬくもり小屋）</summary>
+        Storage,
     }
 
     /// <summary>
@@ -53,11 +57,13 @@ namespace PenguinMonster.Story
         public StoryItem Item { get; }
         /// <summary>GiveItem でもらう数</summary>
         public int Count { get; }
+        /// <summary>Shop で売っている道具</summary>
+        public IReadOnlyList<StoryItem> ShopItems { get; }
 
         private EventStep(EventStepKind kind, string text = null, string flag = null, StorySpecies species = null,
             IReadOnlyList<StorySpecies> choices = null, int level = 0, IReadOnlyList<EventStep> onNo = null,
             TrainerDefinition trainer = null, bool canLose = false, FieldSpot healSpot = default, StoryItem item = default,
-            int count = 0)
+            int count = 0, IReadOnlyList<StoryItem> shopItems = null)
         {
             Kind = kind;
             Text = text;
@@ -71,6 +77,7 @@ namespace PenguinMonster.Story
             HealSpot = healSpot;
             Item = item;
             Count = count;
+            ShopItems = shopItems;
         }
 
         public static EventStep Say(string text) => new EventStep(EventStepKind.Say, text);
@@ -105,6 +112,10 @@ namespace PenguinMonster.Story
         {
             return new EventStep(EventStepKind.GiveItem, item: item, count: count);
         }
+
+        public static EventStep Shop(params StoryItem[] items) => new EventStep(EventStepKind.Shop, shopItems: items);
+
+        public static EventStep Storage() => new EventStep(EventStepKind.Storage);
 
         /// <summary>話すだけの台本（村の人・看板）</summary>
         public static EventStep[] Lines(IEnumerable<string> lines)

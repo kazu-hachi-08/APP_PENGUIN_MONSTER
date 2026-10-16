@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// 出来事の台本を画面で見せる（PLAN_STORY_TOWN01.md フェーズ4）。進め方は EventRunner が決め、ここは窓を出して答えを返すだけ。
+    /// 出来事の台本を画面で見せる（PLAN_STORY_TOWN01.md フェーズ4〜6）。進め方は EventRunner が決め、ここは窓を出して答えを返すだけ。
     /// 会話窓はバトルと同じ MessageWindow（同じ見た目・送り方。仕様書 §7）。A / B でも送れるようにする。
     /// 会話の間だけこの層を出し、十字キーは隠す（下の窓と重なるため）
     /// </summary>
@@ -19,6 +19,9 @@ namespace PenguinMonster.View.Story
         [SerializeField] private StarterPanel _starters;
         [SerializeField] private FieldInput _input;
         [SerializeField] private StoryBattleScreen _battles;
+        [Tooltip("よろず屋・あずかり箱の画面（フェーズ6）。会話窓より奥に置き、結果の文は会話窓に出す")]
+        [SerializeField] private ShopPanel _shop;
+        [SerializeField] private BoxPanel _box;
 
         private Action _beforeReturn;
 
@@ -67,6 +70,14 @@ namespace PenguinMonster.View.Story
                     StorySpecies chosen = null;
                     yield return ChooseStarter(runner.Current, species => chosen = species);
                     runner.Choose(chosen);
+                    break;
+                case EventStepKind.Shop:
+                    yield return _shop.Open(state, runner.Current.ShopItems);
+                    runner.Advance();
+                    break;
+                case EventStepKind.Storage:
+                    yield return _box.Open(state);
+                    runner.Advance();
                     break;
                 case EventStepKind.Give:
                 case EventStepKind.GiveItem:

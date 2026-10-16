@@ -1,7 +1,7 @@
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2）。今は仮のハツユキ村と、家・研究所の中、試しの1番道路だけ。
+    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2）。今は仮のハツユキ村と、家・研究所・仮のぬくもり小屋・よろず屋の中、試しの1番道路だけ。
     /// 本番の中身はフェーズ8で作り直す。
     /// 文字: . 雪 / , 草むら / = 道 / T 木 / ~ 水 / W 家の壁 / R 屋根 / D 扉 / _ 床 / S 看板
     /// </summary>
@@ -12,11 +12,17 @@ namespace PenguinMonster.Story
         public const string RivalHouse = "RivalHouse";
         public const string Lab = "Lab";
         public const string Route01 = "Route01";
+        /// <summary>ぬくもり小屋・よろず屋。本番はツララ町に置くが、8b で町ができるまで村に仮で置く（PLAN_STORY_TOWN01.md フェーズ6）</summary>
+        public const string WarmHut = "WarmHut";
+        public const string Shop = "Shop";
 
         // 村の扉と、外へ出たときに立つ扉の前のマス
         private static readonly GridPos PlayerHouseDoor = new GridPos(4, 4);
         private static readonly GridPos RivalHouseDoor = new GridPos(13, 4);
         private static readonly GridPos LabDoor = new GridPos(6, 10);
+        private static readonly GridPos WarmHutDoor = new GridPos(11, 13);
+        private static readonly GridPos ShopDoor = new GridPos(16, 13);
+        private static readonly GridPos HutShopSign = new GridPos(14, 13);
 
         /// <summary>村の北の出口（1番道路へ）。最初の1体をもらうまで母が手前でふさぐ</summary>
         public static readonly GridPos NorthExit = new GridPos(9, 0);
@@ -31,6 +37,7 @@ namespace PenguinMonster.Story
             return new FieldWorld(new[]
             {
                 CreateVillage(), CreateHouse(PlayerHouse, PlayerHouseDoor), CreateHouse(RivalHouse, RivalHouseDoor), CreateLab(), CreateRoute01(),
+                CreateHouse(WarmHut, WarmHutDoor), CreateHouse(Shop, ShopDoor),
             });
         }
 
@@ -49,19 +56,22 @@ namespace PenguinMonster.Story
                 "T..RRRRRR=.....,,,.T",
                 "T..RRRRRR=.....,,,.T",
                 "T..WWWDWW=.........T",
-                "T.....====.........T",
-                "T..................T",
-                "T..~~~~............T",
-                "T..~~~~............T",
+                "T.....====RRRR.RRRRT",
+                "T.........RRRR.RRRRT",
+                "T..~~~~...WDWWSWDWWT",
+                "T..~~~~....=....=..T",
                 "TTTTTTTTTTTTTTTTTTTT",
             };
             return new FieldMap(Village, rows,
                 Inside(PlayerHouseDoor, PlayerHouse, HouseArrival),
                 Inside(RivalHouseDoor, RivalHouse, HouseArrival),
                 Inside(LabDoor, Lab, LabArrival),
+                Inside(WarmHutDoor, WarmHut, HouseArrival),
+                Inside(ShopDoor, Shop, HouseArrival),
                 new Warp(NorthExit, new FieldSpot(Route01, Route01Exit + Direction.Up.Offset(), Direction.Up)))
                 .WithSign(ExitSign, "この先 1番道路", "草むらでは 野生の ペンモンが 飛び出して くるぞ")
-                .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村");
+                .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村")
+                .WithSign(HutShopSign, "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）");
         }
 
         // 中の扉と、入ったときに立つ扉の前のマス

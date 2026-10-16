@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / GiveItem / ChooseStarter / Battle / Heal）で止まり、View が見せ終えたら
+    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / GiveItem / ChooseStarter / Battle / Heal / Shop / Storage）で止まり、View が見せ終えたら
     /// Advance / Answer / Choose / FinishBattle で先へ送る。フラグ・手持ち・お金・回復はここで行い、View は表示だけを受け持つ
     /// </summary>
     public sealed class EventRunner
@@ -47,10 +47,10 @@ namespace PenguinMonster.Story
             RunUntilShown();
         }
 
-        /// <summary>Say・Give・GiveItem・Heal を読み終えた</summary>
+        /// <summary>Say・Give・GiveItem・Heal を読み終えた / Shop・Storage の画面を閉じた（売り買い・入れ替えは画面が StoryState に直接行う）</summary>
         public void Advance()
         {
-            Expect(EventStepKind.Say, EventStepKind.Give, EventStepKind.GiveItem, EventStepKind.Heal);
+            Expect(EventStepKind.Say, EventStepKind.Give, EventStepKind.GiveItem, EventStepKind.Heal, EventStepKind.Shop, EventStepKind.Storage);
             Next();
         }
 

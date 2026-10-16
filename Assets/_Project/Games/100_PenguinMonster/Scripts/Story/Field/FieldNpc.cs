@@ -12,6 +12,10 @@ namespace PenguinMonster.Story
         Rival,
         /// <summary>道路のトレーナー</summary>
         Youngster,
+        /// <summary>ぬくもり小屋の受付</summary>
+        HutKeeper,
+        /// <summary>よろず屋の店員</summary>
+        Clerk,
     }
 
     /// <summary>

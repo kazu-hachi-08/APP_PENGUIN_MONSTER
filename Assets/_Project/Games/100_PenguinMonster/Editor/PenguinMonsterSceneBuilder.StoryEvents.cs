@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// フィールドの出来事の層（PLAN_STORY_TOWN01.md フェーズ4）。奥から タップ領域 → 最初の3体を選ぶ画面 → 会話窓 → はい / いいえ。
+    /// フィールドの出来事の層（PLAN_STORY_TOWN01.md フェーズ4・6）。奥から タップ領域 → 最初の3体を選ぶ画面・よろず屋・あずかり箱 → 会話窓 → はい / いいえ。
     /// 会話窓はバトルと同じ作り（CreateMessageWindow）。選ぶ画面の上に会話窓が重なるよう、選ぶ画面を奥に置く（「〇〇に しますか？」を画面の上で聞くため）
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -36,7 +36,10 @@ namespace PenguinMonster.Editor
             // 窓の外をタップしても送れるよう、一番奥に敷く（バトルと同じ）
             var tapArea = CreateFieldTapArea(root.transform);
             var starters = CreateStarterPanel(root.transform, input);
+            var shop = CreateShopPanel(root.transform);
+            var box = CreateBoxPanel(root.transform);
             var window = CreateMessageWindow(root.transform, tapArea);
+            LinkStoryScreenWindow(window, shop, box);
             var yesNo = CreateYesNoWindow(root.transform, input);
 
             var player = root.AddComponent<FieldEventPlayer>();
@@ -44,6 +47,8 @@ namespace PenguinMonster.Editor
             so.FindProperty("_window").objectReferenceValue = window;
             so.FindProperty("_yesNo").objectReferenceValue = yesNo;
             so.FindProperty("_starters").objectReferenceValue = starters;
+            so.FindProperty("_shop").objectReferenceValue = shop;
+            so.FindProperty("_box").objectReferenceValue = box;
             so.FindProperty("_input").objectReferenceValue = input;
             so.ApplyModifiedProperties();
 
