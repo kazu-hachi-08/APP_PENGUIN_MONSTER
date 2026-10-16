@@ -10,7 +10,7 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// ストーリーの1戦（PLAN_STORY_TOWN01.md フェーズ5）。手持ち全員 vs 相手全員のシングルで、見せ合い・選出はない。
-    /// コマンドは「戦う / バッグ / ペンモン / 逃げる」。逃げられるのは野生だけで、失敗したら相手だけが動く。
+    /// コマンドは「戦う / バッグ / ペンモン / 逃げる」。逃げられるのは野生だけで、失敗したら相手だけが動く（バッグは .Bag.cs）。
     /// 経験値・賞金など戦いの後のことは、呼ぶ側（StoryBattleScreen）が受け持つ
     /// </summary>
     public partial class BattleController
@@ -41,10 +41,11 @@ namespace PenguinMonster.View
         public bool Fled { get; private set; }
 
         /// <summary>
-        /// ストーリーの1戦を決着（か逃げ切る）まで進める。HP・状態異常はまだ手持ちに戻さない（呼ぶ側が StoryBattle.ApplyResults）
+        /// ストーリーの1戦を決着（か逃げ切る・捕まえる）まで進める。HP・状態異常はまだ手持ちに戻さない（呼ぶ側が StoryBattle.ApplyResults）
         /// </summary>
+        /// <param name="bag">バトル中に使う道具。使ったぶんはその場で減る</param>
         /// <param name="trainerName">トレーナー戦なら名前（「〇〇が 勝負を しかけてきた！」）。野生は null</param>
-        public IEnumerator RunStory(StoryBattle battle, CpuPlayer cpu, System.Random random, string trainerName)
+        public IEnumerator RunStory(StoryBattle battle, Bag bag, CpuPlayer cpu, System.Random random, string trainerName)
         {
             ClearField();
             _story = battle;
@@ -53,6 +54,8 @@ namespace PenguinMonster.View
             _choiceSeconds = 0f;
             _cpu = cpu;
             _random = random;
+            _bag = bag;
+            _bagItem = null;
             Fled = false;
             _fleeChosen = false;
 
@@ -68,6 +71,14 @@ namespace PenguinMonster.View
                 {
                     yield return TryFlee();
                     if (Fled)
+                    {
+                        break;
+                    }
+                }
+                if (_bagItem.HasValue)
+                {
+                    yield return UseBagItem();
+                    if (battle.Caught != null)
                     {
                         break;
                     }
@@ -178,7 +189,8 @@ namespace PenguinMonster.View
             _storyCommandPanel.Show(Player, reserved,
                 onFight: () => ShowMoveSelect(slot, reserved),
                 onParty: () => ShowSwitchSelect(slot, reserved),
-                onRun: onRun);
+                onRun: onRun,
+                onBag: () => ShowBag(slot, reserved));
         }
     }
 }

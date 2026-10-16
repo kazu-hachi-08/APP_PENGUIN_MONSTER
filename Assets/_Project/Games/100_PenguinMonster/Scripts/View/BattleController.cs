@@ -121,6 +121,7 @@ namespace PenguinMonster.View
             _movePanel.gameObject.SetActive(false);
             _targetPanel.gameObject.SetActive(false);
             _partyPanel.gameObject.SetActive(false);
+            _bagPanel.Hide();
         }
 
         /// <summary>CPU とのバトルを決着まで進める。勝敗は終わったあと PlayerWon で見る</summary>

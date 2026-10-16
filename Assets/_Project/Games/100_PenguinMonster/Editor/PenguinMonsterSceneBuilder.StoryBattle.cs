@@ -1,4 +1,6 @@
+using PenguinMonster.Common.Editor;
 using PenguinMonster.Common.Scene;
+using PenguinMonster.Story;
 using PenguinMonster.View;
 using PenguinMonster.View.Story;
 using UnityEditor;
@@ -9,7 +11,8 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// ストーリーのバトル（PLAN_STORY_TOWN01.md フェーズ5）。バトルの画面は対戦と同じものを使い、
-    /// コマンドの窓だけ「戦う / バッグ / ペンモン / 逃げる」の 2x2 を別に作る（対戦の窓と同じ場所・大きさ）
+    /// コマンドの窓だけ「戦う / バッグ / ペンモン / 逃げる」の 2x2 を別に作る（対戦の窓と同じ場所・大きさ）。
+    /// バッグの一覧は交代の画面と同じ形（暗幕の上の縦の枠）にする（フェーズ6）
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -65,6 +68,47 @@ namespace PenguinMonster.Editor
             var button = CreateButton(parent, name, label, StoryCommandButtonSize, color);
             button.GetComponentInChildren<Text>().fontSize = CommandFontSize;
             return button.GetComponent<Button>();
+        }
+
+        private const int BagEmptyFontSize = 40;
+
+        /// <summary>道具の種類ごとに1枠。交代の画面と同じ大きさ・並びにして、窓の行き来で形が変わらないようにする</summary>
+        private static BagPanel CreateBagPanel(Transform parent)
+        {
+            var overlay = CreateImage(parent, "BagPanel", OverlayColor);
+            UIDialogBuilder.SetStretchAll(overlay.rectTransform);
+
+            var frame = CreateFramedBox(overlay.transform, "Box", InfoBoxColor, out var inner);
+            Place(frame.rectTransform, Center, Vector2.zero, PartyBoxSize);
+            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
+            layout.spacing = PartySlotSpacing;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+
+            var empty = CreateText(inner, "Empty", "道具を 何も 持っていない", BagEmptyFontSize, BoxTextColor, TextAnchor.MiddleCenter);
+            empty.rectTransform.sizeDelta = PartySlotSize;
+            var buttons = new Button[StoryItems.Count];
+            var labels = new Text[buttons.Length];
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                var slot = CreateButton(inner, $"Btn_Item{i}", "", PartySlotSize, BagColor);
+                buttons[i] = slot.GetComponent<Button>();
+                labels[i] = slot.GetComponentInChildren<Text>();
+                labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
+            }
+            var back = CreateButton(inner, "Btn_Back", "戻る", BackButtonSize, BackColor);
+
+            var panel = overlay.gameObject.AddComponent<BagPanel>();
+            var so = new SerializedObject(panel);
+            SetArray(so.FindProperty("_slotButtons"), buttons);
+            SetArray(so.FindProperty("_slotLabels"), labels);
+            so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
+            so.FindProperty("_emptyLabel").objectReferenceValue = empty.gameObject;
+            so.ApplyModifiedProperties();
+
+            overlay.gameObject.SetActive(false);
+            return panel;
         }
 
         /// <summary>左の列に能力の名前、右の列に数（右寄せ）</summary>

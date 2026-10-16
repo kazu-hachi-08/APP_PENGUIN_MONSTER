@@ -16,6 +16,7 @@ namespace PenguinMonster.View.Story
     {
         private const string BlackOutMessage = "目の前が 真っ暗に なった！";
         private const string PrizeFormat = "賞金 {0}円を 手に入れた！";
+        private const string SentToBoxFormat = "{0}は あずかり箱へ 送られた！";
 
         [SerializeField] private BattleController _battle;
         [SerializeField] private FadeController _fade;
@@ -38,16 +39,22 @@ namespace PenguinMonster.View.Story
 
             var battle = new StoryBattle(state.Party, foes, trainer != null);
             var cpu = new CpuPlayer(random, trainer?.Cpu ?? CpuLevel.Weak);
-            var running = StartCoroutine(_battle.RunStory(battle, cpu, random, trainer?.Name));
+            var running = StartCoroutine(_battle.RunStory(battle, state.Bag, cpu, random, trainer?.Name));
             yield return _fade.FadeInCoroutine(_fadeSeconds);
             yield return running;
 
             battle.ApplyResults();
             PlayerWon = battle.PlayerWon;
-            BlackedOut = !PlayerWon && !_battle.Fled && !canLose;
+            // 逃げた・捕まえたときは、勝ってはいないが負けでもない
+            bool endedEarly = _battle.Fled || battle.Caught != null;
+            BlackedOut = !PlayerWon && !endedEarly && !canLose;
             if (PlayerWon)
             {
                 yield return AfterWin(battle, trainer);
+            }
+            else if (battle.Caught != null)
+            {
+                yield return AfterCatch(state, battle.Caught);
             }
             else if (BlackedOut)
             {
@@ -64,6 +71,15 @@ namespace PenguinMonster.View.Story
         public IEnumerator ReturnToField()
         {
             yield return _fade.FadeInCoroutine(_fadeSeconds);
+        }
+
+        /// <summary>捕まえた子を手持ちへ（いっぱいなら あずかり箱へ）。捕まえても経験値は無い（本家の第3〜4世代と同じ）</summary>
+        private IEnumerator AfterCatch(StoryState state, OwnedMonster caught)
+        {
+            if (!state.Receive(caught))
+            {
+                yield return _battle.Say(string.Format(SentToBoxFormat, caught.Name));
+            }
         }
 
         private IEnumerator AfterWin(StoryBattle battle, TrainerDefinition trainer)

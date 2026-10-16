@@ -113,6 +113,7 @@ namespace PenguinMonster.Editor
             var storyCommandPanel = CreateStoryCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
             var targetPanel = CreateTargetPanel(root.transform);
+            var bagPanel = CreateBagPanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
             var levelUpWindow = CreateLevelUpWindow(root.transform);
             // 一覧は枠をタップしたときだけ出る。暗幕で場と窓を覆うよう、窓より手前に置く
@@ -142,6 +143,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
             so.FindProperty("_targetPanel").objectReferenceValue = targetPanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
+            so.FindProperty("_bagPanel").objectReferenceValue = bagPanel;
             so.FindProperty("_levelUpWindow").objectReferenceValue = levelUpWindow;
             so.FindProperty("_turnTimer").objectReferenceValue = turnTimer;
             so.ApplyModifiedProperties();

@@ -8,7 +8,7 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// 「たたかう / ペンモン」のコマンド。対戦では逃げるは無い。
-    /// ストーリーの窓だけ「バッグ / 逃げる」も持つ（PLAN_STORY_TOWN01.md フェーズ5。バッグはフェーズ6まで押せない）
+    /// ストーリーの窓だけ「バッグ / 逃げる」も持つ（PLAN_STORY_TOWN01.md フェーズ5・6）
     /// </summary>
     public class CommandPanel : MonoBehaviour
     {
@@ -21,6 +21,7 @@ namespace PenguinMonster.View
         private Action _onFight;
         private Action _onParty;
         private Action _onRun;
+        private Action _onBag;
 
         private void Awake()
         {
@@ -29,22 +30,25 @@ namespace PenguinMonster.View
             if (_runButton != null)
             {
                 _runButton.onClick.AddListener(() => Choose(_onRun));
+                _bagButton.onClick.AddListener(() => Choose(_onBag));
             }
         }
 
         /// <param name="reserved">ダブルスでもう1体が交代先に選んだ控え（交代できる子に数えない）</param>
         /// <param name="onRun">逃げる。null なら押せない（トレーナー戦）</param>
-        public void Show(BattleSide side, ICollection<int> reserved, Action onFight, Action onParty, Action onRun = null)
+        /// <param name="onBag">バッグ。ストーリーの窓だけ</param>
+        public void Show(BattleSide side, ICollection<int> reserved, Action onFight, Action onParty, Action onRun = null,
+            Action onBag = null)
         {
             _onFight = onFight;
             _onParty = onParty;
             _onRun = onRun;
+            _onBag = onBag;
             _partyButton.interactable = CanSwitchAny(side, reserved);
             if (_runButton != null)
             {
                 _runButton.interactable = onRun != null;
-                // 道具はフェーズ6で足す
-                _bagButton.interactable = false;
+                _bagButton.interactable = onBag != null;
             }
             gameObject.SetActive(true);
         }
