@@ -53,6 +53,19 @@ namespace PenguinMonster.View.Story
             _input.SetPadVisible(true);
         }
 
+        /// <summary>台本の外から「はい / いいえ」だけ聞く（メニューの「やめる」の確かめ）</summary>
+        public IEnumerator Confirm(string question, Action<bool> onAnswer)
+        {
+            _input.SetPadVisible(false);
+            _yesNo.gameObject.SetActive(false);
+            gameObject.SetActive(true);
+            yield return _window.Type(question);
+            bool yes = false;
+            yield return _yesNo.Ask(answer => yes = answer);
+            gameObject.SetActive(false);
+            onAnswer(yes);
+        }
+
         private IEnumerator PlayStep(EventRunner runner, StoryState state, System.Random random)
         {
             switch (runner.Current.Kind)

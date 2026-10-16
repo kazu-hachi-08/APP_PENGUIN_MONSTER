@@ -84,11 +84,7 @@ namespace PenguinMonster.Editor
             var back = CreateNightBack(parent, "BoxPanel");
             var safe = CreateSafeContent(back.transform);
             CreateDraftTitle(safe).text = BoxTitleText;
-            var close = CreateButton(safe, "Btn_Close", "やめる", StoryCloseButtonSize, BackColor);
-            var closeRect = close.GetComponent<RectTransform>();
-            closeRect.anchorMin = closeRect.anchorMax = closeRect.pivot = Vector2.one;
-            closeRect.anchoredPosition = new Vector2(-StoryScreenSideMargin, -(DraftTitleHeight - StoryCloseButtonSize.y) / 2f);
-            closeRect.sizeDelta = StoryCloseButtonSize;
+            var close = CreateTopRightClose(safe, "やめる");
 
             var party = CreateBoxColumn(safe, "Party", StoryScreenSideMargin, out var partyButtons, out var partyLabels, out var partyIcons);
             CreateBoxHeader(party, "手持ち");
@@ -109,7 +105,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_boxTitle").objectReferenceValue = boxTitle;
             so.FindProperty("_prevButton").objectReferenceValue = prev;
             so.FindProperty("_nextButton").objectReferenceValue = next;
-            so.FindProperty("_closeButton").objectReferenceValue = close.GetComponent<Button>();
+            so.FindProperty("_closeButton").objectReferenceValue = close;
             so.ApplyModifiedProperties();
 
             back.gameObject.SetActive(false);

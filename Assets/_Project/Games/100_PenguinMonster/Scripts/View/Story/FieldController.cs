@@ -9,7 +9,7 @@ namespace PenguinMonster.View.Story
     /// <summary>
     /// フィールドの進行役（PLAN_STORY_TOWN01.md フェーズ3〜5）。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
     /// A で向いている先の人・看板を調べ、台本を FieldEventPlayer で見せる。草むらでは1歩ごとに野生に出会い、StoryBattleScreen で戦う。
-    /// 全滅したら最後に回復した場所へ戻る。B を押したら Run を抜ける（今はタイトルへ戻る。フェーズ6でメニューにする）
+    /// 全滅したら最後に回復した場所へ戻る。B でメニュー（FieldMenu）を開き、「やめる」で はい と答えたら Run を抜ける（タイトルへ戻る）
     /// </summary>
     public class FieldController : MonoBehaviour
     {
@@ -21,6 +21,7 @@ namespace PenguinMonster.View.Story
         [SerializeField] private FieldInput _input;
         [SerializeField] private FadeController _fade;
         [SerializeField] private StoryBattleScreen _battles;
+        [SerializeField] private FieldMenu _menu;
         [Tooltip("1マス歩く秒数。ダイパの歩き（約16フレーム）に合わせる")]
         [SerializeField] private float _stepSeconds = 0.27f;
         [SerializeField] private float _doorFadeSeconds = 0.25f;
@@ -41,10 +42,20 @@ namespace PenguinMonster.View.Story
             _input.gameObject.SetActive(true);
             ShowCurrentMap();
 
-            while (!_input.IsBDown)
+            while (true)
             {
                 var direction = _input.HeldDirection;
-                if (_input.IsADown)
+                if (_input.IsBDown)
+                {
+                    yield return _menu.Open(_state);
+                    if (_menu.QuitRequested)
+                    {
+                        yield break;
+                    }
+                    // 閉じた B・A で歩き出したり話しかけたりしないよう1フレーム空ける
+                    yield return null;
+                }
+                else if (_input.IsADown)
                 {
                     yield return Inspect();
                 }

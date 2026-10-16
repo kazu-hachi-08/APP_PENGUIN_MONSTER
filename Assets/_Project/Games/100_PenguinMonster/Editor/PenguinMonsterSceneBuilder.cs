@@ -46,6 +46,8 @@ namespace PenguinMonster.Editor
             var canvas = CreateCanvas();
             var battle = BuildBattleUI(canvas.transform);
             var fieldInput = CreateFieldControls(canvas.transform);
+            // メニューは十字キーより手前、会話の層より奥（「やめる」の はい / いいえ を会話窓で聞くため）
+            var fieldMenu = CreateFieldMenu(canvas.transform, fieldInput);
             // 会話の層は十字キーより手前（会話の間は十字キーを隠すが、窓のタップを取られないように）
             var fieldEvents = CreateFieldEvents(canvas.transform, fieldInput);
             var flow = BuildFlow(canvas.transform, battle);
@@ -53,6 +55,8 @@ namespace PenguinMonster.Editor
             var fade = CreateFade(canvas.transform);
             var field = BuildStoryField(camera, fieldInput, fade, fieldEvents, battle);
             LinkStory(flow, field, fade);
+            // 図鑑はタイトルのもの（Flow の層）をそのまま開く
+            LinkFieldMenu(fieldMenu, fieldEvents, flow.GetComponentInChildren<DexPanel>(true), field);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddToBuildSettings();

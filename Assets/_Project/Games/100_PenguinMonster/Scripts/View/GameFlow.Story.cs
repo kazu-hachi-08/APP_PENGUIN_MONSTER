@@ -7,7 +7,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ストーリーの流れ（PLAN_STORY_TOWN01.md）。今はフェーズ4: 仮のハツユキ村を歩いて人と話し、最初の1体をもらう。B でタイトルへ戻る。
+    /// ストーリーの流れ（PLAN_STORY_TOWN01.md）。今は仮のハツユキ村と試しの1番道路を歩き、話す・戦う・捕まえる・買う。メニューの「やめる」でタイトルへ戻る。
     /// 進み具合（StoryState）はまだ保存しないので、始めるたびに最初から（セーブはフェーズ7）
     /// </summary>
     public partial class GameFlow
