@@ -44,6 +44,13 @@ namespace PenguinMonster.View.Art
             { 136, Raisetsu }, { 137, Kujiranori }, { 138, Suishou }, { 139, Plasma }, { 140, Oni }, { 141, Ninja },
             { 142, YamiInazuma }, { 143, Juhyou }, { 144, Yokozuna }, { 145, Ufo }, { 146, Kodaiou }, { 147, Sekaiju },
             { 148, Hajimari }, { 149, Nisshoku }, { 150, Amatsubasa },
+            // 区切り1（ストーリー）
+            { 151, Kobune }, { 152, Hobashira }, { 153, Saihyousen }, { 154, Hidane }, { 155, Fuigo }, { 156, Katanakaji },
+            { 157, Mebuki }, { 158, Fukinotou }, { 159, Yukitsubaki },
+            { 160, Kogara }, { 161, Tsugumi }, { 162, Oowashi }, { 163, Omochi }, { 164, Kagamimochi }, { 165, Konayuki },
+            { 166, Botanyuki }, { 167, Gousetsu }, { 168, Tsukushi }, { 169, Sugina }, { 170, Yamame }, { 171, Sakuramasu },
+            { 172, Pachiri }, { 173, Raichou }, { 174, Ishikoro }, { 175, Ishidourou }, { 176, Warashi }, { 177, Zashikiwarashi },
+            { 178, Kawara }, { 179, Onigawara }, { 180, DiamondDust },
         };
 
         public static PixelCanvas Paint(int no, bool front)
