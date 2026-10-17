@@ -9,6 +9,12 @@ namespace PenguinMonster.View
         Title,
         Draft,
         Battle,
+        /// <summary>ストーリーの村・町・建物の中</summary>
+        Village,
+        /// <summary>ストーリーの道路</summary>
+        Route,
+        /// <summary>ストーリーの道場</summary>
+        Gym,
     }
 
     /// <summary>
@@ -28,6 +34,9 @@ namespace PenguinMonster.View
             { MusicTrack.Title, BgmId.TitleBgm },
             { MusicTrack.Draft, BgmId.GameBgm01 },
             { MusicTrack.Battle, BgmId.GameBgm02 },
+            { MusicTrack.Village, BgmId.GameBgm03 },
+            { MusicTrack.Route, BgmId.GameBgm04 },
+            { MusicTrack.Gym, BgmId.GameBgm05 },
         };
 
         private static readonly Dictionary<MusicTrack, AudioClip> Clips = new Dictionary<MusicTrack, AudioClip>();

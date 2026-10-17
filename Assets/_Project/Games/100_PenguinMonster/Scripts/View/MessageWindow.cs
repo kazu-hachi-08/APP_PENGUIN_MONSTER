@@ -18,6 +18,10 @@ namespace PenguinMonster.View
         [Tooltip("タップを待たない文（「〇〇の △△！」など）を、読み終わってから残しておく秒数")]
         [SerializeField] private float _holdSeconds = 0.5f;
         [SerializeField] private float _indicatorBlinkSeconds = 0.4f;
+        [Tooltip("文字が出るたびに小さな音を鳴らす。フィールドの会話窓だけ（バトルは効果音が多いので鳴らさない）")]
+        [SerializeField] private bool _typingSound;
+        [Tooltip("文字の音を鳴らす間隔（文字数）。1文字ごとだと速すぎてうるさい")]
+        [SerializeField] private int _charsPerTypingSound = 2;
 
         private bool _advanceRequested;
 
@@ -69,13 +73,29 @@ namespace PenguinMonster.View
             float shown = 0f;
             // 設定画面で変えた速さをすぐ反映するよう、1文ごとに読む
             float charsPerSecond = _charsPerSecond * GameSettings.SpeedRate;
+            int nextSoundAt = 0;
             while (shown < message.Length && !_advanceRequested)
             {
                 shown += charsPerSecond * Time.deltaTime;
-                _text.text = message.Substring(0, Mathf.Min(message.Length, Mathf.FloorToInt(shown)));
+                int count = Mathf.Min(message.Length, Mathf.FloorToInt(shown));
+                _text.text = message.Substring(0, count);
+                if (_typingSound && count > nextSoundAt)
+                {
+                    PlayTypingSound(message[count - 1]);
+                    nextSoundAt = count + _charsPerTypingSound - 1;
+                }
                 yield return null;
             }
             _text.text = message;
+        }
+
+        private static void PlayTypingSound(char shownChar)
+        {
+            // 文の区切りの空白・改行は声に出さないので鳴らさない
+            if (!char.IsWhiteSpace(shownChar))
+            {
+                BattleSounds.Play(BattleSound.Talk);
+            }
         }
 
         /// <summary>文はそのまま、タップされるまで待つ（レベルアップの窓を次の段へ送るときなど）</summary>

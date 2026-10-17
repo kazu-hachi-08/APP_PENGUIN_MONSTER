@@ -213,6 +213,15 @@ namespace PenguinMonster.View.Story
             DrawPeople();
             _avatar.Place(_mapView.FeetPosition(_player.Position), _player.Facing);
             _camera.Follow(_avatar.transform, _player.Map.Width, _player.Map.Height);
+            PlayMapMusic();
+        }
+
+        /// <summary>同じ曲のマップへ移ったときは頭から流し直さない（AudioManager が同じ曲を見分ける）</summary>
+        private void PlayMapMusic()
+        {
+            var track = FieldMusic.TrackOf(_player.Map.Id);
+            _battles.FieldTrack = track;
+            GameMusic.Play(track);
         }
 
         private void DrawPeople()

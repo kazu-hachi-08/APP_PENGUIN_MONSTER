@@ -38,7 +38,8 @@ namespace PenguinMonster.Editor
             var starters = CreateStarterPanel(root.transform, input);
             var shop = CreateShopPanel(root.transform);
             var box = CreateBoxPanel(root.transform);
-            var window = CreateMessageWindow(root.transform, tapArea);
+            // 会話の文字の音はフィールドの窓だけ（お店・あずかり箱もこの窓を使う）
+            var window = CreateMessageWindow(root.transform, tapArea, typingSound: true);
             LinkStoryScreenWindow(window, shop, box);
             var yesNo = CreateYesNoWindow(root.transform, input);
 

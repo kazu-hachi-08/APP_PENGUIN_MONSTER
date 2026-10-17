@@ -12,7 +12,10 @@ namespace PenguinMonster.Common.Audio
         TitleBgm = 1,
         GameBgm01 = 2,
         GameBgm02 = 3,
-        ResultBgm = 4
+        ResultBgm = 4,
+        GameBgm03 = 5,
+        GameBgm04 = 6,
+        GameBgm05 = 7
     }
 
     /// <summary>

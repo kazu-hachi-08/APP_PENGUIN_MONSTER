@@ -40,8 +40,8 @@ namespace PenguinMonster.Editor
 
         // あそびかた
         private static readonly Vector2 HowToTabPosition = new Vector2(0f, -175f);
-        // 5つのタブが横1列に収まる幅
-        private static readonly Vector2 HowToTabSize = new Vector2(300f, 90f);
+        // 6つのタブが説明の枠の幅（1920 − 左右の余白）に収まる幅
+        private static readonly Vector2 HowToTabSize = new Vector2(250f, 90f);
         private const float HowToTabSpacing = 24f;
         private const float HowToBodyTop = 240f;
         private const float HowToBodyMarginX = 160f;

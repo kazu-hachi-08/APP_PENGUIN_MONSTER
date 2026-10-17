@@ -86,7 +86,7 @@ namespace PenguinMonster.Editor
             return image.gameObject.AddComponent<Button>();
         }
 
-        private static MessageWindow CreateMessageWindow(Transform parent, Button fieldTapArea)
+        private static MessageWindow CreateMessageWindow(Transform parent, Button fieldTapArea, bool typingSound = false)
         {
             var frame = CreateFramedBox(parent, "MessageWindow", MessageBoxColor, out var inner);
             SetBottomArea(frame.rectTransform, 0f, 1f);
@@ -109,6 +109,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_text").objectReferenceValue = text;
             SetArray(so.FindProperty("_advanceButtons"), new Object[] { button, fieldTapArea });
             so.FindProperty("_nextIndicator").objectReferenceValue = indicator.gameObject;
+            so.FindProperty("_typingSound").boolValue = typingSound;
             so.ApplyModifiedProperties();
             return window;
         }

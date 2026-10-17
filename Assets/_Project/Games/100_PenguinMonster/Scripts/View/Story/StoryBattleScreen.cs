@@ -25,6 +25,8 @@ namespace PenguinMonster.View.Story
         public bool PlayerWon { get; private set; }
         /// <summary>負けて、最後に回復した場所へ戻る（負けてもよい戦いでは false）</summary>
         public bool BlackedOut { get; private set; }
+        /// <summary>戦いの後に戻すフィールドの曲。フィールドがマップを映すたびに入れる</summary>
+        public MusicTrack FieldTrack { get; set; } = MusicTrack.Village;
 
         /// <summary>
         /// 1戦して、戦いの後の文まで見せる。終わったときは暗転したまま（呼ぶ側がフィールドを整えてから ReturnToField で明ける）
@@ -68,8 +70,7 @@ namespace PenguinMonster.View.Story
 
             yield return _fade.FadeOutCoroutine(_fadeSeconds);
             _battle.gameObject.SetActive(false);
-            // フィールドの曲はまだ無い（フェーズ10）ので、ストーリーに入ったときの曲に戻す
-            GameMusic.Play(MusicTrack.Title);
+            GameMusic.Play(FieldTrack);
         }
 
         /// <summary>暗転を明けてフィールドに戻る</summary>
