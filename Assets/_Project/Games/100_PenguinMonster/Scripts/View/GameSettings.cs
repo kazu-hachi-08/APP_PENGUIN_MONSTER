@@ -10,7 +10,7 @@ namespace PenguinMonster.View
     }
 
     /// <summary>
-    /// ペンモン固有の設定（仕様書 §9）。音量は共通基盤の AudioManager が保存するので、ここはメッセージの速さだけ
+    /// ペンモン固有の設定。音量は共通基盤の AudioManager が保存するので、ここはメッセージの速さだけ
     /// </summary>
     public static class GameSettings
     {

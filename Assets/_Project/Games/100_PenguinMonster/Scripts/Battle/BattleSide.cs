@@ -31,11 +31,20 @@ namespace PenguinMonster.Battle
         public bool NeedsReplacement => ReplaceableSlots().Count > 0;
 
         public BattleSide(int index, IReadOnlyList<MonsterDefinition> party, int activeCount)
+            : this(index, party.Select(d => new BattleMonster(d)).ToList(), activeCount)
+        {
+        }
+
+        /// <summary>写しを渡して作る（ストーリーの手持ち）。瀕死の子を飛ばし、元気な子を先頭から順に場へ出す</summary>
+        public BattleSide(int index, IReadOnlyList<BattleMonster> party, int activeCount)
         {
             Index = index;
-            Party = party.Select(d => new BattleMonster(d) { Side = this }).ToList();
-            // 選出の先頭から順に場へ出す
-            _activePartyIndices = Enumerable.Range(0, activeCount).ToArray();
+            Party = party;
+            foreach (var monster in party)
+            {
+                monster.Side = this;
+            }
+            _activePartyIndices = Enumerable.Range(0, party.Count).Where(i => !party[i].IsFainted).Take(activeCount).ToArray();
         }
 
         public BattleMonster ActiveAt(int slot) => Party[_activePartyIndices[slot]];

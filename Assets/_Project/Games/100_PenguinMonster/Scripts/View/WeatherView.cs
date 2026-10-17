@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 場の天候の見た目（仕様書 §4.10 / §7）。場全体に色を薄く重ね、吹雪は雪の粒・大雨は雨の筋を降らせる。
+    /// 場の天候の見た目。場全体に色を薄く重ね、吹雪は雪の粒・大雨は雨の筋を降らせる。
     /// 日差しは粒を出さず、色をゆっくり明滅させて照りつける感じを出す。粒は左下基準の RectTransform
     /// </summary>
     public class WeatherView : MonoBehaviour

@@ -7,12 +7,16 @@ using static PenguinMonster.View.Art.PenguinBrush;
 namespace PenguinMonster.View.Art
 {
     /// <summary>
-    /// ペンモン1体ごとの絵（仕様書 §6）。共通の胴体に小物を付けるだけだと全員同じ形に見えたので、
+    /// ペンモン1体ごとの絵。共通の胴体に小物を付けるだけだと全員同じ形に見えたので、
     /// No ごとにシルエットから描き分ける。座標は 64x64・Y 上向き。デザインは型ごとのファイルに分けてある
     /// </summary>
     public static partial class PenguinDesigns
     {
         public const int CanvasSize = 64;
+
+        // 複数のファイルのデザインで使う色
+        private static readonly Color32 SnowWhite = Rgb(240, 246, 252);
+        private static readonly Color32 HinaGrayFluff = Rgb(170, 172, 186);
 
         private static readonly Dictionary<int, Action<PenguinBrush>> ByNo = new Dictionary<int, Action<PenguinBrush>>
         {
@@ -44,6 +48,13 @@ namespace PenguinMonster.View.Art
             { 136, Raisetsu }, { 137, Kujiranori }, { 138, Suishou }, { 139, Plasma }, { 140, Oni }, { 141, Ninja },
             { 142, YamiInazuma }, { 143, Juhyou }, { 144, Yokozuna }, { 145, Ufo }, { 146, Kodaiou }, { 147, Sekaiju },
             { 148, Hajimari }, { 149, Nisshoku }, { 150, Amatsubasa },
+            // ストーリー
+            { 151, Kobune }, { 152, Hobashira }, { 153, Saihyousen }, { 154, Hidane }, { 155, Fuigo }, { 156, Katanakaji },
+            { 157, Mebuki }, { 158, Fukinotou }, { 159, Yukitsubaki },
+            { 160, Kogara }, { 161, Tsugumi }, { 162, Oowashi }, { 163, Omochi }, { 164, Kagamimochi }, { 165, Konayuki },
+            { 166, Botanyuki }, { 167, Gousetsu }, { 168, Tsukushi }, { 169, Sugina }, { 170, Yamame }, { 171, Sakuramasu },
+            { 172, Pachiri }, { 173, Raichou }, { 174, Ishikoro }, { 175, Ishidourou }, { 176, Warashi }, { 177, Zashikiwarashi },
+            { 178, Kawara }, { 179, Onigawara }, { 180, DiamondDust },
         };
 
         public static PixelCanvas Paint(int no, bool front)
@@ -55,7 +66,7 @@ namespace PenguinMonster.View.Art
             canvas.Outline(PenguinPalette.Outline);
             if (IsLegend(no))
             {
-                // 黒い輪郭の外にもう1周 金を回して、ひと目で伝説とわかるようにする（仕様書 §6）
+                // 黒い輪郭の外にもう1周 金を回して、ひと目で伝説とわかるようにする
                 canvas.Outline(PenguinPalette.Gold);
             }
             if (!front)

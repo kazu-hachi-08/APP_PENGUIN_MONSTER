@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// シングルかダブルスかを選ぶ画面（仕様書 §2 / §4.9）。勝ち抜き戦はドラフトの前、オンラインはホストだけが接続の後に選ぶ。
+    /// シングルかダブルスかを選ぶ画面。勝ち抜き戦はドラフトの前、オンラインはホストだけが接続の後に選ぶ。
     /// ボタンには場に出る数（1体 / 2体）だけペンモンの絵を乗せ、開くたびに顔ぶれを変える
     /// </summary>
     public class FormatPanel : MonoBehaviour

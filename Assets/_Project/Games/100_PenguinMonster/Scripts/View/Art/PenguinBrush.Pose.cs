@@ -23,16 +23,19 @@ namespace PenguinMonster.View.Art
 
         /// <summary>傾いた楕円に Shaded と同じ影を付ける</summary>
         public void ShadedTilted(float x, float y, float radiusX, float radiusY, float angle, Color32 light)
-        {
-            Tilted(x, y, radiusX, radiusY, angle, PenguinPalette.Shade(light));
-            Tilted(x - 1f, y + 1f, radiusX - LightInset, radiusY - LightInset, angle, light);
-        }
+            => TwoToneTilted(x, y, radiusX, radiusY, angle, PenguinPalette.Shade(light), light);
 
         public void BellyTilted(float x, float y, float radiusX, float radiusY, float angle)
         {
             if (!Front) return;
-            Tilted(x, y, radiusX, radiusY, angle, PenguinPalette.BellyShade);
-            Tilted(x - 1f, y + 1f, radiusX - LightInset, radiusY - LightInset, angle, PenguinPalette.Belly);
+            TwoToneTilted(x, y, radiusX, radiusY, angle, PenguinPalette.BellyShade, PenguinPalette.Belly);
+        }
+
+        /// <summary>TwoTone の傾けた版</summary>
+        private void TwoToneTilted(float x, float y, float radiusX, float radiusY, float angle, Color32 shade, Color32 light)
+        {
+            Tilted(x, y, radiusX, radiusY, angle, shade);
+            Tilted(x - 1f, y + 1f, radiusX - LightInset, radiusY - LightInset, angle, light);
         }
 
         public void WhiteTilted(float x, float y, float radiusX, float radiusY, float angle)
@@ -54,7 +57,7 @@ namespace PenguinMonster.View.Art
         }
 
         public void Foot(float x, float y, float angle = 0f, float size = 1f)
-            => Tilted(x, y, 5f * size, 2.5f * size, angle, PenguinPalette.Beak);
+            => Tilted(x, y, FootRadiusX * size, FootRadiusY * size, angle, PenguinPalette.Beak);
 
         public void TurnedFace(float x, float eyeY, int dir, EyeStyle eyes, float eyeGap = 7f, bool open = false)
             => TurnedFace(x, eyeY, dir, eyes, eyes, eyeGap, open);
@@ -101,17 +104,9 @@ namespace PenguinMonster.View.Art
                 return;
             }
             var pattern = EyePattern(eyes);
-            int width = pattern[0].Length;
-            int left = Mathf.RoundToInt(x - width / 2f);
+            int left = Mathf.RoundToInt(x - pattern[0].Length / 2f);
             int top = Mathf.RoundToInt(y + pattern.Length / 2f) - 1;
-            bool flip = rightSide && FlipsOnRight(eyes);
-            for (int row = 0; row < pattern.Length; row++)
-            {
-                for (int col = 0; col < width; col++)
-                {
-                    EyeDot(left + col, top - row, pattern[row][flip ? width - 1 - col : col]);
-                }
-            }
+            StampEye(left, top, pattern, rightSide && FlipsOnRight(eyes));
         }
 
         public void Cheek(float x, float y)

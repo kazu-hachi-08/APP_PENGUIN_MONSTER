@@ -20,9 +20,15 @@ namespace PenguinMonster.View
         private IEnumerator PlayEvent(List<BattleEvent> events, int index)
         {
             var e = events[index];
-            string message = BattleMessages.Format(e, PlayerSide);
+            string message = BattleMessages.Format(e, PlayerSide, FoeIsWild);
             switch (e.Kind)
             {
+                case BattleEventKind.SentOut when FoeIsWild && e.Side == OpponentSide:
+                    // 野生はタマゴから出さず、草むらから飛び出してくる
+                    InfoOf(e).Show(e.Monster, e.Hp, e.Status);
+                    yield return ViewOf(e).Appear(SpriteOf(e.Side, e.Monster));
+                    yield return _messageWindow.Play(message);
+                    break;
                 case BattleEventKind.SentOut:
                     // 「行けっ！」の文を出し、タマゴを投げて割れてから登場させる（登場の音はタマゴが割れたときに鳴る）
                     yield return _messageWindow.Show(message);
@@ -114,7 +120,10 @@ namespace PenguinMonster.View
                 case BattleEventKind.BattleEnd:
                     GameMusic.Stop();
                     BattleSounds.Play(e.Side == PlayerSide ? BattleSound.Win : BattleSound.Lose);
-                    yield return _messageWindow.Play(message);
+                    if (message != null)
+                    {
+                        yield return _messageWindow.Play(message);
+                    }
                     break;
                 default:
                     if (message != null)

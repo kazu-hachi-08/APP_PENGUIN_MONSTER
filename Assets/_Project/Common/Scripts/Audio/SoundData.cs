@@ -4,7 +4,7 @@ using UnityEngine;
 namespace PenguinMonster.Common.Audio
 {
     /// <summary>
-    /// BGM識別子
+    /// BGM識別子。番号はインスペクタに保存されるので、値を消しても残りの番号は詰めない
     /// </summary>
     public enum BgmId
     {
@@ -12,23 +12,21 @@ namespace PenguinMonster.Common.Audio
         TitleBgm = 1,
         GameBgm01 = 2,
         GameBgm02 = 3,
-        ResultBgm = 4
+        GameBgm03 = 5,
+        GameBgm04 = 6,
+        GameBgm05 = 7
     }
 
     /// <summary>
-    /// SE識別子
+    /// SE識別子。ゲーム固有の音はここに足さず、ゲーム側で AudioManager.PlaySeClip に直接渡す。
+    /// 番号はインスペクタに保存されるので、値を消しても残りの番号は詰めない
     /// </summary>
     public enum SeId
     {
         None = 0,
         ButtonClick = 1,
-        ButtonCancel = 2,
-        Whistle = 3,
-        Kick = 4,
-        GoalCheer = 5,
         GameOver = 6,
-        GameClear = 7,
-        CountDown = 8
+        GameClear = 7
     }
 
     [Serializable]

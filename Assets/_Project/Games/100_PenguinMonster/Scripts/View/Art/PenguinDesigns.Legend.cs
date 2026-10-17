@@ -4,7 +4,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 namespace PenguinMonster.View.Art
 {
     /// <summary>
-    /// 伝説ランクのデザイン（仕様書 §6）。キャンバスいっぱいに描き、金の飾りを付ける。
+    /// 伝説ランクのデザイン。キャンバスいっぱいに描き、金の飾りを付ける。
     /// Paint が外側に黒と金の輪郭を2周回すので、外周 2 ドットは空けておく
     /// </summary>
     public static partial class PenguinDesigns

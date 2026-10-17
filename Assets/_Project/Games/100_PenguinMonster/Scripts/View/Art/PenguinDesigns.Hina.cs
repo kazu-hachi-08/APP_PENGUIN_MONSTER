@@ -3,13 +3,13 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>ヒナランクのデザイン（仕様書 §6）。体をふつうの6割ほどにして、頭に綿毛のアホ毛を立てる</summary>
+    /// <summary>ヒナランクのデザイン。体をふつうの6割ほどにして、頭に綿毛のアホ毛を立てる</summary>
     public static partial class PenguinDesigns
     {
         /// <summary>No.37 ヒナペン: 力持ちでがんばり屋。足を大きく開いて踏んばり、体をのけぞらせて自分より大きなダンベルを斜めに差し上げる</summary>
         private static void HinaPen(PenguinBrush b)
         {
-            var fluff = Rgb(170, 172, 186);
+            var fluff = HinaGrayFluff;
             var fluffShade = PenguinPalette.Shade(fluff);
             var iron = Rgb(80, 82, 96);
             var ironLight = Rgb(140, 142, 160);

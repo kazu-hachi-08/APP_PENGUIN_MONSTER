@@ -9,10 +9,16 @@ namespace PenguinMonster.View
         Title,
         Draft,
         Battle,
+        /// <summary>ストーリーの村・町・建物の中</summary>
+        Village,
+        /// <summary>ストーリーの道路</summary>
+        Route,
+        /// <summary>ストーリーの道場</summary>
+        Gym,
     }
 
     /// <summary>
-    /// 仮の BGM。素材がまだ無いので楽譜（GameMusic.Songs.cs）から曲をコードで作る（仕様書 §7）。
+    /// 仮の BGM。素材がまだ無いので楽譜（GameMusic.Songs.cs）から曲をコードで作る。
     /// 再生は共通基盤の AudioManager に任せる。同じ曲が続くときに頭から流し直さない判定とクロスフェードは、AudioManager がやってくれる。
     /// 音の作り方は GameMusic.Synth.cs
     /// </summary>
@@ -28,6 +34,9 @@ namespace PenguinMonster.View
             { MusicTrack.Title, BgmId.TitleBgm },
             { MusicTrack.Draft, BgmId.GameBgm01 },
             { MusicTrack.Battle, BgmId.GameBgm02 },
+            { MusicTrack.Village, BgmId.GameBgm03 },
+            { MusicTrack.Route, BgmId.GameBgm04 },
+            { MusicTrack.Gym, BgmId.GameBgm05 },
         };
 
         private static readonly Dictionary<MusicTrack, AudioClip> Clips = new Dictionary<MusicTrack, AudioClip>();

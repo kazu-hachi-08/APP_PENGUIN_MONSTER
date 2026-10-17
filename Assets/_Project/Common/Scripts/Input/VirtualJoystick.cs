@@ -72,6 +72,11 @@ namespace PenguinMonster.Common.Input
             }
         }
 
+        private void OnDisable()
+        {
+            ResetInput();
+        }
+
         public void ResetInput()
         {
             _inputVector = Vector2.zero;

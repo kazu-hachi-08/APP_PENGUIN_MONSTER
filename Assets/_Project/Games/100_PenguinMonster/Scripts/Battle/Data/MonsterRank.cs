@@ -12,5 +12,10 @@ namespace PenguinMonster.Battle
         Ace,
         /// <summary>ボスの切り札。ドラフトでは出にくく、1チーム1体まで</summary>
         Legend,
+        /// <summary>
+        /// ストーリーの進化前（No.151〜）。種族値は低いが育てて進化させる前提なので、ヒナの綿毛は付けない。
+        /// ドラフトには出さない（ストーリーの子はストーリーで育てるもののため）
+        /// </summary>
+        Young,
     }
 }

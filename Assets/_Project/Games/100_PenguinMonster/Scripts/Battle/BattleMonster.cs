@@ -102,8 +102,18 @@ namespace PenguinMonster.Battle
         public BattleMonster(MonsterDefinition definition)
         {
             Definition = definition;
-            Stats = Stats.FromBase(definition.BaseStats);
+            Stats = Stats.FromBase(definition.BaseStats, definition.Level);
             CurrentHp = Stats.Hp;
+        }
+
+        /// <summary>
+        /// 途中の HP・状態異常から始める。ストーリーで前の戦いの傷を持ち越すため。
+        /// HP は 0〜最大HP に収める。0 の子は手持ちに並ぶだけで場には出ない（BattleSide が元気な子から出す）
+        /// </summary>
+        public BattleMonster(MonsterDefinition definition, int startHp, StatusCondition startStatus) : this(definition)
+        {
+            CurrentHp = Math.Max(0, Math.Min(MaxHp, startHp));
+            Status = startStatus;
         }
 
         public int GetStage(StatKind stat) => _stages[(int)stat];
@@ -149,6 +159,16 @@ namespace PenguinMonster.Battle
         }
 
         internal void UseItem() => ItemUsed = true;
+
+        /// <summary>ストーリーでバッグの道具（傷薬・毒消しなど）を使った。HP は最大HPまで。治すかどうかは道具の側が決める</summary>
+        public void ApplyMedicine(int healAmount, bool cureStatus)
+        {
+            Heal(healAmount);
+            if (cureStatus)
+            {
+                CureStatus();
+            }
+        }
 
         /// <summary>ランクを変える。-6〜+6 に収め、実際に変わった量を返す（0 なら もう変わらない）</summary>
         internal int ChangeStage(StatKind stat, int delta)

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ダブルスで、1体だけに当たる技の狙う相手を選ぶ（仕様書 §4.9）。相手の場の左右に1つずつボタンを出し、その相手への相性も添える
+    /// ダブルスで、1体だけに当たる技の狙う相手を選ぶ。相手の場の左右に1つずつボタンを出し、その相手への相性も添える
     /// </summary>
     public class TargetPanel : MonoBehaviour
     {

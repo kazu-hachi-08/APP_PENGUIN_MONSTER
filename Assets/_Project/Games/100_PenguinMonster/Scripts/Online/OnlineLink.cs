@@ -8,12 +8,12 @@ using UnityEngine;
 
 namespace PenguinMonster.Online
 {
-    /// <summary>ペンモンの対戦中にやり取りするメッセージの種類（仕様書 §8 のメッセージ一覧）</summary>
+    /// <summary>ペンモンの対戦中にやり取りするメッセージの種類</summary>
     public enum LinkMessage
     {
-        /// <summary>ホスト → ゲスト: ゲストのドラフトの抽選に使う種</summary>
+        /// <summary>ホスト → ゲスト: ゲストのドラフトの抽選に使う種・シングル / ダブルス・ドラフト / 自分のチーム</summary>
         DraftSeed,
-        /// <summary>お互い: ドラフトで取った6体（No の列）</summary>
+        /// <summary>お互い: ドラフトで取った6体か、自分のチームの6体（No・持ち物・技の列）</summary>
         Six,
         /// <summary>お互い: 選出した3体（No の列。並びが出す順）</summary>
         Team,
@@ -23,6 +23,8 @@ namespace PenguinMonster.Online
         Replace,
         /// <summary>ホスト → ゲスト: 計算した結果の BattleEvent の列</summary>
         Events,
+        /// <summary>ゲスト → ホスト: 自分のチームで戦えるか（OnlineTeamProblem。ホストが選べるかを決めるため）</summary>
+        TeamReady,
     }
 
     /// <summary>

@@ -17,7 +17,10 @@ namespace PenguinMonster.Editor
     /// 場（背景・ペンモン・HPの枠）は .Field.cs、下の窓と交代の画面は .Panels.cs、
     /// タイトルは .Title.cs、ドラフトは .Draft.cs、持ち物は .Item.cs、「やめる」は .Quit.cs、試合前の登場は .Intro.cs、見せ合い・選出は .Select.cs、
     /// タイトルから開く画面（タイプ相性表・あそびかた・設定）は .Menus.cs、ずかんは .Dex.cs、
-    /// 結果は .Result.cs、オンラインの部屋は .Room.cs、画面をまたいでそろえる見た目（夜空・見出し・ボタン）は .Style.cs
+    /// 結果は .Result.cs、オンラインの部屋は .Room.cs、画面をまたいでそろえる見た目（夜空・見出し・ボタン）は .Style.cs、
+    /// ストーリーのフィールド（マップ・主人公・十字キー）は .StoryField.cs、会話窓・はい / いいえ・最初の3体を選ぶ画面は .StoryEvents.cs、
+    /// ストーリーのバトルのコマンドは .StoryBattle.cs、
+    /// 画面の暗転は .Fade.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -38,18 +41,29 @@ namespace PenguinMonster.Editor
             }
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
-            CreateCamera();
+            var camera = CreateCamera();
             CreateEventSystem();
             var canvas = CreateCanvas();
             var battle = BuildBattleUI(canvas.transform);
-            BuildFlow(canvas.transform, battle);
+            var fieldInput = CreateFieldControls(canvas.transform);
+            // メニューは十字キーより手前、会話の層より奥（「やめる」の はい / いいえ を会話窓で聞くため）
+            var fieldMenu = CreateFieldMenu(canvas.transform, fieldInput);
+            // 会話の層は十字キーより手前（会話の間は十字キーを隠すが、窓のタップを取られないように）
+            var fieldEvents = CreateFieldEvents(canvas.transform, fieldInput);
+            var flow = BuildFlow(canvas.transform, battle);
+            // 暗転は全部の画面より手前に重ねる
+            var fade = CreateFade(canvas.transform);
+            var field = BuildStoryField(camera, fieldInput, fade, fieldEvents, battle);
+            LinkStory(flow, field, fade);
+            // 図鑑はタイトルのもの（Flow の層）をそのまま開く
+            LinkFieldMenu(fieldMenu, fieldEvents, flow.GetComponentInChildren<DexPanel>(true), field);
 
             EditorSceneManager.SaveScene(scene, ScenePath);
             AddToBuildSettings();
             Debug.Log($"[PenguinMonsterSceneBuilder] {ScenePath} を生成しました");
         }
 
-        private static void CreateCamera()
+        private static Camera CreateCamera()
         {
             var cameraObj = new GameObject("Main Camera");
             cameraObj.tag = "MainCamera";
@@ -58,6 +72,7 @@ namespace PenguinMonster.Editor
             camera.clearFlags = CameraClearFlags.SolidColor;
             camera.backgroundColor = BackgroundColor;
             cameraObj.AddComponent<AudioListener>();
+            return camera;
         }
 
         private static void CreateEventSystem()
@@ -99,9 +114,12 @@ namespace PenguinMonster.Editor
             var enemyBanner = CreateAbilityBanner(root.transform, "EnemyAbilityBanner", EnemyBannerPosition, fromLeft: false);
             var messageWindow = CreateMessageWindow(root.transform, fieldTapArea);
             var commandPanel = CreateCommandPanel(root.transform);
+            var storyCommandPanel = CreateStoryCommandPanel(root.transform);
             var movePanel = CreateMovePanel(root.transform);
             var targetPanel = CreateTargetPanel(root.transform);
+            var bagPanel = CreateBagPanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
+            var levelUpWindow = CreateLevelUpWindow(root.transform);
             // 一覧は枠をタップしたときだけ出る。暗幕で場と窓を覆うよう、窓より手前に置く
             var stagePanel = CreateStatStagePanel(root.transform);
             LinkStatStagePanel(stagePanel, playerInfos.Concat(enemyInfos).Append(playerInfo).Append(enemyInfo).ToArray());
@@ -125,19 +143,22 @@ namespace PenguinMonster.Editor
             so.FindProperty("_eggThrow").objectReferenceValue = eggThrow;
             so.FindProperty("_messageWindow").objectReferenceValue = messageWindow;
             so.FindProperty("_commandPanel").objectReferenceValue = commandPanel;
+            so.FindProperty("_storyCommandPanel").objectReferenceValue = storyCommandPanel;
             so.FindProperty("_movePanel").objectReferenceValue = movePanel;
             so.FindProperty("_targetPanel").objectReferenceValue = targetPanel;
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
+            so.FindProperty("_bagPanel").objectReferenceValue = bagPanel;
+            so.FindProperty("_levelUpWindow").objectReferenceValue = levelUpWindow;
             so.FindProperty("_turnTimer").objectReferenceValue = turnTimer;
             so.ApplyModifiedProperties();
             return controller;
         }
 
         /// <summary>
-        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → 持ち物 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
+        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → 持ち物 → ドラフト → シングル / ダブルス → ドラフト / 自分のチーム → 続きから / 最初から → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
         /// 結果は共通基盤の ResultDialog を見た目だけ作り直して使う。「もう一度遊ぶ」は勝ち抜き戦の「次の 戦いへ」に使う
         /// </summary>
-        private static void BuildFlow(Transform canvas, BattleController battle)
+        private static GameFlow BuildFlow(Transform canvas, BattleController battle)
         {
             var root = UIDialogBuilder.CreateUIObject("Flow", canvas);
             UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
@@ -148,6 +169,8 @@ namespace PenguinMonster.Editor
             var itemPanel = CreateItemPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
             var formatPanel = CreateFormatPanel(root.transform);
+            var teamSourcePanel = CreateTeamSourcePanel(root.transform);
+            var storyStartPanel = CreateStoryStartPanel(root.transform);
             var quitButton = CreateQuitButton(root.transform);
             var subMenus = CreateSubMenus(root.transform);
             var titlePanel = CreateTitlePanel(root.transform, subMenus);
@@ -158,6 +181,8 @@ namespace PenguinMonster.Editor
             var so = new SerializedObject(flow);
             so.FindProperty("_titlePanel").objectReferenceValue = titlePanel;
             so.FindProperty("_formatPanel").objectReferenceValue = formatPanel;
+            so.FindProperty("_teamSourcePanel").objectReferenceValue = teamSourcePanel;
+            so.FindProperty("_storyStartPanel").objectReferenceValue = storyStartPanel;
             so.FindProperty("_draftPanel").objectReferenceValue = draftPanel;
             so.FindProperty("_itemPanel").objectReferenceValue = itemPanel;
             so.FindProperty("_introPanel").objectReferenceValue = introPanel;
@@ -169,6 +194,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_session").objectReferenceValue = session;
             so.FindProperty("_modeSelect").objectReferenceValue = modeSelect;
             so.ApplyModifiedProperties();
+            return flow;
         }
 
         private static void AddToBuildSettings()

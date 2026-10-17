@@ -49,7 +49,8 @@ namespace PenguinMonster.Battle
             bool isStab = attacker.Definition.HasType(move.Type);
 
             int damage = Compute(move.Power, attack, defense, isCritical, randomPercent, isStab, effectiveness,
-                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier);
+                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier,
+                attacker.Definition.Level);
             return new DamageResult(damage, isCritical, effectiveness,
                 AttackerAbilityMultiplier(attacker, move) != 1f,
                 criticalBlocked || DefenderAbilityMultiplier(defender, move) != 1f);
@@ -71,7 +72,8 @@ namespace PenguinMonster.Battle
             int defense = DefenseInWeather(defender, isPhysical, defender.DefenseStat(isPhysical, false));
             int damage = Compute(move.Power, attacker.AttackStat(isPhysical, false), defense,
                 false, BattleBalance.DamageRandomMaxPercent, attacker.Definition.HasType(move.Type), effectiveness,
-                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier);
+                IsBurnHalved(attacker, isPhysical), Modifier(attacker, defender, move, effectiveness) * targetMultiplier,
+                attacker.Definition.Level);
             return damage * ExpectedHits(attacker, move) * move.Accuracy / BattleBalance.AccuracyPercentMax;
         }
 
@@ -98,7 +100,7 @@ namespace PenguinMonster.Battle
         public static int SelfHit(BattleMonster monster, Random random)
         {
             return Compute(BattleBalance.ConfusionSelfHitPower, monster.AttackStat(true, false), monster.DefenseStat(true, false),
-                false, RollRandomPercent(random), false, 1f, IsBurnHalved(monster, true));
+                false, RollRandomPercent(random), false, 1f, IsBurnHalved(monster, true), level: monster.Definition.Level);
         }
 
         private static int RollRandomPercent(Random random)
@@ -209,17 +211,17 @@ namespace PenguinMonster.Battle
         /// <summary>
         /// 乱数を引き終えた値からダメージを出す。テストで期待値と突き合わせられるよう分けてある。
         /// 本家と同じく段階ごとに切り捨てる（掛ける順で1ずれることがあるため順番を変えないこと）。
-        /// 特性・持ち物の倍率（modifier）は本家の「その他の補正」と同じく最後に掛ける
+        /// 特性・持ち物の倍率（modifier）は本家の「その他の補正」と同じく最後に掛ける。level は攻撃する側のレベル
         /// </summary>
         public static int Compute(int power, int attack, int defense, bool isCritical, int randomPercent, bool isStab, float effectiveness,
-            bool isBurned = false, float modifier = 1f)
+            bool isBurned = false, float modifier = 1f, int level = BattleBalance.Level)
         {
             if (effectiveness == 0f)
             {
                 return 0;
             }
 
-            int damage = BattleBalance.LevelFactor * power * attack / defense / BattleBalance.DamageDivisor + BattleBalance.DamageBase;
+            int damage = BattleBalance.LevelFactor(level) * power * attack / defense / BattleBalance.DamageDivisor + BattleBalance.DamageBase;
             if (isCritical)
             {
                 damage = (int)(damage * BattleBalance.CriticalMultiplier);

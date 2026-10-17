@@ -7,7 +7,7 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// ターンの行動を選ばせる。ダブルスは場の左から1体ずつ「戦う（技 → 狙う相手）/ ペンモン（交代）」を選ぶ。
-    /// 1体目の行動は決めたら戻せない（戻せるようにすると窓の行き来が増えるため。仕様書 §4.9）
+    /// 1体目の行動は決めたら戻せない（戻せるようにすると窓の行き来が増えるため）
     /// </summary>
     public partial class BattleController
     {
@@ -42,7 +42,7 @@ namespace PenguinMonster.View
             var view = PlayerViewAt(slot);
             view.StartBob();
             ShowCommands(slot, reserved);
-            // 時間切れは一番上の技（仕様書 §4.7）。狙いは倒れていればエンジンがもう片方へ向ける
+            // 時間切れは一番上の技。狙いは倒れていればエンジンがもう片方へ向ける
             StartChoiceTimer(() => _pendingAction = BattleAction.UseMove(0));
             yield return new WaitUntil(() => _pendingAction != null);
             _turnTimer.Stop();
@@ -57,6 +57,11 @@ namespace PenguinMonster.View
         private void ShowCommands(int slot, List<int> reserved)
         {
             _messageWindow.SetText($"{Player.ActiveAt(slot).Name}は どうする？");
+            if (_story != null)
+            {
+                ShowStoryCommands(slot, reserved);
+                return;
+            }
             _commandPanel.Show(Player, reserved,
                 onFight: () => ShowMoveSelect(slot, reserved),
                 onParty: () => ShowSwitchSelect(slot, reserved));

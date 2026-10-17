@@ -29,6 +29,11 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 DexCellSize = new Vector2(100f, 100f);
         private const float DexCellSpacing = 6f;
         private const float DexCellIconPadding = 4f;
+        // 捕まえた子の印（右上の小さなタマゴ）と、見ていない子の「？」
+        private const float DexCaughtMarkSize = 26f;
+        private const float DexCaughtMarkMargin = 3f;
+        private const int DexUnknownFontSize = 48;
+        private static readonly Color DexUnknownColor = new Color(0.55f, 0.6f, 0.72f);
 
         private const float DexScrollbarWidth = 14f;
         private const float DexScrollbarSpacing = 10f;
@@ -67,7 +72,7 @@ namespace PenguinMonster.Editor
         {
             var back = CreateSubMenuFrame(parent, "DexPanel", "図鑑", out var content, out var backButton);
             var filters = CreateDexFilters(content);
-            var cells = CreateDexList(content, out var cellIcons, out var scrollRect);
+            var cells = CreateDexList(content, out var cellIcons, out var caughtMarks, out var scrollRect);
             var detail = CreateDexDetail(content);
 
             return FinishSubMenu<DexPanel>(back, backButton, so =>
@@ -75,6 +80,7 @@ namespace PenguinMonster.Editor
                 SetArray(so.FindProperty("_filterButtons"), filters);
                 SetArray(so.FindProperty("_listButtons"), cells);
                 SetArray(so.FindProperty("_listIcons"), cellIcons);
+                SetArray(so.FindProperty("_listCaughtMarks"), caughtMarks);
                 so.FindProperty("_scrollRect").objectReferenceValue = scrollRect;
                 so.FindProperty("_cellColor").colorValue = DexCellColor;
                 detail.Apply(so);
@@ -103,8 +109,8 @@ namespace PenguinMonster.Editor
             return obj.GetComponent<Button>();
         }
 
-        /// <summary>定義表の体数ぶんのマス。スクロール枠に入れて一覧表示する</summary>
-        private static Button[] CreateDexList(Transform parent, out Image[] icons, out ScrollRect scrollRect)
+        /// <summary>図鑑の体数ぶん（ストーリーの子も含む）のマス。スクロール枠に入れて一覧表示する</summary>
+        private static Button[] CreateDexList(Transform parent, out Image[] icons, out Image[] caughtMarks, out ScrollRect scrollRect)
         {
             var scrollObj = UIDialogBuilder.CreateUIObject("List", parent);
             var rect = scrollObj.GetComponent<RectTransform>();
@@ -191,9 +197,10 @@ namespace PenguinMonster.Editor
             scrollRect.verticalScrollbar = scrollbar;
             scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.Permanent;
 
-            int count = MonsterTable.All.Count;
+            int count = MonsterTable.Dex.Count;
             var buttons = new Button[count];
             icons = new Image[count];
+            caughtMarks = new Image[count];
             for (int i = 0; i < count; i++)
             {
                 var cell = CreateButton(content.transform, $"Btn_Cell{i}", "", DexCellSize, DexCellColor);
@@ -204,8 +211,26 @@ namespace PenguinMonster.Editor
                 UIDialogBuilder.SetStretchAll(icons[i].rectTransform);
                 icons[i].rectTransform.offsetMin = Vector2.one * DexCellIconPadding;
                 icons[i].rectTransform.offsetMax = -Vector2.one * DexCellIconPadding;
+                caughtMarks[i] = CreateDexCaughtMark(cell.transform);
+                var label = cell.GetComponentInChildren<Text>();
+                label.fontSize = DexUnknownFontSize;
+                label.color = DexUnknownColor;
             }
             return buttons;
+        }
+
+        /// <summary>マスの右上の、捕まえた印。タマゴの絵は実行時にはめる</summary>
+        private static Image CreateDexCaughtMark(Transform cell)
+        {
+            var mark = CreateImage(cell, "Caught", Color.white);
+            mark.preserveAspect = true;
+            mark.raycastTarget = false;
+            mark.enabled = false;
+            var rect = mark.rectTransform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.one;
+            rect.anchoredPosition = -Vector2.one * DexCaughtMarkMargin;
+            rect.sizeDelta = Vector2.one * DexCaughtMarkSize;
+            return mark;
         }
 
         /// <summary>右の詳しい枠の部品。SerializedObject への登録をまとめるために束ねる</summary>

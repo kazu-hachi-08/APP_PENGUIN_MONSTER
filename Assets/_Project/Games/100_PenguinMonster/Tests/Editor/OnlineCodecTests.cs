@@ -47,6 +47,35 @@ namespace PenguinMonster.Battle.Tests
         }
 
         [Test]
+        public void MonstersRoundTripWithLearnedMoves()
+        {
+            var learned = new[] { MoveTable.Pound, MoveTable.Growl, MoveTable.WaterGun };
+            var six = MonsterTable.All.Take(6).ToList();
+            six[1] = MonsterTable.ByNo(151).WithLoadout(BattleBalance.Level, learned, HeldItem.None);
+
+            var decoded = OnlineCodec.DecodeMonsters(OnlineCodec.EncodeMonsters(six));
+
+            CollectionAssert.AreEqual(six.Select(m => m.No), decoded.Select(m => m.No));
+            CollectionAssert.AreEqual(learned, decoded[1].Moves);
+            CollectionAssert.AreEqual(six[0].Moves, decoded[0].Moves);
+            Assert.AreEqual(BattleBalance.Level, decoded[1].Level);
+        }
+
+        /// <summary>技は MoveTable.All の番号で送るので、ペンモンが持つ技が全部その表に無いと相手の端末で消える</summary>
+        [Test]
+        public void EveryMonsterMoveHasAnIndex()
+        {
+            foreach (var monster in MonsterTable.All.Concat(MonsterTable.Story))
+            {
+                foreach (var move in monster.Moves)
+                {
+                    Assert.GreaterOrEqual(MoveTable.IndexOf(move), 0, $"{monster.Name} の {move.Name}");
+                    Assert.AreSame(move, MoveTable.ByIndex(MoveTable.IndexOf(move)));
+                }
+            }
+        }
+
+        [Test]
         public void DecodedEventsSwapSidesAndRestoreMoveNames()
         {
             var host = new BattleEngine(new BattleState(HostTeam, GuestTeam), new System.Random(1));

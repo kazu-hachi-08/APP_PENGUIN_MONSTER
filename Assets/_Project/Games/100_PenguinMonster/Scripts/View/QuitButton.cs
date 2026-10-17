@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ドラフト〜バトルの間、右上に出す「やめる」。押したら確認を出し、「やめる」でその回を終わらせる（仕様書 §7）。
+    /// ドラフト〜バトルの間、右上に出す「やめる」。押したら確認を出し、「やめる」でその回を終わらせる。
     /// にげるは無いので、遊ぶのをやめたいときの出口はここだけ
     /// </summary>
     public class QuitButton : MonoBehaviour

@@ -43,9 +43,20 @@ namespace PenguinMonster.View
             _backButton.onClick.AddListener(Back);
         }
 
+        /// <summary>
+        /// ストーリーで道具を使う相手を選ぶ。場に出ている子も選べるので、全員の HP を出す
+        /// </summary>
+        /// <param name="canPick">道具が効く子</param>
+        public void ShowItemTargets(BattleSide side, Func<int, bool> canPick, Action<int> onSelect, Action onBack)
+        {
+            Show(side, onSelect, onBack, canPick: canPick);
+        }
+
         /// <param name="onBack">null ならもどれない（ひんしの入れ替え）</param>
         /// <param name="reserved">ダブルスで同じターンにもう1体が選んだ子（選べなくする）</param>
-        public void Show(BattleSide side, Action<int> onSelect, Action onBack, ICollection<int> reserved = null)
+        /// <param name="canPick">道具を使う相手を選ぶときだけ。null なら交代先を選ぶ</param>
+        public void Show(BattleSide side, Action<int> onSelect, Action onBack, ICollection<int> reserved = null,
+            Func<int, bool> canPick = null)
         {
             _side = side;
             _onSelect = onSelect;
@@ -61,11 +72,12 @@ namespace PenguinMonster.View
                 }
                 var monster = side.Party[i];
                 bool isReserved = reserved != null && reserved.Contains(i);
-                string state = monster.IsFainted ? "瀕死" : side.IsActive(i) ? "戦闘中" : isReserved ? "交代先" : $"HP {monster.CurrentHp}/{monster.MaxHp}";
+                bool showActive = canPick == null && side.IsActive(i);
+                string state = monster.IsFainted ? "瀕死" : showActive ? "戦闘中" : isReserved ? "交代先" : $"HP {monster.CurrentHp}/{monster.MaxHp}";
                 string status = monster.IsFainted ? "" : monster.Status.ToJapanese();
                 _slotLabels[i].SetFitted($"{monster.Name}   {state}  {status}\n<size={AbilityLineSize}>特性 {monster.Definition.Ability.ToJapanese()}</size>");
                 _slotIcons[i].sprite = MonsterSprites.Front(monster.Definition);
-                _slotButtons[i].interactable = side.CanSwitchTo(i) && !isReserved;
+                _slotButtons[i].interactable = canPick?.Invoke(i) ?? (side.CanSwitchTo(i) && !isReserved);
             }
             _backButton.gameObject.SetActive(onBack != null);
             HideHint();

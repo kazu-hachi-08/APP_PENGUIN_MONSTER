@@ -20,10 +20,12 @@ namespace PenguinMonster.View
         Status,
         /// <summary>特性の帯が出たとき</summary>
         Ability,
+        /// <summary>フィールドの会話で文字が出るとき</summary>
+        Talk,
     }
 
     /// <summary>
-    /// バトルの仮の効果音。素材がまだ無いのでコードで作る（仕様書 §7）。
+    /// バトルの仮の効果音。素材がまだ無いのでコードで作る。
     /// 共通基盤の SeId はゲーム固有の音を持たないので、クリップを作って AudioManager に直接渡す（音量設定はそちらで掛かる）。
     /// 音の作り方は BattleSounds.Synth.cs
     /// </summary>
@@ -46,6 +48,7 @@ namespace PenguinMonster.View
             { BattleSound.StatDown, 0.4f },
             { BattleSound.Status, 0.45f },
             { BattleSound.Ability, 0.4f },
+            { BattleSound.Talk, 0.2f },
         };
 
         public static void Play(BattleSound sound)
@@ -74,6 +77,7 @@ namespace PenguinMonster.View
                 case BattleSound.StatDown: return Sweep("Se_StatDown", 0.35f, 1200f, 300f);
                 case BattleSound.Status: return Impact("Se_Status", 0.25f, 330f);
                 case BattleSound.Ability: return Jingle("Se_Ability", new[] { 880f, 1320f });
+                case BattleSound.Talk: return Tone("Se_Talk", 0.03f, 880f);
                 default: return Jingle("Se_Lose", new[] { 392f, 311f, 262f });
             }
         }

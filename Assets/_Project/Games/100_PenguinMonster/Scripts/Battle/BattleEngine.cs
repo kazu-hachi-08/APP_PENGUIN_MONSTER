@@ -103,7 +103,7 @@ namespace PenguinMonster.Battle
                 ExecuteMove(side, slot, action, events);
             }
             // ダブルスで同じ控えを2体が選んでいたら、後の交代は取りやめる
-            else if (!battleSide.ActiveAt(slot).IsFainted && battleSide.CanSwitchTo(action.Index))
+            else if (action.Kind == BattleActionKind.Switch && !battleSide.ActiveAt(slot).IsFainted && battleSide.CanSwitchTo(action.Index))
             {
                 ExecuteSwitch(side, slot, action.Index, events);
             }

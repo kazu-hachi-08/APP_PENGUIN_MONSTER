@@ -4,10 +4,12 @@ namespace PenguinMonster.Battle
     {
         Move,
         Switch,
+        /// <summary>何もしない（ストーリーで逃げ損ねたとき。相手だけが動く）</summary>
+        Skip,
     }
 
     /// <summary>
-    /// 1ターンに選ぶ行動（技 / 交代）。ダブルスでは場の1体ごとに1つ選ぶ
+    /// 1ターンに選ぶ行動（技 / 交代 / 何もしない）。ダブルスでは場の1体ごとに1つ選ぶ
     /// </summary>
     public sealed class BattleAction
     {
@@ -26,5 +28,6 @@ namespace PenguinMonster.Battle
 
         public static BattleAction UseMove(int moveIndex, int target = 0) => new BattleAction(BattleActionKind.Move, moveIndex, target);
         public static BattleAction SwitchTo(int partyIndex) => new BattleAction(BattleActionKind.Switch, partyIndex, 0);
+        public static BattleAction Skip() => new BattleAction(BattleActionKind.Skip, 0, 0);
     }
 }

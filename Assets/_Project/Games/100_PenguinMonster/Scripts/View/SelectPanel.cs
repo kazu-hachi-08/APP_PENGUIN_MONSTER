@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 見せ合い・選出の画面（仕様書 §2.2）。上に相手の6体を見せ、下の自分の6体から3体（ダブルスは4体）を選ぶ。
+    /// 見せ合い・選出の画面。上に相手の6体を見せ、下の自分の6体から3体（ダブルスは4体）を選ぶ。
     /// 選んだ順が出す順（1番目が先頭）。もう一度押すと外せる。持ち物は自分のマスにだけ出す（相手のはバトルで働くまで隠す）。
     /// 演出: 開いたら相手の帯は右から、自分の列は左から滑り込み、あいだに「VS」を出す
     /// </summary>
@@ -88,7 +88,7 @@ namespace PenguinMonster.View
             gameObject.SetActive(false);
         }
 
-        /// <summary>時間切れ。選びかけのぶんは残し、足りないぶんを上から埋めて決める（仕様書 §2.2）</summary>
+        /// <summary>時間切れ。選びかけのぶんは残し、足りないぶんを上から埋めて決める</summary>
         private void DecideByTimeout()
         {
             for (int i = 0; i < _monsters.Count && _picked.Count < _partySize; i++)

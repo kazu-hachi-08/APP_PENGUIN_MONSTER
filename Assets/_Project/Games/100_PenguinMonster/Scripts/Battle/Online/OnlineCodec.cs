@@ -40,20 +40,28 @@ namespace PenguinMonster.Battle
             return actions;
         }
 
-        /// <summary>ペンモン1体は 2 int（No・持ち物）</summary>
-        public const int FieldsPerMonster = 2;
+        /// <summary>ペンモン1体は 6 int（No・持ち物・技4つ）。技は MoveTable.All の番号で、空きは -1</summary>
+        public const int FieldsPerMonster = 2 + MaxMoves;
+        private const int MaxMoves = 4;
+        private const int NoMove = -1;
 
         /// <summary>
-        /// ペンモンは「No と持ち物」の組の列で送る（ドラフトの6体・選出の3体。どちらも同じペンモンは重ならない）。
-        /// 持ち物はドラフトの後に配るので定義表には無く、送らないとホストの計算でゲストの持ち物が働かない
+        /// ペンモンは「No・持ち物・技」の組の列で送る（ドラフトの6体・自分のチームの6体・選出の3体）。
+        /// 持ち物はドラフトの後に配るので定義表には無く、送らないとホストの計算でゲストの持ち物が働かない。
+        /// 技も「自分のチーム」ではストーリーで覚えた技なので定義表と違い、送らないと相手の端末で別の技になる
         /// </summary>
         public static int[] EncodeMonsters(IReadOnlyList<MonsterDefinition> monsters)
         {
             var data = new int[monsters.Count * FieldsPerMonster];
             for (int i = 0; i < monsters.Count; i++)
             {
-                data[i * FieldsPerMonster] = monsters[i].No;
-                data[i * FieldsPerMonster + 1] = (int)monsters[i].Item;
+                int offset = i * FieldsPerMonster;
+                data[offset] = monsters[i].No;
+                data[offset + 1] = (int)monsters[i].Item;
+                for (int m = 0; m < MaxMoves; m++)
+                {
+                    data[offset + 2 + m] = m < monsters[i].Moves.Count ? MoveTable.IndexOf(monsters[i].Moves[m]) : NoMove;
+                }
             }
             return data;
         }
@@ -65,9 +73,42 @@ namespace PenguinMonster.Battle
             {
                 var monster = MonsterTable.ByNo(data[offset]);
                 var item = (HeldItem)data[offset + 1];
-                monsters.Add(item == HeldItem.None ? monster : monster.WithItem(item));
+                var moves = DecodeMoves(data, offset + 2);
+                // ドラフトの子は定義表のままの方が、表の子と同じものとして扱える（選出・図鑑の照合など）
+                bool asDefined = item == HeldItem.None && SameMoves(monster.Moves, moves);
+                monsters.Add(asDefined ? monster : monster.WithLoadout(BattleBalance.Level, moves, item));
             }
             return monsters;
+        }
+
+        private static MoveDefinition[] DecodeMoves(int[] data, int offset)
+        {
+            var moves = new List<MoveDefinition>(MaxMoves);
+            for (int m = 0; m < MaxMoves; m++)
+            {
+                var move = MoveTable.ByIndex(data[offset + m]);
+                if (move != null)
+                {
+                    moves.Add(move);
+                }
+            }
+            return moves.ToArray();
+        }
+
+        private static bool SameMoves(IReadOnlyList<MoveDefinition> a, IReadOnlyList<MoveDefinition> b)
+        {
+            if (a.Count != b.Count)
+            {
+                return false;
+            }
+            for (int i = 0; i < a.Count; i++)
+            {
+                if (a[i] != b[i])
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

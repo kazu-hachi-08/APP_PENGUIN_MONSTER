@@ -43,6 +43,11 @@ namespace PenguinMonster.Common.Input
             _wasReleasedThisFrame = false;
         }
 
+        private void OnDisable()
+        {
+            ResetButton();
+        }
+
         public void ResetButton()
         {
             IsDown = false;

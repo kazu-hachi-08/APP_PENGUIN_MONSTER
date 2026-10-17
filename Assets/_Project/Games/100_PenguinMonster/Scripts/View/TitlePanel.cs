@@ -7,11 +7,12 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// タイトル画面（仕様書 §2）。勝ち抜き戦・オンライン対戦は GameFlow へ渡し、
+    /// タイトル画面。ストーリー・勝ち抜き戦・オンライン対戦は GameFlow へ渡し、
     /// ずかん・タイプ相性表・あそびかた・設定はその画面を開いて、閉じたらタイトルに戻る
     /// </summary>
     public class TitlePanel : MonoBehaviour
     {
+        [SerializeField] private Button _storyButton;
         [SerializeField] private Button _survivalButton;
         [SerializeField] private Button _onlineButton;
         [Tooltip("_subMenus と同じ並び")]
@@ -20,11 +21,13 @@ namespace PenguinMonster.View
         [SerializeField] private Image[] _mascots;
         [SerializeField] private Text _bestText;
 
+        private Action _onStory;
         private Action _onSurvival;
         private Action _onOnline;
 
         private void Awake()
         {
+            _storyButton.onClick.AddListener(() => Choose(_onStory));
             _survivalButton.onClick.AddListener(() => Choose(_onSurvival));
             _onlineButton.onClick.AddListener(() => Choose(_onOnline));
             for (int i = 0; i < _subMenuButtons.Length; i++)
@@ -34,8 +37,9 @@ namespace PenguinMonster.View
             }
         }
 
-        public void Show(int bestSingleWins, int bestDoubleWins, Action onSurvival, Action onOnline)
+        public void Show(int bestSingleWins, int bestDoubleWins, Action onStory, Action onSurvival, Action onOnline)
         {
+            _onStory = onStory;
             _onSurvival = onSurvival;
             _onOnline = onOnline;
             _bestText.SetFitted($"勝ち抜き戦 最高記録: シングル {bestSingleWins} 連勝 / ダブルス {bestDoubleWins} 連勝");

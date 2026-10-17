@@ -22,6 +22,9 @@ namespace PenguinMonster.View
             {
                 case MusicTrack.Draft: return DraftSong;
                 case MusicTrack.Battle: return BattleSong;
+                case MusicTrack.Village: return VillageSong;
+                case MusicTrack.Route: return RouteSong;
+                case MusicTrack.Gym: return GymSong;
                 default: return TitleSong;
             }
         }

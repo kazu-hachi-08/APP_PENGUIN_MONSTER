@@ -48,10 +48,12 @@ namespace PenguinMonster.Editor
         private const float TargetSpacing = 32f;
 
         // ダブルスの4体が入る大きさ（シングルは余った枠を隠す）
-        private static readonly Vector2 PartyBoxSize = new Vector2(900f, 800f);
-        private static readonly Vector2 PartySlotSize = new Vector2(760f, 130f);
-        private const float PartySlotSpacing = 20f;
-        private const float PartyIconSize = 112f;
+        // ストーリーの手持ち（6体）まで入るよう、縦に6枠＋戻る を並べる
+        private const int PartySlotCount = 6;
+        private static readonly Vector2 PartyBoxSize = new Vector2(900f, 900f);
+        private static readonly Vector2 PartySlotSize = new Vector2(760f, 108f);
+        private const float PartySlotSpacing = 14f;
+        private const float PartyIconSize = 96f;
         // 一覧（幅 900 の中央寄せ）の右の空きに、画面の端から少し余白を残して収まる大きさ
         private static readonly Vector2 PartyHintSize = new Vector2(440f, 640f);
         private const float PartyHintGap = 16f;
@@ -84,7 +86,7 @@ namespace PenguinMonster.Editor
             return image.gameObject.AddComponent<Button>();
         }
 
-        private static MessageWindow CreateMessageWindow(Transform parent, Button fieldTapArea)
+        private static MessageWindow CreateMessageWindow(Transform parent, Button fieldTapArea, bool typingSound = false)
         {
             var frame = CreateFramedBox(parent, "MessageWindow", MessageBoxColor, out var inner);
             SetBottomArea(frame.rectTransform, 0f, 1f);
@@ -107,6 +109,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_text").objectReferenceValue = text;
             SetArray(so.FindProperty("_advanceButtons"), new Object[] { button, fieldTapArea });
             so.FindProperty("_nextIndicator").objectReferenceValue = indicator.gameObject;
+            so.FindProperty("_typingSound").boolValue = typingSound;
             so.ApplyModifiedProperties();
             return window;
         }
@@ -218,7 +221,7 @@ namespace PenguinMonster.Editor
             layout.childControlWidth = false;
             layout.childControlHeight = false;
 
-            var buttons = new Button[BattleBalance.DoublesPartySize];
+            var buttons = new Button[PartySlotCount];
             var labels = new Text[buttons.Length];
             var icons = new Image[buttons.Length];
             for (int i = 0; i < buttons.Length; i++)
