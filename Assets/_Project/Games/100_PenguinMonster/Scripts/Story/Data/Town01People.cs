@@ -3,8 +3,8 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1の人と台本（PLAN_STORY_TOWN01.md フェーズ4〜6・8b）。ツララ町・道路の人と落とし物は .Town.cs。
-    /// 名前（博士・ライバルなど）はまだ決めていないので役割で呼ぶ。本番の物語はフェーズ8c で書き直す
+    /// 区切り1の人と台本（PLAN_STORY_TOWN01.md フェーズ4〜6・8b・8c）。ハツユキ村・研究所・ぬくもり小屋・よろず屋の人はここ、
+    /// ツララ町・道路の人と落とし物は .Town.cs、道場とライバルの2戦目は .Gym.cs
     /// </summary>
     public static partial class Town01People
     {
@@ -14,10 +14,18 @@ namespace PenguinMonster.Story
         /// <summary>最初の1体をもらうまで、村の北の出口をふさぐ場所</summary>
         public static readonly FieldSpot MomAtExit = new FieldSpot(Town01Maps.Village, Town01Maps.NorthExit + Direction.Down.Offset(), Direction.Down);
 
+        /// <summary>最初から始めたときだけ、家で目覚めたところで流す文（PLAN_STORY_TOWN01.md フェーズ8c）</summary>
+        public static readonly IReadOnlyList<EventStep> Opening = new[]
+        {
+            EventStep.Say("ハツユキ村の 朝。窓の 外は 今日も 雪が 降っている"),
+            EventStep.Say("そうだ！ 今日は シラカバ博士の 研究所で ペンモンを もらえる 日だ！"),
+        };
+
         public static IReadOnlyList<FieldNpc> Create()
         {
-            var people = new List<FieldNpc> { Mom(), Professor(), Assistant(), Villager(), RivalFamily(), Rival(), Route01Kid(), HutKeeper(), Clerk() };
+            var people = new List<FieldNpc> { Mom(), Professor(), Assistant(), Villager(), RivalFamily(), Rival(), HutKeeper(), Clerk() };
             people.AddRange(TownAndRoutes());
+            people.AddRange(GymAndRival2());
             return people;
         }
 
@@ -26,7 +34,7 @@ namespace PenguinMonster.Story
             return new FieldNpc("mom", NpcLook.Mom,
                 NpcPlacement.Until(Town01Flags.GotStarter, MomAtExit,
                     EventStep.Say("あら、どこへ 行くの？"),
-                    EventStep.Say("博士の 研究所で ペンモンを もらってから に しなさい")),
+                    EventStep.Say("シラカバ博士の 研究所で ペンモンを もらってから に しなさい")),
                 NpcPlacement.Always(new FieldSpot(Town01Maps.PlayerHouse, new GridPos(5, 2), Direction.Left),
                     EventStep.Say("おかえり！ 少し 休んで いきなさい"),
                     // ぬくもり小屋（フェーズ6）ができるまでの仮の回復。全滅したら この家に戻る
@@ -39,7 +47,7 @@ namespace PenguinMonster.Story
             var spot = new FieldSpot(Town01Maps.Lab, new GridPos(4, 2), Direction.Down);
             return new FieldNpc("professor", NpcLook.Professor,
                 NpcPlacement.Until(Town01Flags.GotStarter, spot,
-                    EventStep.Say("おお、来たか！ 待って おったぞ"),
+                    EventStep.Say("おお、来たか！ わしは シラカバ。ペンモンの 研究を しておる"),
                     EventStep.Ask("ペンモンを 1体 もらって くれるかね？",
                         EventStep.Say("そうか…… 気が 変わったら また 来なさい")),
                     EventStep.Say("ここに 3つの タマゴが ある。好きな 子を 選ぶと いい！"),
@@ -59,7 +67,7 @@ namespace PenguinMonster.Story
             var spot = new FieldSpot(Town01Maps.Lab, new GridPos(7, 4), Direction.Left);
             return new FieldNpc("assistant", NpcLook.Assistant,
                 NpcPlacement.Until(Town01Flags.GotStarter, spot,
-                    EventStep.Say("博士は ペンモンの 研究を しているの")),
+                    EventStep.Say("シラカバ博士は 雪国の ペンモンの 研究を しているの")),
                 NpcPlacement.Always(spot,
                     EventStep.Say("タマゴから かえった 子、元気そうね！")));
         }
@@ -80,7 +88,7 @@ namespace PenguinMonster.Story
             var placements = new List<NpcPlacement>
             {
                 NpcPlacement.Until(Town01Flags.GotStarter, new FieldSpot(Town01Maps.Lab, new GridPos(2, 2), Direction.Down),
-                    EventStep.Say("おそいぞ！ 博士が 待ちくたびれてるぜ")),
+                    EventStep.Say("おそいぞ！ おれは ユキト。博士が 待ちくたびれてるぜ")),
             };
             foreach (var starter in Town01Starters.All)
             {
@@ -100,21 +108,8 @@ namespace PenguinMonster.Story
                 EventStep.Battle(rival, canLose: true),
                 EventStep.Say("ふう…… いい 勝負 だったな！"),
                 EventStep.Heal("博士が ペンモンを 元気に してくれた！", Town01Maps.Start),
-                EventStep.Say("おれは 先に 行くぜ！ じゃあな！"),
+                EventStep.Say("おれは 先に ツララ町へ 行くぜ！ じゃあな！"),
             };
-        }
-
-        /// <summary>1番道路のトレーナー。道を歩いてくる主人公を横から見張る（顔ぶれは 8c で作り直す）</summary>
-        private static FieldNpc Route01Kid()
-        {
-            var spot = new FieldSpot(Town01Maps.Route01, new GridPos(9, 11), Direction.Left);
-            var trainer = Town01Trainers.Route01Kid;
-            return new FieldNpc("route01Kid", NpcLook.Youngster,
-                NpcPlacement.Until(trainer.DefeatedFlag, spot,
-                    EventStep.Say("目が 合ったら 勝負だ！"),
-                    EventStep.Battle(trainer)),
-                NpcPlacement.Always(spot,
-                    EventStep.Say("草むらで 戦って 鍛え直しだ！")));
         }
 
         // 小屋・店の中の受付は奥の真ん中に立ち、主人公はその1つ手前（扉から2マス奥）で話す
@@ -125,14 +120,16 @@ namespace PenguinMonster.Story
         /// <summary>
         /// ぬくもり小屋の受付。休ませる（全回復・全滅したらここへ戻る）→ あずかり箱、の順に聞く（本家の回復と預かりシステムを1人にまとめる）
         /// </summary>
+        /// <summary>ぬくもり小屋で休ませたときの、全滅したときの戻り先（受付の前）</summary>
+        private static readonly FieldSpot HutReturnSpot = new FieldSpot(Town01Maps.WarmHut, InFrontOfCounter, Direction.Up);
+
         private static FieldNpc HutKeeper()
         {
-            var returnSpot = new FieldSpot(Town01Maps.WarmHut, InFrontOfCounter, Direction.Up);
             return new FieldNpc("hutKeeper", NpcLook.HutKeeper,
                 NpcPlacement.Always(new FieldSpot(Town01Maps.WarmHut, CounterSpot, Direction.Down),
                     EventStep.Say("ようこそ ぬくもり小屋へ！"),
                     EventStep.Ask("ペンモンを 休ませて いきますか？", StorageSteps()),
-                    EventStep.Heal("ペンモンたちは すっかり 元気に なった！", returnSpot),
+                    EventStep.Heal("ペンモンたちは すっかり 元気に なった！", HutReturnSpot),
                     StorageQuestion(),
                     EventStep.Storage(),
                     EventStep.Say(HutFarewell)));
@@ -163,9 +160,9 @@ namespace PenguinMonster.Story
             var spot = new FieldSpot(Town01Maps.RivalHouse, new GridPos(2, 2), Direction.Down);
             return new FieldNpc("rivalFamily", NpcLook.Villager,
                 NpcPlacement.Until(Town01Flags.GotStarter, spot,
-                    EventStep.Say("うちの 子なら、先に 研究所へ 行ったよ")),
+                    EventStep.Say("ユキトなら、先に 研究所へ 行ったよ")),
                 NpcPlacement.Always(spot,
-                    EventStep.Say("うちの 子も ペンモンを もらって 張り切ってたよ")));
+                    EventStep.Say("ユキトも ペンモンを もらって 張り切ってたよ")));
         }
     }
 }

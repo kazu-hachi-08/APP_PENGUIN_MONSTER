@@ -40,6 +40,9 @@ namespace PenguinMonster.View.Story
             // 道場の門下生: 坊主頭（帽子を髪と同じ色）に白い道着と黒帯
             { NpcLook.Disciple, Colors(hat: new Color32(50, 40, 36, 255), trim: new Color32(248, 248, 252, 255), hair: new Color32(50, 40, 36, 255),
                 coat: new Color32(244, 244, 240, 255), hem: new Color32(40, 40, 48, 255)) },
+            // 道場主: 岩のような灰色の道着に赤い帯。門下生（白い道着）と並んでも主だと分かるように
+            { NpcLook.GymLeader, Colors(hat: new Color32(70, 60, 56, 255), trim: new Color32(200, 60, 50, 255), hair: new Color32(70, 60, 56, 255),
+                coat: new Color32(120, 120, 130, 255), hem: new Color32(200, 60, 50, 255)) },
         };
 
         private static readonly Dictionary<NpcLook, Sprite[,]> Cache = new Dictionary<NpcLook, Sprite[,]>();

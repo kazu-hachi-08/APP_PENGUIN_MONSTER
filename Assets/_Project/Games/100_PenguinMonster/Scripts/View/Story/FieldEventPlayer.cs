@@ -104,6 +104,7 @@ namespace PenguinMonster.View.Story
                     break;
                 case EventStepKind.Give:
                 case EventStepKind.GiveItem:
+                case EventStepKind.GiveBadge:
                     BattleSounds.Play(BattleSound.Win);
                     yield return _window.Play(runner.Message);
                     runner.Advance();

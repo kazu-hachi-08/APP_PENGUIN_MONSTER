@@ -24,6 +24,8 @@ namespace PenguinMonster.Story
         Shop,
         /// <summary>あずかり箱の画面を出す（ぬくもり小屋）</summary>
         Storage,
+        /// <summary>羽章をもらう（Flag の名前で StoryState.Badges に足す）。「〇〇を もらった！」を出す</summary>
+        GiveBadge,
     }
 
     /// <summary>
@@ -125,6 +127,13 @@ namespace PenguinMonster.Story
         public static EventStep Shop(params StoryItem[] items) => new EventStep(EventStepKind.Shop, shopItems: items);
 
         public static EventStep Storage() => new EventStep(EventStepKind.Storage);
+
+        /// <param name="badgeId">記録に残す羽章の名前（表示名を後で変えても記録がずれないように、表示名とは分ける）</param>
+        /// <param name="displayName">「〇〇を もらった！」の〇〇</param>
+        public static EventStep GiveBadge(string badgeId, string displayName)
+        {
+            return new EventStep(EventStepKind.GiveBadge, displayName, flag: badgeId);
+        }
 
         /// <summary>話すだけの台本（村の人・看板）</summary>
         public static EventStep[] Lines(IEnumerable<string> lines)

@@ -270,7 +270,7 @@ namespace PenguinMonster.Story
             };
             return new FieldMap(Route02, rows,
                 new Warp(Route02West, new FieldSpot(Town, TownEast + Direction.Left.Offset(), Direction.Left)))
-                .WithSign(new GridPos(26, 20), "この先 3番道路", "（雪が 深くて 今は 通れない）")
+                .WithSign(new GridPos(26, 20), "この先 3番道路", "（雪が 深くて 今は 通れない）", "続きは 次の 更新で！")
                 .WithEncounters(
                     new EncounterTable(EncounterPercent,
                         new EncounterSlot(Town01Species.Konayuki, 6, 9, 25),

@@ -33,7 +33,9 @@ namespace PenguinMonster.View.Story
         private StoryState _state;
         private readonly System.Random _random = new System.Random();
 
-        public IEnumerator Run(FieldWorld world, FieldSpot start, StoryState state, IReadOnlyList<FieldNpc> npcs)
+        /// <param name="opening">歩き出す前に流す台本（最初から始めたときの目覚め）。無ければ null</param>
+        public IEnumerator Run(FieldWorld world, FieldSpot start, StoryState state, IReadOnlyList<FieldNpc> npcs,
+            IReadOnlyList<EventStep> opening = null)
         {
             _state = state;
             _people = new FieldPeople(npcs, state.Flags);
@@ -41,6 +43,13 @@ namespace PenguinMonster.View.Story
             gameObject.SetActive(true);
             _input.gameObject.SetActive(true);
             ShowCurrentMap();
+            if (opening != null)
+            {
+                // 呼ぶ側の暗転が明けてから流す（真っ暗な中で文が進まないように）
+                yield return null;
+                yield return new WaitWhile(() => _fade.IsFading);
+                yield return PlayScript(opening);
+            }
 
             while (true)
             {

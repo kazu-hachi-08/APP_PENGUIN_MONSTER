@@ -3,8 +3,8 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// ツララ町・2番道路の人と、道路の落とし物（PLAN_STORY_TOWN01.md フェーズ8b）。
-    /// 道場の前の門下生は、2番道路の奥の出来事（Town01Flags.Route02Cleared）まで扉をふさぐ。奥の出来事は 8c で本物にするまで仮の人が立てる
+    /// ツララ町・道路の人とトレーナー、道路の落とし物（PLAN_STORY_TOWN01.md フェーズ8b・8c）。
+    /// 道場の前の門下生は、2番道路の奥のユキトとの2戦目（Town01Flags.Route02Cleared）まで扉をふさぐ
     /// </summary>
     public static partial class Town01People
     {
@@ -20,7 +20,17 @@ namespace PenguinMonster.Story
                 DroppedItem("route01Potion", new FieldSpot(Town01Maps.Route01, new GridPos(14, 5), Direction.Down), StoryItem.Potion, 1),
                 DroppedItem("route02Eggs", new FieldSpot(Town01Maps.Route02, new GridPos(4, 1), Direction.Down), StoryItem.CaptureEgg, FoundEggs),
                 DroppedItem("route02Awakening", new FieldSpot(Town01Maps.Route02, new GridPos(28, 4), Direction.Down), StoryItem.Awakening, 1),
-                GymDisciple(), Route02Woodcutter(), GymPlaceholder(), TownGuide(), PondKid(), TownHouseResident(),
+                GymDoorDisciple(), TownGuide(), PondKid(), TownHouseResident(),
+                RouteTrainer("route01Kid", NpcLook.Youngster, Town01Trainers.Route01Kid, Town01Maps.Route01, new GridPos(9, 11), Direction.Left,
+                    "目が 合ったら 勝負だ！", "草むらで 戦って 鍛え直しだ！"),
+                RouteTrainer("route01Angler", NpcLook.Youngster, Town01Trainers.Route01Angler, Town01Maps.Route01, new GridPos(6, 16), Direction.Right,
+                    "川で 釣った ペンモンを 見せて やる！", "川べりの 深い 草むらで 釣ったんだ"),
+                RouteTrainer("route02Snowball", NpcLook.Youngster, Town01Trainers.Route02SnowballKid, Town01Maps.Route02, new GridPos(12, 4), Direction.Down,
+                    "雪玉 くらえー！ 勝負だ！", "雪合戦なら 負けないのに……"),
+                RouteTrainer("route02Hiker", NpcLook.Villager, Town01Trainers.Route02Hiker, Town01Maps.Route02, new GridPos(16, 11), Direction.Left,
+                    "山で 鍛えた 岩の 守り、崩せるかな？", "道場の ガンテツさんは もっと 固いぞ"),
+                RouteTrainer("route02Forest", NpcLook.Youngster, Town01Trainers.Route02ForestKid, Town01Maps.Route02, new GridPos(28, 11), Direction.Up,
+                    "林の 奥で 見つけた 不思議な 子だよ", "暗い 林には まだ 見たことの ない 子が いるかも"),
             };
         }
 
@@ -34,34 +44,27 @@ namespace PenguinMonster.Story
                     EventStep.SetFlag(flag)));
         }
 
-        private static FieldNpc GymDisciple()
+        /// <summary>道路のトレーナー。向いている先を見張り、目が合ったら勝負。勝った後は別のセリフ</summary>
+        private static FieldNpc RouteTrainer(string id, NpcLook look, TrainerDefinition trainer, string mapId, GridPos pos, Direction facing,
+            string challenge, string afterwards)
         {
-            return new FieldNpc("gymDisciple", NpcLook.Disciple,
-                NpcPlacement.Until(Town01Flags.Route02Cleared, DiscipleAtGymDoor,
-                    EventStep.Say("押忍！ 道場主は いま 留守に している！"),
-                    EventStep.Say("東の 2番道路の 奥へ 出かけた ままだ")),
-                NpcPlacement.Always(new FieldSpot(Town01Maps.Town, new GridPos(6, 6), Direction.Right),
-                    EventStep.Say("押忍！ 道場主が 中で お待ちだ！")));
-        }
-
-        /// <summary>2番道路の奥の仮の人。話すと道場の前の門下生がどく（8c で本物の出来事に作り直す）</summary>
-        private static FieldNpc Route02Woodcutter()
-        {
-            var spot = new FieldSpot(Town01Maps.Route02, new GridPos(27, 21), Direction.Left);
-            return new FieldNpc("route02Woodcutter", NpcLook.Villager,
-                NpcPlacement.Until(Town01Flags.Route02Cleared, spot,
-                    EventStep.Say("道場主かい？ さっき 町へ 帰って いったよ"),
-                    EventStep.SetFlag(Town01Flags.Route02Cleared)),
+            var spot = new FieldSpot(mapId, pos, facing);
+            return new FieldNpc(id, look,
+                NpcPlacement.Until(trainer.DefeatedFlag, spot,
+                    EventStep.Say(challenge),
+                    EventStep.Battle(trainer)),
                 NpcPlacement.Always(spot,
-                    EventStep.Say("この先は 雪が 深くて 通れないんだ")));
+                    EventStep.Say(afterwards)));
         }
 
-        /// <summary>道場の中の仮の人（門下生・道場主は 8c）</summary>
-        private static FieldNpc GymPlaceholder()
+        private static FieldNpc GymDoorDisciple()
         {
-            return new FieldNpc("gymPlaceholder", NpcLook.Disciple,
-                NpcPlacement.Always(new FieldSpot(Town01Maps.Gym, new GridPos(5, 2), Direction.Down),
-                    EventStep.Say("押忍！ 道場は 稽古の 準備中だ！")));
+            return new FieldNpc("gymDoorDisciple", NpcLook.Disciple,
+                NpcPlacement.Until(Town01Flags.Route02Cleared, DiscipleAtGymDoor,
+                    EventStep.Say("押忍！ 道場主の ガンテツさんは いま 留守だ！"),
+                    EventStep.Say("東の 2番道路の 奥へ 修行に 出かけた ままだ")),
+                NpcPlacement.Always(new FieldSpot(Town01Maps.Town, new GridPos(6, 6), Direction.Right),
+                    EventStep.Say("押忍！ ガンテツさんが 中で お待ちだ！")));
         }
 
         private static FieldNpc TownGuide()

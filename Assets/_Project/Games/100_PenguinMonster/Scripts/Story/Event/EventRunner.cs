@@ -35,6 +35,8 @@ namespace PenguinMonster.Story
                         return string.Format(_sentToBox ? SentToBoxFormat : ReceivedFormat, Current.Species.Name);
                     case EventStepKind.GiveItem:
                         return string.Format(Current.Found ? FoundItemFormat : ReceivedItemFormat, StoryItems.Get(Current.Item).Name, Current.Count);
+                    case EventStepKind.GiveBadge:
+                        return string.Format(ReceivedFormat, Current.Text);
                     default:
                         return Current?.Text;
                 }
@@ -48,10 +50,11 @@ namespace PenguinMonster.Story
             RunUntilShown();
         }
 
-        /// <summary>Say・Give・GiveItem・Heal を読み終えた / Shop・Storage の画面を閉じた（売り買い・入れ替えは画面が StoryState に直接行う）</summary>
+        /// <summary>Say・Give・GiveItem・GiveBadge・Heal を読み終えた / Shop・Storage の画面を閉じた（売り買い・入れ替えは画面が StoryState に直接行う）</summary>
         public void Advance()
         {
-            Expect(EventStepKind.Say, EventStepKind.Give, EventStepKind.GiveItem, EventStepKind.Heal, EventStepKind.Shop, EventStepKind.Storage);
+            Expect(EventStepKind.Say, EventStepKind.Give, EventStepKind.GiveItem, EventStepKind.GiveBadge, EventStepKind.Heal,
+                EventStepKind.Shop, EventStepKind.Storage);
             Next();
         }
 
@@ -121,6 +124,9 @@ namespace PenguinMonster.Story
                         return;
                     case EventStepKind.GiveItem:
                         _state.Bag.Add(Current.Item, Current.Count);
+                        return;
+                    case EventStepKind.GiveBadge:
+                        _state.Badges.Add(Current.Flag);
                         return;
                     case EventStepKind.Heal:
                         _state.Party.HealAll();

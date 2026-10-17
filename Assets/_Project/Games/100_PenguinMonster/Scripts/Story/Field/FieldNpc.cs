@@ -18,6 +18,8 @@ namespace PenguinMonster.Story
         Clerk,
         /// <summary>道場の門下生</summary>
         Disciple,
+        /// <summary>道場主</summary>
+        GymLeader,
         /// <summary>道路の落とし物（人ではなく道具の袋。前から A で拾う）</summary>
         Item,
     }

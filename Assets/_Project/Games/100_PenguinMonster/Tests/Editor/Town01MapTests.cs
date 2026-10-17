@@ -106,8 +106,8 @@ namespace PenguinMonster.Story.Tests
             var belowDisciple = Town01People.DiscipleAtGymDoor.Position + Direction.Down.Offset();
             Assert.AreEqual(StepResult.Blocked, PlayerAt(Town01Maps.Town, belowDisciple, Direction.Up).Step(Direction.Up));
 
-            RunToEnd(PlayerAt(Town01Maps.Route02, new GridPos(26, 21), Direction.Right).ScriptAhead());
-            Assert.IsTrue(_state.Flags.Has(Town01Flags.Route02Cleared));
+            // 2番道路の奥のユキトとの2戦目で立つフラグ（出来事そのものは Town01StoryTests）
+            _state.Flags.Set(Town01Flags.Route02Cleared);
 
             var player = PlayerAt(Town01Maps.Town, belowDisciple, Direction.Up);
             Assert.AreEqual(StepResult.Moved, player.Step(Direction.Up));

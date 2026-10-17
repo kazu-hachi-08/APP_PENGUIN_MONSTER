@@ -7,8 +7,8 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ストーリーの流れ（PLAN_STORY_TOWN01.md）。今は仮のハツユキ村と試しの1番道路を歩き、話す・戦う・捕まえる・買う。メニューの「やめる」でタイトルへ戻る。
-    /// 記録（フェーズ7）があれば「続きから / 最初から」を聞き、続きからなら記録した場所から歩き始める
+    /// ストーリーの流れ（PLAN_STORY_TOWN01.md）。区切り1（ハツユキ村 〜 ツララ町の道場）を歩き、話す・戦う・捕まえる・買う。メニューの「やめる」でタイトルへ戻る。
+    /// 記録（フェーズ7）があれば「続きから / 最初から」を聞き、続きからなら記録した場所から歩き始める。最初からなら家で目覚める文を出す
     /// </summary>
     public partial class GameFlow
     {
@@ -34,7 +34,8 @@ namespace PenguinMonster.View
 
             // フィールドはバトルの画面の後ろ（カメラ）に映るので、バトルの UI を隠して見えるようにする
             _battle.gameObject.SetActive(false);
-            var walking = StartCoroutine(_field.Run(Town01Maps.CreateWorld(), start, state, Town01People.Create()));
+            var opening = saved == null ? Town01People.Opening : null;
+            var walking = StartCoroutine(_field.Run(Town01Maps.CreateWorld(), start, state, Town01People.Create(), opening));
             yield return _fade.FadeInCoroutine();
             yield return walking;
 

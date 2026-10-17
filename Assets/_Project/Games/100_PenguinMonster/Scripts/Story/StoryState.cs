@@ -16,7 +16,7 @@ namespace PenguinMonster.Story
         /// <summary>図鑑の「見た」「捕まえた」の No。捕まえた子は見たにも入る（MarkSeen・MarkCaught で足す）</summary>
         public HashSet<int> SeenNos { get; } = new HashSet<int>();
         public HashSet<int> CaughtNos { get; } = new HashSet<int>();
-        /// <summary>もらった羽章の名前。中身を入れるのはフェーズ8c（今はセーブの欄だけ用意する）</summary>
+        /// <summary>もらった羽章の名前（EventStep.GiveBadge の badgeId）</summary>
         public HashSet<string> Badges { get; } = new HashSet<string>();
         /// <summary>全滅したときに戻る場所。回復したところで書き換える</summary>
         public FieldSpot LastHealSpot { get; set; }
