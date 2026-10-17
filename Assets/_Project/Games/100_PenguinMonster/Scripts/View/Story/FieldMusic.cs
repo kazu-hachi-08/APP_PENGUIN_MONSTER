@@ -14,8 +14,11 @@ namespace PenguinMonster.View.Story
             {
                 case Town01Maps.Route01:
                 case Town01Maps.Route02:
+                case Town02Maps.Route03:
+                case Town02Maps.Route04:
                     return MusicTrack.Route;
                 case Town01Maps.Gym:
+                case Town02Maps.Gym:
                     return MusicTrack.Gym;
                 default:
                     return MusicTrack.Village;

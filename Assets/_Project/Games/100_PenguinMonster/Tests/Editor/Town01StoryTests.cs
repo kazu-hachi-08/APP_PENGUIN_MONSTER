@@ -18,7 +18,7 @@ namespace PenguinMonster.Story.Tests
         public void SetUp()
         {
             _state = new StoryState(Town01Maps.Start);
-            _world = Town01Maps.CreateWorld();
+            _world = StoryWorld.Create();
             _people = new FieldPeople(Town01People.Create(), _state.Flags);
         }
 

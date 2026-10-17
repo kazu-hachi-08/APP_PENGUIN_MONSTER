@@ -17,7 +17,7 @@ namespace PenguinMonster.Story.Tests
         public void SetUp()
         {
             _state = new StoryState(Town01Maps.Start);
-            _world = Town01Maps.CreateWorld();
+            _world = StoryWorld.Create();
             _people = new FieldPeople(Town01People.Create(), _state.Flags);
         }
 
@@ -153,7 +153,8 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void EncounterSpecies_AreTown01Species_AndPlacedAsPlanned()
         {
-            var tables = _world.Maps.SelectMany(map => new[] { map.Encounters, map.DeepEncounters }).Where(table => table != null).ToList();
+            var town01Maps = Town01Maps.CreateMaps().ToList();
+            var tables = town01Maps.SelectMany(map => new[] { map.Encounters, map.DeepEncounters }).Where(table => table != null).ToList();
             foreach (var slot in tables.SelectMany(table => table.Slots))
             {
                 Assert.AreSame(slot.Species, Town01Species.ByNo(slot.Species.No), slot.Species.Name);
@@ -161,7 +162,7 @@ namespace PenguinMonster.Story.Tests
             // 川の子は1番道路の川べり、闇の子は2番道路の林の奥だけ
             CollectionAssert.Contains(_world.Get(Town01Maps.Route01).DeepEncounters.Slots.Select(slot => slot.Species), Town01Species.Yamame);
             CollectionAssert.Contains(_world.Get(Town01Maps.Route02).DeepEncounters.Slots.Select(slot => slot.Species), Town01Species.Warashi);
-            Assert.IsFalse(_world.Maps.Where(map => map.Encounters != null)
+            Assert.IsFalse(town01Maps.Where(map => map.Encounters != null)
                 .Any(map => map.Encounters.Slots.Any(slot => slot.Species == Town01Species.Yamame || slot.Species == Town01Species.Warashi)));
         }
     }

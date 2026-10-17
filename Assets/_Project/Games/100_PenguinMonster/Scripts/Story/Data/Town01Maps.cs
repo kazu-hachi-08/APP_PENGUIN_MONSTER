@@ -22,13 +22,10 @@ namespace PenguinMonster.Story
         public const string Route02 = "Route02";
 
         /// <summary>草むらを1歩進むごとに野生に出会う確率（％）。本家の草むら（おおよそ 1割）に合わせる</summary>
-        private const int EncounterPercent = 10;
+        internal const int EncounterPercent = 10;
 
         /// <summary>「ストーリー」を始めたときに立つ場所。自分の家の中で目覚める</summary>
         public static readonly FieldSpot Start = new FieldSpot(PlayerHouse, new GridPos(2, 2), Direction.Down);
-
-        /// <summary>この区切りだけの世界（区切り1のテスト用）。ゲームでは StoryWorld.Create() で全区切りをまとめる</summary>
-        public static FieldWorld CreateWorld() => new FieldWorld(CreateMaps());
 
         public static IEnumerable<FieldMap> CreateMaps()
         {
@@ -36,7 +33,7 @@ namespace PenguinMonster.Story
             {
                 CreateVillage(), CreateHouse(PlayerHouse, Village, PlayerHouseDoor), CreateHouse(RivalHouse, Village, RivalHouseDoor),
                 CreateLab(), CreateRoute01(), CreateTown(), CreateHouse(TownHouse, Town, TownHouseDoor),
-                CreateHouse(WarmHut, Town, WarmHutDoor), CreateHouse(Shop, Town, ShopDoor), CreateGym(), CreateRoute02(),
+                CreateHouse(WarmHut, Town, WarmHutDoor), CreateHouse(Shop, Town, ShopDoor), CreateGym(Gym, Town, GymDoor), CreateRoute02(),
             };
         }
 
@@ -81,11 +78,13 @@ namespace PenguinMonster.Story
 
         // ---- 家・研究所・小屋・店の中 ----
         private static readonly GridPos HouseExit = new GridPos(3, 5);
-        private static readonly GridPos HouseArrival = new GridPos(3, 4);
+        /// <summary>家・小屋・店に入ったときに立つ場所（扉の1つ奥）</summary>
+        internal static readonly GridPos HouseArrival = new GridPos(3, 4);
         private static readonly GridPos LabExit = new GridPos(4, 7);
         private static readonly GridPos LabArrival = new GridPos(4, 6);
 
-        private static FieldMap CreateHouse(string id, string outsideMap, GridPos outsideDoor)
+        /// <summary>家・小屋・店の中（8x6）。どの町でも同じ形を使い回す</summary>
+        internal static FieldMap CreateHouse(string id, string outsideMap, GridPos outsideDoor)
         {
             var rows = new[]
             {
@@ -217,9 +216,11 @@ namespace PenguinMonster.Story
 
         // ---- 道場（12x14） ----
         private static readonly GridPos GymExit = new GridPos(5, 13);
-        private static readonly GridPos GymArrival = new GridPos(5, 12);
+        /// <summary>道場に入ったときに立つ場所（扉の1つ奥）</summary>
+        internal static readonly GridPos GymArrival = new GridPos(5, 12);
 
-        private static FieldMap CreateGym()
+        /// <summary>道場の中（12x14）。どの町の道場も同じ形を使い回す</summary>
+        internal static FieldMap CreateGym(string id, string outsideMap, GridPos outsideDoor)
         {
             var rows = new[]
             {
@@ -238,11 +239,13 @@ namespace PenguinMonster.Story
                 "W__________W",
                 "WWWWWDWWWWWW",
             };
-            return new FieldMap(Gym, rows, Outside(GymExit, Town, GymDoor));
+            return new FieldMap(id, rows, Outside(GymExit, outsideMap, outsideDoor));
         }
 
-        // ---- 2番道路（30x24）。雪の林。東の奥は暗い林で深い草むら。南東が行き止まり ----
+        // ---- 2番道路（30x24）。雪の林。東の奥は暗い林で深い草むら。南東の奥の東の端から 3番道路へ ----
         private static readonly GridPos Route02West = new GridPos(0, 12);
+        /// <summary>3番道路への出口（南東の奥の東の端）。ガンテツに勝つまで町の人が手前でふさぐ</summary>
+        public static readonly GridPos Route02East = new GridPos(29, 21);
 
         private static FieldMap CreateRoute02()
         {
@@ -269,13 +272,14 @@ namespace PenguinMonster.Story
                 "TTT............TTT.......;;;.T",
                 "T.....,,,,.............T.....T",
                 "T.....,,,,.....,,,,....T..S..T",
-                "T..TT.,,,,.....,,,,....T.....T",
+                "T..TT.,,,,.....,,,,....T......",
                 "T..TT..........,,,,....T.....T",
                 "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
             };
             return new FieldMap(Route02, rows,
-                new Warp(Route02West, StepFrom(Town, TownEast, Direction.Left)))
-                .WithSign(new GridPos(26, 20), "この先 3番道路", "（雪が 深くて 今は 通れない）", "続きは 次の 更新で！")
+                new Warp(Route02West, StepFrom(Town, TownEast, Direction.Left)),
+                new Warp(Route02East, StepFrom(Town02Maps.Route03, Town02Maps.Route03West, Direction.Right)))
+                .WithSign(new GridPos(26, 20), "この先 3番道路")
                 .WithEncounters(
                     new EncounterTable(EncounterPercent,
                         new EncounterSlot(Town01Species.Konayuki, 6, 9, 25),
@@ -293,13 +297,13 @@ namespace PenguinMonster.Story
         }
 
         /// <summary>外の扉から建物の中へ。中では扉の前で奥（上）を向いて立つ</summary>
-        private static Warp Inside(GridPos outsideDoor, string mapId, GridPos arrival)
+        internal static Warp Inside(GridPos outsideDoor, string mapId, GridPos arrival)
         {
             return new Warp(outsideDoor, new FieldSpot(mapId, arrival, Direction.Up));
         }
 
         /// <summary>建物の扉から外へ。外では扉の1つ下で手前（下）を向いて立つ</summary>
-        private static Warp Outside(GridPos exit, string outsideMap, GridPos outsideDoor)
+        internal static Warp Outside(GridPos exit, string outsideMap, GridPos outsideDoor)
         {
             return new Warp(exit, StepFrom(outsideMap, outsideDoor, Direction.Down));
         }

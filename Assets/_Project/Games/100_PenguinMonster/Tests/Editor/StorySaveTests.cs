@@ -160,6 +160,23 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void Load_Town01EndSave_CanWalkOnToRoute03()
+        {
+            // 区切り1の終わりで記録した人が、区切り2を足した版でそのまま 3番道路へ進めること（PLAN_STORY_TOWN02.md §4）
+            var restored = FromJson(Town01EndJson);
+            var people = new FieldPeople(StoryWorld.People(), restored.State.Flags);
+            var player = new FieldPlayer(_world, restored.Position, people);
+
+            for (int i = 0; i < 3; i++)
+            {
+                Assert.AreEqual(StepResult.Moved, player.Step(Direction.Right), $"{player.Position}");
+            }
+            player.Enter(player.WarpHere);
+
+            Assert.AreEqual(Town02Maps.Route03, player.Map.Id);
+        }
+
+        [Test]
         public void StoryWorld_HasEveryTown01Map()
         {
             // 区切り1で記録した場所が、全区切りの世界でも「今は無いマップ」にならないこと

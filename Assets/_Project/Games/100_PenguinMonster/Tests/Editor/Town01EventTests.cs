@@ -18,7 +18,7 @@ namespace PenguinMonster.Story.Tests
         public void SetUp()
         {
             _state = new StoryState(Town01Maps.Start);
-            _world = Town01Maps.CreateWorld();
+            _world = StoryWorld.Create();
             _people = new FieldPeople(Town01People.Create(), _state.Flags);
         }
 
@@ -307,7 +307,7 @@ namespace PenguinMonster.Story.Tests
                 Assert.IsNotNull(evolved, starter.Name);
                 Assert.AreEqual(starter.Definition.Types[0], evolved.Definition.Types[0], starter.Name);
             }
-            foreach (var map in _world.Maps.Where(map => map.Encounters != null))
+            foreach (var map in Town01Maps.CreateMaps().Where(map => map.Encounters != null))
             {
                 foreach (var slot in map.Encounters.Slots)
                 {
