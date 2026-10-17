@@ -24,7 +24,8 @@ namespace PenguinMonster.Story
 
         public static IReadOnlyList<FieldNpc> Create()
         {
-            var people = new List<FieldNpc> { Mom(), Professor(), Assistant(), Villager(), RivalFamily(), Rival(), HutKeeper(), Clerk() };
+            var people = new List<FieldNpc> { Mom(), Professor(), Assistant(), Villager(), RivalFamily(), Rival(),
+                HutKeeper("hutKeeper", Town01Maps.WarmHut), Clerk("clerk", Town01Maps.Shop) };
             people.AddRange(TownAndRoutes());
             people.AddRange(GymAndRival2());
             return people;
@@ -99,7 +100,7 @@ namespace PenguinMonster.Story
         /// ライバル戦の置き場所を、こちらが選んだ最初の子ごとに1つずつ作る（ライバルの手持ちがこちらの子で変わるため）。
         /// 選んだ子のフラグが立っていて、戦い終えるまでの間だけ立つ
         /// </summary>
-        private static IEnumerable<NpcPlacement> PerStarter(string beatenFlag, FieldSpot spot, Func<StorySpecies, EventStep[]> script)
+        internal static IEnumerable<NpcPlacement> PerStarter(string beatenFlag, FieldSpot spot, Func<StorySpecies, EventStep[]> script)
         {
             foreach (var starter in Town01Starters.All)
             {
@@ -127,18 +128,21 @@ namespace PenguinMonster.Story
         private const string HutFarewell = "また いつでも どうぞ！";
 
         /// <summary>ぬくもり小屋で休ませたときの、全滅したときの戻り先（受付の前）</summary>
-        private static readonly FieldSpot HutReturnSpot = new FieldSpot(Town01Maps.WarmHut, InFrontOfCounter, Direction.Up);
+        private static readonly FieldSpot HutReturnSpot = HutReturnSpotOf(Town01Maps.WarmHut);
+
+        internal static FieldSpot HutReturnSpotOf(string hutMapId) => new FieldSpot(hutMapId, InFrontOfCounter, Direction.Up);
 
         /// <summary>
-        /// ぬくもり小屋の受付。休ませる（全回復・全滅したらここへ戻る）→ あずかり箱、の順に聞く（本家の回復と預かりシステムを1人にまとめる）
+        /// ぬくもり小屋の受付。休ませる（全回復・全滅したらここへ戻る）→ あずかり箱、の順に聞く（本家の回復と預かりシステムを1人にまとめる）。
+        /// どの町の小屋も同じ受付にする
         /// </summary>
-        private static FieldNpc HutKeeper()
+        internal static FieldNpc HutKeeper(string id, string hutMapId)
         {
-            return new FieldNpc("hutKeeper", NpcLook.HutKeeper,
-                NpcPlacement.Always(new FieldSpot(Town01Maps.WarmHut, CounterSpot, Direction.Down),
+            return new FieldNpc(id, NpcLook.HutKeeper,
+                NpcPlacement.Always(new FieldSpot(hutMapId, CounterSpot, Direction.Down),
                     EventStep.Say("ようこそ ぬくもり小屋へ！"),
                     EventStep.Ask("ペンモンを 休ませて いきますか？", StorageSteps()),
-                    EventStep.Heal("ペンモンたちは すっかり 元気に なった！", HutReturnSpot),
+                    EventStep.Heal("ペンモンたちは すっかり 元気に なった！", HutReturnSpotOf(hutMapId)),
                     StorageQuestion(),
                     EventStep.Storage(),
                     EventStep.Say(HutFarewell)));
@@ -155,10 +159,11 @@ namespace PenguinMonster.Story
             return EventStep.Ask("あずかり箱を 使いますか？", EventStep.Say(HutFarewell));
         }
 
-        private static FieldNpc Clerk()
+        /// <summary>よろず屋の店員。品ぞろえはどの町も同じ（区切り2までは同じ5種。PLAN_STORY_TOWN02.md §0）</summary>
+        internal static FieldNpc Clerk(string id, string shopMapId)
         {
-            return new FieldNpc("clerk", NpcLook.Clerk,
-                NpcPlacement.Always(new FieldSpot(Town01Maps.Shop, CounterSpot, Direction.Down),
+            return new FieldNpc(id, NpcLook.Clerk,
+                NpcPlacement.Always(new FieldSpot(shopMapId, CounterSpot, Direction.Down),
                     EventStep.Say("いらっしゃいませ！ よろず屋です"),
                     EventStep.Shop(StoryItem.CaptureEgg, StoryItem.Potion, StoryItem.Antidote, StoryItem.ParalyzeHeal, StoryItem.Awakening),
                     EventStep.Say("まいど ありがとう ございました！")));

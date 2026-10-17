@@ -19,7 +19,7 @@ namespace PenguinMonster.Story.Tests
         public void Species_Are151To180InOrderAndMatchStoryTable()
         {
             CollectionAssert.AreEqual(Enumerable.Range(FirstNo, Count), Town01Species.All.Select(species => species.No));
-            CollectionAssert.AreEqual(MonsterTable.Story, Town01Species.All.Select(species => species.Definition));
+            CollectionAssert.AreEqual(MonsterTable.Story.Take(Count), Town01Species.All.Select(species => species.Definition));
             Assert.AreSame(MonsterTable.Story[0], MonsterTable.ByNo(FirstNo));
         }
 

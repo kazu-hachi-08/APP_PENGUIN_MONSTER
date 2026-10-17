@@ -64,7 +64,7 @@ namespace PenguinMonster.Story
                     EventStep.Say("羽章を 集めて いけば、いずれ 雪の 王にも 届くだろう")),
                 NpcPlacement.Always(GymLeaderSpot,
                     EventStep.Say("道場を 巡り、もっと 強く なるのだ"),
-                    EventStep.Say("次の 道場は 3番道路の 先…… 雪が 解けたら 行って みよ")));
+                    EventStep.Say("次の 道場は 3番道路を 抜けた 先、カガミコ町に ある")));
         }
     }
 }

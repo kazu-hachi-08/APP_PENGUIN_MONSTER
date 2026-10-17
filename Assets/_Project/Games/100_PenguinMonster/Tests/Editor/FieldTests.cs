@@ -113,7 +113,7 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void Town01_StartIsWalkable()
         {
-            var world = Town01Maps.CreateWorld();
+            var world = StoryWorld.Create();
             var start = Town01Maps.Start;
 
             Assert.IsTrue(world.Get(start.MapId).IsWalkable(start.Position));
@@ -122,7 +122,7 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void Town01_EveryWarpLeadsToWalkableTileWithoutWarp()
         {
-            var world = Town01Maps.CreateWorld();
+            var world = StoryWorld.Create();
             foreach (var map in world.Maps)
             {
                 foreach (var warp in map.Warps)
@@ -142,7 +142,7 @@ namespace PenguinMonster.Story.Tests
         public void Town01_LeaveHouseAndComeBack_ArrivesInFrontOfDoors()
         {
             // 自分の家の中で目覚め、扉 (3,5) から村へ出て、また入る
-            var player = new FieldPlayer(Town01Maps.CreateWorld(), Town01Maps.Start);
+            var player = new FieldPlayer(StoryWorld.Create(), Town01Maps.Start);
             Assert.AreEqual(Town01Maps.PlayerHouse, player.Map.Id);
 
             player.Step(Direction.Right);

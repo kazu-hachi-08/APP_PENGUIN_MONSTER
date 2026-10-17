@@ -120,7 +120,7 @@ namespace PenguinMonster.Story
 
         private static OwnedMonster ToMonster(MonsterSave saved)
         {
-            var species = Town01Species.ByNo(saved.No);
+            var species = StorySpeciesTable.ByNo(saved.No);
             if (species == null)
             {
                 return null;

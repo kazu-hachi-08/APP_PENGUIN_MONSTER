@@ -39,7 +39,7 @@ namespace PenguinMonster.View.Story
                 Debug.LogWarning($"[StorySaveStore] 記録を読めませんでした: {e.Message}");
                 return null;
             }
-            var restored = StorySave.Restore(data, Town01Maps.CreateWorld(), Town01Maps.Start);
+            var restored = StorySave.Restore(data, StoryWorld.Create(), Town01Maps.Start);
             if (restored == null)
             {
                 Debug.LogWarning("[StorySaveStore] 今は無い種・技が入った記録か、新しい版の記録なので読みません");

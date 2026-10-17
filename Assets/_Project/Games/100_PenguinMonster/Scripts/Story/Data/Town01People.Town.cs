@@ -17,9 +17,9 @@ namespace PenguinMonster.Story
         {
             return new[]
             {
-                DroppedItem("route01Potion", new FieldSpot(Town01Maps.Route01, new GridPos(14, 5), Direction.Down), StoryItem.Potion, 1),
-                DroppedItem("route02Eggs", new FieldSpot(Town01Maps.Route02, new GridPos(4, 1), Direction.Down), StoryItem.CaptureEgg, FoundEggs),
-                DroppedItem("route02Awakening", new FieldSpot(Town01Maps.Route02, new GridPos(28, 4), Direction.Down), StoryItem.Awakening, 1),
+                DroppedItem(Town01Flags.ItemPrefix, "route01Potion", new FieldSpot(Town01Maps.Route01, new GridPos(14, 5), Direction.Down), StoryItem.Potion, 1),
+                DroppedItem(Town01Flags.ItemPrefix, "route02Eggs", new FieldSpot(Town01Maps.Route02, new GridPos(4, 1), Direction.Down), StoryItem.CaptureEgg, FoundEggs),
+                DroppedItem(Town01Flags.ItemPrefix, "route02Awakening", new FieldSpot(Town01Maps.Route02, new GridPos(28, 4), Direction.Down), StoryItem.Awakening, 1),
                 GymDoorDisciple(), TownGuide(), PondKid(), TownHouseResident(),
                 RouteTrainer("route01Kid", NpcLook.Youngster, Town01Trainers.Route01Kid, Town01Maps.Route01, new GridPos(9, 11), Direction.Left,
                     "目が 合ったら 勝負だ！", "草むらで 戦って 鍛え直しだ！"),
@@ -34,10 +34,10 @@ namespace PenguinMonster.Story
             };
         }
 
-        /// <summary>道路の落とし物。人と同じく前から A で調べると拾い、拾ったフラグで消える</summary>
-        private static FieldNpc DroppedItem(string id, FieldSpot spot, StoryItem item, int count)
+        /// <summary>道路の落とし物。人と同じく前から A で調べると拾い、拾ったフラグ（区切りごとの頭 ＋ id）で消える</summary>
+        internal static FieldNpc DroppedItem(string flagPrefix, string id, FieldSpot spot, StoryItem item, int count)
         {
-            string flag = Town01Flags.ItemPrefix + id;
+            string flag = flagPrefix + id;
             return new FieldNpc("item." + id, NpcLook.Item,
                 NpcPlacement.Until(flag, spot,
                     EventStep.FindItem(item, count),
@@ -45,7 +45,7 @@ namespace PenguinMonster.Story
         }
 
         /// <summary>道路・道場のトレーナー。向いている先を見張り、目が合ったら勝負。勝った後は別のセリフ</summary>
-        private static FieldNpc RouteTrainer(string id, NpcLook look, TrainerDefinition trainer, string mapId, GridPos pos, Direction facing,
+        internal static FieldNpc RouteTrainer(string id, NpcLook look, TrainerDefinition trainer, string mapId, GridPos pos, Direction facing,
             string challenge, string afterwards)
         {
             var spot = new FieldSpot(mapId, pos, facing);
