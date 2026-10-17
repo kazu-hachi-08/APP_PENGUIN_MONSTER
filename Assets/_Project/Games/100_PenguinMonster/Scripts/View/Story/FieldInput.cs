@@ -57,12 +57,18 @@ namespace PenguinMonster.View.Story
             return 0;
         }
 
-        public bool IsADown => _a.IsDown || (Keyboard.current?.zKey.wasPressedThisFrame ?? false);
-        public bool IsBDown => _b.IsDown || (Keyboard.current?.xKey.wasPressedThisFrame ?? false);
+        public bool IsADown => IsActiveDown(_a) || (Keyboard.current?.zKey.wasPressedThisFrame ?? false);
+        public bool IsBDown => IsActiveDown(_b) || (Keyboard.current?.xKey.wasPressedThisFrame ?? false);
+
+        private static bool IsActiveDown(VirtualButton button)
+        {
+            return button != null && button.gameObject.activeInHierarchy && button.IsDown;
+        }
 
         private static bool IsHeld(VirtualButton button, KeyControl arrow, KeyControl letter)
         {
-            return button.IsHeld || (arrow?.isPressed ?? false) || (letter?.isPressed ?? false);
+            bool buttonHeld = button != null && button.gameObject.activeInHierarchy && button.IsHeld;
+            return buttonHeld || (arrow?.isPressed ?? false) || (letter?.isPressed ?? false);
         }
     }
 }
