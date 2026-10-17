@@ -113,8 +113,8 @@ namespace PenguinMonster.View.Story
             }
         }
 
-        /// <summary>手持ち・あずかり箱の枠の文。1行目に名前と Lv、2行目（HP など）は小さく</summary>
-        internal static string MemberLabel(OwnedMonster member, string subLine)
+        /// <summary>手持ちの枠の文。1行目に名前と Lv、2行目（HP など）は小さく</summary>
+        private static string MemberLabel(OwnedMonster member, string subLine)
         {
             return $"{member.Name}   Lv{member.Level}\n<size={SubLineSize}>{subLine}</size>";
         }

@@ -22,9 +22,13 @@ namespace PenguinMonster.Editor
 
         // 手持ちの画面: 左に一覧、右に選択肢か詳しく、下に案内の1行
         private const string PartyScreenTitleText = "手持ち";
-        private static readonly Vector2 PartyListSize = new Vector2(600f, 640f);
-        private static readonly Vector2 PartyListSlotSize = new Vector2(540f, 90f);
-        private const float PartyListSpacing = 10f;
+        // 枠の文は2行（36 + 28）で、丸ゴシックは行の高さが字の約1.45倍なので約93要る。
+        // ぷっくりボタンの段差ぶん（ButtonArt.LabelLiftUnits ≒ 19）文字が上がるので、枠は 93 + 19 より高くする
+        private static readonly Vector2 PartyListSize = new Vector2(600f, 776f);
+        private static readonly Vector2 PartyListSlotSize = new Vector2(540f, 120f);
+        private const float PartyListSpacing = 6f;
+        // 文が枠の右の角丸に触れないよう空ける（あずかり箱も同じ）
+        private const float SlotTextRightPadding = 16f;
         private static readonly Vector2 PartyActionsSize = new Vector2(440f, 500f);
         private static readonly Vector2 PartyActionButtonSize = new Vector2(380f, 100f);
         private const float PartyHintHeight = 110f;
@@ -119,6 +123,7 @@ namespace PenguinMonster.Editor
                 buttons[i] = slot.GetComponent<Button>();
                 labels[i] = slot.GetComponentInChildren<Text>();
                 labels[i].rectTransform.offsetMin = new Vector2(BoxIconSize + 24f, 0f);
+                labels[i].rectTransform.offsetMax = new Vector2(-SlotTextRightPadding, 0f);
                 labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
                 icons[i] = CreatePartyIcon(slot.transform);
                 icons[i].rectTransform.sizeDelta = Vector2.one * BoxIconSize;

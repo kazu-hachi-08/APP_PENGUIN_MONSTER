@@ -27,7 +27,8 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 ShopTabSize = new Vector2(300f, 110f);
         private const int ShopMoneyFontSize = 44;
 
-        // あずかり箱: 左に手持ち、右に箱。どちらも 6枠
+        // あずかり箱: 左に手持ち、右に箱。どちらも 6枠。
+        // 列の下端が会話窓（高さ300）の上端にちょうど来るので枠は高くできない。代わりに枠の文は1行にする（BoxPanel）
         private const int BoxPageSize = 6;
         private static readonly Vector2 BoxColumnSize = new Vector2(880f, 640f);
         private static readonly Vector2 BoxSlotSize = new Vector2(820f, 84f);
@@ -154,6 +155,7 @@ namespace PenguinMonster.Editor
                 buttons[i] = slot.GetComponent<Button>();
                 labels[i] = slot.GetComponentInChildren<Text>();
                 labels[i].rectTransform.offsetMin = new Vector2(BoxIconSize + 24f, 0f);
+                labels[i].rectTransform.offsetMax = new Vector2(-SlotTextRightPadding, 0f);
                 labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
                 icons[i] = CreatePartyIcon(slot.transform);
                 icons[i].rectTransform.sizeDelta = Vector2.one * BoxIconSize;
