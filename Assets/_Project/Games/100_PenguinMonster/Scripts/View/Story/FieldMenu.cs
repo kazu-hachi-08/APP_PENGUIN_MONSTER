@@ -77,7 +77,7 @@ namespace PenguinMonster.View.Story
                         yield return OpenBag(state);
                         break;
                     case Choice.Dex:
-                        yield return OpenDex();
+                        yield return OpenDex(state);
                         break;
                     case Choice.Save:
                         yield return Save(state, here);
@@ -142,10 +142,10 @@ namespace PenguinMonster.View.Story
             }
         }
 
-        private IEnumerator OpenDex()
+        private IEnumerator OpenDex(StoryState state)
         {
             bool closed = false;
-            _dex.Show(() => closed = true);
+            _dex.ShowStory(state, () => closed = true);
             yield return new WaitUntil(() => closed);
         }
     }

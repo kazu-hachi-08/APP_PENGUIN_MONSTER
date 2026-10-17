@@ -362,15 +362,15 @@ namespace PenguinMonster.Battle
             throw new ArgumentException($"No.{no} のペンモンはいない", nameof(no));
         }
 
-        /// <summary>ずかんの しぼりこみ。type が null なら全員。2タイプのペンモンはどちらのタイプでも出る</summary>
+        /// <summary>ずかんの しぼりこみ（ストーリーの子も含む）。type が null なら全員。2タイプのペンモンはどちらのタイプでも出る</summary>
         public static IReadOnlyList<MonsterDefinition> WithType(MonsterType? type)
         {
             if (type == null)
             {
-                return All;
+                return Dex;
             }
             var result = new List<MonsterDefinition>();
-            foreach (var monster in All)
+            foreach (var monster in Dex)
             {
                 if (monster.HasType(type.Value))
                 {

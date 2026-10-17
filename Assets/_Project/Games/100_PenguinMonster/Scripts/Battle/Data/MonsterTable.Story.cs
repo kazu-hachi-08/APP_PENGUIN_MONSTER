@@ -82,5 +82,20 @@ namespace PenguinMonster.Battle
             Monster(180, "ダイヤダストペン", new[] { Aurora }, new Stats(70, 50, 65, 95, 90, 85),
                 new[] { SparkleLaser, FrostKiss, AuroraHeal, AuroraDance }, Ability.Multiscale),
         };
+
+        private static IReadOnlyList<MonsterDefinition> _dex;
+
+        /// <summary>図鑑に並べる全員（ドラフトの子 → ストーリーの子の No 順）</summary>
+        public static IReadOnlyList<MonsterDefinition> Dex => _dex ??= Concat(All, Story);
+
+        private static List<MonsterDefinition> Concat(IReadOnlyList<MonsterDefinition> first, IReadOnlyList<MonsterDefinition> second)
+        {
+            var all = new List<MonsterDefinition>(first);
+            all.AddRange(second);
+            return all;
+        }
+
+        /// <summary>ストーリーの子（ドラフトに出ない子）</summary>
+        public static bool IsStory(int no) => no > All.Count;
     }
 }

@@ -9,9 +9,11 @@ namespace PenguinMonster.Battle.Tests
     public class DexTests
     {
         [Test]
-        public void しぼりこみ無しなら全員()
+        public void しぼりこみ無しなら全員_ストーリーの子も後ろに並ぶ()
         {
-            Assert.AreSame(MonsterTable.All, MonsterTable.WithType(null));
+            Assert.AreSame(MonsterTable.Dex, MonsterTable.WithType(null));
+            Assert.AreEqual(MonsterTable.All.Count + MonsterTable.Story.Count, MonsterTable.Dex.Count);
+            CollectionAssert.IsOrdered(MonsterTable.Dex.Select(m => m.No));
         }
 
         [Test]
@@ -20,7 +22,7 @@ namespace PenguinMonster.Battle.Tests
             var ice = MonsterTable.WithType(MonsterType.Ice);
 
             Assert.That(ice.All(m => m.HasType(MonsterType.Ice)));
-            Assert.AreEqual(MonsterTable.All.Count(m => m.HasType(MonsterType.Ice)), ice.Count);
+            Assert.AreEqual(MonsterTable.Dex.Count(m => m.HasType(MonsterType.Ice)), ice.Count);
             CollectionAssert.IsOrdered(ice.Select(m => m.No));
         }
 
