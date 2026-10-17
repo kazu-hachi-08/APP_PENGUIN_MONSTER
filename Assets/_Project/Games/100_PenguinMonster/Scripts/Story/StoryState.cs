@@ -13,7 +13,7 @@ namespace PenguinMonster.Story
         public MonsterBox Box { get; } = new MonsterBox();
         public Bag Bag { get; } = new Bag();
         public int Money { get; internal set; } = StoryBalance.StartMoney;
-        /// <summary>図鑑の「見た」「捕まえた」の No。中身を入れるのはフェーズ8（今はセーブの欄だけ用意する）</summary>
+        /// <summary>図鑑の「見た」「捕まえた」の No。捕まえた子は見たにも入る（MarkSeen・MarkCaught で足す）</summary>
         public HashSet<int> SeenNos { get; } = new HashSet<int>();
         public HashSet<int> CaughtNos { get; } = new HashSet<int>();
         /// <summary>もらった羽章の名前。中身を入れるのはフェーズ8c（今はセーブの欄だけ用意する）</summary>
@@ -51,9 +51,23 @@ namespace PenguinMonster.Story
             return LastHealSpot;
         }
 
+        /// <summary>図鑑の「見た」に入れる（バトルで場に出てきた相手）</summary>
+        public void MarkSeen(int no)
+        {
+            SeenNos.Add(no);
+        }
+
+        /// <summary>図鑑の「捕まえた」に入れる（もらった・捕まえた・進化した子）。見ていない子は捕まえられないので、見たにも入れる</summary>
+        public void MarkCaught(int no)
+        {
+            SeenNos.Add(no);
+            CaughtNos.Add(no);
+        }
+
         /// <summary>もらった・捕まえた子を手持ちに入れる。いっぱいなら あずかり箱へ送り、false を返す（「箱へ 送られた」を出すため）</summary>
         public bool Receive(OwnedMonster monster)
         {
+            MarkCaught(monster.No);
             if (Party.Add(monster))
             {
                 return true;

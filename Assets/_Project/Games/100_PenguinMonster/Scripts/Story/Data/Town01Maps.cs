@@ -146,8 +146,8 @@ namespace PenguinMonster.Story
             return new FieldMap(Route01, rows, toVillage)
                 .WithSign(Route01Sign, "この先 ツララ町", "（まだ 準備中です）")
                 .WithEncounters(new EncounterTable(Route01EncounterPercent,
-                    new EncounterSlot(Town01Species.WildBird, 2, 4, 50),
-                    new EncounterSlot(Town01Species.WildNormal, 2, 4, 50)));
+                    new EncounterSlot(Town01Species.Kogara, 2, 4, 50),
+                    new EncounterSlot(Town01Species.Omochi, 2, 4, 50)));
         }
 
         /// <summary>村の扉から建物の中へ。中では扉の前で奥（上）を向いて立つ</summary>

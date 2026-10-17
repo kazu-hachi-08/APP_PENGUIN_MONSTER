@@ -22,7 +22,7 @@ namespace PenguinMonster.Story.Tests
         private static StoryState PlayedState()
         {
             var state = new StoryState(Town01Maps.Start) { LastHealSpot = HutCounter };
-            var starter = OwnedMonster.Create(Town01Species.SeaStarter, StoryBalance.StarterLevel);
+            var starter = OwnedMonster.Create(Town01Species.Kobune, StoryBalance.StarterLevel);
             starter.GainExp(30);
             Hurt(starter, 4);
             starter.Item = HeldItem.LightFeather;
@@ -30,7 +30,7 @@ namespace PenguinMonster.Story.Tests
             poisoned.SetStatus(StatusCondition.Poison, 0);
             starter.ApplyBattleResult(poisoned);
             state.Party.Add(starter);
-            state.Box.Add(OwnedMonster.Create(Town01Species.WildBird, 3));
+            state.Box.Add(OwnedMonster.Create(Town01Species.Kogara, 3));
             state.Bag.Add(StoryItem.CaptureEgg, 5);
             state.Bag.Add(StoryItem.Potion, 2);
             state.SpendMoney(700);
@@ -72,7 +72,7 @@ namespace PenguinMonster.Story.Tests
             CollectionAssert.AreEquivalent(original.CaughtNos, state.CaughtNos);
             CollectionAssert.AreEquivalent(original.Badges, state.Badges);
             Assert.AreEqual(1, state.Box.Count);
-            Assert.AreEqual(Town01Species.WildBird, state.Box.Members[0].Species);
+            Assert.AreEqual(Town01Species.Kogara, state.Box.Members[0].Species);
             AssertSameMonster(original.Party.Members[0], state.Party.Members[0]);
         }
 

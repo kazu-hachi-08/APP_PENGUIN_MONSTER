@@ -22,6 +22,6 @@ namespace PenguinMonster.Story
         }
 
         public static readonly TrainerDefinition Route01Kid = new TrainerDefinition("town01.route01.kid", "雪あそびの 子",
-            new[] { new TrainerMon(Town01Species.WildBird, 3), new TrainerMon(Town01Species.WildNormal, 4) }, prize: 120, sightRange: RouteSight);
+            new[] { new TrainerMon(Town01Species.Kogara, 3), new TrainerMon(Town01Species.Omochi, 4) }, prize: 120, sightRange: RouteSight);
     }
 }

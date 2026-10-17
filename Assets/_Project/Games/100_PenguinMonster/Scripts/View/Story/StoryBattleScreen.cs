@@ -44,6 +44,10 @@ namespace PenguinMonster.View.Story
             yield return running;
 
             battle.ApplyResults();
+            foreach (int no in battle.SeenNos)
+            {
+                state.MarkSeen(no);
+            }
             PlayerWon = battle.PlayerWon;
             // 逃げた・捕まえたときは、勝ってはいないが負けでもない
             bool endedEarly = _battle.Fled || battle.Caught != null;
@@ -51,6 +55,7 @@ namespace PenguinMonster.View.Story
             if (PlayerWon)
             {
                 yield return AfterWin(battle, trainer);
+                MarkPartyCaught(state);
             }
             else if (battle.Caught != null)
             {
@@ -71,6 +76,15 @@ namespace PenguinMonster.View.Story
         public IEnumerator ReturnToField()
         {
             yield return _fade.FadeInCoroutine(_fadeSeconds);
+        }
+
+        /// <summary>進化した子を図鑑の「捕まえた」に入れる（進化は手持ちの子の種が変わるだけなので、ここでまとめて足す）</summary>
+        private static void MarkPartyCaught(StoryState state)
+        {
+            foreach (var member in state.Party.Members)
+            {
+                state.MarkCaught(member.No);
+            }
         }
 
         /// <summary>捕まえた子を手持ちへ（いっぱいなら あずかり箱へ）。捕まえても経験値は無い（本家の第3〜4世代と同じ）</summary>

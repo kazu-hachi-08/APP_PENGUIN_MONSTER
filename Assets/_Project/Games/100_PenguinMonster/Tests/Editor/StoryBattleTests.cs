@@ -148,6 +148,26 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void SeenNos_OnlyFoesThatCameOut()
+        {
+            var battle = new StoryBattle(PartyOf(Owned(Chick, 10)), new[] { Owned(Chick, 3), Owned(Junior, 3) }, isTrainer: true);
+
+            CollectionAssert.AreEquivalent(new[] { Chick.No }, battle.SeenNos);
+        }
+
+        [Test]
+        public void Receive_MarksCaughtAndSeen()
+        {
+            var state = new StoryState(Town01Maps.Start);
+
+            state.Receive(Owned(Chick, 5));
+            state.MarkSeen(Junior.No);
+
+            CollectionAssert.AreEquivalent(new[] { Chick.No, Junior.No }, state.SeenNos);
+            CollectionAssert.AreEquivalent(new[] { Chick.No }, state.CaughtNos);
+        }
+
+        [Test]
         public void BlackOut_HalvesMoneyHealsAndReturnsHome()
         {
             var state = new StoryState(Town01Maps.Start);

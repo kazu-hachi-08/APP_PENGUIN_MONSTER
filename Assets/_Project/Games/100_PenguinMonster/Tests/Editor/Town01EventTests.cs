@@ -8,6 +8,8 @@ namespace PenguinMonster.Story.Tests
     /// <summary>区切り1の人・看板・最初の1体をもらう出来事（PLAN_STORY_TOWN01.md フェーズ4）</summary>
     public class Town01EventTests
     {
+        private const int StarterMoveCount = 3;
+
         private StoryState _state;
         private FieldWorld _world;
         private FieldPeople _people;
@@ -321,7 +323,8 @@ namespace PenguinMonster.Story.Tests
 
             CollectionAssert.AreEqual(new[] { MonsterType.Sea, MonsterType.Fire, MonsterType.Moss }, types);
             Assert.IsTrue(Town01Starters.All.All(species => species.Definition.Rank == MonsterRank.Young));
-            Assert.IsTrue(Town01Starters.All.All(species => OwnedMonster.Create(species, StoryBalance.StarterLevel).Moves.Count == StoryBalance.MaxMoves));
+            // 体当たり系・鳴き声系・タイプの弱い技の3つ（PLAN_STORY_TOWN01.md フェーズ8）
+            Assert.IsTrue(Town01Starters.All.All(species => OwnedMonster.Create(species, StoryBalance.StarterLevel).Moves.Count == StarterMoveCount));
         }
     }
 }

@@ -84,7 +84,7 @@ namespace PenguinMonster.View.Story
 
         private IEnumerator Evolve(OwnedMonster member)
         {
-            // 種の一覧は区切りごとに足す。今は区切り1だけ（フェーズ8で No.151〜 が入っても同じ引き方）
+            // 種の一覧は区切りごとに足す。今は区切り1だけ
             var into = Town01Species.ByNo(member.Species.Evolution.IntoNo);
             if (into == null)
             {

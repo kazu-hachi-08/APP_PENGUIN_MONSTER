@@ -12,7 +12,7 @@ namespace PenguinMonster.Battle
     /// 種族値の合計はランクごとの帯（ヒナ 360〜400 / ふつう 425〜475 / エース 520〜540 / 伝説 580〜600）にそろえ、
     /// 同じランクの中の差は技とタイプで付ける。特性は1体1つずつ。持ち物は定義に持たず、ドラフトの後に1チーム1個配る（仕様書 §4.6）
     /// </summary>
-    public static class MonsterTable
+    public static partial class MonsterTable
     {
         public static readonly IReadOnlyList<MonsterDefinition> All = new[]
         {
@@ -346,14 +346,17 @@ namespace PenguinMonster.Battle
                 new[] { SkySoar, PrismKick, IcicleBeak, IceStep }, Ability.Multiscale, MonsterRank.Legend),
         };
 
-        /// <summary>No から引く。オンラインでは相手のチームを No の列で受け取るため</summary>
+        /// <summary>No から引く（ストーリーの子も含む）。オンラインでは相手のチームを No の列で受け取るため</summary>
         public static MonsterDefinition ByNo(int no)
         {
-            foreach (var monster in All)
+            foreach (var list in new[] { All, Story })
             {
-                if (monster.No == no)
+                foreach (var monster in list)
                 {
-                    return monster;
+                    if (monster.No == no)
+                    {
+                        return monster;
+                    }
                 }
             }
             throw new ArgumentException($"No.{no} のペンモンはいない", nameof(no));

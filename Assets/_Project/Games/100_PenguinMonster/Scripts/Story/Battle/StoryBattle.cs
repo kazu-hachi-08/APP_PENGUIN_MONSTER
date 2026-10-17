@@ -31,12 +31,15 @@ namespace PenguinMonster.Story
         private readonly IReadOnlyList<OwnedMonster> _foes;
         /// <summary>相手ごとに、その子と場で向き合った手持ちの番号</summary>
         private readonly List<HashSet<int>> _facedBy = new List<HashSet<int>>();
+        private readonly HashSet<int> _seenNos = new HashSet<int>();
         private int _fleeAttempts;
 
         public BattleState State { get; }
         /// <summary>トレーナー戦（逃げられない・経験値 1.5 倍）。false なら野生</summary>
         public bool IsTrainer { get; }
         public IReadOnlyList<OwnedMonster> Foes => _foes;
+        /// <summary>場に出てきた相手の No（図鑑の「見た」に入れる。出てこなかったトレーナーの子は入らない）</summary>
+        public IEnumerable<int> SeenNos => _seenNos;
 
         public bool PlayerWon => State.Winner == PlayerSide;
         /// <summary>捕獲タマゴで捕まえた子。捕まえたらそこでバトルは終わる。捕まえていなければ null</summary>
@@ -73,7 +76,9 @@ namespace PenguinMonster.Story
         /// </summary>
         public void RecordFacing()
         {
-            _facedBy[State.Sides[FoeSide].ActivePartyIndex].Add(State.Sides[PlayerSide].ActivePartyIndex);
+            int foe = State.Sides[FoeSide].ActivePartyIndex;
+            _facedBy[foe].Add(State.Sides[PlayerSide].ActivePartyIndex);
+            _seenNos.Add(_foes[foe].No);
         }
 
         /// <summary>
