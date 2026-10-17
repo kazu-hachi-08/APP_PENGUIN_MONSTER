@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace PenguinMonster.Story
 {
     /// <summary>
@@ -25,14 +27,17 @@ namespace PenguinMonster.Story
         /// <summary>「ストーリー」を始めたときに立つ場所。自分の家の中で目覚める</summary>
         public static readonly FieldSpot Start = new FieldSpot(PlayerHouse, new GridPos(2, 2), Direction.Down);
 
-        public static FieldWorld CreateWorld()
+        /// <summary>この区切りだけの世界（区切り1のテスト用）。ゲームでは StoryWorld.Create() で全区切りをまとめる</summary>
+        public static FieldWorld CreateWorld() => new FieldWorld(CreateMaps());
+
+        public static IEnumerable<FieldMap> CreateMaps()
         {
-            return new FieldWorld(new[]
+            return new[]
             {
                 CreateVillage(), CreateHouse(PlayerHouse, Village, PlayerHouseDoor), CreateHouse(RivalHouse, Village, RivalHouseDoor),
                 CreateLab(), CreateRoute01(), CreateTown(), CreateHouse(TownHouse, Town, TownHouseDoor),
                 CreateHouse(WarmHut, Town, WarmHutDoor), CreateHouse(Shop, Town, ShopDoor), CreateGym(), CreateRoute02(),
-            });
+            };
         }
 
         // ---- ハツユキ村（20x16） ----

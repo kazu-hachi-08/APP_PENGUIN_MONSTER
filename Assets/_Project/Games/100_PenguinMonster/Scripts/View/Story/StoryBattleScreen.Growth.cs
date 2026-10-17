@@ -84,8 +84,8 @@ namespace PenguinMonster.View.Story
 
         private IEnumerator Evolve(OwnedMonster member)
         {
-            // 進化先はストーリーの種の一覧から探す（今は Town01Species だけ）
-            var into = Town01Species.ByNo(member.Species.Evolution.IntoNo);
+            // 進化先は全区切りの種から探す（区切りをまたいで進化する子がいても引けるように）
+            var into = StorySpeciesTable.ByNo(member.Species.Evolution.IntoNo);
             if (into == null)
             {
                 yield break;

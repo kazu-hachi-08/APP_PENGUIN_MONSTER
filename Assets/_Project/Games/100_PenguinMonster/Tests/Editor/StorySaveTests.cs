@@ -16,8 +16,30 @@ namespace PenguinMonster.Story.Tests
         [SetUp]
         public void SetUp()
         {
-            _world = Town01Maps.CreateWorld();
+            // ゲームと同じく、全区切りのマップの世界に戻す
+            _world = StoryWorld.Create();
         }
+
+        /// <summary>
+        /// 区切り1の終わりの記録（2番道路の奥の看板の前・ガンテツに勝って いわおこし羽章あり）。
+        /// 区切り1の版が書く形のまま残しておき、区切りを足しても読めることを守る（中身を書き換えないこと）
+        /// </summary>
+        private const string Town01EndJson =
+            "{\"Version\":1," +
+            "\"Position\":{\"MapId\":\"Route02\",\"X\":26,\"Y\":21,\"Facing\":1}," +
+            "\"LastHealSpot\":{\"MapId\":\"WarmHut\",\"X\":3,\"Y\":2,\"Facing\":1}," +
+            "\"Party\":[" +
+            "{\"No\":155,\"Level\":17,\"Exp\":3300,\"Moves\":[\"腹ばいタックル\",\"火の粉\",\"ゆらゆら火\",\"火の粉ダイブ\"],\"Hp\":40,\"Status\":0,\"Item\":0}," +
+            "{\"No\":161,\"Level\":15,\"Exp\":3500,\"Moves\":[\"ついばみ\",\"ぴいぴい鳴く\",\"二段つつき\"],\"Hp\":30,\"Status\":0,\"Item\":0}]," +
+            "\"Box\":[{\"No\":160,\"Level\":5,\"Exp\":150,\"Moves\":[\"ついばみ\",\"ぴいぴい鳴く\"],\"Hp\":20,\"Status\":0,\"Item\":0}]," +
+            "\"Bag\":[{\"Item\":\"CaptureEgg\",\"Count\":7},{\"Item\":\"Potion\",\"Count\":3}]," +
+            "\"Money\":2480," +
+            "\"Flags\":[\"town01.gotStarter\",\"town01.starter.154\",\"trainer.town01.rival1\",\"trainer.town01.route01.kid\"," +
+            "\"town01.item.route02Eggs\",\"trainer.town01.rival2\",\"town01.route02Cleared\",\"trainer.town01.gym.disciple1\"," +
+            "\"trainer.town01.gym.leader\"]," +
+            "\"SeenNos\":[154,155,160,161,165]," +
+            "\"CaughtNos\":[154,155,160,161]," +
+            "\"Badges\":[\"town01.badge\"]}";
 
         private static StoryState PlayedState()
         {
@@ -115,6 +137,46 @@ namespace PenguinMonster.Story.Tests
             data.Party[0].No = 999;
 
             Assert.IsNull(ThroughJson(data));
+        }
+
+        [Test]
+        public void Load_Town01EndSave_ContinuesWhereItWasSaved()
+        {
+            var restored = FromJson(Town01EndJson);
+
+            Assert.IsNotNull(restored);
+            Assert.AreEqual(new FieldSpot(Town01Maps.Route02, new GridPos(26, 21), Direction.Up), restored.Position);
+            var state = restored.State;
+            Assert.AreEqual(new FieldSpot(Town01Maps.WarmHut, new GridPos(3, 2), Direction.Up), state.LastHealSpot);
+            Assert.AreEqual(Town01Species.Fuigo, state.Party.Members[0].Species);
+            Assert.AreEqual(17, state.Party.Members[0].Level);
+            Assert.AreEqual(Town01Species.Tsugumi, state.Party.Members[1].Species);
+            Assert.AreEqual(Town01Species.Kogara, state.Box.Members[0].Species);
+            Assert.AreEqual(7, state.Bag.CountOf(StoryItem.CaptureEgg));
+            Assert.AreEqual(2480, state.Money);
+            Assert.IsTrue(state.Flags.Has(Town01Trainers.GymLeader.DefeatedFlag));
+            Assert.IsTrue(state.Flags.Has(Town01Flags.Route02Cleared));
+            CollectionAssert.Contains(state.Badges, Town01Trainers.BadgeId);
+        }
+
+        [Test]
+        public void StoryWorld_HasEveryTown01Map()
+        {
+            // 区切り1で記録した場所が、全区切りの世界でも「今は無いマップ」にならないこと
+            foreach (var map in Town01Maps.CreateMaps())
+            {
+                Assert.IsTrue(_world.Contains(map.Id), map.Id);
+            }
+        }
+
+        [Test]
+        public void StorySpeciesTable_FindsEveryTown01Species()
+        {
+            foreach (var species in Town01Species.All)
+            {
+                Assert.AreSame(species, StorySpeciesTable.ByNo(species.No), species.Name);
+            }
+            Assert.IsNull(StorySpeciesTable.ByNo(999));
         }
 
         [Test]

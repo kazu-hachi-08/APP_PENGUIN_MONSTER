@@ -35,7 +35,7 @@ namespace PenguinMonster.View
             // フィールドはバトルの画面の後ろ（カメラ）に映るので、バトルの UI を隠して見えるようにする
             _battle.gameObject.SetActive(false);
             var opening = saved == null ? Town01People.Opening : null;
-            var walking = StartCoroutine(_field.Run(Town01Maps.CreateWorld(), start, state, Town01People.Create(), opening));
+            var walking = StartCoroutine(_field.Run(StoryWorld.Create(), start, state, StoryWorld.People(), opening));
             yield return _fade.FadeInCoroutine();
             yield return walking;
 
