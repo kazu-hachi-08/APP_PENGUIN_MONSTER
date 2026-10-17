@@ -28,13 +28,7 @@ namespace PenguinMonster.Editor
             Place(buttonObj.GetComponent<RectTransform>(), TopRight, QuitButtonPosition, QuitButtonSize);
 
             // 確認は画面いっぱいに暗幕を敷きたいので、セーフエリアの外（兄弟）に置く
-            var dialog = UIDialogBuilder.CreateCommonDialog(parent);
-            // 箱は共通基盤のままだが、ボタンだけはゲームのほかのボタンと同じ見た目にそろえる
-            foreach (var name in QuitDialogButtons)
-            {
-                var button = dialog.transform.Find($"Panel/ButtonArea/{name}");
-                StyleButton(button.gameObject, (RectTransform)button.GetComponentInChildren<Text>().transform);
-            }
+            var dialog = CreateConfirmDialog(parent);
 
             var quit = root.AddComponent<QuitButton>();
             var so = new SerializedObject(quit);
@@ -43,6 +37,18 @@ namespace PenguinMonster.Editor
             so.ApplyModifiedProperties();
             root.SetActive(false);
             return quit;
+        }
+
+        /// <summary>確かめの窓。箱は共通基盤のままだが、ボタンだけはゲームのほかのボタンと同じ見た目にそろえる</summary>
+        private static CommonDialog CreateConfirmDialog(Transform parent)
+        {
+            var dialog = UIDialogBuilder.CreateCommonDialog(parent);
+            foreach (var name in QuitDialogButtons)
+            {
+                var button = dialog.transform.Find($"Panel/ButtonArea/{name}");
+                StyleButton(button.gameObject, (RectTransform)button.GetComponentInChildren<Text>().transform);
+            }
+            return dialog;
         }
     }
 }

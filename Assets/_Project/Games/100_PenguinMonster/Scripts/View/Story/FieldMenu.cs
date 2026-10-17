@@ -7,10 +7,12 @@ namespace PenguinMonster.View.Story
 {
     /// <summary>
     /// フィールドのメニュー（PLAN_STORY_TOWN01.md フェーズ6）。B で開き、手持ち / バッグ / 図鑑 / 記録する / やめる / 閉じる。
-    /// 記録するはセーブ（フェーズ7）まで押せない。やめるは確かめてからタイトルへ戻る。B か「閉じる」で歩くのに戻る
+    /// 記録するは確かめてから今の場所ごと記録する（フェーズ7）。やめるは確かめてからタイトルへ戻る。B か「閉じる」で歩くのに戻る
     /// </summary>
     public class FieldMenu : MonoBehaviour
     {
+        private const string SaveQuestion = "ここまでの 進み具合を\n記録しますか？";
+        private const string SavedMessage = "しっかり 記録した！";
         private const string QuitQuestion = "タイトルに 戻りますか？\n記録して いない 進み具合は 消えます";
 
         private enum Choice
@@ -19,6 +21,7 @@ namespace PenguinMonster.View.Story
             Party,
             Bag,
             Dex,
+            Save,
             Quit,
             Close,
         }
@@ -49,14 +52,14 @@ namespace PenguinMonster.View.Story
             _partyButton.onClick.AddListener(() => Choose(Choice.Party));
             _bagButton.onClick.AddListener(() => Choose(Choice.Bag));
             _dexButton.onClick.AddListener(() => Choose(Choice.Dex));
+            _saveButton.onClick.AddListener(() => Choose(Choice.Save));
             _quitButton.onClick.AddListener(() => Choose(Choice.Quit));
             _closeButton.onClick.AddListener(() => Choose(Choice.Close));
-            // セーブはフェーズ7で足す
-            _saveButton.interactable = false;
         }
 
         /// <summary>閉じるか、やめるで はい と答えるまで開いておく</summary>
-        public IEnumerator Open(StoryState state)
+        /// <param name="here">今立っている場所（記録すると、続きはここから）</param>
+        public IEnumerator Open(StoryState state, FieldSpot here)
         {
             QuitRequested = false;
             _input.SetPadVisible(false);
@@ -75,6 +78,9 @@ namespace PenguinMonster.View.Story
                         break;
                     case Choice.Dex:
                         yield return OpenDex();
+                        break;
+                    case Choice.Save:
+                        yield return Save(state, here);
                         break;
                     case Choice.Quit:
                         yield return _events.Confirm(QuitQuestion, yes => QuitRequested = yes);
@@ -122,6 +128,17 @@ namespace PenguinMonster.View.Story
             if (chosen.HasValue)
             {
                 yield return _party.Open(state, chosen.Value);
+            }
+        }
+
+        private IEnumerator Save(StoryState state, FieldSpot here)
+        {
+            bool yes = false;
+            yield return _events.Confirm(SaveQuestion, answer => yes = answer);
+            if (yes)
+            {
+                StorySaveStore.Save(StorySave.Capture(state, here));
+                yield return _events.Say(SavedMessage);
             }
         }
 

@@ -24,6 +24,9 @@ namespace PenguinMonster.Story
         public GridPos Position { get; private set; }
         public Direction Facing { get; private set; }
 
+        /// <summary>今の場所と向き（記録する。続きはここから）</summary>
+        public FieldSpot Spot => new FieldSpot(Map.Id, Position, Facing);
+
         /// <summary>今いるマスの出入口。View は歩き終えたらこれを見て、暗転してから Enter を呼ぶ</summary>
         public Warp WarpHere => Map.WarpAt(Position);
 

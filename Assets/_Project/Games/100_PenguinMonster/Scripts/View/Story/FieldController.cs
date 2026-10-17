@@ -47,7 +47,7 @@ namespace PenguinMonster.View.Story
                 var direction = _input.HeldDirection;
                 if (_input.IsBDown)
                 {
-                    yield return _menu.Open(_state);
+                    yield return _menu.Open(_state, _player.Spot);
                     if (_menu.QuitRequested)
                     {
                         yield break;

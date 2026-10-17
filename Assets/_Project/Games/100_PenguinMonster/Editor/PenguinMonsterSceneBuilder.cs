@@ -155,7 +155,7 @@ namespace PenguinMonster.Editor
         }
 
         /// <summary>
-        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → 持ち物 → ドラフト → シングル / ダブルス → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
+        /// バトルの上に重ねる画面（結果 → 選出 → 登場 → 持ち物 → ドラフト → シングル / ダブルス → 続きから / 最初から → やめる → タイトルから開く画面 → タイトルの順に手前）と、流れの進行役。
         /// 結果は共通基盤の ResultDialog を見た目だけ作り直して使う。「もう一度遊ぶ」は勝ち抜き戦の「次の 戦いへ」に使う
         /// </summary>
         private static GameFlow BuildFlow(Transform canvas, BattleController battle)
@@ -169,6 +169,7 @@ namespace PenguinMonster.Editor
             var itemPanel = CreateItemPanel(root.transform);
             var draftPanel = CreateDraftPanel(root.transform);
             var formatPanel = CreateFormatPanel(root.transform);
+            var storyStartPanel = CreateStoryStartPanel(root.transform);
             var quitButton = CreateQuitButton(root.transform);
             var subMenus = CreateSubMenus(root.transform);
             var titlePanel = CreateTitlePanel(root.transform, subMenus);
@@ -179,6 +180,7 @@ namespace PenguinMonster.Editor
             var so = new SerializedObject(flow);
             so.FindProperty("_titlePanel").objectReferenceValue = titlePanel;
             so.FindProperty("_formatPanel").objectReferenceValue = formatPanel;
+            so.FindProperty("_storyStartPanel").objectReferenceValue = storyStartPanel;
             so.FindProperty("_draftPanel").objectReferenceValue = draftPanel;
             so.FindProperty("_itemPanel").objectReferenceValue = itemPanel;
             so.FindProperty("_introPanel").objectReferenceValue = introPanel;

@@ -66,6 +66,16 @@ namespace PenguinMonster.View.Story
             onAnswer(yes);
         }
 
+        /// <summary>台本の外から1文だけ見せ、送られるまで待つ（メニューの「記録した！」）</summary>
+        public IEnumerator Say(string message)
+        {
+            _input.SetPadVisible(false);
+            _yesNo.gameObject.SetActive(false);
+            gameObject.SetActive(true);
+            yield return _window.Play(message);
+            gameObject.SetActive(false);
+        }
+
         private IEnumerator PlayStep(EventRunner runner, StoryState state, System.Random random)
         {
             switch (runner.Current.Kind)
