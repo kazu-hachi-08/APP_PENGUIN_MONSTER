@@ -121,11 +121,8 @@ namespace PenguinMonster.Story.Tests
             var belowDisciple = Town02People.DiscipleAtGymDoor.Position + Direction.Down.Offset();
             Assert.AreEqual(StepResult.Blocked, PlayerAt(Town02Maps.Town, belowDisciple, Direction.Up).Step(Direction.Up));
 
-            // 4番道路の奥の人（フェーズ4でユキトの3戦目にする）に話しかけると、門下生がどく
-            var entrance = Town02People.Route04EndSpot.Position;
-            RunToEnd(PlayerAt(Town02Maps.Route04, entrance + Direction.Left.Offset(), Direction.Right).ScriptAhead());
-            Assert.IsTrue(_state.Flags.Has(Town02Flags.Route04Cleared));
-            Assert.IsNull(_people.At(Town02Maps.Route04, entrance));
+            // 4番道路の奥の出来事（ユキトの3戦目。Town02StoryTests）を終えると、門下生がどく
+            _state.Flags.Set(Town02Flags.Route04Cleared);
 
             var player = PlayerAt(Town02Maps.Town, belowDisciple, Direction.Up);
             WalkAndEnter(player, Direction.Up, 2);

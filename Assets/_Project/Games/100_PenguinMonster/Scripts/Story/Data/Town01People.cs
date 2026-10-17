@@ -100,7 +100,7 @@ namespace PenguinMonster.Story
         /// ライバル戦の置き場所を、こちらが選んだ最初の子ごとに1つずつ作る（ライバルの手持ちがこちらの子で変わるため）。
         /// 選んだ子のフラグが立っていて、戦い終えるまでの間だけ立つ
         /// </summary>
-        private static IEnumerable<NpcPlacement> PerStarter(string beatenFlag, FieldSpot spot, Func<StorySpecies, EventStep[]> script)
+        internal static IEnumerable<NpcPlacement> PerStarter(string beatenFlag, FieldSpot spot, Func<StorySpecies, EventStep[]> script)
         {
             foreach (var starter in Town01Starters.All)
             {

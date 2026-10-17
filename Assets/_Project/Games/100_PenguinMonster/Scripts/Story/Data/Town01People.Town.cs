@@ -45,7 +45,7 @@ namespace PenguinMonster.Story
         }
 
         /// <summary>道路・道場のトレーナー。向いている先を見張り、目が合ったら勝負。勝った後は別のセリフ</summary>
-        private static FieldNpc RouteTrainer(string id, NpcLook look, TrainerDefinition trainer, string mapId, GridPos pos, Direction facing,
+        internal static FieldNpc RouteTrainer(string id, NpcLook look, TrainerDefinition trainer, string mapId, GridPos pos, Direction facing,
             string challenge, string afterwards)
         {
             var spot = new FieldSpot(mapId, pos, facing);
