@@ -5,9 +5,9 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// ストーリーの記録（PLAN_STORY_TOWN01.md フェーズ7）。View が JSON にして保存する形なので、public の項目だけで持つ。
+    /// ストーリーの記録。View が JSON にして保存する形なので、public の項目だけで持つ。
     /// 項目を足したら Version を上げ、初期値に「古い記録に無かったときの値」を書いておく（JSON に無い項目は初期値のまま残るため）。
-    /// 道具・技は名前で持つ（並びの番号だと、後の区切りで足したときに古い記録がずれるため）
+    /// 道具・技は名前で持つ（並びの番号だと、後で足したときに古い記録がずれるため）
     /// </summary>
     [Serializable]
     public sealed class StorySaveData

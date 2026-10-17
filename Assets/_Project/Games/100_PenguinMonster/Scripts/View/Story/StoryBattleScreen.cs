@@ -8,7 +8,7 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// フィールドからストーリーの1戦へ移り、戦いの後のこと（賞金・経験値・レベルアップ）を見せる（PLAN_STORY_TOWN01.md フェーズ5）。
+    /// フィールドからストーリーの1戦へ移り、戦いの後のこと（賞金・経験値・レベルアップ）を見せる。
     /// バトルの画面は対戦と同じ BattleController を使い、ここは暗転と前後の文だけを受け持つ。
     /// 経験値・レベルアップ・技・進化の見せ方は .Growth.cs
     /// </summary>

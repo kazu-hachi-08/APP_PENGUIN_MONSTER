@@ -18,7 +18,7 @@ namespace PenguinMonster.Story
     }
 
     /// <summary>
-    /// ストーリーの1戦（PLAN_STORY_TOWN01.md フェーズ5）。手持ち全員 vs 相手全員のシングルで、見せ合い・選出はない。
+    /// ストーリーの1戦。手持ち全員 vs 相手全員のシングルで、見せ合い・選出はない。
     /// 手持ちの HP・状態異常から始め、終わったら持ち帰る。ターンは今までどおり BattleEngine が進め、
     /// ここは「誰が誰と向き合ったか」を覚えて、経験値を出た子だけで分ける
     /// </summary>
@@ -37,7 +37,6 @@ namespace PenguinMonster.Story
         public BattleState State { get; }
         /// <summary>トレーナー戦（逃げられない・経験値 1.5 倍）。false なら野生</summary>
         public bool IsTrainer { get; }
-        public IReadOnlyList<OwnedMonster> Foes => _foes;
         /// <summary>場に出てきた相手の No（図鑑の「見た」に入れる。出てこなかったトレーナーの子は入らない）</summary>
         public IEnumerable<int> SeenNos => _seenNos;
 

@@ -8,7 +8,7 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// 「たたかう / ペンモン」のコマンド。対戦では逃げるは無い。
-    /// ストーリーの窓だけ「バッグ / 逃げる」も持つ（PLAN_STORY_TOWN01.md フェーズ5・6）
+    /// ストーリーの窓だけ「バッグ / 逃げる」も持つ
     /// </summary>
     public class CommandPanel : MonoBehaviour
     {

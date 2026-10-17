@@ -6,7 +6,6 @@ namespace PenguinMonster.View.Art
     /// <summary>段階4のふつう前半（No.76〜100）のデザイン</summary>
     public static partial class PenguinDesigns
     {
-        private static readonly Color32 S4aSnow = Rgb(240, 246, 252);
         private static readonly Color32 S4aWood = Rgb(150, 100, 60);
 
         /// <summary>No.76 スノードームペン: 夢見がちでおっとり。ガラスのドームの中にちょこんと座る。丸い大きなドームと台形の木の台座のシルエット</summary>
@@ -19,7 +18,7 @@ namespace PenguinMonster.View.Art
             // 中は淡く、縁だけ濃くして、透けたガラスの球に見せる
             b.Ellipse(32f, 34f, 23f, 23f, glassEdge);
             b.Ellipse(32f, 34f, 21f, 21f, glass);
-            b.Ellipse(32f, 15f, 17f, 4f, S4aSnow);
+            b.Ellipse(32f, 15f, 17f, 4f, SnowWhite);
             b.Shaded(33f, 21f, 7.5f, 6.5f, body);
             b.Belly(31f, 20f, 5f, 4.5f);
             b.Foot(27f, 16f, 0f, 0.6f);
@@ -31,7 +30,7 @@ namespace PenguinMonster.View.Art
             // 舞う雪の粒。ドームの中だけに散らして、外の世界と分ける
             foreach (var p in new[] { V(18, 40), V(24, 48), V(36, 50), V(45, 42), V(47, 30), V(17, 27), V(30, 44), V(42, 24) })
             {
-                b.Rect((int)p.x, (int)p.y, 2, 2, S4aSnow);
+                b.Rect((int)p.x, (int)p.y, 2, 2, SnowWhite);
             }
             // ガラスの光の弧。左上に入れて球の丸みを出す
             b.Line(0.8f, PenguinPalette.Belly, V(14, 38), V(16, 45), V(20, 50), V(25, 53));
@@ -239,14 +238,14 @@ namespace PenguinMonster.View.Art
             var bodyShade = PenguinPalette.Shade(body);
             var red = Rgb(220, 60, 60);
             // 足元の雪玉の山。投げ続ける気満々なのを見せる
-            b.Shaded(8f, 5f, 4.5f, 4f, S4aSnow);
-            b.Shaded(17f, 5f, 4.5f, 4f, S4aSnow);
-            b.Shaded(12f, 12f, 4.5f, 4f, S4aSnow);
+            b.Shaded(8f, 5f, 4.5f, 4f, SnowWhite);
+            b.Shaded(17f, 5f, 4.5f, 4f, SnowWhite);
+            b.Shaded(12f, 12f, 4.5f, 4f, SnowWhite);
             b.Foot(26f, 4f, -15f);
             b.Foot(44f, 4f, 15f);
             // 振りかぶった腕と雪玉。体の後ろ上へ大きく引き、投げる直前のためを作る
             b.Flipper(V(40, 32), V(53, 46), 3f, bodyShade);
-            b.Shaded(55f, 50f, 5f, 5f, S4aSnow);
+            b.Shaded(55f, 50f, 5f, 5f, SnowWhite);
             b.ShadedTilted(35f, 19f, 11f, 13f, -15f, body);
             b.BellyTilted(32f, 18f, 7.5f, 9.5f, -15f);
             b.Shaded(32f, 37f, 11f, 10.5f, body);
@@ -258,8 +257,8 @@ namespace PenguinMonster.View.Art
             b.TurnedFace(29f, 37f, FaceLeft, EyeStyle.Sharp, eyeGap: 6f, open: true);
             // ニット帽。折り返しの白線とぼんぼんで冬の遊び着に見せる
             b.Polygon(V(33, 47), red, V(21, 44), V(43, 44), V(41, 51), V(34, 54), V(25, 52));
-            b.Line(1f, S4aSnow, V(21, 44), V(43, 44));
-            b.Shaded(36f, 56f, 3f, 3f, S4aSnow);
+            b.Line(1f, SnowWhite, V(21, 44), V(43, 44));
+            b.Shaded(36f, 56f, 3f, 3f, SnowWhite);
         }
 
         /// <summary>No.84 クリオネペン: 天使のようにやさしい（でもおなかが空くと怖い）。下にいくほど細く尾になって浮き、小さな翼のヒレをパタパタさせる。しずく形のシルエット</summary>
@@ -316,8 +315,8 @@ namespace PenguinMonster.View.Art
                 b.Ellipse(16f, 41.5f, 5f, 1.8f, goggle);
                 b.Dot(13, 42, PenguinPalette.EyeLight);
             }
-            b.Line(0.6f, S4aSnow, V(60, 40), V(52, 44));
-            b.Line(0.6f, S4aSnow, V(62, 32), V(56, 35));
+            b.Line(0.6f, SnowWhite, V(60, 40), V(52, 44));
+            b.Line(0.6f, SnowWhite, V(62, 32), V(56, 35));
         }
 
         /// <summary>No.86 ジェンツーペン: せっかちなスピード自慢。魚雷のように体を水平にのばして泳ぐ。横に細長い流線形と、後ろへ流れる足と泡のシルエット</summary>

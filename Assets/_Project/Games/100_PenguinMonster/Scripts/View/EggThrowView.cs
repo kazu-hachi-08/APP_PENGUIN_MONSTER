@@ -8,9 +8,9 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 繰り出すときにタマゴを投げる演出（仕様書 §7）。画面の外から台座へ山なりに飛び、着いたら光って割れる。続きの「ぽよん」は MonsterView。
+    /// 繰り出すときにタマゴを投げる演出。画面の外から台座へ山なりに飛び、着いたら光って割れる。続きの「ぽよん」は MonsterView。
     /// ペンモンの絵は台座のマスクの中にあって外から飛んでくる絵が切れるので、場全体に重ねたこの層に出す。
-    /// ストーリーの捕獲タマゴ（PLAN_STORY_TOWN01.md フェーズ6）も同じ絵で、投げたタマゴを相手の所に残して揺らす
+    /// ストーリーの捕獲タマゴも同じ絵で、投げたタマゴを相手の所に残して揺らす
     /// </summary>
     public class EggThrowView : MonoBehaviour
     {

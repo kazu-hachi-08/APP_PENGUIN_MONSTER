@@ -21,13 +21,11 @@ namespace PenguinMonster.Story
     }
 
     /// <summary>
-    /// マップの草むらの出現表（PLAN_STORY_TOWN01.md フェーズ5）。草むらを1歩進むごとに RatePercent の確率で出会い、
+    /// マップの草むらの出現表。草むらを1歩進むごとに RatePercent の確率で出会い、
     /// 出会ったら重みで種を、その行の幅でレベルを引く
     /// </summary>
     public sealed class EncounterTable
     {
-        private const int Percent = 100;
-
         private readonly EncounterSlot[] _slots;
         private readonly int _totalWeight;
 
@@ -48,7 +46,7 @@ namespace PenguinMonster.Story
         /// <summary>1歩ぶんの判定。出会わなければ null、出会えば野生の子（技は覚える技の表から決める）</summary>
         public OwnedMonster Roll(Random random)
         {
-            if (random.Next(Percent) >= RatePercent)
+            if (random.Next(StoryBalance.Percent) >= RatePercent)
             {
                 return null;
             }

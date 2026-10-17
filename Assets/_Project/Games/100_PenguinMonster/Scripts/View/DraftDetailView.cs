@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ドラフトの右の大きな詳細（仕様書 §2.1）。選んでいる1体の 絵・名前・タイプ・合計・特性・種族値（バー）・技4つ をまとめて出す。
+    /// ドラフトの右の大きな詳細。選んでいる1体の 絵・名前・タイプ・合計・特性・種族値（バー）・技4つ をまとめて出す。
     /// 広い欄に両方並べられるので、種族値 ⇄ 技 の切り替えは要らない
     /// </summary>
     public class DraftDetailView : MonoBehaviour

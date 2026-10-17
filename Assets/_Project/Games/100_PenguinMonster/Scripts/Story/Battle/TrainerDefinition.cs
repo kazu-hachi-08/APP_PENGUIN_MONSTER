@@ -3,7 +3,7 @@ using PenguinMonster.Battle;
 
 namespace PenguinMonster.Story
 {
-    /// <summary>トレーナーの手持ちの1体。技は覚える技の表から自動で決める（STORY_ROADMAP.md §3.3）</summary>
+    /// <summary>トレーナーの手持ちの1体。技は覚える技の表から自動で決める</summary>
     public readonly struct TrainerMon
     {
         public readonly StorySpecies Species;
@@ -17,7 +17,7 @@ namespace PenguinMonster.Story
     }
 
     /// <summary>
-    /// トレーナー1人（PLAN_STORY_TOWN01.md フェーズ5）。見た目・立つ場所・セリフは人（FieldNpc）の側に持ち、ここはバトルの中身だけ。
+    /// トレーナー1人。見た目・立つ場所・セリフは人（FieldNpc）の側に持ち、ここはバトルの中身だけ。
     /// 勝つ（負けてもよい戦いなら、負けても）と DefeatedFlag が立ち、二度と戦わない
     /// </summary>
     public sealed class TrainerDefinition

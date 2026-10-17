@@ -9,7 +9,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ストーリーの1戦（PLAN_STORY_TOWN01.md フェーズ5）。手持ち全員 vs 相手全員のシングルで、見せ合い・選出はない。
+    /// ストーリーの1戦。手持ち全員 vs 相手全員のシングルで、見せ合い・選出はない。
     /// コマンドは「戦う / バッグ / ペンモン / 逃げる」。逃げられるのは野生だけで、失敗したら相手だけが動く（バッグは .Bag.cs）。
     /// 経験値・賞金など戦いの後のことは、呼ぶ側（StoryBattleScreen）が受け持つ
     /// </summary>

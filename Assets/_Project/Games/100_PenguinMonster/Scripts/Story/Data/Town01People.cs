@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1の人と台本（PLAN_STORY_TOWN01.md フェーズ4〜6・8b・8c）。ハツユキ村・研究所・ぬくもり小屋・よろず屋の人はここ、
+    /// 最初の章の人と台本。ハツユキ村・研究所・ぬくもり小屋・よろず屋の人はここ、
     /// ツララ町・道路の人と落とし物は .Town.cs、道場とライバルの2戦目は .Gym.cs
     /// </summary>
     public static partial class Town01People
@@ -12,9 +13,9 @@ namespace PenguinMonster.Story
         public const int StarterCaptureEggs = 5;
 
         /// <summary>最初の1体をもらうまで、村の北の出口をふさぐ場所</summary>
-        public static readonly FieldSpot MomAtExit = new FieldSpot(Town01Maps.Village, Town01Maps.NorthExit + Direction.Down.Offset(), Direction.Down);
+        public static readonly FieldSpot MomAtExit = Town01Maps.StepFrom(Town01Maps.Village, Town01Maps.NorthExit, Direction.Down);
 
-        /// <summary>最初から始めたときだけ、家で目覚めたところで流す文（PLAN_STORY_TOWN01.md フェーズ8c）</summary>
+        /// <summary>最初から始めたときだけ、家で目覚めたところで流す文</summary>
         public static readonly IReadOnlyList<EventStep> Opening = new[]
         {
             EventStep.Say("ハツユキ村の 朝。窓の 外は 今日も 雪が 降っている"),
@@ -37,7 +38,7 @@ namespace PenguinMonster.Story
                     EventStep.Say("シラカバ博士の 研究所で ペンモンを もらってから に しなさい")),
                 NpcPlacement.Always(new FieldSpot(Town01Maps.PlayerHouse, new GridPos(5, 2), Direction.Left),
                     EventStep.Say("おかえり！ 少し 休んで いきなさい"),
-                    // ぬくもり小屋（フェーズ6）ができるまでの仮の回復。全滅したら この家に戻る
+                    // 家でも ぬくもり小屋と同じく休める。全滅したら この家に戻る
                     EventStep.Heal("ペンモンたちは すっかり 元気に なった！", Town01Maps.Start),
                     EventStep.Say("村の 外に 行くときは 気を つけるのよ")));
         }
@@ -90,12 +91,20 @@ namespace PenguinMonster.Story
                 NpcPlacement.Until(Town01Flags.GotStarter, new FieldSpot(Town01Maps.Lab, new GridPos(2, 2), Direction.Down),
                     EventStep.Say("おそいぞ！ おれは ユキト。博士が 待ちくたびれてるぜ")),
             };
+            placements.AddRange(PerStarter(Town01Trainers.RivalBeaten, RivalAtLabExit, starter => RivalBattle(Town01Trainers.Rival(starter))));
+            return new FieldNpc("rival", NpcLook.Rival, placements.ToArray());
+        }
+
+        /// <summary>
+        /// ライバル戦の置き場所を、こちらが選んだ最初の子ごとに1つずつ作る（ライバルの手持ちがこちらの子で変わるため）。
+        /// 選んだ子のフラグが立っていて、戦い終えるまでの間だけ立つ
+        /// </summary>
+        private static IEnumerable<NpcPlacement> PerStarter(string beatenFlag, FieldSpot spot, Func<StorySpecies, EventStep[]> script)
+        {
             foreach (var starter in Town01Starters.All)
             {
-                placements.Add(NpcPlacement.Between(EventStep.ChosenFlag(Town01Flags.StarterPrefix, starter), Town01Trainers.RivalBeaten,
-                    RivalAtLabExit, RivalBattle(Town01Trainers.Rival(starter))));
+                yield return NpcPlacement.Between(EventStep.ChosenFlag(Town01Flags.StarterPrefix, starter), beatenFlag, spot, script(starter));
             }
-            return new FieldNpc("rival", NpcLook.Rival, placements.ToArray());
         }
 
         /// <summary>本家と同じく、最初のライバル戦は負けても話が進む。終わったら博士が回復してくれる</summary>
@@ -117,12 +126,12 @@ namespace PenguinMonster.Story
         private static readonly GridPos InFrontOfCounter = new GridPos(3, 2);
         private const string HutFarewell = "また いつでも どうぞ！";
 
-        /// <summary>
-        /// ぬくもり小屋の受付。休ませる（全回復・全滅したらここへ戻る）→ あずかり箱、の順に聞く（本家の回復と預かりシステムを1人にまとめる）
-        /// </summary>
         /// <summary>ぬくもり小屋で休ませたときの、全滅したときの戻り先（受付の前）</summary>
         private static readonly FieldSpot HutReturnSpot = new FieldSpot(Town01Maps.WarmHut, InFrontOfCounter, Direction.Up);
 
+        /// <summary>
+        /// ぬくもり小屋の受付。休ませる（全回復・全滅したらここへ戻る）→ あずかり箱、の順に聞く（本家の回復と預かりシステムを1人にまとめる）
+        /// </summary>
         private static FieldNpc HutKeeper()
         {
             return new FieldNpc("hutKeeper", NpcLook.HutKeeper,

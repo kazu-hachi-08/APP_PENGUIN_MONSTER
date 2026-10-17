@@ -15,6 +15,8 @@ namespace PenguinMonster.View.Art
         private const float CheekDrop = 3f;
         private const int CheekWidth = 3;
         private const int CheekHeight = 2;
+        private const float FootRadiusX = 5f;
+        private const float FootRadiusY = 2.5f;
         // 明るい色の楕円を影よりどれだけ小さくするか。右下に残る影の太さになる
         private const float LightInset = 1.5f;
 
@@ -30,28 +32,28 @@ namespace PenguinMonster.View.Art
 
         public static Vector2 V(float x, float y) => new Vector2(x, y);
 
-        private static Vector2 Mirror(Vector2 p) => new Vector2(CenterX * 2f - p.x, p.y);
+        private static float MirrorX(float x) => CenterX * 2f - x;
+
+        private static Vector2 Mirror(Vector2 p) => new Vector2(MirrorX(p.x), p.y);
 
         public void Ellipse(float x, float y, float radiusX, float radiusY, Color32 color)
             => _canvas.FillEllipse(x, y, radiusX, radiusY, color);
 
-        public void Ellipse2(float x, float y, float radiusX, float radiusY, Color32 color)
-        {
-            Ellipse(x, y, radiusX, radiusY, color);
-            Ellipse(CenterX * 2f - x, y, radiusX, radiusY, color);
-        }
-
         /// <summary>影色で塗ってから、左上にずらした少し小さい楕円を明るい色で重ねる。右下に影が残って丸く見える</summary>
         public void Shaded(float x, float y, float radiusX, float radiusY, Color32 light)
-        {
-            Ellipse(x, y, radiusX, radiusY, PenguinPalette.Shade(light));
-            Ellipse(x - 1f, y + 1f, radiusX - LightInset, radiusY - LightInset, light);
-        }
+            => TwoTone(x, y, radiusX, radiusY, PenguinPalette.Shade(light), light);
 
         public void Shaded2(float x, float y, float radiusX, float radiusY, Color32 light)
         {
             Shaded(x, y, radiusX, radiusY, light);
-            Shaded(CenterX * 2f - x, y, radiusX, radiusY, light);
+            Shaded(MirrorX(x), y, radiusX, radiusY, light);
+        }
+
+        /// <summary>Shaded と白いおなかで共通の塗り方。おなかは影を Shade で作らず専用の色にしたいので、影の色も渡す</summary>
+        private void TwoTone(float x, float y, float radiusX, float radiusY, Color32 shade, Color32 light)
+        {
+            Ellipse(x, y, radiusX, radiusY, shade);
+            Ellipse(x - 1f, y + 1f, radiusX - LightInset, radiusY - LightInset, light);
         }
 
         public void Triangle(Vector2 a, Vector2 b, Vector2 c, Color32 color) => _canvas.FillTriangle(a, b, c, color);
@@ -77,17 +79,6 @@ namespace PenguinMonster.View.Art
             {
                 _canvas.DrawLine(points[i], points[i + 1], thickness, color);
             }
-        }
-
-        public void Line2(float thickness, Color32 color, params Vector2[] points)
-        {
-            Line(thickness, color, points);
-            var mirrored = new Vector2[points.Length];
-            for (int i = 0; i < points.Length; i++)
-            {
-                mirrored[i] = Mirror(points[i]);
-            }
-            Line(thickness, color, mirrored);
         }
 
         public void Rect(int left, int bottom, int width, int height, Color32 color)
@@ -122,8 +113,8 @@ namespace PenguinMonster.View.Art
 
         public void Feet(float x, float offsetX, float y = 3f)
         {
-            Ellipse(x - offsetX, y, 5f, 2.5f, PenguinPalette.Beak);
-            Ellipse(x + offsetX, y, 5f, 2.5f, PenguinPalette.Beak);
+            Ellipse(x - offsetX, y, FootRadiusX, FootRadiusY, PenguinPalette.Beak);
+            Ellipse(x + offsetX, y, FootRadiusX, FootRadiusY, PenguinPalette.Beak);
         }
 
         /// <summary>おなかや顔の白。後ろ姿では見えないので塗らない</summary>
@@ -137,8 +128,7 @@ namespace PenguinMonster.View.Art
         public void Belly(float x, float y, float radiusX, float radiusY)
         {
             if (!Front) return;
-            Ellipse(x, y, radiusX, radiusY, PenguinPalette.BellyShade);
-            Ellipse(x - 1f, y + 1f, radiusX - LightInset, radiusY - LightInset, PenguinPalette.Belly);
+            TwoTone(x, y, radiusX, radiusY, PenguinPalette.BellyShade, PenguinPalette.Belly);
         }
 
         /// <summary>目・くちばし・ほっぺ。目の種類はデザインごとに選ぶ（全員同じ目だと同じ顔に見えたため）</summary>
@@ -199,13 +189,19 @@ namespace PenguinMonster.View.Art
             int left = Mathf.RoundToInt(x - eyeOffsetX - width / 2f);
             int right = Mathf.RoundToInt(x * 2f) - left - width;
             int top = Mathf.RoundToInt(y + height / 2f) - 1;
-            bool flipRight = FlipsOnRight(eyes);
-            for (int row = 0; row < height; row++)
+            StampEye(left, top, pattern, false);
+            StampEye(right, top, pattern, FlipsOnRight(eyes));
+        }
+
+        /// <summary>目の形を左上 (left, top) から1ドットずつ置く。flip で左右反転する</summary>
+        private void StampEye(int left, int top, string[] pattern, bool flip)
+        {
+            int width = pattern[0].Length;
+            for (int row = 0; row < pattern.Length; row++)
             {
                 for (int col = 0; col < width; col++)
                 {
-                    EyeDot(left + col, top - row, pattern[row][col]);
-                    EyeDot(right + col, top - row, pattern[row][flipRight ? width - 1 - col : col]);
+                    EyeDot(left + col, top - row, pattern[row][flip ? width - 1 - col : col]);
                 }
             }
         }

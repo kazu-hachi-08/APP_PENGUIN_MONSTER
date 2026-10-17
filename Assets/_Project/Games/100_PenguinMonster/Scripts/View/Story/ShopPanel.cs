@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// よろず屋の画面（PLAN_STORY_TOWN01.md フェーズ6）。「買う / 売る」を切り替え、道具を押すたびに1個ずつ売り買いする。
+    /// よろず屋の画面。「買う / 売る」を切り替え、道具を押すたびに1個ずつ売り買いする。
     /// 結果の文は会話窓に出す（画面の下は会話窓のために空けてある）。「やめる」で閉じる
     /// </summary>
     public class ShopPanel : MonoBehaviour

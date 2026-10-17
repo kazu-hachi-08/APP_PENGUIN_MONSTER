@@ -1,7 +1,7 @@
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ストーリーのフィールドの曲（PLAN_STORY_TOWN01.md フェーズ10）。書き方は GameMusic.Songs.cs と同じ。
+    /// ストーリーのフィールドの曲。書き方は GameMusic.Songs.cs と同じ。
     /// 楽譜は # しか読めないので、B♭ は A# と書く
     /// </summary>
     public static partial class GameMusic

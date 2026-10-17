@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 能力が上がる・下がるときの矢印（仕様書 §7）。上がると青い ▲ が足元から立ちのぼり、下がると赤い ▼ が上から流れ落ちる。
+    /// 能力が上がる・下がるときの矢印。上がると青い ▲ が足元から立ちのぼり、下がると赤い ▼ が上から流れ落ちる。
     /// 色が光るだけだと上がったのか下がったのか分かりにくいので、動く向きでも見せる。技のエフェクトと同じ粒・同じ層を使う
     /// </summary>
     public partial class MoveEffectView

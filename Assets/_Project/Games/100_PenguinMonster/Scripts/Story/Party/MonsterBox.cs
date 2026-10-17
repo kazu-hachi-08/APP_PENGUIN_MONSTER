@@ -3,8 +3,8 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// あずかり箱（PLAN_STORY_TOWN01.md フェーズ6）。手持ちがいっぱいのときに捕まえた子が入り、ぬくもり小屋で手持ちと入れ替える。
-    /// 区切り1では数が少ないので、箱の数・入る数の上限は持たない
+    /// あずかり箱。手持ちがいっぱいのときに捕まえた子が入り、ぬくもり小屋で手持ちと入れ替える。
+    /// 今は数が少ないので、箱の数・入る数の上限は持たない
     /// </summary>
     public sealed class MonsterBox
     {

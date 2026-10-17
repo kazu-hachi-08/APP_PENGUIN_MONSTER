@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// メッセージ窓。文字を1つずつ送って表示する（仕様書 §7）。
+    /// メッセージ窓。文字を1つずつ送って表示する。
     /// 送り中にタップすると全文を出し、読み終わったら▼を点滅させてタップを待つ
     /// </summary>
     public class MessageWindow : MonoBehaviour

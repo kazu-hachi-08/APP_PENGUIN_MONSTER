@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// ドラフト画面（仕様書 §2.1）。左の3枚のカードを押すと右の詳細が切り替わり、「これに 決めた！」で取る × 6回。
+    /// ドラフト画面。左の3枚のカードを押すと右の詳細が切り替わり、「これに 決めた！」で取る × 6回。
     /// 抽選は Draft に任せ、ここは表示と入力だけ。
     /// 演出: 提示のカードは1枚ずつ「ぽよん」と配り、取ったペンモンは下のマスへ飛んでいく
     /// </summary>
@@ -152,7 +152,7 @@ namespace PenguinMonster.View
             _flying = null;
         }
 
-        /// <summary>時間切れは3体からランダム（仕様書 §2.1）。選びかけのカードは考えない</summary>
+        /// <summary>時間切れは3体からランダム。選びかけのカードは考えない</summary>
         private void PickRandom()
         {
             Pick(UnityEngine.Random.Range(0, _draft.Offer.Count));

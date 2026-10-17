@@ -25,7 +25,7 @@ namespace PenguinMonster.View
     }
 
     /// <summary>
-    /// バトルの仮の効果音。素材がまだ無いのでコードで作る（仕様書 §7）。
+    /// バトルの仮の効果音。素材がまだ無いのでコードで作る。
     /// 共通基盤の SeId はゲーム固有の音を持たないので、クリップを作って AudioManager に直接渡す（音量設定はそちらで掛かる）。
     /// 音の作り方は BattleSounds.Synth.cs
     /// </summary>

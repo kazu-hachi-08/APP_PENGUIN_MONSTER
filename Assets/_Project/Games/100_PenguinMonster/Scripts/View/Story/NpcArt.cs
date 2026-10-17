@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// 村の人の絵。主人公と同じ形で、帽子・髪・上着の色だけ替える（人ごとに描き分けるのは後回し。PLAN_STORY_TOWN01.md フェーズ4）。
+    /// 村の人の絵。主人公と同じ形で、帽子・髪・上着の色だけ替える（人ごとに描き分けるのは後回し）。
     /// 遠くからでも誰か分かるよう、上着の色を人ごとにはっきり変える
     /// </summary>
     public static class NpcArt
@@ -47,8 +47,12 @@ namespace PenguinMonster.View.Story
 
         private static readonly Dictionary<NpcLook, Sprite[,]> Cache = new Dictionary<NpcLook, Sprite[,]>();
 
-        // 「！」の吹き出し（トレーナーと目が合ったとき）。人の絵と同じ 16 ドット幅
-        private const int MarkSize = 16;
+        // 「！」の吹き出しと落とし物の袋は、人の絵と同じ大きさで描く
+        private const int MarkSize = HeroArt.Size;
+        // 人の絵と同じく、下の真ん中を足元にする
+        private static readonly Vector2 FeetPivot = new Vector2(0.5f, 0f);
+
+        // 「！」の吹き出し（トレーナーと目が合ったとき）
         private static readonly Color32 MarkFill = new Color32(255, 255, 255, 255);
         private static readonly Color32 MarkLine = new Color32(40, 40, 52, 255);
         private static readonly Color32 MarkRed = new Color32(220, 50, 50, 255);
@@ -69,7 +73,7 @@ namespace PenguinMonster.View.Story
             return sprites[(int)facing, frame];
         }
 
-        // 道路の落とし物（道具の袋）。人の絵と同じ 16 ドット幅で、どの向きでも同じ絵
+        // 道路の落とし物（道具の袋）。どの向きでも同じ絵
         private static readonly Color32 BagCloth = new Color32(230, 90, 80, 255);
         private static readonly Color32 BagShade = new Color32(170, 56, 56, 255);
         private static readonly Color32 BagTie = new Color32(250, 220, 120, 255);
@@ -89,7 +93,7 @@ namespace PenguinMonster.View.Story
             canvas.FillRect(6, 8, 5, 1, BagTie);
             canvas.FillRect(6, 4, 2, 2, BagTie);
             canvas.Outline(MarkLine);
-            _itemBag = canvas.ToSprite("Npc_ItemBag", new Vector2(0.5f, 0f));
+            _itemBag = canvas.ToSprite("Npc_ItemBag", FeetPivot);
             return _itemBag;
         }
 
@@ -106,7 +110,7 @@ namespace PenguinMonster.View.Story
             canvas.Outline(MarkLine);
             canvas.FillRect(7, 8, 2, 5, MarkRed);
             canvas.FillRect(7, 5, 2, 2, MarkRed);
-            _exclamation = canvas.ToSprite("Npc_Exclamation", new Vector2(0.5f, 0f));
+            _exclamation = canvas.ToSprite("Npc_Exclamation", FeetPivot);
             return _exclamation;
         }
 

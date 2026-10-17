@@ -21,14 +21,8 @@ namespace PenguinMonster.View.Art
 
         public void Set(int x, int y, Color32 color)
         {
-            if (x < 0 || x >= Width || y < 0 || y >= Height) return;
+            if (!InBounds(x, y)) return;
             Pixels[y * Width + x] = color;
-        }
-
-        public bool IsOpaque(int x, int y)
-        {
-            if (x < 0 || x >= Width || y < 0 || y >= Height) return false;
-            return Pixels[y * Width + x].a > 0;
         }
 
         public void FillEllipse(float centerX, float centerY, float radiusX, float radiusY, Color32 color)
@@ -168,11 +162,9 @@ namespace PenguinMonster.View.Art
             return sprite;
         }
 
-        private bool IsOpaqueIn(Color32[] source, int x, int y)
-        {
-            if (x < 0 || x >= Width || y < 0 || y >= Height) return false;
-            return source[y * Width + x].a > 0;
-        }
+        private bool InBounds(int x, int y) => x >= 0 && x < Width && y >= 0 && y < Height;
+
+        private bool IsOpaqueIn(Color32[] source, int x, int y) => InBounds(x, y) && source[y * Width + x].a > 0;
 
         private static bool Contains(Vector2 a, Vector2 b, Vector2 c, Vector2 p)
         {

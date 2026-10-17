@@ -6,8 +6,8 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// 出来事の台本を画面で見せる（PLAN_STORY_TOWN01.md フェーズ4〜6）。進め方は EventRunner が決め、ここは窓を出して答えを返すだけ。
-    /// 会話窓はバトルと同じ MessageWindow（同じ見た目・送り方。仕様書 §7）。A / B でも送れるようにする。
+    /// 出来事の台本を画面で見せる。進め方は EventRunner が決め、ここは窓を出して答えを返すだけ。
+    /// 会話窓はバトルと同じ MessageWindow（同じ見た目・送り方）。A / B でも送れるようにする。
     /// 会話の間だけこの層を出し、十字キーは隠す（下の窓と重なるため）
     /// </summary>
     public class FieldEventPlayer : MonoBehaviour
@@ -19,7 +19,7 @@ namespace PenguinMonster.View.Story
         [SerializeField] private StarterPanel _starters;
         [SerializeField] private FieldInput _input;
         [SerializeField] private StoryBattleScreen _battles;
-        [Tooltip("よろず屋・あずかり箱の画面（フェーズ6）。会話窓より奥に置き、結果の文は会話窓に出す")]
+        [Tooltip("よろず屋・あずかり箱の画面。会話窓より奥に置き、結果の文は会話窓に出す")]
         [SerializeField] private ShopPanel _shop;
         [SerializeField] private BoxPanel _box;
 
@@ -41,10 +41,8 @@ namespace PenguinMonster.View.Story
         {
             _beforeReturn = beforeReturn;
             BlackedOut = false;
-            _input.SetPadVisible(false);
-            _yesNo.gameObject.SetActive(false);
             _window.SetText("");
-            gameObject.SetActive(true);
+            ShowLayer();
             while (!runner.IsDone)
             {
                 yield return PlayStep(runner, state, random);
@@ -56,12 +54,9 @@ namespace PenguinMonster.View.Story
         /// <summary>台本の外から「はい / いいえ」だけ聞く（メニューの「やめる」の確かめ）</summary>
         public IEnumerator Confirm(string question, Action<bool> onAnswer)
         {
-            _input.SetPadVisible(false);
-            _yesNo.gameObject.SetActive(false);
-            gameObject.SetActive(true);
-            yield return _window.Type(question);
+            ShowLayer();
             bool yes = false;
-            yield return _yesNo.Ask(answer => yes = answer);
+            yield return Ask(question, answer => yes = answer);
             gameObject.SetActive(false);
             onAnswer(yes);
         }
@@ -69,11 +64,24 @@ namespace PenguinMonster.View.Story
         /// <summary>台本の外から1文だけ見せ、送られるまで待つ（メニューの「記録した！」）</summary>
         public IEnumerator Say(string message)
         {
+            ShowLayer();
+            yield return _window.Play(message);
+            gameObject.SetActive(false);
+        }
+
+        /// <summary>会話の層を出す。十字キーは下の窓と重なるので隠し、前に残った「はい / いいえ」も消しておく</summary>
+        private void ShowLayer()
+        {
             _input.SetPadVisible(false);
             _yesNo.gameObject.SetActive(false);
             gameObject.SetActive(true);
-            yield return _window.Play(message);
-            gameObject.SetActive(false);
+        }
+
+        /// <summary>問いを書き終えてから「はい / いいえ」を出す</summary>
+        private IEnumerator Ask(string question, Action<bool> onAnswer)
+        {
+            yield return _window.Type(question);
+            yield return _yesNo.Ask(onAnswer);
         }
 
         private IEnumerator PlayStep(EventRunner runner, StoryState state, System.Random random)
@@ -84,10 +92,7 @@ namespace PenguinMonster.View.Story
                     yield return Fight(runner, state, random);
                     break;
                 case EventStepKind.Ask:
-                    yield return _window.Type(runner.Message);
-                    bool yes = false;
-                    yield return _yesNo.Ask(answer => yes = answer);
-                    runner.Answer(yes);
+                    yield return Ask(runner.Message, runner.Answer);
                     break;
                 case EventStepKind.ChooseStarter:
                     StorySpecies chosen = null;
@@ -145,9 +150,8 @@ namespace PenguinMonster.View.Story
                 yield return _starters.Pick(species => picked = species);
 
                 _window.gameObject.SetActive(true);
-                yield return _window.Type(string.Format(ConfirmStarterFormat, picked.Name));
                 bool yes = false;
-                yield return _yesNo.Ask(answer => yes = answer);
+                yield return Ask(string.Format(ConfirmStarterFormat, picked.Name), answer => yes = answer);
                 if (yes)
                 {
                     _starters.Close();

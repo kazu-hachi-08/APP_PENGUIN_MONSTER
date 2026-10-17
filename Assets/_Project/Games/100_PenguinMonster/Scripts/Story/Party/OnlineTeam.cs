@@ -14,7 +14,7 @@ namespace PenguinMonster.Story
     }
 
     /// <summary>
-    /// オンラインの「自分のチーム」（PLAN_STORY_TOWN01.md フェーズ9）。ストーリーの手持ちの6体を、
+    /// オンラインの「自分のチーム」。ストーリーの手持ちの6体を、
     /// 覚えた技・持ち物はそのままに Lv50・HP 満タン・状態異常なしにして出す。手持ちの子そのものは変えない
     /// </summary>
     public static class OnlineTeam
@@ -45,11 +45,7 @@ namespace PenguinMonster.Story
             var team = new List<MonsterDefinition>(party.Count);
             foreach (var member in party.Members)
             {
-                var moves = new MoveDefinition[member.Moves.Count];
-                for (int i = 0; i < moves.Length; i++)
-                {
-                    moves[i] = member.Moves[i];
-                }
+                var moves = new List<MoveDefinition>(member.Moves).ToArray();
                 team.Add(member.Species.Definition.WithLoadout(BattleBalance.Level, moves, member.Item));
             }
             return team;

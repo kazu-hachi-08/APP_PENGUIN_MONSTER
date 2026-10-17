@@ -4,7 +4,7 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 捕まえた（もらった）ペンモン1体（STORY_ROADMAP.md §3.2）。
+    /// 捕まえた（もらった）ペンモン1体。
     /// 種の定義とは別に、レベル・技・HP・状態異常を戦いの後も持ち越すために持つ。
     /// 育成（経験値・進化）は .Growth、技を覚える・忘れるは .Moves に分ける
     /// </summary>

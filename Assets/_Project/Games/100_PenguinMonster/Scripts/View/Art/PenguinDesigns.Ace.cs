@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>エースランクのデザイン（仕様書 §6）。ふつうより大きな武器（ひれ・翼・しっぽ・岩）を付けて強そうに見せる</summary>
+    /// <summary>エースランクのデザイン。ふつうより大きな武器（ひれ・翼・しっぽ・岩）を付けて強そうに見せる</summary>
     public static partial class PenguinDesigns
     {
         /// <summary>No.43 サメペン: どう猛。サメの着ぐるみで下から跳び上がって噛みつく。背中の大きな背びれが横へ突き出し、足元に尾びれ</summary>

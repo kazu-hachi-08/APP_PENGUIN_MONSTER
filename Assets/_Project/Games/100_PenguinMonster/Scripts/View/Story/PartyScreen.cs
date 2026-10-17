@@ -8,13 +8,15 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// メニューの「手持ち」（PLAN_STORY_TOWN01.md フェーズ6）。左に手持ちの一覧。子を押すと「詳しく 見る / 並べ替え / 道具を 使う / 戻る」。
+    /// メニューの「手持ち」。左に手持ちの一覧。子を押すと「詳しく 見る / 並べ替え / 道具を 使う / 戻る」。
     /// 詳しくはドラフトの詳細と同じ形（技はその子が今覚えている4つ）で、Lv・HP・状態異常は下の行に出す。
     /// バッグから回復の道具を選んで開いたときは、押した子にその道具を使う
     /// </summary>
     public class PartyScreen : MonoBehaviour
     {
         private const int SubLineSize = 28;
+        /// <summary>瀕死の子は HP の代わりにこれを出す（あずかり箱でも同じ）</summary>
+        internal const string FaintedLabel = "瀕死";
         private const string PickPrompt = "どの 子に しますか？";
         private const string SwapPrompt = "どの 子と 入れ替えますか？";
         private const string SwappedFormat = "{0}と {1}を 入れ替えた";
@@ -105,10 +107,16 @@ namespace PenguinMonster.View.Story
                     continue;
                 }
                 var member = members[i];
-                string hp = member.IsFainted ? "瀕死" : $"HP {member.CurrentHp}/{member.MaxHp}  {member.Status.ToJapanese()}";
-                _slotLabels[i].SetFitted($"{member.Name}   Lv{member.Level}\n<size={SubLineSize}>{hp}</size>");
+                string hp = member.IsFainted ? FaintedLabel : $"HP {member.CurrentHp}/{member.MaxHp}  {member.Status.ToJapanese()}";
+                _slotLabels[i].SetFitted(MemberLabel(member, hp));
                 _slotIcons[i].sprite = MonsterSprites.Front(member.Species.Definition);
             }
+        }
+
+        /// <summary>手持ち・あずかり箱の枠の文。1行目に名前と Lv、2行目（HP など）は小さく</summary>
+        internal static string MemberLabel(OwnedMonster member, string subLine)
+        {
+            return $"{member.Name}   Lv{member.Level}\n<size={SubLineSize}>{subLine}</size>";
         }
 
         private void OnSlot(int index)
@@ -136,7 +144,7 @@ namespace PenguinMonster.View.Story
             var member = _state.Party.Members[_selected];
             _detail.gameObject.SetActive(true);
             _detail.Show(member.ToBattle().Definition);
-            string status = member.IsFainted ? "瀕死" : member.Status.ToJapanese();
+            string status = member.IsFainted ? FaintedLabel :member.Status.ToJapanese();
             _hint.text = string.Format(DetailFormat, member.Name, member.Level, member.CurrentHp, member.MaxHp, status);
         }
 

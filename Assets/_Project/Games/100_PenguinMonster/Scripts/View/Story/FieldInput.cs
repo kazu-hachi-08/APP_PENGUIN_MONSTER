@@ -7,7 +7,7 @@ using UnityEngine.InputSystem.Controls;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// フィールドの操作（STORY_ROADMAP.md §2）。PC は矢印・WASD・Z（A）/ X（B）、タッチの端末は画面の十字キーと A / B。
+    /// フィールドの操作。PC は矢印・WASD・Z（A）/ X（B）、タッチの端末は画面の十字キーと A / B。
     /// 画面のボタンはタッチの端末のときだけ出す（PC では景色を隠さないように）
     /// </summary>
     public class FieldInput : MonoBehaviour
@@ -43,6 +43,18 @@ namespace PenguinMonster.View.Story
                 if (IsHeld(_right, keyboard?.rightArrowKey, keyboard?.dKey)) return Direction.Right;
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 縦に並んだ選択肢の送り（-1 で上、1 で下、0 は動かさない）。押し続けても1回だけ動かすよう、
+        /// 前のフレームの向き（lastHeld）から変わった瞬間だけ見る
+        /// </summary>
+        public static int VerticalStep(Direction? held, Direction? lastHeld)
+        {
+            if (held == lastHeld) return 0;
+            if (held == Direction.Up) return -1;
+            if (held == Direction.Down) return 1;
+            return 0;
         }
 
         public bool IsADown => _a.IsDown || (Keyboard.current?.zKey.wasPressedThisFrame ?? false);

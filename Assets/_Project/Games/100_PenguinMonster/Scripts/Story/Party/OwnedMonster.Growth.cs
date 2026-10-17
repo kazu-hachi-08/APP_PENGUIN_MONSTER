@@ -6,7 +6,7 @@ namespace PenguinMonster.Story
     /// <summary>経験値・レベルアップ・進化</summary>
     public sealed partial class OwnedMonster
     {
-        /// <summary>進化の表のレベルに届いている。画面（フェーズ5）はバトルの後にこれを見て進化の演出を出す</summary>
+        /// <summary>進化の表のレベルに届いている。画面はバトルの後にこれを見て進化の演出を出す</summary>
         public bool CanEvolve => Species.Evolution != null && Level >= Species.Evolution.Level;
 
         /// <summary>
@@ -25,7 +25,7 @@ namespace PenguinMonster.Story
         }
 
         /// <summary>
-        /// 進化先の種に変わる。種は呼ぶ側が進化の表の No から引いて渡す（種の一覧はフェーズ8で作るため）。
+        /// 進化先の種に変わる。種は呼ぶ側が進化の表の No から引いて渡す。
         /// 進化先がいまのレベルで覚える技を返す
         /// </summary>
         public MoveLearning Evolve(StorySpecies into)

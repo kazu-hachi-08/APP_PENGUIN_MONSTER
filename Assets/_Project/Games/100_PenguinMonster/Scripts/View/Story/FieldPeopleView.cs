@@ -18,6 +18,7 @@ namespace PenguinMonster.View.Story
 
         private readonly List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
         private readonly Dictionary<string, SpriteRenderer> _byId = new Dictionary<string, SpriteRenderer>();
+        private SpriteRenderer _mark;
 
         public void Draw(IEnumerable<PlacedNpc> people, FieldMapView mapView)
         {
@@ -67,23 +68,10 @@ namespace PenguinMonster.View.Story
             {
                 yield break;
             }
-            var from = renderer.transform.position;
             renderer.sprite = NpcArt.Get(npc.Look, facing, 1);
-            for (float t = 0f; t < seconds; t += Time.deltaTime)
-            {
-                float progress = t / seconds;
-                renderer.transform.position = Vector3.Lerp(from, to, progress);
-                if (progress >= 0.5f)
-                {
-                    renderer.sprite = NpcArt.Get(npc.Look, facing);
-                }
-                yield return null;
-            }
-            renderer.transform.position = to;
+            yield return FieldAvatar.Slide(renderer.transform, to, seconds, () => renderer.sprite = NpcArt.Get(npc.Look, facing));
             renderer.sprite = NpcArt.Get(npc.Look, facing);
         }
-
-        private SpriteRenderer _mark;
 
         private SpriteRenderer MarkRenderer()
         {

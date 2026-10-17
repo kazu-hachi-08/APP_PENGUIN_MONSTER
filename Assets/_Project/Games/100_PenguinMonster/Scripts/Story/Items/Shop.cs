@@ -1,6 +1,6 @@
 namespace PenguinMonster.Story
 {
-    /// <summary>よろず屋の売り買い（PLAN_STORY_TOWN01.md フェーズ6）。1回で1個ずつ</summary>
+    /// <summary>よろず屋の売り買い。1回で1個ずつ</summary>
     public static class Shop
     {
         /// <summary>買う。お金が足りなければ買わずに false</summary>

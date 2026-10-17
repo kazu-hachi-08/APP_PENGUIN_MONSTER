@@ -6,7 +6,7 @@ using PenguinMonster.Online;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// オンライン対戦（仕様書 §8）。計算はホストだけがする。
+    /// オンライン対戦。計算はホストだけがする。
     /// ホスト: 自分の行動とゲストから届いた行動でターンを解決し、出てきた BattleEvent をゲストへ送ってから再生する。
     /// ゲスト: 行動を送り、届いた BattleEvent で写しを更新して再生する。写しは自分が手前（陣営 0）になるよう陣営を入れ替えてある
     /// </summary>

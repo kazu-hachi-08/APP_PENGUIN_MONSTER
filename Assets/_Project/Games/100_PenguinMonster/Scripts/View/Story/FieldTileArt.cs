@@ -12,7 +12,7 @@ namespace PenguinMonster.View.Story
     /// </summary>
     public static class FieldTileArt
     {
-        public const int Size = 16;
+        private const int Size = 16;
 
         private static readonly Vector2 MiddlePivot = new Vector2(0.5f, 0.5f);
         private static readonly Dictionary<TileKind, Tile> Cache = new Dictionary<TileKind, Tile>();

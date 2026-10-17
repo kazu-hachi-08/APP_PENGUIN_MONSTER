@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 1枚のマップ（STORY_ROADMAP.md §3.3）。文字の表（1文字＝1マス）から作る。
+    /// 1枚のマップ。文字の表（1文字＝1マス）から作る。
     /// 表のまま読めるよう、行は上から並べ、マスの位置も上の行から数える
     /// </summary>
     public sealed class FieldMap

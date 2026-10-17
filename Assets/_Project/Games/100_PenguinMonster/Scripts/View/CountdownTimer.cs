@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// オンラインの制限時間（仕様書 §2.1 / §2.2 / §4.7）。残り秒数を出し、0 になったら一度だけ知らせる。
+    /// オンラインの制限時間。残り秒数を出し、0 になったら一度だけ知らせる。
     /// オフラインでは使わないので、止めている間は自分ごと隠す
     /// </summary>
     public class CountdownTimer : MonoBehaviour

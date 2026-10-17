@@ -3,8 +3,8 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1のトレーナー（PLAN_STORY_TOWN01.md フェーズ5・8c）。ライバルのユキト2戦・道路の5人・道場の門下生2人と道場主ガンテツ。
-    /// 道場主の最後の子は Lv14（STORY_ROADMAP.md §4）。道路の子は CPU よわい、道場は ふつう
+    /// 最初の章のトレーナー。ライバルのユキト2戦・道路の5人・道場の門下生2人と道場主ガンテツ。
+    /// 道場主の最後の子は Lv14。道路の子は CPU よわい、道場は ふつう
     /// </summary>
     public static class Town01Trainers
     {

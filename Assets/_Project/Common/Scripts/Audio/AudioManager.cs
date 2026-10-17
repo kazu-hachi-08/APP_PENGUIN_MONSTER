@@ -74,37 +74,26 @@ namespace PenguinMonster.Common.Audio
 
         private void InitializeAudioSources()
         {
-            if (_bgmSourceA == null)
-            {
-                var bgmAObj = new GameObject("BgmSource_A");
-                bgmAObj.transform.SetParent(transform);
-                _bgmSourceA = bgmAObj.AddComponent<AudioSource>();
-                _bgmSourceA.loop = true;
-                _bgmSourceA.playOnAwake = false;
-            }
-
-            if (_bgmSourceB == null)
-            {
-                var bgmBObj = new GameObject("BgmSource_B");
-                bgmBObj.transform.SetParent(transform);
-                _bgmSourceB = bgmBObj.AddComponent<AudioSource>();
-                _bgmSourceB.loop = true;
-                _bgmSourceB.playOnAwake = false;
-            }
+            if (_bgmSourceA == null) _bgmSourceA = CreateSource("BgmSource_A", loop: true);
+            if (_bgmSourceB == null) _bgmSourceB = CreateSource("BgmSource_B", loop: true);
 
             _activeBgmSource = _bgmSourceA;
             _inactiveBgmSource = _bgmSourceB;
 
-            // SEプール作成
             for (int i = 0; i < _seSourcePoolSize; i++)
             {
-                var seObj = new GameObject($"SeSource_{i}");
-                seObj.transform.SetParent(transform);
-                var source = seObj.AddComponent<AudioSource>();
-                source.loop = false;
-                source.playOnAwake = false;
-                _seSourcePool.Add(source);
+                _seSourcePool.Add(CreateSource($"SeSource_{i}", loop: false));
             }
+        }
+
+        private AudioSource CreateSource(string name, bool loop)
+        {
+            var obj = new GameObject(name);
+            obj.transform.SetParent(transform);
+            var source = obj.AddComponent<AudioSource>();
+            source.loop = loop;
+            source.playOnAwake = false;
+            return source;
         }
 
         private void BuildDictionaries()
@@ -211,13 +200,7 @@ namespace PenguinMonster.Common.Audio
             }
 
             CurrentBgmId = id;
-
-            if (_bgmCrossfadeRoutine != null)
-            {
-                StopCoroutine(_bgmCrossfadeRoutine);
-            }
-
-            _bgmCrossfadeRoutine = StartCoroutine(CrossfadeBgmRoutine(bgmData, fadeDuration));
+            StartBgmRoutine(CrossfadeBgmRoutine(bgmData, fadeDuration));
         }
 
         /// <summary>
@@ -233,13 +216,7 @@ namespace PenguinMonster.Common.Audio
 
             CurrentBgmId = BgmId.None;
             var data = new BgmData { clip = clip, volume = volumeRate, id = BgmId.None };
-
-            if (_bgmCrossfadeRoutine != null)
-            {
-                StopCoroutine(_bgmCrossfadeRoutine);
-            }
-
-            _bgmCrossfadeRoutine = StartCoroutine(CrossfadeBgmRoutine(data, fadeDuration));
+            StartBgmRoutine(CrossfadeBgmRoutine(data, fadeDuration));
         }
 
         /// <summary>
@@ -248,12 +225,18 @@ namespace PenguinMonster.Common.Audio
         public void StopBgm(float fadeDuration = 0.5f)
         {
             CurrentBgmId = BgmId.None;
+            StartBgmRoutine(FadeOutBgmRoutine(fadeDuration));
+        }
+
+        /// <summary>BGMのフェードは常に1本だけ走らせる（前のフェードが残ると音量を奪い合うため）</summary>
+        private void StartBgmRoutine(IEnumerator routine)
+        {
             if (_bgmCrossfadeRoutine != null)
             {
                 StopCoroutine(_bgmCrossfadeRoutine);
             }
 
-            _bgmCrossfadeRoutine = StartCoroutine(FadeOutBgmRoutine(fadeDuration));
+            _bgmCrossfadeRoutine = StartCoroutine(routine);
         }
 
         private IEnumerator CrossfadeBgmRoutine(BgmData nextBgm, float duration)
@@ -357,14 +340,6 @@ namespace PenguinMonster.Common.Audio
 
             // プールに空きがない場合は最初のを再利用
             return _seSourcePool.Count > 0 ? _seSourcePool[0] : null;
-        }
-
-        /// <summary>
-        /// 指定SEが登録済みか（仮素材の自動生成が正式素材を上書きしないよう判定に使う）
-        /// </summary>
-        public bool HasSe(SeId id)
-        {
-            return _seDict.ContainsKey(id);
         }
 
         /// <summary>

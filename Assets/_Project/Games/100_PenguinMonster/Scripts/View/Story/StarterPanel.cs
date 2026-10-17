@@ -10,7 +10,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// 最初の3体を選ぶ画面（PLAN_STORY_TOWN01.md フェーズ4）。ドラフト画面と同じ形で、左に3つのタマゴのカード、
+    /// 最初の3体を選ぶ画面。ドラフト画面と同じ形で、左に3つのタマゴのカード、
     /// 押すと右に中身の詳細（DraftDetailView）、「この子に 決めた！」で選ぶ。確かめる「はい / いいえ」は FieldEventPlayer が出す。
     /// PC は上下でタマゴを選び、A（Z）で決める
     /// </summary>
@@ -80,9 +80,9 @@ namespace PenguinMonster.View.Story
         private Direction? ReadKeys(Direction? lastHeld)
         {
             var held = _input.HeldDirection;
-            if (held != lastHeld && (held == Direction.Up || held == Direction.Down))
+            int step = FieldInput.VerticalStep(held, lastHeld);
+            if (step != 0)
             {
-                int step = held == Direction.Up ? -1 : 1;
                 OnCardClicked((_selected + step + _choices.Count) % _choices.Count);
             }
             if (_input.IsADown)

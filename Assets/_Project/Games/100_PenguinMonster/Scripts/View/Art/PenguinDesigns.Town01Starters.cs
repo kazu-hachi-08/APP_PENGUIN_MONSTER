@@ -4,7 +4,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 namespace PenguinMonster.View.Art
 {
     /// <summary>
-    /// 区切り1の最初の3体（No.151〜159。PLAN_STORY_TOWN01.md フェーズ8a）。
+    /// ストーリーの最初の3体（No.151〜159）。
     /// 進化で育つのが見て分かるよう、体を 進化前 ヒナくらい → 途中 ひと回り大きく → 最後 ふつうより大きく、と段ごとに大きくする
     /// </summary>
     public static partial class PenguinDesigns
@@ -13,7 +13,6 @@ namespace PenguinMonster.View.Art
         private static readonly Color32 WoodLight = Rgb(205, 155, 100);
         private static readonly Color32 Iron = Rgb(90, 92, 108);
         private static readonly Color32 IronLight = Rgb(150, 152, 170);
-        private static readonly Color32 SnowWhite = Rgb(240, 246, 252);
         private static readonly Color32 SnowShade = Rgb(196, 212, 230);
 
         /// <summary>No.151 コブネペン: 好奇心いっぱいの見習い船乗り。小さな木の小舟に乗り込み、ヒレで櫂を握って漕ぎ出す</summary>

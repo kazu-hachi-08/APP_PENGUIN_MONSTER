@@ -5,7 +5,7 @@ using static PenguinMonster.Battle.MoveTable;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1の種（No.151〜180。PLAN_STORY_TOWN01.md §1・フェーズ8a）。種族値・タイプ・特性は MonsterTable.Story に持ち、
+    /// 最初の章の種（No.151〜180）。種族値・タイプ・特性は MonsterTable.Story に持ち、
     /// ここは育成の情報（覚える技・進化・経験値・捕まえやすさ）を足す。
     /// 進化前は同じ技を進化後より遅く覚え、進化後は進化したレベルでその段の技を1つ覚える（本家と同じ形）
     /// </summary>

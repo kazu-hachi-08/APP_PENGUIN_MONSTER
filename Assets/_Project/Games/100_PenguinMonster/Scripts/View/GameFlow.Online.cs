@@ -10,7 +10,7 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// オンライン対戦の流れ（仕様書 §8）: 部屋を作る / コードで参加 → シングル / ダブルス → ドラフト / 自分のチーム（どちらもホストが選ぶ）
+    /// オンライン対戦の流れ: 部屋を作る / コードで参加 → シングル / ダブルス → ドラフト / 自分のチーム（どちらもホストが選ぶ）
     /// → ドラフト → 持ち物 → 見せ合い・選出 → バトル → 結果 → タイトル。自分のチームはドラフト・持ち物を飛ばし、最後に記録した手持ちの6体を Lv50 で出す。
     /// ドラフトの抽選はホストが決めた種でゲストの端末が引く（提示はお互い別々で、相手の取り方に左右されないため）。
     /// 相手が抜けたら、どこにいても勝ち扱いで終わる
@@ -99,7 +99,7 @@ namespace PenguinMonster.View
             IReadOnlyList<MonsterDefinition> ownSix = null;
             _draftPanel.Show(new Draft(MonsterTable.All, draftRandom), six => ownSix = six, BattleBalance.OnlineDraftSeconds);
             yield return new WaitUntil(() => ownSix != null);
-            // 持ち物も各自の端末で引く。結果は Six で送るので、種をそろえる必要はない（仕様書 §2.1.1）
+            // 持ち物も各自の端末で引く。結果は Six で送るので、種をそろえる必要はない
             List<MonsterDefinition> withItem = null;
             _itemPanel.Show(ownSix, ItemDraw.Draw(draftRandom), six => withItem = six, BattleBalance.OnlineDraftSeconds);
             yield return new WaitUntil(() => withItem != null);
@@ -195,7 +195,7 @@ namespace PenguinMonster.View
             _link = null;
         }
 
-        /// <summary>相手が抜けたら、ドラフト・持ち物・選出・バトルのどこでも止めて勝ち扱い（仕様書 §2.4）</summary>
+        /// <summary>相手が抜けたら、ドラフト・持ち物・選出・バトルのどこでも止めて勝ち扱い</summary>
         private void HandleDisconnected()
         {
             StopOnline();
@@ -204,7 +204,7 @@ namespace PenguinMonster.View
 
         /// <summary>
         /// 自分の端末が裏で止まっていた／相手の返事が来ないまま止まった。どちらに原因があるか分からないので負け扱いにし、
-        /// 部屋を抜けて相手には切断として伝える（仕様書 §8）
+        /// 部屋を抜けて相手には切断として伝える
         /// </summary>
         private void HandleConnectionLost()
         {

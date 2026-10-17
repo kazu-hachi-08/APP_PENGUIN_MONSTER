@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// ツララ町の道場（門下生2人・道場主ガンテツ）と、2番道路の奥のユキトとの2戦目（PLAN_STORY_TOWN01.md フェーズ8c）。
+    /// ツララ町の道場（門下生2人・道場主ガンテツ）と、2番道路の奥のユキトとの2戦目。
     /// 2戦目を終えると門下生が道場の前からどき、ガンテツに勝つと羽章をもらえる
     /// </summary>
     public static partial class Town01People
@@ -29,13 +29,8 @@ namespace PenguinMonster.Story
         /// <summary>ユキトの2戦目。こちらの最初の子ごとに手持ちが変わるので、選んだ子のフラグごとに置き場所を分ける</summary>
         private static FieldNpc Rival2()
         {
-            var placements = new List<NpcPlacement>();
-            foreach (var starter in Town01Starters.All)
-            {
-                placements.Add(NpcPlacement.Between(EventStep.ChosenFlag(Town01Flags.StarterPrefix, starter), Town01Trainers.Rival2Beaten,
-                    RivalAtRoute02End, Rival2Battle(Town01Trainers.Rival2(starter))));
-            }
-            return new FieldNpc("rival2", NpcLook.Rival, placements.ToArray());
+            var placements = PerStarter(Town01Trainers.Rival2Beaten, RivalAtRoute02End, starter => Rival2Battle(Town01Trainers.Rival2(starter)));
+            return new FieldNpc("rival2", NpcLook.Rival, new List<NpcPlacement>(placements).ToArray());
         }
 
         /// <summary>負けても話は進み、ユキトが回復してくれる（行き止まりで動けなくならないように）。終わると道場主が戻ったと教えて先へ行く</summary>

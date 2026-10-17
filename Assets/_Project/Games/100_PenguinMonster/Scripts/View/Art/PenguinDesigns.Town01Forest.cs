@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>区切り1の雪の林と道場の子（No.172〜180。PLAN_STORY_TOWN01.md フェーズ8a）。雷鳥・石灯籠・座敷童・鬼瓦・ダイヤモンドダスト</summary>
+    /// <summary>ストーリー序盤の雪の林と道場の子（No.172〜180）。雷鳥・石灯籠・座敷童・鬼瓦・ダイヤモンドダスト</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 Okappa = Rgb(30, 28, 36);

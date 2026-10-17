@@ -4,7 +4,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 結果の画面の演出（仕様書 §7）。文面とボタンは共通基盤の ResultDialog が持ち、ここは勝ち負けで変わる見た目だけ:
+    /// 結果の画面の演出。文面とボタンは共通基盤の ResultDialog が持ち、ここは勝ち負けで変わる見た目だけ:
     /// 見出しの色・「ぽよん」・勝ったときの紙吹雪・連勝数のバッジ（オンラインは連勝数が無いので隠す）
     /// </summary>
     public class ResultBanner : MonoBehaviour

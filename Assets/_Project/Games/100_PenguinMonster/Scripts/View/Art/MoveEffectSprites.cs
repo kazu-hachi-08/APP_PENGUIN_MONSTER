@@ -152,19 +152,16 @@ namespace PenguinMonster.View.Art
         }
 
         /// <summary>闇: 円から一回り小さい円を消して作る三日月。ひっかいた跡に見せる</summary>
-        private static void PaintCrescent(PixelCanvas c)
-        {
-            c.FillEllipse(Center, Center, 7f, 7f, Rgb(90, 50, 130));
-            c.FillEllipse(10.5f, 10.5f, 6.5f, 6.5f, new Color32(0, 0, 0, 0));
-            c.Outline(Rgb(210, 150, 255));
-        }
+        private static void PaintCrescent(PixelCanvas c) => PaintCrescentShape(c, Rgb(90, 50, 130), Rgb(210, 150, 255));
 
         /// <summary>切る: 闇の三日月と同じ形を白で描く（色はタイプで付ける）</summary>
-        private static void PaintSlash(PixelCanvas c)
+        private static void PaintSlash(PixelCanvas c) => PaintCrescentShape(c, Rgb(255, 255, 255), Rgb(90, 90, 100));
+
+        private static void PaintCrescentShape(PixelCanvas c, Color32 fill, Color32 outline)
         {
-            c.FillEllipse(Center, Center, 7f, 7f, Rgb(255, 255, 255));
-            c.FillEllipse(10.5f, 10.5f, 6.5f, 6.5f, new Color32(0, 0, 0, 0));
-            c.Outline(Rgb(90, 90, 100));
+            c.FillEllipse(Center, Center, 7f, 7f, fill);
+            c.FillEllipse(10.5f, 10.5f, 6.5f, 6.5f, PenguinPalette.Clear);
+            c.Outline(outline);
         }
 
         /// <summary>噛む: 上あごの牙3本（下向き）。下あごは同じ絵を逆さにして出す</summary>
@@ -195,6 +192,6 @@ namespace PenguinMonster.View.Art
             c.FillEllipse(Center, Center, 3f, 3f, white);
         }
 
-        private static Color32 Rgb(byte r, byte g, byte b) => new Color32(r, g, b, 255);
+        private static Color32 Rgb(byte r, byte g, byte b) => PenguinPalette.Rgb(r, g, b);
     }
 }

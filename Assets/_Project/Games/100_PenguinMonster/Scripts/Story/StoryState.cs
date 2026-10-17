@@ -113,11 +113,11 @@ namespace PenguinMonster.Story
         /// <summary>手持ちの子と あずかり箱の子を入れ替える。入れ替えた後に戦える子が居なくなるなら false</summary>
         public bool SwapWithBox(int partyIndex, int boxIndex)
         {
-            if (Box.Members[boxIndex].IsFainted && !Party.CanFightWithout(partyIndex))
+            var fromBox = Box.Members[boxIndex];
+            if (fromBox.IsFainted && !Party.CanFightWithout(partyIndex))
             {
                 return false;
             }
-            var fromBox = Box.Members[boxIndex];
             Box.Replace(boxIndex, Party.Replace(partyIndex, fromBox));
             return true;
         }

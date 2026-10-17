@@ -1,7 +1,7 @@
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2・フェーズ8b）。ハツユキ村（北）→ 1番道路（北）→ ツララ町、町の東から 2番道路（行き止まり）。
+    /// 最初の章のマップ。ハツユキ村（北）→ 1番道路（北）→ ツララ町、町の東から 2番道路（行き止まり）。
     /// 文字: . 雪 / , 草むら / ; 深い草むら / = 道 / T 木 / ~ 水 / W 家の壁 / R 屋根 / D 扉 / _ 床 / S 看板
     /// </summary>
     public static class Town01Maps
@@ -69,7 +69,7 @@ namespace PenguinMonster.Story
                 Inside(PlayerHouseDoor, PlayerHouse, HouseArrival),
                 Inside(RivalHouseDoor, RivalHouse, HouseArrival),
                 Inside(LabDoor, Lab, LabArrival),
-                new Warp(NorthExit, new FieldSpot(Route01, Route01South + Direction.Up.Offset(), Direction.Up)))
+                new Warp(NorthExit, StepFrom(Route01, Route01South, Direction.Up)))
                 .WithSign(ExitSign, "この先 1番道路", "1番道路を 抜けると ツララ町")
                 .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村");
         }
@@ -150,8 +150,8 @@ namespace PenguinMonster.Story
                 "TTTTTTT=TTTTTTTT",
             };
             return new FieldMap(Route01, rows,
-                new Warp(Route01South, new FieldSpot(Village, NorthExit + Direction.Down.Offset(), Direction.Down)),
-                new Warp(Route01North, new FieldSpot(Town, TownSouth + Direction.Up.Offset(), Direction.Up)))
+                new Warp(Route01South, StepFrom(Village, NorthExit, Direction.Down)),
+                new Warp(Route01North, StepFrom(Town, TownSouth, Direction.Up)))
                 .WithSign(new GridPos(9, 1), "この先 ツララ町")
                 .WithSign(new GridPos(10, 27), "1番道路", "川べりの 深い 草むらには 川の ペンモンが いるらしい")
                 .WithEncounters(
@@ -199,8 +199,8 @@ namespace PenguinMonster.Story
                 "TTTTTTT=TTTTTTTTTTTTTTTT",
             };
             return new FieldMap(Town, rows,
-                new Warp(TownSouth, new FieldSpot(Route01, Route01North + Direction.Down.Offset(), Direction.Down)),
-                new Warp(TownEast, new FieldSpot(Route02, Route02West + Direction.Right.Offset(), Direction.Right)),
+                new Warp(TownSouth, StepFrom(Route01, Route01North, Direction.Down)),
+                new Warp(TownEast, StepFrom(Route02, Route02West, Direction.Right)),
                 Inside(GymDoor, Gym, GymArrival),
                 Inside(TownHouseDoor, TownHouse, HouseArrival),
                 Inside(WarmHutDoor, WarmHut, HouseArrival),
@@ -210,7 +210,7 @@ namespace PenguinMonster.Story
                 .WithSign(new GridPos(7, 14), "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）");
         }
 
-        // ---- 道場（12x14）。中の顔ぶれは 8c ----
+        // ---- 道場（12x14） ----
         private static readonly GridPos GymExit = new GridPos(5, 13);
         private static readonly GridPos GymArrival = new GridPos(5, 12);
 
@@ -269,7 +269,7 @@ namespace PenguinMonster.Story
                 "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
             };
             return new FieldMap(Route02, rows,
-                new Warp(Route02West, new FieldSpot(Town, TownEast + Direction.Left.Offset(), Direction.Left)))
+                new Warp(Route02West, StepFrom(Town, TownEast, Direction.Left)))
                 .WithSign(new GridPos(26, 20), "この先 3番道路", "（雪が 深くて 今は 通れない）", "続きは 次の 更新で！")
                 .WithEncounters(
                     new EncounterTable(EncounterPercent,
@@ -296,8 +296,13 @@ namespace PenguinMonster.Story
         /// <summary>建物の扉から外へ。外では扉の1つ下で手前（下）を向いて立つ</summary>
         private static Warp Outside(GridPos exit, string outsideMap, GridPos outsideDoor)
         {
-            var front = outsideDoor + Direction.Down.Offset();
-            return new Warp(exit, new FieldSpot(outsideMap, front, Direction.Down));
+            return new Warp(exit, StepFrom(outsideMap, outsideDoor, Direction.Down));
+        }
+
+        /// <summary>from から facing へ1マス進んだマスに、facing を向いて立つ（出入口の手前・出口をふさぐ場所）</summary>
+        internal static FieldSpot StepFrom(string mapId, GridPos from, Direction facing)
+        {
+            return new FieldSpot(mapId, from + facing.Offset(), facing);
         }
     }
 }

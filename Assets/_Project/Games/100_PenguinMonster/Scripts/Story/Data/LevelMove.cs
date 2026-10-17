@@ -15,7 +15,7 @@ namespace PenguinMonster.Story
         }
     }
 
-    /// <summary>進化の表の1行「Lv N で No.M へ」。当面はレベル進化だけ（STORY_ROADMAP.md §3.3）</summary>
+    /// <summary>進化の表の1行「Lv N で No.M へ」。当面はレベル進化だけ</summary>
     public sealed class Evolution
     {
         public int Level { get; }

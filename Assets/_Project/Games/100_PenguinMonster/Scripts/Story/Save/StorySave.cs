@@ -18,7 +18,7 @@ namespace PenguinMonster.Story
     }
 
     /// <summary>
-    /// StoryState と記録（StorySaveData）の行き来（PLAN_STORY_TOWN01.md フェーズ7）。JSON・PlayerPrefs は View が受け持つ
+    /// StoryState と記録（StorySaveData）の行き来。JSON・PlayerPrefs は View が受け持つ
     /// </summary>
     public static class StorySave
     {

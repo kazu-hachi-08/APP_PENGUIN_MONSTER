@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// ツララ町・道路の人とトレーナー、道路の落とし物（PLAN_STORY_TOWN01.md フェーズ8b・8c）。
+    /// ツララ町・道路の人とトレーナー、道路の落とし物。
     /// 道場の前の門下生は、2番道路の奥のユキトとの2戦目（Town01Flags.Route02Cleared）まで扉をふさぐ
     /// </summary>
     public static partial class Town01People
@@ -11,7 +11,7 @@ namespace PenguinMonster.Story
         private const int FoundEggs = 3;
 
         /// <summary>道場の扉の前。2番道路の奥の出来事まで門下生がここに立つ</summary>
-        public static readonly FieldSpot DiscipleAtGymDoor = new FieldSpot(Town01Maps.Town, Town01Maps.GymDoor + Direction.Down.Offset(), Direction.Down);
+        public static readonly FieldSpot DiscipleAtGymDoor = Town01Maps.StepFrom(Town01Maps.Town, Town01Maps.GymDoor, Direction.Down);
 
         private static IEnumerable<FieldNpc> TownAndRoutes()
         {
@@ -44,7 +44,7 @@ namespace PenguinMonster.Story
                     EventStep.SetFlag(flag)));
         }
 
-        /// <summary>道路のトレーナー。向いている先を見張り、目が合ったら勝負。勝った後は別のセリフ</summary>
+        /// <summary>道路・道場のトレーナー。向いている先を見張り、目が合ったら勝負。勝った後は別のセリフ</summary>
         private static FieldNpc RouteTrainer(string id, NpcLook look, TrainerDefinition trainer, string mapId, GridPos pos, Direction facing,
             string challenge, string afterwards)
         {

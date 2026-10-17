@@ -29,7 +29,7 @@ namespace PenguinMonster.Story
     }
 
     /// <summary>
-    /// 出来事の台本の1行（PLAN_STORY_TOWN01.md フェーズ4）。台本は「会話 → 選ぶ → フラグ → 手持ちに足す」をこの並びで書く。
+    /// 出来事の台本の1行。台本は「会話 → 選ぶ → フラグ → 手持ちに足す」をこの並びで書く。
     /// 種類ごとに使う中身だけ入れる（ほかは空のまま）。作るときは下の Say などから作る
     /// </summary>
     public sealed class EventStep
@@ -37,9 +37,9 @@ namespace PenguinMonster.Story
         private static readonly EventStep[] None = new EventStep[0];
 
         public EventStepKind Kind { get; }
-        /// <summary>Say / Ask の文</summary>
+        /// <summary>Say / Ask / Heal の文。GiveBadge では羽章の表示名</summary>
         public string Text { get; }
-        /// <summary>SetFlag のフラグ。ChooseStarter では、選んだ子の No を後ろに付けて立てるフラグの頭</summary>
+        /// <summary>SetFlag のフラグ。ChooseStarter では、選んだ子の No を後ろに付けて立てるフラグの頭。GiveBadge では羽章の名前</summary>
         public string Flag { get; }
         /// <summary>Give でもらう子</summary>
         public StorySpecies Species { get; }

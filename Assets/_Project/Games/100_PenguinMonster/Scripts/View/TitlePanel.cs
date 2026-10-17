@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// タイトル画面（仕様書 §2）。ストーリー・勝ち抜き戦・オンライン対戦は GameFlow へ渡し、
+    /// タイトル画面。ストーリー・勝ち抜き戦・オンライン対戦は GameFlow へ渡し、
     /// ずかん・タイプ相性表・あそびかた・設定はその画面を開いて、閉じたらタイトルに戻る
     /// </summary>
     public class TitlePanel : MonoBehaviour

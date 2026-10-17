@@ -44,7 +44,7 @@ namespace PenguinMonster.View
         }
 
         /// <summary>
-        /// ストーリーで道具を使う相手を選ぶ（PLAN_STORY_TOWN01.md フェーズ6）。場に出ている子も選べるので、全員の HP を出す
+        /// ストーリーで道具を使う相手を選ぶ。場に出ている子も選べるので、全員の HP を出す
         /// </summary>
         /// <param name="canPick">道具が効く子</param>
         public void ShowItemTargets(BattleSide side, Func<int, bool> canPick, Action<int> onSelect, Action onBack)

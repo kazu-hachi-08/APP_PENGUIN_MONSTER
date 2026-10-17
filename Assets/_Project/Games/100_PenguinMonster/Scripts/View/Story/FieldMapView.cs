@@ -12,11 +12,11 @@ namespace PenguinMonster.View.Story
     {
         [SerializeField] private Tilemap _tilemap;
 
-        public FieldMap Map { get; private set; }
+        private FieldMap _map;
 
         public void Draw(FieldMap map)
         {
-            Map = map;
+            _map = map;
             _tilemap.ClearAllTiles();
             for (int y = 0; y < map.Height; y++)
             {
@@ -35,6 +35,6 @@ namespace PenguinMonster.View.Story
             return new Vector3(cell.x + 0.5f, cell.y, 0f);
         }
 
-        private Vector3Int ToCell(GridPos pos) => new Vector3Int(pos.X, Map.Height - 1 - pos.Y, 0);
+        private Vector3Int ToCell(GridPos pos) => new Vector3Int(pos.X, _map.Height - 1 - pos.Y, 0);
     }
 }

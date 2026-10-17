@@ -5,7 +5,7 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// ストーリーの記録の置き場所（PLAN_STORY_TOWN01.md フェーズ7）。記録は1つだけで、StorySaveData を JSON にして PlayerPrefs に置く。
+    /// ストーリーの記録の置き場所。記録は1つだけで、StorySaveData を JSON にして PlayerPrefs に置く。
     /// 中身の行き来は StorySave（純C#）が受け持つ
     /// </summary>
     public static class StorySaveStore

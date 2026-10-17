@@ -4,7 +4,7 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 1レベル上がったときの結果。画面（フェーズ5）が「Lv○に 上がった！」と上がった能力の窓、覚えた技を1段ずつ出すのに使う
+    /// 1レベル上がったときの結果。画面が「Lv○に 上がった！」と上がった能力の窓、覚えた技を1段ずつ出すのに使う
     /// </summary>
     public sealed class LevelUp
     {

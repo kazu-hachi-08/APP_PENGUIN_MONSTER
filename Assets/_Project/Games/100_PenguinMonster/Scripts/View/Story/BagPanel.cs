@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// バッグの一覧（PLAN_STORY_TOWN01.md フェーズ6）。道具の種類ごとに枠を1つ持ち、持っている道具だけ並べる。
+    /// バッグの一覧。道具の種類ごとに枠を1つ持ち、持っている道具だけ並べる。
     /// 押せるかどうかは呼ぶ側が決める（バトル中・フィールドで使える道具が違うため）。バトルとフィールドのメニューで使い回す
     /// </summary>
     public class BagPanel : MonoBehaviour

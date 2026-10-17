@@ -4,8 +4,8 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// あそびかた（Phase 8）。上のタブで ドラフト・選出・バトル・ダブルス・勝ち抜き戦・ストーリー を切り替える。
-    /// 文面は仕様書 §2・§4・§5 の要約。ルールを変えたらここも直す
+    /// あそびかた。上のタブで ドラフト・選出・バトル・ダブルス・勝ち抜き戦・ストーリー を切り替える。
+    /// 文面は仕様書のルールの要約。ルールを変えたらここも直す
     /// </summary>
     public class HowToPanel : SubMenuPanel
     {

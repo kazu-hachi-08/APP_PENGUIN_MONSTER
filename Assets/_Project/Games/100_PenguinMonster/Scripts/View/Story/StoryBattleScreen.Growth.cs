@@ -6,7 +6,7 @@ using PenguinMonster.Story;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// 戦いの後の経験値 → レベルアップ（能力の窓）→ 技を覚える（いっぱいなら忘れる技を選ぶ）→ 進化（PLAN_STORY_TOWN01.md フェーズ5）。
+    /// 戦いの後の経験値 → レベルアップ（能力の窓）→ 技を覚える（いっぱいなら忘れる技を選ぶ）→ 進化。
     /// 進化は本家と同じく、この戦いでレベルが上がった子だけ、経験値を配り終えてから
     /// </summary>
     public partial class StoryBattleScreen
@@ -84,7 +84,7 @@ namespace PenguinMonster.View.Story
 
         private IEnumerator Evolve(OwnedMonster member)
         {
-            // 種の一覧は区切りごとに足す。今は区切り1だけ
+            // 進化先はストーリーの種の一覧から探す（今は Town01Species だけ）
             var into = Town01Species.ByNo(member.Species.Evolution.IntoNo);
             if (into == null)
             {

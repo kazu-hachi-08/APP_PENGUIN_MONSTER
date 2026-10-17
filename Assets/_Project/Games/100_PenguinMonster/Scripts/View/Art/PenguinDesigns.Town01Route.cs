@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>区切り1の道路の子（No.160〜171。PLAN_STORY_TOWN01.md フェーズ8a）。鳥・お餅・雪・土筆・川魚の系統</summary>
+    /// <summary>ストーリー序盤の道路の子（No.160〜171）。鳥・お餅・雪・土筆・川魚の系統</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 BirdCap = Rgb(45, 42, 52);

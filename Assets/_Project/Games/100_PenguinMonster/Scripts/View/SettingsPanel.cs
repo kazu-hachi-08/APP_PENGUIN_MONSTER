@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 設定（Phase 8）。BGM・SE の音量とメッセージの速さ。
+    /// 設定。BGM・SE の音量とメッセージの速さ。
     /// 音量は共通基盤の AudioManager に渡し、閉じるときに保存する。速さは押したらすぐ GameSettings に保存する
     /// </summary>
     public class SettingsPanel : SubMenuPanel

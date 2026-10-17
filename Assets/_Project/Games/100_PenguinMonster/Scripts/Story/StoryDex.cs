@@ -4,7 +4,7 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 図鑑の見せ方（PLAN_STORY_TOWN01.md フェーズ8）。ドラフトの子はいつも見せ、ストーリーの子は見た子だけ見せる
+    /// 図鑑の見せ方。ドラフトの子はいつも見せ、ストーリーの子は見た子だけ見せる
     /// </summary>
     public static class StoryDex
     {

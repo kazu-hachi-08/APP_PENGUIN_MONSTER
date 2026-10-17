@@ -25,7 +25,7 @@ namespace PenguinMonster.Story
 
         /// <summary>始めたときのお金（本家と同じ）</summary>
         public const int StartMoney = 3000;
-        /// <summary>全滅したら お金を この数で割った分だけ残す（PLAN_STORY_TOWN01.md フェーズ5。半分）</summary>
+        /// <summary>全滅したら お金を この数で割った分だけ残す（半分）</summary>
         public const int BlackOutMoneyDivisor = 2;
 
         // 逃げる（本家の第3世代の簡略版）: 自分が速ければ必ず逃げられる。遅ければ

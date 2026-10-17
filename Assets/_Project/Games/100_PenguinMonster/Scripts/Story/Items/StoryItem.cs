@@ -4,7 +4,7 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// バッグに入る道具（PLAN_STORY_TOWN01.md フェーズ6）。バトルの持ち物（HeldItem）とは別物。
+    /// バッグに入る道具。バトルの持ち物（HeldItem）とは別物。
     /// 並びはバッグの並び（捕獲タマゴ → 回復 → 状態異常を治すもの）
     /// </summary>
     public enum StoryItem
@@ -65,7 +65,7 @@ namespace PenguinMonster.Story
         }
     }
 
-    /// <summary>区切り1の道具の一覧（PLAN_STORY_TOWN01.md フェーズ6。値段は本家に寄せる）</summary>
+    /// <summary>道具の一覧（値段は本家に寄せる）</summary>
     public static class StoryItems
     {
         private static readonly StoryItemDefinition[] All =

@@ -6,8 +6,8 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// フィールドのメニュー（PLAN_STORY_TOWN01.md フェーズ6）。B で開き、手持ち / バッグ / 図鑑 / 記録する / やめる / 閉じる。
-    /// 記録するは確かめてから今の場所ごと記録する（フェーズ7）。やめるは確かめてからタイトルへ戻る。B か「閉じる」で歩くのに戻る
+    /// フィールドのメニュー。B で開き、手持ち / バッグ / 図鑑 / 記録する / やめる / 閉じる。
+    /// 記録するは確かめてから今の場所ごと記録する。やめるは確かめてからタイトルへ戻る。B か「閉じる」で歩くのに戻る
     /// </summary>
     public class FieldMenu : MonoBehaviour
     {
@@ -36,7 +36,7 @@ namespace PenguinMonster.View.Story
         [SerializeField] private GameObject _list;
         [SerializeField] private PartyScreen _party;
         [SerializeField] private BagPanel _bag;
-        [Tooltip("タイトルの図鑑をそのまま開く（見た / 捕まえた はフェーズ8）")]
+        [Tooltip("タイトルの図鑑をそのまま開く")]
         [SerializeField] private DexPanel _dex;
         [Tooltip("やめるの「はい / いいえ」を会話窓で聞く")]
         [SerializeField] private FieldEventPlayer _events;

@@ -8,12 +8,11 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// あずかり箱の画面（PLAN_STORY_TOWN01.md フェーズ6）。左に手持ち、右に箱（1ページ6体、◀ ▶ で送る）。
+    /// あずかり箱の画面。左に手持ち、右に箱（1ページ6体、◀ ▶ で送る）。
     /// 押した子が反対側へ移る（入れ替えは「預ける → 引き出す」の2回押し）。結果の文は会話窓に出す
     /// </summary>
     public class BoxPanel : MonoBehaviour
     {
-        private const int SubLineSize = 28;
         private const string Prompt = "押した 子が 反対側へ 移ります";
         private const string DepositedFormat = "{0}を あずかり箱へ 預けた";
         private const string WithdrewFormat = "{0}を 手持ちに 加えた";
@@ -95,8 +94,8 @@ namespace PenguinMonster.View.Story
                     continue;
                 }
                 var member = members[first + i];
-                string hp = member.IsFainted ? "瀕死" : $"HP {member.CurrentHp}/{member.MaxHp}";
-                labels[i].SetFitted($"{member.Name}   Lv{member.Level}\n<size={SubLineSize}>{hp}</size>");
+                string hp = member.IsFainted ? PartyScreen.FaintedLabel : $"HP {member.CurrentHp}/{member.MaxHp}";
+                labels[i].SetFitted(PartyScreen.MemberLabel(member, hp));
                 icons[i].sprite = MonsterSprites.Front(member.Species.Definition);
             }
         }

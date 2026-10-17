@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 記録があるときに「ストーリー」で出す「続きから / 最初から」（PLAN_STORY_TOWN01.md フェーズ7）。
+    /// 記録があるときに「ストーリー」で出す「続きから / 最初から」。
     /// 最初からは確かめる。前の記録は、次に記録したときに上書きされるまで残す（本家と同じ。ここでは消さない）
     /// </summary>
     public class StoryStartPanel : MonoBehaviour

@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// レベルが上がったときの能力の窓（PLAN_STORY_TOWN01.md フェーズ5）。本家と同じく、先に上がった分（＋いくつ）、
+    /// レベルが上がったときの能力の窓。本家と同じく、先に上がった分（＋いくつ）、
     /// 次のタップで新しい値を見せる。左の列に能力の名前、右の列に数を出す
     /// </summary>
     public class LevelUpWindow : MonoBehaviour

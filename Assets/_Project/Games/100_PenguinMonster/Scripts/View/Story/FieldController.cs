@@ -7,7 +7,7 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// フィールドの進行役（PLAN_STORY_TOWN01.md フェーズ3〜5）。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
+    /// フィールドの進行役。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
     /// A で向いている先の人・看板を調べ、台本を FieldEventPlayer で見せる。草むらでは1歩ごとに野生に出会い、StoryBattleScreen で戦う。
     /// 全滅したら最後に回復した場所へ戻る。B でメニュー（FieldMenu）を開き、「やめる」で はい と答えたら Run を抜ける（タイトルへ戻る）
     /// </summary>

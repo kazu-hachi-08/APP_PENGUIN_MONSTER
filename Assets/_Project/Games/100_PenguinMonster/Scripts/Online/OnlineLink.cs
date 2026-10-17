@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace PenguinMonster.Online
 {
-    /// <summary>ペンモンの対戦中にやり取りするメッセージの種類（仕様書 §8 のメッセージ一覧）</summary>
+    /// <summary>ペンモンの対戦中にやり取りするメッセージの種類</summary>
     public enum LinkMessage
     {
         /// <summary>ホスト → ゲスト: ゲストのドラフトの抽選に使う種・シングル / ダブルス・ドラフト / 自分のチーム</summary>

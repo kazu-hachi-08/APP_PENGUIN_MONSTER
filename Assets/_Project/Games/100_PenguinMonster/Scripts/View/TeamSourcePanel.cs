@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// オンラインでホストが「ドラフト / 自分のチーム」を選ぶ画面（PLAN_STORY_TOWN01.md フェーズ9）。シングル / ダブルスの次に出す。
+    /// オンラインでホストが「ドラフト / 自分のチーム」を選ぶ画面。シングル / ダブルスの次に出す。
     /// 自分のチームは自分と相手の両方の手持ちが使えるときだけ決まり、使えなければ下に理由を出して選び直してもらう
     /// </summary>
     public class TeamSourcePanel : MonoBehaviour

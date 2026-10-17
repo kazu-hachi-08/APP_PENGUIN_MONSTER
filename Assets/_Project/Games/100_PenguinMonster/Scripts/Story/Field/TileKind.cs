@@ -4,9 +4,9 @@ namespace PenguinMonster.Story
     public enum TileKind
     {
         Snow,
-        /// <summary>草むら（フェーズ5で野生が出る）</summary>
+        /// <summary>草むら（野生が出る）</summary>
         Grass,
-        /// <summary>深い草むら。マップの2つ目の出現表から出る（川べり・林の奥など、場所で出る子を変える。フェーズ8b）</summary>
+        /// <summary>深い草むら。マップの2つ目の出現表から出る（川べり・林の奥など、場所で出る子を変える）</summary>
         DeepGrass,
         Path,
         Tree,

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// 「はい / いいえ」の窓（PLAN_STORY_TOWN01.md フェーズ4）。会話窓の右上に重ねる（ダイパと同じ）。
+    /// 「はい / いいえ」の窓。会話窓の右上に重ねる（ダイパと同じ）。
     /// 押して選ぶほか、PC は上下で ▶ を動かして A（Z）で決める。B（X）は いいえ（本家と同じく、断る側へ逃げられるように）
     /// </summary>
     public class YesNoWindow : MonoBehaviour
@@ -44,11 +44,11 @@ namespace PenguinMonster.View.Story
             onAnswer(_answer.Value);
         }
 
-        /// <summary>上下は押し続けても1回だけ動かす（押した瞬間だけ見る）</summary>
+        /// <summary>選択肢は2つなので、上でも下でも反対側へ動かす</summary>
         private Direction? ReadKeys(Direction? lastHeld)
         {
             var held = _input.HeldDirection;
-            if (held != lastHeld && (held == Direction.Up || held == Direction.Down))
+            if (FieldInput.VerticalStep(held, lastHeld) != 0)
             {
                 MoveCursor(!_cursorOnYes);
             }

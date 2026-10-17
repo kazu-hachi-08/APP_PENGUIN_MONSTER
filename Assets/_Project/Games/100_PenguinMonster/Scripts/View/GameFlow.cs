@@ -8,14 +8,14 @@ using UnityEngine;
 namespace PenguinMonster.View
 {
     /// <summary>
-    /// 画面の流れ（仕様書 §2 / §2.3）: タイトル → シングル / ダブルス → ドラフト → 持ち物 →
+    /// 画面の流れ: タイトル → シングル / ダブルス → ドラフト → 持ち物 →
     /// [何戦目か・ボス登場 → 見せ合い・選出 → バトル → 結果] を負けるまでくり返す → タイトル。
     /// 各画面は自分の表示と入力だけを持ち、次へ進む順番はここで決める。
     /// 結果の文面は GameFlow.Result.cs、オンライン対戦の流れは GameFlow.Online.cs、ストーリーの流れは GameFlow.Story.cs
     /// </summary>
     public partial class GameFlow : MonoBehaviour
     {
-        /// <summary>最高連勝数の保存キー（共通基盤の BestScore）。シングルは Phase 9 までと同じキーのまま、ダブルスは別に数える</summary>
+        /// <summary>最高連勝数の保存キー（共通基盤の BestScore）。シングルはダブルスを足す前と同じキーのまま（記録を引き継ぐため）、ダブルスは別に数える</summary>
         private const string BestWinsKey = "PenguinMonster.SurvivalWins";
         private const string BestDoubleWinsKey = "PenguinMonster.SurvivalWins.Double";
         private const string SurvivalQuitMessage = "勝ち抜き戦は ここで 終わります\n（最高記録は 残ります）";
@@ -73,12 +73,12 @@ namespace PenguinMonster.View
             GameMusic.Play(MusicTrack.Draft);
             _draftPanel.Show(new Draft(MonsterTable.All, random), six => playerSix = six);
             yield return new WaitUntil(() => playerSix != null);
-            // 持ち物は最初の1回だけ。チームを途中で変えないので、持ち主も最後まで同じ（仕様書 §2.1.1）
+            // 持ち物は最初の1回だけ。チームを途中で変えないので、持ち主も最後まで同じ
             List<MonsterDefinition> withItem = null;
             _itemPanel.Show(playerSix, ItemDraw.Draw(random), six => withItem = six);
             yield return new WaitUntil(() => withItem != null);
 
-            // 途中経過は保存しない（仕様書 §9）。アプリを閉じたらその回はおしまい
+            // 途中経過は保存しない。アプリを閉じたらその回はおしまい
             var run = new SurvivalRun(withItem, random, format.Value);
             while (true)
             {

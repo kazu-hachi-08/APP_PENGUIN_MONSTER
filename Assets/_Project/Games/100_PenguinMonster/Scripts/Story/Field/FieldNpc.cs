@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace PenguinMonster.Story
 {
-    /// <summary>人の見た目。View が主人公の絵の色を替えて描く（区切りごとに足す）</summary>
+    /// <summary>人の見た目。View が主人公の絵の色を替えて描く</summary>
     public enum NpcLook
     {
         Mom,
@@ -60,9 +60,6 @@ namespace PenguinMonster.Story
         }
 
         public static NpcPlacement Always(FieldSpot spot, params EventStep[] script) => new NpcPlacement(spot, script, null, null);
-
-        /// <summary>フラグが立ってから</summary>
-        public static NpcPlacement After(string flag, FieldSpot spot, params EventStep[] script) => new NpcPlacement(spot, script, flag, null);
 
         /// <summary>フラグが立つまで</summary>
         public static NpcPlacement Until(string flag, FieldSpot spot, params EventStep[] script) => new NpcPlacement(spot, script, null, flag);
