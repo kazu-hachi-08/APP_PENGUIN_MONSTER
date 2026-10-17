@@ -1,7 +1,10 @@
+using System.Collections.Generic;
+
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// ストーリー1回分の持ち物。フラグ・手持ち・あずかり箱・バッグ・お金・最後に回復した場所（セーブはフェーズ7で足す）
+    /// ストーリー1回分の持ち物。フラグ・手持ち・あずかり箱・バッグ・お金・図鑑・羽章・最後に回復した場所。
+    /// 記録（セーブ）への書き出し・読み込みは StorySave
     /// </summary>
     public sealed class StoryState
     {
@@ -9,7 +12,12 @@ namespace PenguinMonster.Story
         public Party Party { get; } = new Party();
         public MonsterBox Box { get; } = new MonsterBox();
         public Bag Bag { get; } = new Bag();
-        public int Money { get; private set; } = StoryBalance.StartMoney;
+        public int Money { get; internal set; } = StoryBalance.StartMoney;
+        /// <summary>図鑑の「見た」「捕まえた」の No。中身を入れるのはフェーズ8（今はセーブの欄だけ用意する）</summary>
+        public HashSet<int> SeenNos { get; } = new HashSet<int>();
+        public HashSet<int> CaughtNos { get; } = new HashSet<int>();
+        /// <summary>もらった羽章の名前。中身を入れるのはフェーズ8c（今はセーブの欄だけ用意する）</summary>
+        public HashSet<string> Badges { get; } = new HashSet<string>();
         /// <summary>全滅したときに戻る場所。回復したところで書き換える</summary>
         public FieldSpot LastHealSpot { get; set; }
 

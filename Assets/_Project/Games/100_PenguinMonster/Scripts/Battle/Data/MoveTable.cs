@@ -13,7 +13,7 @@ namespace PenguinMonster.Battle
     /// 反動・吸収・連続・回復・天候の技は Phase 11 で足した（威力は原作の同じ役割の技に合わせた）。
     /// 段階4（76〜150）では、タイプごとに足りなかった役割（岩とノーマルの特殊・オーロラの物理・先制・積み技など）を埋めた
     /// </summary>
-    public static class MoveTable
+    public static partial class MoveTable
     {
         private const int Sure = 100;
         // 2〜5回当たる技の回数
