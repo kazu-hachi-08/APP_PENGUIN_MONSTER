@@ -12,6 +12,7 @@ namespace PenguinMonster.Story
         private const string ReceivedFormat = "{0}を もらった！";
         private const string SentToBoxFormat = "{0}を もらった！\n手持ちが いっぱいなので あずかり箱へ 送られた";
         private const string ReceivedItemFormat = "{0}を {1}個 もらった！";
+        private const string FoundItemFormat = "{0}を {1}個 見つけた！";
 
         private readonly StoryState _state;
         private readonly List<EventStep> _steps;
@@ -33,7 +34,7 @@ namespace PenguinMonster.Story
                     case EventStepKind.Give:
                         return string.Format(_sentToBox ? SentToBoxFormat : ReceivedFormat, Current.Species.Name);
                     case EventStepKind.GiveItem:
-                        return string.Format(ReceivedItemFormat, StoryItems.Get(Current.Item).Name, Current.Count);
+                        return string.Format(Current.Found ? FoundItemFormat : ReceivedItemFormat, StoryItems.Get(Current.Item).Name, Current.Count);
                     default:
                         return Current?.Text;
                 }

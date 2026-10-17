@@ -1,9 +1,8 @@
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2）。今は仮のハツユキ村と、家・研究所・仮のぬくもり小屋・よろず屋の中、試しの1番道路だけ。
-    /// 本番の中身はフェーズ8で作り直す。
-    /// 文字: . 雪 / , 草むら / = 道 / T 木 / ~ 水 / W 家の壁 / R 屋根 / D 扉 / _ 床 / S 看板
+    /// 区切り1のマップ（PLAN_STORY_TOWN01.md §2・フェーズ8b）。ハツユキ村（北）→ 1番道路（北）→ ツララ町、町の東から 2番道路（行き止まり）。
+    /// 文字: . 雪 / , 草むら / ; 深い草むら / = 道 / T 木 / ~ 水 / W 家の壁 / R 屋根 / D 扉 / _ 床 / S 看板
     /// </summary>
     public static class Town01Maps
     {
@@ -12,22 +11,16 @@ namespace PenguinMonster.Story
         public const string RivalHouse = "RivalHouse";
         public const string Lab = "Lab";
         public const string Route01 = "Route01";
-        /// <summary>ぬくもり小屋・よろず屋。本番はツララ町に置くが、8b で町ができるまで村に仮で置く（PLAN_STORY_TOWN01.md フェーズ6）</summary>
+        public const string Town = "TsuraraTown";
+        public const string TownHouse = "TsuraraHouse";
+        /// <summary>ぬくもり小屋・よろず屋（ツララ町）。名前は村に仮で置いていたときと同じにして、記録の戻り先をそのまま使えるようにする</summary>
         public const string WarmHut = "WarmHut";
         public const string Shop = "Shop";
+        public const string Gym = "TsuraraGym";
+        public const string Route02 = "Route02";
 
-        // 村の扉と、外へ出たときに立つ扉の前のマス
-        private static readonly GridPos PlayerHouseDoor = new GridPos(4, 4);
-        private static readonly GridPos RivalHouseDoor = new GridPos(13, 4);
-        private static readonly GridPos LabDoor = new GridPos(6, 10);
-        private static readonly GridPos WarmHutDoor = new GridPos(11, 13);
-        private static readonly GridPos ShopDoor = new GridPos(16, 13);
-        private static readonly GridPos HutShopSign = new GridPos(14, 13);
-
-        /// <summary>村の北の出口（1番道路へ）。最初の1体をもらうまで母が手前でふさぐ</summary>
-        public static readonly GridPos NorthExit = new GridPos(9, 0);
-        private static readonly GridPos ExitSign = new GridPos(10, 1);
-        private static readonly GridPos VillageSign = new GridPos(8, 7);
+        /// <summary>草むらを1歩進むごとに野生に出会う確率（％）。本家の草むら（おおよそ 1割）に合わせる</summary>
+        private const int EncounterPercent = 10;
 
         /// <summary>「ストーリー」を始めたときに立つ場所。自分の家の中で目覚める</summary>
         public static readonly FieldSpot Start = new FieldSpot(PlayerHouse, new GridPos(2, 2), Direction.Down);
@@ -36,10 +29,20 @@ namespace PenguinMonster.Story
         {
             return new FieldWorld(new[]
             {
-                CreateVillage(), CreateHouse(PlayerHouse, PlayerHouseDoor), CreateHouse(RivalHouse, RivalHouseDoor), CreateLab(), CreateRoute01(),
-                CreateHouse(WarmHut, WarmHutDoor), CreateHouse(Shop, ShopDoor),
+                CreateVillage(), CreateHouse(PlayerHouse, Village, PlayerHouseDoor), CreateHouse(RivalHouse, Village, RivalHouseDoor),
+                CreateLab(), CreateRoute01(), CreateTown(), CreateHouse(TownHouse, Town, TownHouseDoor),
+                CreateHouse(WarmHut, Town, WarmHutDoor), CreateHouse(Shop, Town, ShopDoor), CreateGym(), CreateRoute02(),
             });
         }
+
+        // ---- ハツユキ村（20x16） ----
+        private static readonly GridPos PlayerHouseDoor = new GridPos(4, 4);
+        private static readonly GridPos RivalHouseDoor = new GridPos(13, 4);
+        private static readonly GridPos LabDoor = new GridPos(6, 10);
+        /// <summary>村の北の出口（1番道路へ）。最初の1体をもらうまで母が手前でふさぐ</summary>
+        public static readonly GridPos NorthExit = new GridPos(9, 0);
+        private static readonly GridPos ExitSign = new GridPos(10, 1);
+        private static readonly GridPos VillageSign = new GridPos(8, 7);
 
         private static FieldMap CreateVillage()
         {
@@ -56,31 +59,28 @@ namespace PenguinMonster.Story
                 "T..RRRRRR=.....,,,.T",
                 "T..RRRRRR=.....,,,.T",
                 "T..WWWDWW=.........T",
-                "T.....====RRRR.RRRRT",
-                "T.........RRRR.RRRRT",
-                "T..~~~~...WDWWSWDWWT",
-                "T..~~~~....=....=..T",
+                "T.....====.....T...T",
+                "T.........TT.......T",
+                "T..~~~~.....T..TT..T",
+                "T..~~~~.......T....T",
                 "TTTTTTTTTTTTTTTTTTTT",
             };
             return new FieldMap(Village, rows,
                 Inside(PlayerHouseDoor, PlayerHouse, HouseArrival),
                 Inside(RivalHouseDoor, RivalHouse, HouseArrival),
                 Inside(LabDoor, Lab, LabArrival),
-                Inside(WarmHutDoor, WarmHut, HouseArrival),
-                Inside(ShopDoor, Shop, HouseArrival),
-                new Warp(NorthExit, new FieldSpot(Route01, Route01Exit + Direction.Up.Offset(), Direction.Up)))
-                .WithSign(ExitSign, "この先 1番道路", "草むらでは 野生の ペンモンが 飛び出して くるぞ")
-                .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村")
-                .WithSign(HutShopSign, "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）");
+                new Warp(NorthExit, new FieldSpot(Route01, Route01South + Direction.Up.Offset(), Direction.Up)))
+                .WithSign(ExitSign, "この先 1番道路", "1番道路を 抜けると ツララ町")
+                .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村");
         }
 
-        // 中の扉と、入ったときに立つ扉の前のマス
+        // ---- 家・研究所・小屋・店の中 ----
         private static readonly GridPos HouseExit = new GridPos(3, 5);
         private static readonly GridPos HouseArrival = new GridPos(3, 4);
         private static readonly GridPos LabExit = new GridPos(4, 7);
         private static readonly GridPos LabArrival = new GridPos(4, 6);
 
-        private static FieldMap CreateHouse(string id, GridPos villageDoor)
+        private static FieldMap CreateHouse(string id, string outsideMap, GridPos outsideDoor)
         {
             var rows = new[]
             {
@@ -91,7 +91,7 @@ namespace PenguinMonster.Story
                 "W______W",
                 "WWWDWWWW",
             };
-            return new FieldMap(id, rows, Outside(HouseExit, villageDoor));
+            return new FieldMap(id, rows, Outside(HouseExit, outsideMap, outsideDoor));
         }
 
         private static FieldMap CreateLab()
@@ -107,60 +107,197 @@ namespace PenguinMonster.Story
                 "W________W",
                 "WWWWDWWWWW",
             };
-            return new FieldMap(Lab, rows, Outside(LabExit, LabDoor));
+            return new FieldMap(Lab, rows, Outside(LabExit, Village, LabDoor));
         }
 
-        // 試しの1番道路の南の出口（村へ）と、北の行き止まりの看板
-        private static readonly GridPos Route01Exit = new GridPos(6, 17);
-        private static readonly GridPos Route01Sign = new GridPos(5, 1);
-        /// <summary>草むらを1歩進むごとに野生に出会う確率（％）。本家の草むら（おおよそ 1割）に合わせる</summary>
-        private const int Route01EncounterPercent = 10;
+        // ---- 1番道路（16x30）。西に川が流れ、川べりは深い草むら ----
+        private static readonly GridPos Route01South = new GridPos(7, 29);
+        private static readonly GridPos Route01North = new GridPos(7, 0);
 
-        /// <summary>
-        /// 試しの1番道路（フェーズ5で野生・トレーナーと戦うため）。本番の 16x30 の道路はフェーズ8b で作り直す
-        /// </summary>
         private static FieldMap CreateRoute01()
         {
             var rows = new[]
             {
-                "TTTTTTTTTTTT",
-                "T....S=....T",
-                "T,,,,.=,,,,T",
-                "T,,,,.=,,,,T",
-                "T,,,,.=,,,,T",
-                "T.....=....T",
-                "T.....=....T",
-                "TTT...=..TTT",
-                "T.....=....T",
-                "T..,,,=,,,.T",
-                "T..,,,=,,,.T",
-                "T..,,,=,,,.T",
-                "T.....=....T",
-                "T.....=....T",
-                "T~~...=....T",
-                "T~~...=....T",
-                "T.....=....T",
-                "TTTTTT=TTTTT",
+                "TTTTTTT=TTTTTTTT",
+                "T......=.S.....T",
+                "T.,,,,.=....,,,T",
+                "T.,,,,.=....,,,T",
+                "T.,,,,.=....,,,T",
+                "T......=.......T",
+                "TTTT...=...TTTTT",
+                "T......=.......T",
+                "T~~;;..=..,,,,.T",
+                "T~~;;..=..,,,,.T",
+                "T~~;;..=..,,,,.T",
+                "T~~;;..=.......T",
+                "T~~....=.......T",
+                "T~~..TT=TT.....T",
+                "T~~....=.......T",
+                "T~~;;;.=.,,,,,.T",
+                "T~~;;;.=.,,,,,.T",
+                "T~~;;;.=.,,,,,.T",
+                "T~~....=.......T",
+                "T~~....=....TTTT",
+                "T~~....=.......T",
+                "T~~,,,.=.......T",
+                "T~~,,,.=..,,,..T",
+                "T~~,,,.=..,,,..T",
+                "T~~....=..,,,..T",
+                "T~~....=.......T",
+                "T~~....=.......T",
+                "T......=..S....T",
+                "T......=.......T",
+                "TTTTTTT=TTTTTTTT",
             };
-            var toVillage = new Warp(Route01Exit, new FieldSpot(Village, NorthExit + Direction.Down.Offset(), Direction.Down));
-            return new FieldMap(Route01, rows, toVillage)
-                .WithSign(Route01Sign, "この先 ツララ町", "（まだ 準備中です）")
-                .WithEncounters(new EncounterTable(Route01EncounterPercent,
-                    new EncounterSlot(Town01Species.Kogara, 2, 4, 50),
-                    new EncounterSlot(Town01Species.Omochi, 2, 4, 50)));
+            return new FieldMap(Route01, rows,
+                new Warp(Route01South, new FieldSpot(Village, NorthExit + Direction.Down.Offset(), Direction.Down)),
+                new Warp(Route01North, new FieldSpot(Town, TownSouth + Direction.Up.Offset(), Direction.Up)))
+                .WithSign(new GridPos(9, 1), "この先 ツララ町")
+                .WithSign(new GridPos(10, 27), "1番道路", "川べりの 深い 草むらには 川の ペンモンが いるらしい")
+                .WithEncounters(
+                    new EncounterTable(EncounterPercent,
+                        new EncounterSlot(Town01Species.Kogara, 2, 4, 50),
+                        new EncounterSlot(Town01Species.Omochi, 2, 4, 50)),
+                    new EncounterTable(EncounterPercent,
+                        new EncounterSlot(Town01Species.Yamame, 3, 5, 50),
+                        new EncounterSlot(Town01Species.Kogara, 3, 5, 30),
+                        new EncounterSlot(Town01Species.Omochi, 3, 5, 20)));
         }
 
-        /// <summary>村の扉から建物の中へ。中では扉の前で奥（上）を向いて立つ</summary>
-        private static Warp Inside(GridPos villageDoor, string mapId, GridPos arrival)
+        // ---- ツララ町（24x20）。道場・ぬくもり小屋・よろず屋・家 ----
+        private static readonly GridPos TownSouth = new GridPos(7, 19);
+        private static readonly GridPos TownEast = new GridPos(23, 9);
+        /// <summary>道場の扉。最初は門下生が扉の前（1つ下）でふさぐ</summary>
+        public static readonly GridPos GymDoor = new GridPos(7, 5);
+        private static readonly GridPos TownHouseDoor = new GridPos(17, 4);
+        private static readonly GridPos WarmHutDoor = new GridPos(4, 13);
+        private static readonly GridPos ShopDoor = new GridPos(11, 13);
+
+        private static FieldMap CreateTown()
         {
-            return new Warp(villageDoor, new FieldSpot(mapId, arrival, Direction.Up));
+            var rows = new[]
+            {
+                "TTTTTTTTTTTTTTTTTTTTTTTT",
+                "T......................T",
+                "T..RRRRRRRR....RRRRR...T",
+                "T..RRRRRRRR....RRRRR...T",
+                "T..RRRRRRRR....WWDWW...T",
+                "T..WWWWDWWW......=.....T",
+                "T......=..S......=.....T",
+                "T......===========.....T",
+                "T............=.........T",
+                "T..S.........===========",
+                "T............=.........T",
+                "T..RRRR..RRRR=...~~~~..T",
+                "T..RRRR..RRRR=...~~~~..T",
+                "T..WDWW..WWDW=...~~~~..T",
+                "T...=..S...===.........T",
+                "T...==========.........T",
+                "T......=...............T",
+                "T......=.....TT....TT..T",
+                "T......=...............T",
+                "TTTTTTT=TTTTTTTTTTTTTTTT",
+            };
+            return new FieldMap(Town, rows,
+                new Warp(TownSouth, new FieldSpot(Route01, Route01North + Direction.Down.Offset(), Direction.Down)),
+                new Warp(TownEast, new FieldSpot(Route02, Route02West + Direction.Right.Offset(), Direction.Right)),
+                Inside(GymDoor, Gym, GymArrival),
+                Inside(TownHouseDoor, TownHouse, HouseArrival),
+                Inside(WarmHutDoor, WarmHut, HouseArrival),
+                Inside(ShopDoor, Shop, HouseArrival))
+                .WithSign(new GridPos(3, 9), "ここは ツララ町", "つららの 下がる 雪国の 町")
+                .WithSign(new GridPos(10, 6), "ツララ町 道場", "岩のように 固い 守りの 道場")
+                .WithSign(new GridPos(7, 14), "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）");
         }
 
-        /// <summary>建物の扉から村へ。村では扉の1つ下で手前（下）を向いて立つ</summary>
-        private static Warp Outside(GridPos exit, GridPos villageDoor)
+        // ---- 道場（12x14）。中の顔ぶれは 8c ----
+        private static readonly GridPos GymExit = new GridPos(5, 13);
+        private static readonly GridPos GymArrival = new GridPos(5, 12);
+
+        private static FieldMap CreateGym()
         {
-            var front = villageDoor + Direction.Down.Offset();
-            return new Warp(exit, new FieldSpot(Village, front, Direction.Down));
+            var rows = new[]
+            {
+                "WWWWWWWWWWWW",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "W__________W",
+                "WWWWWDWWWWWW",
+            };
+            return new FieldMap(Gym, rows, Outside(GymExit, Town, GymDoor));
+        }
+
+        // ---- 2番道路（30x24）。雪の林。東の奥は暗い林で深い草むら。南東が行き止まり ----
+        private static readonly GridPos Route02West = new GridPos(0, 12);
+
+        private static FieldMap CreateRoute02()
+        {
+            var rows = new[]
+            {
+                "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+                "T.....,,,,...TTTT....TTT;;;;;T",
+                "T.....,,,,...TTTT....TTT;;;;;T",
+                "T..TT.,,,,...........TTT;;;;;T",
+                "T..TT..........,,,,......;;;.T",
+                "T..............,,,,..TT......T",
+                "TTT....TTT.....,,,,..TT..TTTTT",
+                "T......TTT...........TT..;;;;T",
+                "T..,,,,......TT..........;;;;T",
+                "T..,,,,......TT..,,,,....;;;;T",
+                "T..,,,,..........,,,,..TT....T",
+                "T................,,,,..TT....T",
+                "=.........TT.................T",
+                "T.........TT..,,,,,..TTTT..TTT",
+                "T..TT.........,,,,,..TTTT....T",
+                "T..TT..,,,,...,,,,,......;;;.T",
+                "T......,,,,..........TT..;;;.T",
+                "T......,,,,....TTT...TT..;;;.T",
+                "TTT............TTT.......;;;.T",
+                "T.....,,,,.............T.....T",
+                "T.....,,,,.....,,,,....T..S..T",
+                "T..TT.,,,,.....,,,,....T.....T",
+                "T..TT..........,,,,....T.....T",
+                "TTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+            };
+            return new FieldMap(Route02, rows,
+                new Warp(Route02West, new FieldSpot(Town, TownEast + Direction.Left.Offset(), Direction.Left)))
+                .WithSign(new GridPos(26, 20), "この先 3番道路", "（雪が 深くて 今は 通れない）")
+                .WithEncounters(
+                    new EncounterTable(EncounterPercent,
+                        new EncounterSlot(Town01Species.Konayuki, 6, 9, 25),
+                        new EncounterSlot(Town01Species.Tsukushi, 6, 9, 25),
+                        new EncounterSlot(Town01Species.Ishikoro, 6, 9, 20),
+                        new EncounterSlot(Town01Species.Kogara, 6, 9, 15),
+                        new EncounterSlot(Town01Species.Omochi, 6, 9, 10),
+                        new EncounterSlot(Town01Species.Pachiri, 6, 9, 5)),
+                    new EncounterTable(EncounterPercent,
+                        new EncounterSlot(Town01Species.Warashi, 7, 10, 40),
+                        new EncounterSlot(Town01Species.Konayuki, 7, 10, 25),
+                        new EncounterSlot(Town01Species.Tsukushi, 7, 10, 25),
+                        new EncounterSlot(Town01Species.Pachiri, 7, 10, 9),
+                        new EncounterSlot(Town01Species.DiamondDust, 7, 10, 1)));
+        }
+
+        /// <summary>外の扉から建物の中へ。中では扉の前で奥（上）を向いて立つ</summary>
+        private static Warp Inside(GridPos outsideDoor, string mapId, GridPos arrival)
+        {
+            return new Warp(outsideDoor, new FieldSpot(mapId, arrival, Direction.Up));
+        }
+
+        /// <summary>建物の扉から外へ。外では扉の1つ下で手前（下）を向いて立つ</summary>
+        private static Warp Outside(GridPos exit, string outsideMap, GridPos outsideDoor)
+        {
+            var front = outsideDoor + Direction.Down.Offset();
+            return new Warp(exit, new FieldSpot(outsideMap, front, Direction.Down));
         }
     }
 }

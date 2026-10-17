@@ -250,16 +250,16 @@ namespace PenguinMonster.Story.Tests
         [Test]
         public void HutAndShopDoors_LeadInsideAndBack()
         {
-            foreach (var (door, mapId) in new[] { (new GridPos(11, 14), Town01Maps.WarmHut), (new GridPos(16, 14), Town01Maps.Shop) })
+            foreach (var (door, mapId) in new[] { (new GridPos(4, 14), Town01Maps.WarmHut), (new GridPos(11, 14), Town01Maps.Shop) })
             {
-                var player = PlayerAt(Town01Maps.Village, door, Direction.Up);
+                var player = PlayerAt(Town01Maps.Town, door, Direction.Up);
                 player.Step(Direction.Up);
                 player.Enter(player.WarpHere);
                 Assert.AreEqual(mapId, player.Map.Id);
 
                 player.Step(Direction.Down);
                 player.Enter(player.WarpHere);
-                Assert.AreEqual(Town01Maps.Village, player.Map.Id);
+                Assert.AreEqual(Town01Maps.Town, player.Map.Id);
                 Assert.AreEqual(door, player.Position);
             }
         }

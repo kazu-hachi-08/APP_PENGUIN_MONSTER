@@ -7,5 +7,9 @@ namespace PenguinMonster.Story
         public const string GotStarter = "town01.gotStarter";
         /// <summary>選んだ最初の1体（後ろに No が付く）。ライバルが相性のいい子を選ぶのに使う</summary>
         public const string StarterPrefix = "town01.starter.";
+        /// <summary>2番道路の奥の出来事を見た。道場の前の門下生がどく（PLAN_STORY_TOWN01.md フェーズ8b。中身は 8c）</summary>
+        public const string Route02Cleared = "town01.route02Cleared";
+        /// <summary>道路の落とし物を拾った（後ろに落とし物の名前が付く）</summary>
+        public const string ItemPrefix = "town01.item.";
     }
 }

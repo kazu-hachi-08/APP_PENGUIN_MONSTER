@@ -16,6 +16,10 @@ namespace PenguinMonster.Story
         HutKeeper,
         /// <summary>よろず屋の店員</summary>
         Clerk,
+        /// <summary>道場の門下生</summary>
+        Disciple,
+        /// <summary>道路の落とし物（人ではなく道具の袋。前から A で拾う）</summary>
+        Item,
     }
 
     /// <summary>

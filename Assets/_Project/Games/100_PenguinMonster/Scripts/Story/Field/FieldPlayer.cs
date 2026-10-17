@@ -70,16 +70,26 @@ namespace PenguinMonster.Story
 
         /// <summary>
         /// 今いるマスで野生に出会うか（草むらを1歩進むごとに View が呼ぶ）。草むらでない・出現表が無い・
-        /// 戦える子がいないときは出会わない。出会わなければ null
+        /// 戦える子がいないときは出会わない。深い草むらはマップの2つ目の出現表を使う。出会わなければ null
         /// </summary>
         public OwnedMonster RollEncounter(Random random, Party party)
         {
-            var table = Map.Encounters;
-            if (table == null || Map.TileAt(Position) != TileKind.Grass || !party.CanFight)
+            var table = TableAt(Map.TileAt(Position));
+            if (table == null || !party.CanFight)
             {
                 return null;
             }
             return table.Roll(random);
+        }
+
+        private EncounterTable TableAt(TileKind tile)
+        {
+            switch (tile)
+            {
+                case TileKind.Grass: return Map.Encounters;
+                case TileKind.DeepGrass: return Map.DeepEncounters;
+                default: return null;
+            }
         }
 
         /// <summary>今の場所で目が合ったトレーナー。居なければ null</summary>

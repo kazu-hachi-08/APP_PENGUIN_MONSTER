@@ -22,6 +22,10 @@ namespace PenguinMonster.View.Story
         private static readonly Color32 SnowShade = new Color32(205, 220, 240, 255);
         private static readonly Color32 GrassDark = new Color32(52, 120, 84, 255);
         private static readonly Color32 GrassLight = new Color32(96, 168, 108, 255);
+        // 深い草むらは地面まで草で埋め、色も暗くして、ふつうの草むらと遠目で見分けられるようにする
+        private static readonly Color32 DeepGround = new Color32(40, 84, 70, 255);
+        private static readonly Color32 DeepDark = new Color32(24, 64, 56, 255);
+        private static readonly Color32 DeepLight = new Color32(64, 124, 96, 255);
         private static readonly Color32 PathBase = new Color32(204, 194, 178, 255);
         private static readonly Color32 PathPebble = new Color32(170, 160, 146, 255);
         private static readonly Color32 Trunk = new Color32(110, 74, 50, 255);
@@ -62,6 +66,7 @@ namespace PenguinMonster.View.Story
             switch (kind)
             {
                 case TileKind.Grass: PaintGrass(canvas); break;
+                case TileKind.DeepGrass: PaintDeepGrass(canvas); break;
                 case TileKind.Path: PaintPath(canvas); break;
                 case TileKind.Tree: PaintTree(canvas); break;
                 case TileKind.Water: PaintWater(canvas); break;
@@ -96,6 +101,23 @@ namespace PenguinMonster.View.Story
                     int bottom = 1 + row * 7;
                     canvas.FillTriangle(new Vector2(left, bottom), new Vector2(left + 3, bottom + 6), new Vector2(left + 6, bottom), GrassDark);
                     canvas.FillTriangle(new Vector2(left + 1, bottom + 1), new Vector2(left + 3, bottom + 5), new Vector2(left + 5, bottom + 1), GrassLight);
+                }
+            }
+        }
+
+        /// <summary>深い草むら。3列×3段の背の高い草をすき間なく並べる</summary>
+        private static void PaintDeepGrass(PixelCanvas canvas)
+        {
+            canvas.FillRect(0, 0, Size, Size, DeepGround);
+            for (int row = 0; row < 3; row++)
+            {
+                for (int col = 0; col < 3; col++)
+                {
+                    // 段ごとに半分ずらして、格子に並んで見えないようにする
+                    int left = col * 5 + (row % 2) * 2 - 1;
+                    int bottom = row * 5;
+                    canvas.FillTriangle(new Vector2(left, bottom), new Vector2(left + 3, bottom + 7), new Vector2(left + 6, bottom), DeepDark);
+                    canvas.FillTriangle(new Vector2(left + 1, bottom + 1), new Vector2(left + 3, bottom + 5), new Vector2(left + 5, bottom + 1), DeepLight);
                 }
             }
         }

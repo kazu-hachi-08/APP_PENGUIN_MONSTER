@@ -57,13 +57,15 @@ namespace PenguinMonster.Story
         public StoryItem Item { get; }
         /// <summary>GiveItem でもらう数</summary>
         public int Count { get; }
+        /// <summary>GiveItem が落とし物を拾ったもの（「見つけた！」と出す）</summary>
+        public bool Found { get; }
         /// <summary>Shop で売っている道具</summary>
         public IReadOnlyList<StoryItem> ShopItems { get; }
 
         private EventStep(EventStepKind kind, string text = null, string flag = null, StorySpecies species = null,
             IReadOnlyList<StorySpecies> choices = null, int level = 0, IReadOnlyList<EventStep> onNo = null,
             TrainerDefinition trainer = null, bool canLose = false, FieldSpot healSpot = default, StoryItem item = default,
-            int count = 0, IReadOnlyList<StoryItem> shopItems = null)
+            int count = 0, IReadOnlyList<StoryItem> shopItems = null, bool found = false)
         {
             Kind = kind;
             Text = text;
@@ -78,6 +80,7 @@ namespace PenguinMonster.Story
             Item = item;
             Count = count;
             ShopItems = shopItems;
+            Found = found;
         }
 
         public static EventStep Say(string text) => new EventStep(EventStepKind.Say, text);
@@ -111,6 +114,12 @@ namespace PenguinMonster.Story
         public static EventStep GiveItem(StoryItem item, int count)
         {
             return new EventStep(EventStepKind.GiveItem, item: item, count: count);
+        }
+
+        /// <summary>落とし物を拾う。もらうのと同じくバッグに入り、文だけ「見つけた！」にする</summary>
+        public static EventStep FindItem(StoryItem item, int count)
+        {
+            return new EventStep(EventStepKind.GiveItem, item: item, count: count, found: true);
         }
 
         public static EventStep Shop(params StoryItem[] items) => new EventStep(EventStepKind.Shop, shopItems: items);

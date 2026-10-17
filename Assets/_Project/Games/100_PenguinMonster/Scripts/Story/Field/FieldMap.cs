@@ -14,6 +14,7 @@ namespace PenguinMonster.Story
         {
             { '.', TileKind.Snow },
             { ',', TileKind.Grass },
+            { ';', TileKind.DeepGrass },
             { '=', TileKind.Path },
             { 'T', TileKind.Tree },
             { '~', TileKind.Water },
@@ -34,6 +35,8 @@ namespace PenguinMonster.Story
         public IEnumerable<Warp> Warps => _warps.Values;
         /// <summary>草むらの出現表。野生の出ないマップは null</summary>
         public EncounterTable Encounters { get; private set; }
+        /// <summary>深い草むらの出現表。深い草むらの無いマップは null</summary>
+        public EncounterTable DeepEncounters { get; private set; }
 
         public FieldMap(string id, string[] rows, params Warp[] warps)
         {
@@ -91,9 +94,10 @@ namespace PenguinMonster.Story
         }
 
         /// <summary>草むらの出現表を付ける。表と続けて書けるよう、自分を返す</summary>
-        public FieldMap WithEncounters(EncounterTable table)
+        public FieldMap WithEncounters(EncounterTable table, EncounterTable deep = null)
         {
             Encounters = table;
+            DeepEncounters = deep;
             return this;
         }
 

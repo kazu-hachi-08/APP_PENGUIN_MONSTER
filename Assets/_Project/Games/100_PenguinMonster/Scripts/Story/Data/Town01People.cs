@@ -3,20 +3,22 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り1の人と台本（PLAN_STORY_TOWN01.md フェーズ4〜6）。今は仮のハツユキ村と試しの1番道路の分だけ。
+    /// 区切り1の人と台本（PLAN_STORY_TOWN01.md フェーズ4〜6・8b）。ツララ町・道路の人と落とし物は .Town.cs。
     /// 名前（博士・ライバルなど）はまだ決めていないので役割で呼ぶ。本番の物語はフェーズ8c で書き直す
     /// </summary>
-    public static class Town01People
+    public static partial class Town01People
     {
-        /// <summary>最初の1体をもらうまで、村の北の出口をふさぐ場所</summary>
         /// <summary>最初の1体と一緒に博士がくれる捕獲タマゴの数（本家の最初のボールと同じ 5個）</summary>
         public const int StarterCaptureEggs = 5;
 
+        /// <summary>最初の1体をもらうまで、村の北の出口をふさぐ場所</summary>
         public static readonly FieldSpot MomAtExit = new FieldSpot(Town01Maps.Village, Town01Maps.NorthExit + Direction.Down.Offset(), Direction.Down);
 
         public static IReadOnlyList<FieldNpc> Create()
         {
-            return new[] { Mom(), Professor(), Assistant(), Villager(), RivalFamily(), Rival(), Route01Kid(), HutKeeper(), Clerk() };
+            var people = new List<FieldNpc> { Mom(), Professor(), Assistant(), Villager(), RivalFamily(), Rival(), Route01Kid(), HutKeeper(), Clerk() };
+            people.AddRange(TownAndRoutes());
+            return people;
         }
 
         private static FieldNpc Mom()
@@ -102,10 +104,10 @@ namespace PenguinMonster.Story
             };
         }
 
-        /// <summary>試しの1番道路のトレーナー。道を歩いてくる主人公を横から見張る</summary>
+        /// <summary>1番道路のトレーナー。道を歩いてくる主人公を横から見張る（顔ぶれは 8c で作り直す）</summary>
         private static FieldNpc Route01Kid()
         {
-            var spot = new FieldSpot(Town01Maps.Route01, new GridPos(8, 6), Direction.Left);
+            var spot = new FieldSpot(Town01Maps.Route01, new GridPos(9, 11), Direction.Left);
             var trainer = Town01Trainers.Route01Kid;
             return new FieldNpc("route01Kid", NpcLook.Youngster,
                 NpcPlacement.Until(trainer.DefeatedFlag, spot,

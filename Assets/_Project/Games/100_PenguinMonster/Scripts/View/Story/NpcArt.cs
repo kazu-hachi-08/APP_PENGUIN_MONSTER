@@ -37,6 +37,9 @@ namespace PenguinMonster.View.Story
             // よろず屋の店員: 紺の帽子に青い前掛け
             { NpcLook.Clerk, Colors(hat: new Color32(40, 60, 110, 255), trim: new Color32(248, 248, 252, 255), hair: new Color32(60, 44, 34, 255),
                 coat: new Color32(70, 120, 200, 255), hem: new Color32(40, 80, 150, 255)) },
+            // 道場の門下生: 坊主頭（帽子を髪と同じ色）に白い道着と黒帯
+            { NpcLook.Disciple, Colors(hat: new Color32(50, 40, 36, 255), trim: new Color32(248, 248, 252, 255), hair: new Color32(50, 40, 36, 255),
+                coat: new Color32(244, 244, 240, 255), hem: new Color32(40, 40, 48, 255)) },
         };
 
         private static readonly Dictionary<NpcLook, Sprite[,]> Cache = new Dictionary<NpcLook, Sprite[,]>();
@@ -51,12 +54,40 @@ namespace PenguinMonster.View.Story
         /// <param name="frame">0 が立ち、1 が歩き（目が合ったトレーナーが近づくときだけ歩く）</param>
         public static Sprite Get(NpcLook look, Direction facing, int frame = 0)
         {
+            if (look == NpcLook.Item)
+            {
+                return ItemBag();
+            }
             if (!Cache.TryGetValue(look, out var sprites) || sprites[0, 0] == null)
             {
                 sprites = HeroArt.CreateAll($"Npc_{look}", HeroArt.Recolor(Changes[look]));
                 Cache[look] = sprites;
             }
             return sprites[(int)facing, frame];
+        }
+
+        // 道路の落とし物（道具の袋）。人の絵と同じ 16 ドット幅で、どの向きでも同じ絵
+        private static readonly Color32 BagCloth = new Color32(230, 90, 80, 255);
+        private static readonly Color32 BagShade = new Color32(170, 56, 56, 255);
+        private static readonly Color32 BagTie = new Color32(250, 220, 120, 255);
+        private static Sprite _itemBag;
+
+        /// <summary>落とし物の袋。人の絵と同じく足元を下の真ん中にする</summary>
+        private static Sprite ItemBag()
+        {
+            if (_itemBag != null)
+            {
+                return _itemBag;
+            }
+            var canvas = new PixelCanvas(MarkSize, MarkSize);
+            canvas.FillEllipse(8f, 4.5f, 5f, 4f, BagShade);
+            canvas.FillEllipse(7.5f, 5f, 4f, 3f, BagCloth);
+            canvas.FillTriangle(new Vector2(5f, 8f), new Vector2(11f, 8f), new Vector2(8f, 11f), BagCloth);
+            canvas.FillRect(6, 8, 5, 1, BagTie);
+            canvas.FillRect(6, 4, 2, 2, BagTie);
+            canvas.Outline(MarkLine);
+            _itemBag = canvas.ToSprite("Npc_ItemBag", new Vector2(0.5f, 0f));
+            return _itemBag;
         }
 
         /// <summary>頭の上に出す「！」。下の真ん中を足元にして、人の絵の上に重ねる</summary>
