@@ -95,7 +95,8 @@ namespace PenguinMonster.View.Story
                 }
                 var member = members[first + i];
                 string hp = member.IsFainted ? PartyScreen.FaintedLabel : $"HP {member.CurrentHp}/{member.MaxHp}";
-                labels[i].SetFitted(PartyScreen.MemberLabel(member, hp));
+                // 枠が低く2行は入らないが横は広いので、名前・Lv・HP を1行に並べる
+                labels[i].SetFitted($"{member.Name}   Lv{member.Level}   {hp}");
                 icons[i].sprite = MonsterSprites.Front(member.Species.Definition);
             }
         }
