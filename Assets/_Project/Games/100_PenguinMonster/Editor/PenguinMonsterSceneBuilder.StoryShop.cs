@@ -1,3 +1,4 @@
+using PenguinMonster.Common.Editor;
 using PenguinMonster.Story;
 using PenguinMonster.View;
 using PenguinMonster.View.Story;
@@ -19,9 +20,12 @@ namespace PenguinMonster.Editor
         private const float StoryScreenGap = 30f;
         private static readonly Vector2 StoryCloseButtonSize = new Vector2(260f, 90f);
 
-        // よろず屋: 左に品の一覧、右にお金と「買う / 売る / やめる」
+        // よろず屋: 左に品の一覧（6個ずつのページ）、右にお金と「買う / 売る / ◀ ▶ / やめる」。
+        // 区切り3で品が 11 個になり1列に入らないため、ページ送りにして枠を少し低くした
+        private const int ShopPageSize = 6;
         private static readonly Vector2 ShopListSize = new Vector2(1100f, 640f);
-        private static readonly Vector2 ShopSlotSize = new Vector2(1040f, 104f);
+        private static readonly Vector2 ShopSlotSize = new Vector2(1040f, 88f);
+        private static readonly Vector2 ShopPageButtonSize = new Vector2(140f, 90f);
         private const float ShopSlotSpacing = 14f;
         private static readonly Vector2 ShopSideSize = new Vector2(360f, 640f);
         private static readonly Vector2 ShopTabSize = new Vector2(300f, 110f);
@@ -48,7 +52,7 @@ namespace PenguinMonster.Editor
             CreateDraftTitle(safe).text = ShopTitleText;
 
             var list = CreateStoryScreenColumn(safe, "List", new Vector2(StoryScreenSideMargin, StoryScreenTop), ShopListSize, ShopSlotSpacing);
-            var buttons = new Button[StoryItems.Count];
+            var buttons = new Button[ShopPageSize];
             var labels = new Text[buttons.Length];
             for (int i = 0; i < buttons.Length; i++)
             {
@@ -56,6 +60,7 @@ namespace PenguinMonster.Editor
                 buttons[i] = slot.GetComponent<Button>();
                 labels[i] = slot.GetComponentInChildren<Text>();
                 labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
+                UseVerticalNavigation(buttons[i]);
             }
 
             var sidePosition = new Vector2(StoryScreenSideMargin + ShopListSize.x + StoryScreenGap, StoryScreenTop);
@@ -64,6 +69,9 @@ namespace PenguinMonster.Editor
             money.rectTransform.sizeDelta = ShopTabSize;
             var buy = CreateButton(side, "Btn_Buy", "買う", ShopTabSize, YesColor);
             var sell = CreateButton(side, "Btn_Sell", "売る", ShopTabSize, BagColor);
+            var pages = CreateShopPageRow(side);
+            var prev = CreateButton(pages, "Btn_Prev", "◀", ShopPageButtonSize, SlotColor);
+            var next = CreateButton(pages, "Btn_Next", "▶", ShopPageButtonSize, SlotColor);
             var close = CreateButton(side, "Btn_Close", "やめる", ShopTabSize, BackColor);
 
             var panel = back.gameObject.AddComponent<ShopPanel>();
@@ -73,11 +81,26 @@ namespace PenguinMonster.Editor
             so.FindProperty("_closeButton").objectReferenceValue = close.GetComponent<Button>();
             SetArray(so.FindProperty("_slotButtons"), buttons);
             SetArray(so.FindProperty("_slotLabels"), labels);
+            so.FindProperty("_prevButton").objectReferenceValue = prev.GetComponent<Button>();
+            so.FindProperty("_nextButton").objectReferenceValue = next.GetComponent<Button>();
             so.FindProperty("_moneyText").objectReferenceValue = money;
             so.ApplyModifiedProperties();
 
             back.gameObject.SetActive(false);
             return panel;
+        }
+
+        /// <summary>右の列に ◀ ▶ を横に並べる1行（ページが1つのときは中身が隠れて空く）</summary>
+        private static Transform CreateShopPageRow(Transform parent)
+        {
+            var row = UIDialogBuilder.CreateUIObject("Pages", parent);
+            row.GetComponent<RectTransform>().sizeDelta = ShopTabSize;
+            var layout = row.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = ShopSlotSpacing;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+            return row.transform;
         }
 
         private static BoxPanel CreateBoxPanel(Transform parent)

@@ -189,6 +189,78 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void CaptureOdds_EggPercentMultipliesCatchRate()
+        {
+            int normal = Capture.Odds(30, 15, CatchRate, StatusCondition.None);
+            int great = Capture.Odds(30, 15, CatchRate, StatusCondition.None, StoryBalance.GreatEggCatchPercent);
+            int ultra = Capture.Odds(30, 15, CatchRate, StatusCondition.None, StoryBalance.UltraEggCatchPercent);
+            int typed = Capture.Odds(30, 15, CatchRate, StatusCondition.None, StoryBalance.TypeEggCatchPercent);
+
+            // (90 − 30) × 45 ÷ 90 ＝ 30 に、タマゴの倍率を掛ける
+            Assert.AreEqual(30, normal);
+            Assert.AreEqual(45, great);
+            Assert.AreEqual(60, ultra);
+            Assert.AreEqual(90, typed);
+        }
+
+        [Test]
+        public void CaptureOdds_EggAndStatusBothApply()
+        {
+            int sleepUltra = Capture.Odds(30, 15, CatchRate, StatusCondition.Sleep, StoryBalance.UltraEggCatchPercent);
+
+            Assert.AreEqual(Capture.Odds(30, 15, CatchRate, StatusCondition.None) * 2 * 2, sleepUltra);
+        }
+
+        [Test]
+        public void CatchPercent_PlainEggsIgnoreTypes()
+        {
+            var fire = new[] { MonsterType.Fire };
+
+            Assert.AreEqual(StoryBalance.Percent, StoryItems.Get(StoryItem.CaptureEgg).CatchPercentAgainst(fire));
+            Assert.AreEqual(StoryBalance.GreatEggCatchPercent, StoryItems.Get(StoryItem.GreatEgg).CatchPercentAgainst(fire));
+            Assert.AreEqual(StoryBalance.UltraEggCatchPercent, StoryItems.Get(StoryItem.UltraEgg).CatchPercentAgainst(fire));
+        }
+
+        [TestCase(StoryItem.NetEgg, MonsterType.Sea, MonsterType.Moss)]
+        [TestCase(StoryItem.NightEgg, MonsterType.Dark, MonsterType.Aurora)]
+        [TestCase(StoryItem.HeavyEgg, MonsterType.Rock, MonsterType.Ice)]
+        [TestCase(StoryItem.SkyEgg, MonsterType.Bird, MonsterType.Thunder)]
+        public void CatchPercent_TypeEggsTripleOnlyMatchingTypes(StoryItem egg, MonsterType first, MonsterType second)
+        {
+            var definition = StoryItems.Get(egg);
+
+            Assert.AreEqual(StoryBalance.TypeEggCatchPercent, definition.CatchPercentAgainst(new[] { first }));
+            Assert.AreEqual(StoryBalance.TypeEggCatchPercent, definition.CatchPercentAgainst(new[] { second }));
+            // 2タイプの子は片方が合えば ×3、両方合っても ×9 にはしない
+            Assert.AreEqual(StoryBalance.TypeEggCatchPercent, definition.CatchPercentAgainst(new[] { MonsterType.Fire, first }));
+            Assert.AreEqual(StoryBalance.TypeEggCatchPercent, definition.CatchPercentAgainst(new[] { first, second }));
+            Assert.AreEqual(StoryBalance.Percent, definition.CatchPercentAgainst(new[] { MonsterType.Normal }));
+            Assert.AreEqual(StoryBalance.Percent, definition.CatchPercentAgainst(new[] { MonsterType.Normal, MonsterType.Fire }));
+        }
+
+        [Test]
+        public void StoryItems_DefinitionsFollowEnumOrder()
+        {
+            var items = (StoryItem[])Enum.GetValues(typeof(StoryItem));
+
+            Assert.AreEqual(items.Length, StoryItems.Count);
+            for (int i = 0; i < items.Length; i++)
+            {
+                Assert.AreEqual(items[i], StoryItems.Definitions[i].Item);
+                Assert.AreEqual(i, (int)items[i]);
+            }
+        }
+
+        [Test]
+        public void StoryItems_EachItemIsEitherEggOrMedicine()
+        {
+            foreach (var definition in StoryItems.Definitions)
+            {
+                Assert.AreNotEqual(definition.IsCaptureEgg, definition.IsMedicine, definition.Name);
+            }
+        }
+
+        [Test]
         public void CaptureRoll_MaxOddsAlwaysCatchesWithThreeShakes()
         {
             var result = Capture.Roll(StoryBalance.CaptureMaxOdds, new Random(1));
@@ -235,7 +307,7 @@ namespace PenguinMonster.Story.Tests
             var battle = new StoryBattle(_state.Party, new[] { Owned(Chick, 3) }, isTrainer: true);
 
             Assert.IsFalse(battle.CanThrowEgg);
-            Assert.Throws<InvalidOperationException>(() => battle.ThrowEgg(_state.Bag, new Random(1)));
+            Assert.Throws<InvalidOperationException>(() => battle.ThrowEgg(_state.Bag, StoryItem.CaptureEgg, new Random(1)));
             Assert.AreEqual(1, _state.Bag.CountOf(StoryItem.CaptureEgg));
         }
 
@@ -251,7 +323,7 @@ namespace PenguinMonster.Story.Tests
             fighter.TakeDamage(wild.MaxHp - 1);
             fighter.SetStatus(StatusCondition.Sleep, 2);
 
-            var result = battle.ThrowEgg(_state.Bag, new Random(1));
+            var result = battle.ThrowEgg(_state.Bag, StoryItem.CaptureEgg, new Random(1));
 
             Assert.IsTrue(result.Caught);
             Assert.AreEqual(wild, battle.Caught);
@@ -260,6 +332,31 @@ namespace PenguinMonster.Story.Tests
             Assert.AreEqual(0, _state.Bag.CountOf(StoryItem.CaptureEgg));
             Assert.IsTrue(_state.Receive(battle.Caught));
             Assert.AreEqual(2, _state.Party.Count);
+        }
+
+        [Test]
+        public void ThrowEgg_UsesUpTheChosenEgg()
+        {
+            _state.Party.Add(Owned(Chick, 10));
+            _state.Bag.Add(StoryItem.CaptureEgg);
+            _state.Bag.Add(StoryItem.UltraEgg);
+            var battle = WildBattle(Owned(Chick, 3));
+
+            battle.ThrowEgg(_state.Bag, StoryItem.UltraEgg, new Random(1));
+
+            Assert.AreEqual(0, _state.Bag.CountOf(StoryItem.UltraEgg));
+            Assert.AreEqual(1, _state.Bag.CountOf(StoryItem.CaptureEgg));
+        }
+
+        [Test]
+        public void ThrowEgg_NotAnEgg_IsRefused()
+        {
+            _state.Party.Add(Owned(Chick, 10));
+            _state.Bag.Add(StoryItem.Potion);
+            var battle = WildBattle(Owned(Chick, 3));
+
+            Assert.Throws<InvalidOperationException>(() => battle.ThrowEgg(_state.Bag, StoryItem.Potion, new Random(1)));
+            Assert.AreEqual(1, _state.Bag.CountOf(StoryItem.Potion));
         }
 
         // --- 手持ち・あずかり箱 ---

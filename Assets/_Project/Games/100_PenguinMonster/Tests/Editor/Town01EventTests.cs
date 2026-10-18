@@ -295,7 +295,9 @@ namespace PenguinMonster.Story.Tests
             var script = PlayerAt(Town01Maps.Shop, new GridPos(3, 2), Direction.Up).ScriptAhead();
 
             var shop = script.Single(step => step.Kind == EventStepKind.Shop);
-            Assert.AreEqual(StoryItems.Count, shop.ShopItems.Count);
+            // 新しいタマゴ（区切り3）は区切り1・2の店には並べない
+            CollectionAssert.AreEqual(new[] { StoryItem.CaptureEgg, StoryItem.Potion, StoryItem.Antidote, StoryItem.ParalyzeHeal,
+                StoryItem.Awakening }, shop.ShopItems);
         }
 
         [Test]

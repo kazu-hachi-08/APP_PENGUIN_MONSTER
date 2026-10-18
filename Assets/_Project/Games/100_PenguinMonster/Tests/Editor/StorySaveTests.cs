@@ -98,6 +98,28 @@ namespace PenguinMonster.Story.Tests
             AssertSameMonster(original.Party.Members[0], state.Party.Members[0]);
         }
 
+        [Test]
+        public void SaveThenLoad_KeepsEveryEggKind()
+        {
+            var original = PlayedState();
+            original.Bag.Add(StoryItem.GreatEgg, 3);
+            original.Bag.Add(StoryItem.SkyEgg, 1);
+            original.Bag.Add(StoryItem.Awakening, 4);
+
+            var data = StorySave.Capture(original, Standing);
+            var restored = ThroughJson(data);
+
+            Assert.IsNotNull(restored);
+            var bag = restored.State.Bag;
+            CollectionAssert.AreEqual(original.Bag.Items(), bag.Items());
+            foreach (var item in original.Bag.Items())
+            {
+                Assert.AreEqual(original.Bag.CountOf(item), bag.CountOf(item), item.ToString());
+            }
+            // 番号ではなく名前で書いていること（enum の並びが変わっても読めるように）
+            StringAssert.Contains("\"GreatEgg\"", JsonUtility.ToJson(data));
+        }
+
         private static void AssertSameMonster(OwnedMonster expected, OwnedMonster actual)
         {
             Assert.AreEqual(expected.Species, actual.Species);
@@ -153,6 +175,9 @@ namespace PenguinMonster.Story.Tests
             Assert.AreEqual(Town01Species.Tsugumi, state.Party.Members[1].Species);
             Assert.AreEqual(Town01Species.Kogara, state.Box.Members[0].Species);
             Assert.AreEqual(7, state.Bag.CountOf(StoryItem.CaptureEgg));
+            // 道具の enum の途中に新しいタマゴを足しても、記録は名前なので同じ道具に戻る
+            Assert.AreEqual(3, state.Bag.CountOf(StoryItem.Potion));
+            Assert.AreEqual(2, state.Bag.Items().Count);
             Assert.AreEqual(2480, state.Money);
             Assert.IsTrue(state.Flags.Has(Town01Trainers.GymLeader.DefeatedFlag));
             Assert.IsTrue(state.Flags.Has(Town01Flags.Route02Cleared));

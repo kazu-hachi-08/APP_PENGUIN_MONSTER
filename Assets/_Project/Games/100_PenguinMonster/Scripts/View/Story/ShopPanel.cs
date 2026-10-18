@@ -8,7 +8,7 @@ namespace PenguinMonster.View.Story
 {
     /// <summary>
     /// よろず屋の画面。「買う / 売る」を切り替え、道具を押すたびに1個ずつ売り買いする。
-    /// 結果の文は会話窓に出す（画面の下は会話窓のために空けてある）。「やめる」で閉じる
+    /// 品が枠に入りきらないので1ページずつ並べる（← → で送る）。結果の文は会話窓に出す（画面の下は会話窓のために空けてある）。「やめる」で閉じる
     /// </summary>
     public class ShopPanel : MonoBehaviour
     {
@@ -23,9 +23,11 @@ namespace PenguinMonster.View.Story
         [SerializeField] private Button _buyTab;
         [SerializeField] private Button _sellTab;
         [SerializeField] private Button _closeButton;
-        [Tooltip("道具の種類の数だけ")]
+        [Tooltip("1ページぶんの枠")]
         [SerializeField] private Button[] _slotButtons;
         [SerializeField] private Text[] _slotLabels;
+        [SerializeField] private Button _prevButton;
+        [SerializeField] private Button _nextButton;
         [SerializeField] private Text _moneyText;
         [SerializeField] private MessageWindow _window;
 
@@ -35,6 +37,10 @@ namespace PenguinMonster.View.Story
         private List<StoryItem> _shown = new List<StoryItem>();
         private bool _selling;
         private bool _closed;
+        private int _page;
+
+        private int PageSize => _slotButtons.Length;
+        private int PageCount => PagedList.PageCount(_shown.Count, PageSize);
 
         private void Awake()
         {
@@ -43,6 +49,8 @@ namespace PenguinMonster.View.Story
                 int index = i;
                 _slotButtons[i].onClick.AddListener(() => Trade(index));
             }
+            _prevButton.onClick.AddListener(() => TurnPage(-1));
+            _nextButton.onClick.AddListener(() => TurnPage(1));
             _buyTab.onClick.AddListener(() => SetMode(false));
             _sellTab.onClick.AddListener(() => SetMode(true));
             _closeButton.onClick.AddListener(() =>
@@ -50,6 +58,15 @@ namespace PenguinMonster.View.Story
                 BattleSounds.Play(BattleSound.Cursor);
                 _closed = true;
             });
+        }
+
+        private void Update()
+        {
+            int delta = PagedList.KeyDelta();
+            if (delta != 0)
+            {
+                TurnPage(delta);
+            }
         }
 
         /// <summary>「やめる」が押されるまで開いておく。売り買いは StoryState に直接行う</summary>
@@ -67,6 +84,7 @@ namespace PenguinMonster.View.Story
         private void SetMode(bool selling)
         {
             _selling = selling;
+            _page = 0;
             // 今の側のタブは押せなくして、どちらを開いているか見せる
             _buyTab.interactable = selling;
             _sellTab.interactable = !selling;
@@ -77,15 +95,19 @@ namespace PenguinMonster.View.Story
         private void Refresh()
         {
             _shown = _selling ? _state.Bag.Items() : new List<StoryItem>(_goods);
+            // 売って道具が無くなると最後のページが消えることがあるので、ページを詰める
+            _page = Mathf.Min(_page, PageCount - 1);
             for (int i = 0; i < _slotButtons.Length; i++)
             {
-                bool exists = i < _shown.Count;
+                int index = _page * PageSize + i;
+                bool exists = index < _shown.Count;
                 _slotButtons[i].gameObject.SetActive(exists);
                 if (exists)
                 {
-                    _slotLabels[i].SetFitted(Label(_shown[i]));
+                    _slotLabels[i].SetFitted(Label(_shown[index]));
                 }
             }
+            PagedList.ShowPageButtons(_prevButton, _nextButton, _page, PageCount);
             _moneyText.text = $"お金\n{_state.Money}円";
         }
 
@@ -96,9 +118,21 @@ namespace PenguinMonster.View.Story
             return $"{definition.Name}   {price}円\n<size={SubLineSize}>持っている数 {_state.Bag.CountOf(item)}</size>";
         }
 
-        private void Trade(int index)
+        private void TurnPage(int delta)
         {
-            var item = _shown[index];
+            int page = Mathf.Clamp(_page + delta, 0, PageCount - 1);
+            if (page == _page)
+            {
+                return;
+            }
+            BattleSounds.Play(BattleSound.Cursor);
+            _page = page;
+            Refresh();
+        }
+
+        private void Trade(int slot)
+        {
+            var item = _shown[_page * PageSize + slot];
             var definition = StoryItems.Get(item);
             string message;
             if (_selling)

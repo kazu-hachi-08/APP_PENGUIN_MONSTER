@@ -41,11 +41,16 @@ namespace PenguinMonster.Story
         /// <summary>よろず屋で売ると 買う値段を この数で割った額（本家と同じく半分）</summary>
         public const int SellPriceDivisor = 2;
 
-        // 捕獲（本家の第3〜4世代の簡略版）: 値 ＝ (3×最大HP − 2×今の HP) × 捕まえやすさ ÷ (3×最大HP) × 状態異常の倍率。
+        // 捕獲（本家の第3〜4世代の簡略版）: 値 ＝ (3×最大HP − 2×今の HP) × 捕まえやすさ × タマゴの倍率 ÷ (3×最大HP) × 状態異常の倍率。
         // 255 以上なら必ず捕まえる。それより下なら 4回の揺れの判定を引く
         public const int CaptureMaxHpWeight = 3;
         public const int CaptureHpWeight = 2;
         public const int CaptureMaxOdds = 255;
+        // タマゴの倍率（百分率）。ふつうの捕獲タマゴとタイプ特化のタマゴの「合わない相手」は Percent（×1）
+        public const int GreatEggCatchPercent = 150;
+        public const int UltraEggCatchPercent = 200;
+        /// <summary>タイプ特化のタマゴを、合うタイプの相手に投げたときの倍率</summary>
+        public const int TypeEggCatchPercent = 300;
         public const int CaptureSleepBonusPercent = 200;
         public const int CaptureStatusBonusPercent = 150;
         public const int CaptureChecks = 4;

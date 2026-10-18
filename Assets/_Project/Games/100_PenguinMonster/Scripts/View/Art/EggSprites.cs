@@ -29,10 +29,36 @@ namespace PenguinMonster.View.Art
             new Color32(250, 245, 225, 255), new Color32(120, 190, 235, 255), new Color32(40, 60, 110, 255),
             new Color(0.85f, 0.95f, 1f));
 
+        // 捕獲タマゴの種類ごと（PLAN_STORY_TOWN03.md §3.3）。タイプ特化のタマゴは効くタイプの色に寄せて見分けやすくする
+        private static readonly EggStyle Great = new EggStyle(
+            new Color32(150, 205, 245, 255), new Color32(255, 255, 255, 255), new Color32(30, 70, 130, 255),
+            new Color(0.8f, 0.95f, 1f));
+        private static readonly EggStyle Ultra = new EggStyle(
+            new Color32(245, 205, 70, 255), new Color32(110, 70, 30, 255), new Color32(110, 70, 20, 255),
+            new Color(1f, 0.95f, 0.6f));
+        private static readonly EggStyle Net = new EggStyle(
+            new Color32(120, 200, 120, 255), new Color32(110, 200, 235, 255), new Color32(30, 90, 50, 255),
+            new Color(0.8f, 1f, 0.85f));
+        private static readonly EggStyle Night = new EggStyle(
+            new Color32(40, 50, 100, 255), new Color32(250, 220, 90, 255), new Color32(15, 20, 50, 255),
+            new Color(0.75f, 0.7f, 1f));
+        private static readonly EggStyle Heavy = new EggStyle(
+            new Color32(160, 160, 165, 255), new Color32(120, 85, 55, 255), new Color32(60, 60, 70, 255),
+            new Color(0.9f, 0.9f, 0.9f));
+        private static readonly EggStyle Sky = new EggStyle(
+            new Color32(250, 225, 100, 255), new Color32(120, 190, 240, 255), new Color32(130, 100, 30, 255),
+            new Color(1f, 1f, 0.75f));
+
         public static EggStyle Get(EggKind kind)
         {
             switch (kind)
             {
+                case EggKind.Great: return Great;
+                case EggKind.Ultra: return Ultra;
+                case EggKind.Net: return Net;
+                case EggKind.Night: return Night;
+                case EggKind.Heavy: return Heavy;
+                case EggKind.Sky: return Sky;
                 default: return Normal;
             }
         }

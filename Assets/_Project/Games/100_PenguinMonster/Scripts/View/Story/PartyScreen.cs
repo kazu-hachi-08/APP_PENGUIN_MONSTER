@@ -175,7 +175,7 @@ namespace PenguinMonster.View.Story
         {
             _actions.SetActive(false);
             var member = _state.Party.Members[_selected];
-            _bag.Show(_state.Bag, item => StoryItems.Get(item).IsMedicine && member.CanBeTreatedWith(StoryItems.Get(item)),
+            _bag.Show(_state.Bag, BagPocket.Medicine, item => StoryItems.Get(item).IsMedicine && member.CanBeTreatedWith(StoryItems.Get(item)),
                 item => UseItem(item, _selected), ShowList);
         }
 

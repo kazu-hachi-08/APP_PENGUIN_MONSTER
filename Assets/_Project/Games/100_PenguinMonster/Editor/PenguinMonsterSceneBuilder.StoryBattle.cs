@@ -74,8 +74,15 @@ namespace PenguinMonster.Editor
         }
 
         private const int BagEmptyFontSize = 40;
+        // バッグ（PLAN_STORY_TOWN03.md §3.4）: 上に「タマゴ / 薬」のタブ、6枠ずつのページ、下に ← 戻る →。
+        // 窓は交代の画面と同じ大きさのまま、タブの1行ぶん枠を低くして収める
+        private const int BagPageSize = 6;
+        private static readonly string[] BagPocketLabels = { "タマゴ", "薬" };
+        private static readonly Vector2 BagSlotSize = new Vector2(760f, 96f);
+        private static readonly Vector2 BagTabSize = new Vector2(300f, 80f);
+        private static readonly Vector2 BagPageButtonSize = new Vector2(120f, 80f);
+        private const float BagFooterHeight = 110f;
 
-        /// <summary>道具の種類ごとに1枠。交代の画面と同じ大きさ・並びにして、窓の行き来で形が変わらないようにする</summary>
         private static BagPanel CreateBagPanel(Transform parent)
         {
             var overlay = CreateImage(parent, "BagPanel", OverlayColor);
@@ -85,33 +92,72 @@ namespace PenguinMonster.Editor
             Place(frame.rectTransform, Center, Vector2.zero, PartyBoxSize);
             var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.spacing = PartySlotSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.padding = new RectOffset(0, 0, (int)PartySlotSpacing, 0);
+            layout.childAlignment = TextAnchor.UpperCenter;
             layout.childControlWidth = false;
             layout.childControlHeight = false;
 
-            var empty = CreateText(inner, "Empty", "道具を 何も 持っていない", BagEmptyFontSize, BoxTextColor, TextAnchor.MiddleCenter);
-            empty.rectTransform.sizeDelta = PartySlotSize;
-            var buttons = new Button[StoryItems.Count];
+            var tabs = CreateBagPocketTabs(inner);
+            var empty = CreateText(inner, "Empty", "", BagEmptyFontSize, BoxTextColor, TextAnchor.MiddleCenter);
+            empty.rectTransform.sizeDelta = BagSlotSize;
+            var buttons = new Button[BagPageSize];
             var labels = new Text[buttons.Length];
             for (int i = 0; i < buttons.Length; i++)
             {
-                var slot = CreateButton(inner, $"Btn_Item{i}", "", PartySlotSize, BagColor);
+                var slot = CreateButton(inner, $"Btn_Item{i}", "", BagSlotSize, BagColor);
                 buttons[i] = slot.GetComponent<Button>();
                 labels[i] = slot.GetComponentInChildren<Text>();
                 labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
+                UseVerticalNavigation(buttons[i]);
             }
-            var back = CreateButton(inner, "Btn_Back", "戻る", BackButtonSize, BackColor);
+
+            // 下の帯は枠の数で上下しないよう、並びから外して窓の下に留める
+            var footer = CreateFooter(inner, BagFooterHeight, PartySlotSpacing);
+            footer.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
+            var prev = CreateButton(footer, "Btn_Prev", "◀", BagPageButtonSize, SlotColor);
+            var back = CreateButton(footer, "Btn_Back", "戻る", BackButtonSize, BackColor);
+            var next = CreateButton(footer, "Btn_Next", "▶", BagPageButtonSize, SlotColor);
 
             var panel = overlay.gameObject.AddComponent<BagPanel>();
             var so = new SerializedObject(panel);
+            SetArray(so.FindProperty("_pocketTabs"), tabs);
             SetArray(so.FindProperty("_slotButtons"), buttons);
             SetArray(so.FindProperty("_slotLabels"), labels);
+            so.FindProperty("_prevButton").objectReferenceValue = prev.GetComponent<Button>();
+            so.FindProperty("_nextButton").objectReferenceValue = next.GetComponent<Button>();
             so.FindProperty("_backButton").objectReferenceValue = back.GetComponent<Button>();
-            so.FindProperty("_emptyLabel").objectReferenceValue = empty.gameObject;
+            so.FindProperty("_emptyLabel").objectReferenceValue = empty;
             so.ApplyModifiedProperties();
 
             overlay.gameObject.SetActive(false);
             return panel;
+        }
+
+        /// <summary>BagPocket の順にタブを横に並べる</summary>
+        private static Button[] CreateBagPocketTabs(Transform parent)
+        {
+            var row = UIDialogBuilder.CreateUIObject("Tabs", parent);
+            row.GetComponent<RectTransform>().sizeDelta = new Vector2(BagSlotSize.x, BagTabSize.y);
+            var layout = row.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = PartySlotSpacing;
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.childControlWidth = false;
+            layout.childControlHeight = false;
+
+            var tabs = new Button[BagPocketLabels.Length];
+            for (int i = 0; i < tabs.Length; i++)
+            {
+                tabs[i] = CreateButton(row.transform, $"Btn_Tab{i}", BagPocketLabels[i], BagTabSize, YesColor).GetComponent<Button>();
+            }
+            return tabs;
+        }
+
+        /// <summary>← → はページ送りに使うので、一覧の枠はキーの上下だけで選ぶ</summary>
+        private static void UseVerticalNavigation(Selectable selectable)
+        {
+            var navigation = selectable.navigation;
+            navigation.mode = Navigation.Mode.Vertical;
+            selectable.navigation = navigation;
         }
 
         /// <summary>左の列に能力の名前、右の列に数（右寄せ）</summary>

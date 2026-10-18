@@ -40,7 +40,7 @@ namespace PenguinMonster.View
 
         private void ShowBag(int slot, List<int> reserved)
         {
-            _bagPanel.Show(_bag, CanUseInBattle,
+            _bagPanel.Show(_bag, BagPocket.Eggs, CanUseInBattle,
                 onSelect: item => ChooseBagItem(slot, reserved, item),
                 onBack: () => ShowCommands(slot, reserved));
         }
@@ -99,7 +99,7 @@ namespace PenguinMonster.View
             _bagItem = null;
             if (StoryItems.Get(item).IsCaptureEgg)
             {
-                yield return ThrowCaptureEgg();
+                yield return ThrowCaptureEgg(item);
             }
             else
             {
@@ -137,14 +137,16 @@ namespace PenguinMonster.View
         }
 
         /// <summary>
-        /// タマゴを投げる → 光って野生が吸い込まれる → 揺れる（0〜3回）→ 捕まえる / 割れて出てくる
+        /// タマゴを投げる → 光って野生が吸い込まれる → 揺れる（0〜3回）→ 捕まえる / 割れて出てくる。
+        /// 絵はバッグで選んだタマゴの種類にする（繰り出すときの _eggs とは別）
         /// </summary>
-        private IEnumerator ThrowCaptureEgg()
+        private IEnumerator ThrowCaptureEgg(StoryItem item)
         {
-            var egg = _eggs[PlayerSide];
+            var definition = StoryItems.Get(item);
+            var egg = definition.Egg;
             var wild = Opponent.Active;
-            yield return _messageWindow.Play(string.Format(ThrewEggFormat, StoryItems.Get(StoryItem.CaptureEgg).Name));
-            var result = _story.ThrowEgg(_bag, _random);
+            yield return _messageWindow.Play(string.Format(ThrewEggFormat, definition.Name));
+            var result = _story.ThrowEgg(_bag, item, _random);
 
             yield return _eggThrow.ThrowToCapture(egg, _enemyView.Body, onLanded: _enemyView.Hide);
             for (int i = 0; i < result.Shakes; i++)
