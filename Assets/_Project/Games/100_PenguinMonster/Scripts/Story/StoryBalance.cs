@@ -22,6 +22,8 @@ namespace PenguinMonster.Story
         // 1.5 倍を整数で掛けるため分子・分母に分ける（小数の誤差で1ずれないように）
         public const int TrainerExpNumerator = 3;
         public const int TrainerExpDenominator = 2;
+        /// <summary>学習装置: 向き合っていない手持ちの子は 1体分の経験値を この数で割った分をもらう（本家の第6世代と同じく半分）</summary>
+        public const int ExpShareDivisor = 2;
 
         /// <summary>始めたときのお金（本家と同じ）</summary>
         public const int StartMoney = 3000;

@@ -6,7 +6,7 @@ using static PenguinMonster.Story.Tests.StoryTestSpecies;
 
 namespace PenguinMonster.Story.Tests
 {
-    /// <summary>ストーリーの1戦（PLAN_STORY_TOWN01.md フェーズ5）: 手持ち全員で戦い、傷を持ち帰り、出た子だけで経験値を分ける</summary>
+    /// <summary>ストーリーの1戦（PLAN_STORY_TOWN01.md フェーズ5）: 手持ち全員で戦い、傷を持ち帰り、出た子で経験値を分ける（出ていない子は学習装置で半分）</summary>
     public class StoryBattleTests
     {
         private static Party PartyOf(params OwnedMonster[] members)
@@ -55,7 +55,7 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
-        public void ExpRewards_GoOnlyToMembersWhoFacedTheFoe()
+        public void ExpRewards_FacedGetsFullAndBenchGetsHalf()
         {
             var first = Owned(Chick, 10);
             var bench = Owned(Chick, 10);
@@ -65,9 +65,52 @@ namespace PenguinMonster.Story.Tests
 
             var rewards = battle.ExpRewards();
 
+            // 学習装置の分は山分けしないので、出た子は満額のまま
+            int exp = Experience.Defeated(Chick.BaseExp, 5, isTrainer: false);
+            Assert.AreEqual(2, rewards.Count);
+            Assert.AreEqual(first, rewards[0].Member);
+            Assert.AreEqual(exp, rewards[0].Exp);
+            Assert.IsFalse(rewards[0].FromBench);
+            Assert.AreEqual(bench, rewards[1].Member);
+            Assert.AreEqual(exp / StoryBalance.ExpShareDivisor, rewards[1].Exp);
+            Assert.IsTrue(rewards[1].FromBench);
+        }
+
+        [Test]
+        public void ExpRewards_FaintedBenchGetsNothing()
+        {
+            var first = Owned(Chick, 10);
+            var wild = Owned(Chick, 5);
+            var battle = new StoryBattle(PartyOf(first, Fainted(Chick, 10)), new[] { wild }, isTrainer: false);
+            battle.State.Sides[StoryBattle.FoeSide].Active.TakeDamage(wild.MaxHp);
+
+            var rewards = battle.ExpRewards();
+
             Assert.AreEqual(1, rewards.Count);
             Assert.AreEqual(first, rewards[0].Member);
-            Assert.AreEqual(Experience.Defeated(Chick.BaseExp, 5, isTrainer: false), rewards[0].Exp);
+        }
+
+        [Test]
+        public void ExpRewards_BenchShareAddsUpPerFoe()
+        {
+            var first = Owned(Chick, 10);
+            var bench = Owned(Chick, 10);
+            var battle = new StoryBattle(PartyOf(first, bench), new[] { Owned(Chick, 5), Owned(Junior, 6) }, isTrainer: true);
+            var engine = new BattleEngine(battle.State, new Random(1));
+            var foe = battle.State.Sides[StoryBattle.FoeSide];
+            // 1体目を倒し、2体目と向き合ってから倒す
+            foe.Active.TakeDamage(999);
+            engine.Replace(StoryBattle.FoeSide, 1);
+            battle.RecordFacing();
+            foe.Active.TakeDamage(999);
+
+            var rewards = battle.ExpRewards();
+
+            int expected = Experience.Defeated(Chick.BaseExp, 5, isTrainer: true) / StoryBalance.ExpShareDivisor
+                + Experience.Defeated(Junior.BaseExp, 6, isTrainer: true) / StoryBalance.ExpShareDivisor;
+            var benchReward = rewards.Single(r => r.Member == bench);
+            Assert.AreEqual(expected, benchReward.Exp);
+            Assert.IsTrue(benchReward.FromBench);
         }
 
         [Test]

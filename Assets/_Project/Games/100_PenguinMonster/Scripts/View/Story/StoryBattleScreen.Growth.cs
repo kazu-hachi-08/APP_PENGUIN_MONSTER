@@ -12,6 +12,7 @@ namespace PenguinMonster.View.Story
     public partial class StoryBattleScreen
     {
         private const string ExpFormat = "{0}は {1} 経験値を もらった！";
+        private const string BenchExpText = "手持ちの 仲間も 経験値を もらった！";
         private const string LevelUpFormat = "{0}は レベル {1}に 上がった！";
         private const string LearnedFormat = "{0}は {1}を 覚えた！";
         private const string WantsToLearnFormat = "{0}は 新しく {1}を 覚えたい……";
@@ -25,15 +26,24 @@ namespace PenguinMonster.View.Story
             var leveledUp = new List<OwnedMonster>();
             foreach (var reward in rewards)
             {
-                var member = reward.Member;
-                yield return _battle.Say(string.Format(ExpFormat, member.Name, reward.Exp));
-                foreach (var levelUp in member.GainExp(reward.Exp))
+                if (!reward.FromBench)
                 {
-                    yield return ShowLevelUp(member, levelUp);
-                    if (!leveledUp.Contains(member))
+                    yield return _battle.Say(string.Format(ExpFormat, reward.Member.Name, reward.Exp));
+                    yield return GainExp(reward, leveledUp);
+                }
+            }
+            // ベンチの子は1体ずつ言うと長いので1行にまとめ、レベルが上がった子だけ個別に見せる
+            bool benchAnnounced = false;
+            foreach (var reward in rewards)
+            {
+                if (reward.FromBench)
+                {
+                    if (!benchAnnounced)
                     {
-                        leveledUp.Add(member);
+                        yield return _battle.Say(BenchExpText);
+                        benchAnnounced = true;
                     }
+                    yield return GainExp(reward, leveledUp);
                 }
             }
             foreach (var member in leveledUp)
@@ -41,6 +51,19 @@ namespace PenguinMonster.View.Story
                 if (member.CanEvolve)
                 {
                     yield return Evolve(member);
+                }
+            }
+        }
+
+        private IEnumerator GainExp(ExpReward reward, List<OwnedMonster> leveledUp)
+        {
+            var member = reward.Member;
+            foreach (var levelUp in member.GainExp(reward.Exp))
+            {
+                yield return ShowLevelUp(member, levelUp);
+                if (!leveledUp.Contains(member))
+                {
+                    leveledUp.Add(member);
                 }
             }
         }
