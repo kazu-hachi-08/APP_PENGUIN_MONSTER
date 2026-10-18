@@ -27,6 +27,17 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void Dex_HasTown03UpTo240_AndUnseenOnesAreHidden()
+        {
+            // 図鑑のマスは Dex の体数ぶん作るので、区切り3を足したら 240 マスになる（PLAN_STORY_TOWN03.md フェーズ3c）
+            const int LastNo = 240;
+            Assert.AreEqual(LastNo, MonsterTable.Dex.Count);
+            Assert.AreEqual(LastNo, MonsterTable.Dex[MonsterTable.Dex.Count - 1].No);
+            Assert.IsFalse(StoryDex.IsRevealed(MonsterTable.ByNo(211), NoneSeen));
+            Assert.IsTrue(StoryDex.IsRevealed(MonsterTable.ByNo(LastNo), new HashSet<int> { LastNo }));
+        }
+
+        [Test]
         public void TypeFilter_HidesUnseenStoryMonsters()
         {
             // 153 サイヒョウセンペン（海/氷）だけ見たことにする
