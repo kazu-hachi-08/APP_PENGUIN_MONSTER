@@ -68,9 +68,6 @@ namespace PenguinMonster.Common.Online
 
         public bool IsHost { get; private set; }
 
-        /// <summary>自分が作った部屋の参加コード（ホストのみ）</summary>
-        public string JoinCode => _session?.Code;
-
         /// <summary>ホストから見た参加者（自分以外）。席番号を参加順で配るため順番を保つ</summary>
         private readonly List<ulong> _memberIds = new List<ulong>();
 

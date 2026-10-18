@@ -12,8 +12,6 @@ namespace PenguinMonster.Common.Scene
         // タイトルバーとタスクバーの分だけ余らせないと、縦長ウィンドウの下端が画面外に出る
         private const float MaxScreenRatio = 0.85f;
 
-        public static void SetPortrait() => SetAspect(WebScreen.ShortSide, WebScreen.LongSide);
-
         public static void SetLandscape() => SetAspect(WebScreen.LongSide, WebScreen.ShortSide);
 
 #if UNITY_STANDALONE && !UNITY_EDITOR

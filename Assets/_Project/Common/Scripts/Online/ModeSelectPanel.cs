@@ -86,18 +86,6 @@ namespace PenguinMonster.Common.Online
             Open(onNpcSelected, OnlineSession.DefaultMaxPlayers, onTitle);
         }
 
-        /// <summary>3人以上で遊べるゲーム用。ホストが開始を押すと全員に席番号が配られる</summary>
-        /// <param name="onNpcSelected">NPC戦を選んだ</param>
-        /// <param name="onMatchStarted">オンライン試合開始（引数は自分の席番号（ホスト=0）と総人数）</param>
-        /// <param name="maxPlayers">部屋の定員</param>
-        /// <param name="onTitle">「タイトルへ」の戻り先。未指定ならシーンを読み直してタイトルへ</param>
-        public void Show(Action onNpcSelected, Action<int, int> onMatchStarted, int maxPlayers, Action onTitle = null)
-        {
-            _onOnlineReady = null;
-            _onMatchStarted = onMatchStarted;
-            Open(onNpcSelected, maxPlayers, onTitle);
-        }
-
         private void Open(Action onNpcSelected, int maxPlayers, Action onTitle)
         {
             _onNpcSelected = onNpcSelected;

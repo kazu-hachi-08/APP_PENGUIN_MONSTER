@@ -1,6 +1,5 @@
 using PenguinMonster.Battle;
 using PenguinMonster.Common.Editor;
-using PenguinMonster.View;
 using PenguinMonster.View.Story;
 using UnityEditor;
 using UnityEngine;

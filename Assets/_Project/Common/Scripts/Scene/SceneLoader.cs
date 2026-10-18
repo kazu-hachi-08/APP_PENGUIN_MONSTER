@@ -16,9 +16,6 @@ namespace PenguinMonster.Common.Scene
 
         public bool IsLoading { get; private set; }
 
-        public event Action<string> OnSceneLoadStarted;
-        public event Action<string> OnSceneLoadCompleted;
-
         protected override void Awake()
         {
             base.Awake();
@@ -85,7 +82,6 @@ namespace PenguinMonster.Common.Scene
         private IEnumerator LoadSceneRoutine(string sceneName, float fadeDuration, Action onLoaded)
         {
             IsLoading = true;
-            OnSceneLoadStarted?.Invoke(sceneName);
 
             // 1. フェードアウト（暗転）
             if (_fadeController != null)
@@ -114,7 +110,6 @@ namespace PenguinMonster.Common.Scene
             yield return null;
 
             onLoaded?.Invoke();
-            OnSceneLoadCompleted?.Invoke(sceneName);
 
             // 3. フェードイン（明転）
             if (_fadeController != null)

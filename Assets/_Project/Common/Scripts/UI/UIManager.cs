@@ -36,21 +36,6 @@ namespace PenguinMonster.Common.UI
         }
 
         /// <summary>
-        /// 単一ボタンOKアラートの表示
-        /// </summary>
-        public void ShowAlertDialog(
-            string title,
-            string message,
-            Action onOk = null,
-            string okText = "OK")
-        {
-            if (_commonDialog != null)
-            {
-                _commonDialog.Show(title, message, onOk, null, okText, "", showCancelButton: false);
-            }
-        }
-
-        /// <summary>
         /// 一時停止ダイアログの表示
         /// </summary>
         public void ShowPauseDialog(Action onResume, Action onRestart, Action onTitle)
@@ -101,16 +86,6 @@ namespace PenguinMonster.Common.UI
         private static void WarnMissingDialog(string dialogName)
         {
             Debug.LogWarning($"[UIManager] {dialogName}参照が設定されていません。");
-        }
-
-        /// <summary>
-        /// 各ダイアログのインスタンスをランタイム登録
-        /// </summary>
-        public void RegisterDialogs(CommonDialog commonDialog = null, PauseDialog pauseDialog = null, ResultDialog resultDialog = null)
-        {
-            if (commonDialog != null) _commonDialog = commonDialog;
-            if (pauseDialog != null) _pauseDialog = pauseDialog;
-            if (resultDialog != null) _resultDialog = resultDialog;
         }
     }
 }

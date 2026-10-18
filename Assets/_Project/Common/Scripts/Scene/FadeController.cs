@@ -78,16 +78,5 @@ namespace PenguinMonster.Common.Scene
             }
             IsFading = false;
         }
-
-        /// <summary>
-        /// フェードの色を設定（黒、白など）
-        /// </summary>
-        public void SetFadeColor(Color color)
-        {
-            if (_fadeImage != null)
-            {
-                _fadeImage.color = color;
-            }
-        }
     }
 }

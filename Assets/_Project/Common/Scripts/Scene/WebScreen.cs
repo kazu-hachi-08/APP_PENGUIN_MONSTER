@@ -12,8 +12,6 @@ namespace PenguinMonster.Common.Scene
         internal const int ShortSide = 9;
         internal const int LongSide = 16;
 
-        public static void SetPortrait() => SetAspect(ShortSide, LongSide);
-
         public static void SetLandscape() => SetAspect(LongSide, ShortSide);
 
 #if UNITY_WEBGL && !UNITY_EDITOR

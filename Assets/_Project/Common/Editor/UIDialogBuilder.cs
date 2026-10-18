@@ -11,25 +11,6 @@ namespace PenguinMonster.Common.Editor
     /// </summary>
     public static class UIDialogBuilder
     {
-        /// <summary>
-        /// 共通ダイアログ一式を生成し、UIManager へ参照を設定する
-        /// </summary>
-        public static void BuildDialogs(Transform canvas, UIManager uiManager)
-        {
-            var dialogsRoot = CreateUIObject("--- Dialogs ---", canvas);
-            SetStretchAll(dialogsRoot.GetComponent<RectTransform>());
-
-            var commonDialog = CreateCommonDialog(dialogsRoot.transform);
-            var pauseDialog = CreatePauseDialog(dialogsRoot.transform);
-            var resultDialog = CreateResultDialog(dialogsRoot.transform);
-
-            var so = new SerializedObject(uiManager);
-            so.FindProperty("_commonDialog").objectReferenceValue = commonDialog;
-            so.FindProperty("_pauseDialog").objectReferenceValue = pauseDialog;
-            so.FindProperty("_resultDialog").objectReferenceValue = resultDialog;
-            so.ApplyModifiedProperties();
-        }
-
         // 確認ダイアログは名前決定や終了確認など重要な判断に使うため、PauseDialog と同じくスマホの指で押せる大きさにする。
         // 横画面(1920x1080, match 0.5)の縦に短い端末でも収まるよう、パネルの高さは PauseDialog より低く抑える
         private const float CommonPanelWidth = 820f;
@@ -109,53 +90,6 @@ namespace PenguinMonster.Common.Editor
         private const float VolumeTrackHeight = 16f;
         private const float VolumeHandleSize = 52f;
 
-        public static PauseDialog CreatePauseDialog(Transform parent)
-        {
-            var dialogObj = CreateUIObject("PauseDialog", parent);
-            SetStretchAll(dialogObj.GetComponent<RectTransform>());
-
-            var bgImg = dialogObj.AddComponent<Image>();
-            bgImg.color = new Color(0, 0, 0, 0.75f);
-
-            var panelObj = CreateCenteredPanel(dialogObj.transform, new Vector2(PausePanelWidth, 0), new Color(0.12f, 0.14f, 0.18f));
-
-            // 項目を上から積むだけにして、サイズ調整のたびに座標を計算し直さなくて済むようにする
-            var layout = panelObj.AddComponent<VerticalLayoutGroup>();
-            layout.padding = new RectOffset(PausePanelPadding, PausePanelPadding, PausePanelPadding, PausePanelPadding);
-            layout.spacing = PauseItemSpacing;
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.childControlWidth = true;
-            layout.childControlHeight = false;
-            layout.childForceExpandWidth = true;
-            layout.childForceExpandHeight = false;
-            var fitter = panelObj.AddComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            // タイトル
-            var titleObj = CreateUIObject("TitleText", panelObj.transform);
-            titleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(0, PauseTitleHeight);
-            AddBoldCenteredText(titleObj, "PAUSE / 設定", PauseTitleFontSize, Color.white);
-
-            var bgmSlider = CreateVolumeSlider("BgmSlider", panelObj.transform, "BGM 音量");
-            var seSlider = CreateVolumeSlider("SeSlider", panelObj.transform, "SE 音量");
-
-            var resumeBtn = CreatePauseButton(panelObj.transform, "Btn_Resume", "再開する", new Color(0.18f, 0.55f, 0.9f));
-            var restartBtn = CreatePauseButton(panelObj.transform, "Btn_Restart", "リトライ", new Color(0.35f, 0.4f, 0.5f));
-            var titleBtn = CreatePauseButton(panelObj.transform, "Btn_Title", "タイトルへ戻る", new Color(0.45f, 0.25f, 0.28f));
-
-            var pause = dialogObj.AddComponent<PauseDialog>();
-            var so = new SerializedObject(pause);
-            so.FindProperty("_resumeButton").objectReferenceValue = resumeBtn.GetComponent<Button>();
-            so.FindProperty("_restartButton").objectReferenceValue = restartBtn.GetComponent<Button>();
-            so.FindProperty("_titleButton").objectReferenceValue = titleBtn.GetComponent<Button>();
-            so.FindProperty("_bgmSlider").objectReferenceValue = bgmSlider;
-            so.FindProperty("_seSlider").objectReferenceValue = seSlider;
-            so.ApplyModifiedProperties();
-
-            dialogObj.SetActive(false);
-            return pause;
-        }
-
         private static GameObject CreatePauseButton(Transform parent, string name, string label, Color color)
         {
             // 幅はレイアウトが決めるので 0 を渡す
@@ -173,58 +107,6 @@ namespace PenguinMonster.Common.Editor
         private const float ResultButtonWidth = 340f;
         private const float ResultButtonHeight = 100f;
         private const int ResultButtonFontSize = 36;
-
-        public static ResultDialog CreateResultDialog(Transform parent)
-        {
-            var dialogObj = CreateUIObject("ResultDialog", parent);
-            SetStretchAll(dialogObj.GetComponent<RectTransform>());
-
-            var bgImg = dialogObj.AddComponent<Image>();
-            bgImg.color = new Color(0, 0, 0, 0.75f);
-
-            var panelObj = CreateCenteredPanel(dialogObj.transform, new Vector2(ResultPanelWidth, ResultPanelHeight), new Color(0.12f, 0.15f, 0.2f));
-
-            var titleObj = CreateUIObject("TitleText", panelObj.transform);
-            SetAnchorRange(titleObj.GetComponent<RectTransform>(), new Vector2(0, 0.8f), new Vector2(1, 1));
-            var titleText = AddBoldCenteredText(titleObj, "RESULT", ResultTitleFontSize, new Color(1f, 0.85f, 0.2f));
-
-            var scoreObj = CreateUIObject("ScoreText", panelObj.transform);
-            SetAnchorRange(scoreObj.GetComponent<RectTransform>(), new Vector2(0.05f, 0.55f), new Vector2(0.95f, 0.8f));
-            var scoreText = AddBoldCenteredText(scoreObj, "SCORE: 100", ResultScoreFontSize, Color.white);
-
-            var detailObj = CreateUIObject("DetailText", panelObj.transform);
-            SetAnchorRange(detailObj.GetComponent<RectTransform>(), new Vector2(0.05f, 0.4f), new Vector2(0.95f, 0.55f));
-            var detailText = detailObj.AddComponent<Text>();
-            detailText.text = "クリアタイム: 01:23";
-            detailText.fontSize = ResultDetailFontSize;
-            detailText.alignment = TextAnchor.MiddleCenter;
-            detailText.color = new Color(0.7f, 0.75f, 0.85f);
-
-            var btnArea = CreateUIObject("ButtonArea", panelObj.transform);
-            SetAnchorRange(btnArea.GetComponent<RectTransform>(), new Vector2(0.05f, 0.08f), new Vector2(0.95f, 0.35f));
-            var layout = btnArea.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = DialogButtonSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
-
-            var retryBtn = CreateDialogButton(btnArea.transform, "Btn_Retry", "もう一度遊ぶ", ResultButtonWidth, ResultButtonHeight,
-                ResultButtonFontSize, new Color(0.18f, 0.55f, 0.9f));
-            var titleBtn = CreateDialogButton(btnArea.transform, "Btn_Title", "タイトルへ", ResultButtonWidth, ResultButtonHeight,
-                ResultButtonFontSize, new Color(0.35f, 0.38f, 0.45f));
-
-            var result = dialogObj.AddComponent<ResultDialog>();
-            var so = new SerializedObject(result);
-            so.FindProperty("_resultTitleText").objectReferenceValue = titleText;
-            so.FindProperty("_scoreText").objectReferenceValue = scoreText;
-            so.FindProperty("_detailText").objectReferenceValue = detailText;
-            so.FindProperty("_retryButton").objectReferenceValue = retryBtn.GetComponent<Button>();
-            so.FindProperty("_titleButton").objectReferenceValue = titleBtn.GetComponent<Button>();
-            so.ApplyModifiedProperties();
-
-            dialogObj.SetActive(false);
-            return result;
-        }
 
         // 3つのダイアログで同じ作り方のパネル（中央基準・固定サイズ）を1か所にまとめる
         private static GameObject CreateCenteredPanel(Transform parent, Vector2 size, Color color)
