@@ -60,6 +60,11 @@ namespace PenguinMonster.View.Art
             { 193, Fuyume }, { 194, Nekoyanagi }, { 195, Itachi }, { 196, Kamaitachi }, { 197, Tsukiakari }, { 198, Oborozuki },
             { 199, Hanten }, { 200, Dotera }, { 201, Shimobashira }, { 202, Hyouzan }, { 203, Hasuha }, { 204, Omiwatari },
             { 205, Usurai }, { 206, Hyoukyou }, { 207, Kohakuchou }, { 208, Oohakuchou }, { 209, Omamori }, { 210, Shinkirou },
+            { 211, Mameden }, { 212, Gorogoro }, { 213, Narukami }, { 214, Jari }, { 215, Ganpeki }, { 216, Sasa },
+            { 217, Kumazasa }, { 218, Tsubame }, { 219, Hayabusa }, { 220, Hatahata }, { 221, Kanburi }, { 222, Arare },
+            { 223, Hisame }, { 224, Teiden }, { 225, Kurayami }, { 226, Yukiakari }, { 227, Ginga }, { 228, Yukigutsu },
+            { 229, Kanjiki }, { 230, Densen }, { 231, Tettou }, { 232, Yukiishi }, { 233, Hyouheki }, { 234, Kairo },
+            { 235, Danro }, { 236, Hatsuden }, { 237, Raijin }, { 238, Kantera }, { 239, Hesotori }, { 240, SaintElmo },
         };
 
         public static PixelCanvas Paint(int no, bool front)
