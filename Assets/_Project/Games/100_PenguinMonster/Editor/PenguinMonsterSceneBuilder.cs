@@ -120,6 +120,7 @@ namespace PenguinMonster.Editor
             var bagPanel = CreateBagPanel(root.transform);
             var partyPanel = CreatePartyPanel(root.transform);
             var levelUpWindow = CreateLevelUpWindow(root.transform);
+            var newMoveWindow = CreateNewMoveWindow(root.transform);
             // 一覧は枠をタップしたときだけ出る。暗幕で場と窓を覆うよう、窓より手前に置く
             var stagePanel = CreateStatStagePanel(root.transform);
             LinkStatStagePanel(stagePanel, playerInfos.Concat(enemyInfos).Append(playerInfo).Append(enemyInfo).ToArray());
@@ -149,6 +150,7 @@ namespace PenguinMonster.Editor
             so.FindProperty("_partyPanel").objectReferenceValue = partyPanel;
             so.FindProperty("_bagPanel").objectReferenceValue = bagPanel;
             so.FindProperty("_levelUpWindow").objectReferenceValue = levelUpWindow;
+            so.FindProperty("_newMoveWindow").objectReferenceValue = newMoveWindow;
             so.FindProperty("_turnTimer").objectReferenceValue = turnTimer;
             so.ApplyModifiedProperties();
             return controller;

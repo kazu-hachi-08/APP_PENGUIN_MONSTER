@@ -79,7 +79,9 @@ namespace PenguinMonster.View.Story
         {
             foreach (var move in learning.Learned)
             {
+                _battle.ShowNewMove(move);
                 yield return _battle.Say(string.Format(LearnedFormat, member.Name, move.Name));
+                _battle.HideNewMove();
             }
             foreach (var move in learning.ToChoose)
             {
@@ -90,10 +92,13 @@ namespace PenguinMonster.View.Story
         /// <summary>技が4つ埋まっているとき、どれか忘れて覚えるかを選ばせる。戻るなら覚えない</summary>
         private IEnumerator OfferMove(OwnedMonster member, MoveDefinition move)
         {
+            // 覚えたい技の中身を、忘れる技を選び終えるまで出しておく（今の技は長押しで説明が出るので見比べられる）
+            _battle.ShowNewMove(move);
             yield return _battle.Say(string.Format(WantsToLearnFormat, member.Name, move.Name));
             yield return _battle.Say(string.Format(MovesFullFormat, StoryBalance.MaxMoves));
             int slot = -1;
             yield return _battle.ChooseMoveToForget(member.ToBattle(), chosen => slot = chosen);
+            _battle.HideNewMove();
             if (slot < 0)
             {
                 yield return _battle.Say(string.Format(GaveUpFormat, member.Name, move.Name));

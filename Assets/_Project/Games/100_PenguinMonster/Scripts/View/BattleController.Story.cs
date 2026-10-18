@@ -29,6 +29,8 @@ namespace PenguinMonster.View
         [Header("ストーリー")]
         [Tooltip("レベルが上がったときの能力の窓")]
         [SerializeField] private LevelUpWindow _levelUpWindow;
+        [Tooltip("覚える技の説明。覚える・忘れる技を選ぶ間だけ出す")]
+        [SerializeField] private NewMoveWindow _newMoveWindow;
 
         /// <summary>ストーリーの1戦の間だけ入る。null なら対戦（勝ち抜き戦・オンライン）</summary>
         private StoryBattle _story;
@@ -108,6 +110,16 @@ namespace PenguinMonster.View
             _levelUpWindow.ShowTotals(after);
             yield return _messageWindow.WaitForTap();
             _levelUpWindow.Hide();
+        }
+
+        public void ShowNewMove(MoveDefinition move)
+        {
+            _newMoveWindow.Show(move);
+        }
+
+        public void HideNewMove()
+        {
+            _newMoveWindow.Hide();
         }
 
         /// <summary>技の窓で忘れる技を選ばせる。戻るなら -1</summary>
