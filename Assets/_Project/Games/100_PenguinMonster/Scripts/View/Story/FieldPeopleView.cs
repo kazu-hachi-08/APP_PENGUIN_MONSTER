@@ -28,7 +28,7 @@ namespace PenguinMonster.View.Story
             {
                 var renderer = RendererAt(used++);
                 renderer.transform.position = mapView.FeetPosition(placed.Position);
-                renderer.sprite = NpcArt.Get(placed.Npc.Look, placed.Placement.Spot.Facing);
+                renderer.sprite = NpcArt.Get(placed.Npc, placed.Placement.Spot.Facing);
                 renderer.enabled = true;
                 _byId[placed.Npc.Id] = renderer;
             }
@@ -43,7 +43,7 @@ namespace PenguinMonster.View.Story
         {
             if (_byId.TryGetValue(npc.Id, out var renderer))
             {
-                renderer.sprite = NpcArt.Get(npc.Look, facing);
+                renderer.sprite = NpcArt.Get(npc, facing);
             }
         }
 
@@ -68,9 +68,9 @@ namespace PenguinMonster.View.Story
             {
                 yield break;
             }
-            renderer.sprite = NpcArt.Get(npc.Look, facing, 1);
-            yield return FieldAvatar.Slide(renderer.transform, to, seconds, () => renderer.sprite = NpcArt.Get(npc.Look, facing));
-            renderer.sprite = NpcArt.Get(npc.Look, facing);
+            renderer.sprite = NpcArt.Get(npc, facing, 1);
+            yield return FieldAvatar.Slide(renderer.transform, to, seconds, () => renderer.sprite = NpcArt.Get(npc, facing));
+            renderer.sprite = NpcArt.Get(npc, facing);
         }
 
         private SpriteRenderer MarkRenderer()

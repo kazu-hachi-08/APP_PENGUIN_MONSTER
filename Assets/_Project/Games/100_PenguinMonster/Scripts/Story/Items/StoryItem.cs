@@ -1,25 +1,34 @@
 using System;
+using System.Collections.Generic;
 using PenguinMonster.Battle;
 
 namespace PenguinMonster.Story
 {
     /// <summary>
     /// バッグに入る道具。バトルの持ち物（HeldItem）とは別物。
-    /// 並びはバッグの並び（捕獲タマゴ → 回復 → 状態異常を治すもの）
+    /// 並びはバッグの並び（捕獲タマゴ → 回復 → 状態異常を治すもの）。
+    /// 記録には名前で入るので途中に足してよいが、名前は変えない・消さない（古い記録が読めなくなる）
     /// </summary>
     public enum StoryItem
     {
         CaptureEgg,
+        GreatEgg,
+        UltraEgg,
+        NetEgg,
+        NightEgg,
+        HeavyEgg,
+        SkyEgg,
         Potion,
         Antidote,
         ParalyzeHeal,
         Awakening,
     }
 
-    /// <summary>道具1種類の中身。回復の量・治す状態異常・値段</summary>
+    /// <summary>道具1種類の中身。回復の量・治す状態異常・値段、捕獲タマゴなら捕まえやすさの倍率</summary>
     public sealed class StoryItemDefinition
     {
         private static readonly StatusCondition[] NoCures = new StatusCondition[0];
+        private static readonly MonsterType[] NoTypes = new MonsterType[0];
 
         public StoryItem Item { get; }
         public string Name { get; }
@@ -29,8 +38,14 @@ namespace PenguinMonster.Story
         /// <summary>HP を回復する量。0 なら回復しない</summary>
         public int HealAmount { get; }
         public StatusCondition[] Cures { get; }
+        /// <summary>捕まえやすさに掛ける倍率（百分率）。0 なら捕獲タマゴではない</summary>
+        public int CatchPercent { get; private set; }
+        /// <summary>この中のどれかのタイプを持つ相手には CatchPercent ではなく StoryBalance.TypeEggCatchPercent を掛ける</summary>
+        public MonsterType[] BonusTypes { get; private set; } = NoTypes;
+        /// <summary>投げるときのタマゴの見た目</summary>
+        public EggKind Egg { get; private set; }
 
-        public bool IsCaptureEgg => Item == StoryItem.CaptureEgg;
+        public bool IsCaptureEgg => CatchPercent > 0;
         /// <summary>手持ちの子に使う道具（回復・状態異常を治す）</summary>
         public bool IsMedicine => HealAmount > 0 || Cures.Length > 0;
         public int SellPrice => Price / StoryBalance.SellPriceDivisor;
@@ -44,6 +59,34 @@ namespace PenguinMonster.Story
             Price = price;
             HealAmount = healAmount;
             Cures = cures ?? NoCures;
+        }
+
+        /// <summary>捕獲タマゴの定義。bonusTypes を渡すと、そのタイプの相手にだけ大きく効くタマゴになる</summary>
+        public static StoryItemDefinition CaptureEgg(StoryItem item, string name, string description, int price,
+            int catchPercent, EggKind egg, params MonsterType[] bonusTypes)
+        {
+            return new StoryItemDefinition(item, name, description, price)
+            {
+                CatchPercent = catchPercent,
+                Egg = egg,
+                BonusTypes = bonusTypes ?? NoTypes,
+            };
+        }
+
+        /// <summary>
+        /// このタマゴを、このタイプの相手に投げたときの倍率。
+        /// 2タイプの子はどちらかが合えば特化の倍率（両方合っても重ねない）
+        /// </summary>
+        public int CatchPercentAgainst(IReadOnlyList<MonsterType> types)
+        {
+            foreach (var type in types)
+            {
+                if (Array.IndexOf(BonusTypes, type) >= 0)
+                {
+                    return StoryBalance.TypeEggCatchPercent;
+                }
+            }
+            return CatchPercent;
         }
 
         /// <summary>
@@ -65,12 +108,25 @@ namespace PenguinMonster.Story
         }
     }
 
-    /// <summary>道具の一覧（値段は本家に寄せる）</summary>
+    /// <summary>道具の一覧（値段は本家に寄せる）。並びは StoryItem と同じにする（Get が番号で引くため）</summary>
     public static class StoryItems
     {
         private static readonly StoryItemDefinition[] All =
         {
-            new StoryItemDefinition(StoryItem.CaptureEgg, "捕獲タマゴ", "弱った 野生の ペンモンに 投げて 捕まえる", 200),
+            StoryItemDefinition.CaptureEgg(StoryItem.CaptureEgg, "捕獲タマゴ", "弱った 野生の ペンモンに 投げて 捕まえる", 200,
+                StoryBalance.Percent, EggKind.Normal),
+            StoryItemDefinition.CaptureEgg(StoryItem.GreatEgg, "上等タマゴ", "ふつうより 捕まえやすい", 600,
+                StoryBalance.GreatEggCatchPercent, EggKind.Great),
+            StoryItemDefinition.CaptureEgg(StoryItem.UltraEgg, "特上タマゴ", "上等より さらに 捕まえやすい", 1200,
+                StoryBalance.UltraEggCatchPercent, EggKind.Ultra),
+            StoryItemDefinition.CaptureEgg(StoryItem.NetEgg, "網タマゴ", "海と 苔の ペンモンが 捕まえやすい", 1000,
+                StoryBalance.Percent, EggKind.Net, MonsterType.Sea, MonsterType.Moss),
+            StoryItemDefinition.CaptureEgg(StoryItem.NightEgg, "夜タマゴ", "闇と オーロラの ペンモンが 捕まえやすい", 1000,
+                StoryBalance.Percent, EggKind.Night, MonsterType.Dark, MonsterType.Aurora),
+            StoryItemDefinition.CaptureEgg(StoryItem.HeavyEgg, "重いタマゴ", "岩と 氷の ペンモンが 捕まえやすい", 1000,
+                StoryBalance.Percent, EggKind.Heavy, MonsterType.Rock, MonsterType.Ice),
+            StoryItemDefinition.CaptureEgg(StoryItem.SkyEgg, "空タマゴ", "鳥と 雷の ペンモンが 捕まえやすい", 1000,
+                StoryBalance.Percent, EggKind.Sky, MonsterType.Bird, MonsterType.Thunder),
             new StoryItemDefinition(StoryItem.Potion, "傷薬", "HPを 20 回復する", 300, healAmount: 20),
             new StoryItemDefinition(StoryItem.Antidote, "毒消し", "毒を 治す", 100, 0, StatusCondition.Poison, StatusCondition.BadPoison),
             new StoryItemDefinition(StoryItem.ParalyzeHeal, "麻痺治し", "麻痺を 治す", 200, 0, StatusCondition.Paralysis),
@@ -80,5 +136,8 @@ namespace PenguinMonster.Story
         public static StoryItemDefinition Get(StoryItem item) => All[(int)item];
 
         public static int Count => All.Length;
+
+        /// <summary>定義の並び（テストで StoryItem と同じ並びか確かめるため）</summary>
+        public static IReadOnlyList<StoryItemDefinition> Definitions => All;
     }
 }

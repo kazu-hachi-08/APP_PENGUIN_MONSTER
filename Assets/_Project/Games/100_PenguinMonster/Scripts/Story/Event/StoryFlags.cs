@@ -18,5 +18,14 @@ namespace PenguinMonster.Story
         {
             _set.Add(flag);
         }
+
+        /// <summary>
+        /// フラグを下ろす。物語の進み具合は戻さないので、切り替えの設定（走る ON など）にだけ使う。
+        /// 記録には「立っているフラグ」だけが入るので、下ろしたフラグは読み直しても戻らない
+        /// </summary>
+        public void Clear(string flag)
+        {
+            _set.Remove(flag);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using PenguinMonster.Story;
 using UnityEngine;
 
@@ -91,6 +92,9 @@ namespace PenguinMonster.View.Story
                 case EventStepKind.Battle:
                     yield return Fight(runner, state, random);
                     break;
+                case EventStepKind.WildBattle:
+                    yield return FightWild(runner, state, random);
+                    break;
                 case EventStepKind.Ask:
                     yield return Ask(runner.Message, runner.Answer);
                     break;
@@ -128,6 +132,12 @@ namespace PenguinMonster.View.Story
             gameObject.SetActive(false);
             yield return _battles.Fight(state, step.Trainer.CreateParty(), step.Trainer, step.CanLose, random);
             runner.FinishBattle(_battles.PlayerWon);
+            yield return AfterBattle();
+        }
+
+        /// <summary>全滅なら暗転したまま呼ぶ側へ返す。そうでなければ人を並べ直してから明け、台本の続きへ</summary>
+        private IEnumerator AfterBattle()
+        {
             if (_battles.BlackedOut)
             {
                 BlackedOut = true;
@@ -137,6 +147,17 @@ namespace PenguinMonster.View.Story
             gameObject.SetActive(true);
             _beforeReturn?.Invoke();
             yield return _battles.ReturnToField();
+        }
+
+        /// <summary>台本の野生と戦う。中身は草むらの野生と同じ（タマゴを投げられ、逃げられる）。明け方はトレーナー戦と同じ</summary>
+        private IEnumerator FightWild(EventRunner runner, StoryState state, System.Random random)
+        {
+            var step = runner.Current;
+            gameObject.SetActive(false);
+            var foes = new List<OwnedMonster> { OwnedMonster.Create(step.Species, step.Level) };
+            yield return _battles.Fight(state, foes, null, canLose: false, random);
+            runner.FinishWildBattle(_battles.PlayerWon || _battles.Caught);
+            yield return AfterBattle();
         }
 
         /// <summary>3つのタマゴから選び、「〇〇に しますか？」で はい と答えるまで選び直す（もらった後は替えられないので確かめる）</summary>

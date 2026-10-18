@@ -24,10 +24,11 @@ namespace PenguinMonster.Story
     public static class Capture
     {
         /// <summary>捕まえやすさの値。大きいほど捕まえやすく、MaxOdds 以上なら必ず捕まえる</summary>
-        public static int Odds(int maxHp, int currentHp, int catchRate, StatusCondition status)
+        /// <param name="eggPercent">タマゴの倍率（百分率）。本家と同じく捕まえやすさに掛ける</param>
+        public static int Odds(int maxHp, int currentHp, int catchRate, StatusCondition status, int eggPercent = StoryBalance.Percent)
         {
             int hpFactor = StoryBalance.CaptureMaxHpWeight * maxHp - StoryBalance.CaptureHpWeight * currentHp;
-            long odds = (long)hpFactor * catchRate / (StoryBalance.CaptureMaxHpWeight * maxHp);
+            long odds = (long)hpFactor * catchRate * eggPercent / ((long)StoryBalance.CaptureMaxHpWeight * maxHp * StoryBalance.Percent);
             return (int)(odds * StatusBonusPercent(status) / StoryBalance.Percent);
         }
 

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / GiveItem / GiveBadge / ChooseStarter / Battle / Heal / Shop / Storage）で止まり、View が見せ終えたら
-    /// Advance / Answer / Choose / FinishBattle で先へ送る。フラグ・手持ち・お金・回復はここで行い、View は表示だけを受け持つ
+    /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / GiveItem / GiveBadge / ChooseStarter / Battle / WildBattle / Heal / Shop / Storage）で止まり、View が見せ終えたら
+    /// Advance / Answer / Choose / FinishBattle / FinishWildBattle で先へ送る。フラグ・手持ち・お金・回復はここで行い、View は表示だけを受け持つ
     /// </summary>
     public sealed class EventRunner
     {
@@ -99,6 +99,21 @@ namespace PenguinMonster.Story
                 return;
             }
             _state.Flags.Set(step.Trainer.DefeatedFlag);
+            Next();
+        }
+
+        /// <summary>
+        /// WildBattle の決着。倒すか捕まえたら続ける。逃げた・負けたときは残りの台本を流さずに終わる
+        /// （同じ置き場所の人が残るので、もう一度話しかければまた戦える）
+        /// </summary>
+        public void FinishWildBattle(bool defeatedOrCaught)
+        {
+            Expect(EventStepKind.WildBattle);
+            if (!defeatedOrCaught)
+            {
+                _steps.RemoveRange(_index, _steps.Count - _index);
+                return;
+            }
             Next();
         }
 

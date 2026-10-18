@@ -4,7 +4,7 @@ namespace PenguinMonster.Story
 {
     /// <summary>
     /// 区切り2のマップ（PLAN_STORY_TOWN02.md §2）。2番道路の奥 → 3番道路（北）→ カガミコ町、町の東から 4番道路（行き止まり）。
-    /// 町の北は 5番道路の看板で止まる。文字は Town01Maps と同じ。
+    /// 町の北から 5番道路（区切り3。サエに勝つまで門下生がふさぐ）。文字は Town01Maps と同じ。
     /// マップ ID は記録に入るので、一度出したら名前を変えないこと
     /// </summary>
     public static class Town02Maps
@@ -100,15 +100,17 @@ namespace PenguinMonster.Story
         private static readonly GridPos WarmHutDoor = new GridPos(13, 5);
         private static readonly GridPos ShopDoor = new GridPos(19, 5);
         private static readonly GridPos TownHouseDoor = new GridPos(3, 18);
-        /// <summary>北の出口（5番道路）は看板で止まる。看板の上の道は、道が先へ続いて見えるように残す</summary>
-        public static readonly GridPos Route05Sign = new GridPos(11, 1);
+        /// <summary>北の出口（5番道路）。サエに勝つまで門下生が手前でふさぐ</summary>
+        public static readonly GridPos Route05Exit = new GridPos(11, 0);
+        /// <summary>北の出口の横の看板。区切り2では出口の上に立って道を止めていたが、区切り3で道の横へずらした</summary>
+        public static readonly GridPos Route05Sign = new GridPos(12, 1);
 
         private static FieldMap CreateTown()
         {
             var rows = new[]
             {
                 "TTTTTTTTTTT=TTTTTTTTTTTTTT",
-                "T..........S.............T",
+                "T..........=S............T",
                 "T.RRRRRRRR.=.............T",
                 "T.RRRRRRRR.=RRRR.RRRR....T",
                 "T.RRRRRRRR.=RRRR.RRRR....T",
@@ -134,11 +136,12 @@ namespace PenguinMonster.Story
             return new FieldMap(Town, rows,
                 new Warp(TownSouth, Town01Maps.StepFrom(Route03, Route03North, Direction.Down)),
                 new Warp(TownEast, Town01Maps.StepFrom(Route04, Route04West, Direction.Right)),
+                new Warp(Route05Exit, Town01Maps.StepFrom(Town03Maps.Route05, Town03Maps.Route05South, Direction.Up)),
                 Town01Maps.Inside(GymDoor, Gym, Town01Maps.GymArrival),
                 Town01Maps.Inside(WarmHutDoor, WarmHut, Town01Maps.HouseArrival),
                 Town01Maps.Inside(ShopDoor, Shop, Town01Maps.HouseArrival),
                 Town01Maps.Inside(TownHouseDoor, TownHouse, Town01Maps.HouseArrival))
-                .WithSign(Route05Sign, "この先 5番道路", "続きは 次の 更新で！")
+                .WithSign(Route05Sign, "この先 5番道路")
                 .WithSign(new GridPos(9, 6), "カガミコ町 道場", "鏡のように 冴えた 氷の 道場")
                 .WithSign(new GridPos(16, 6), "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）")
                 .WithSign(new GridPos(21, 10), "ここは カガミコ町", "鏡のように 凍った 湖の ほとりの 町")

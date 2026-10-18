@@ -21,7 +21,7 @@ namespace PenguinMonster.Story.Tests
         public void Species_Are181To210InOrderAndMatchStoryTable()
         {
             CollectionAssert.AreEqual(Enumerable.Range(FirstNo, Count), Town02Species.All.Select(species => species.No));
-            CollectionAssert.AreEqual(MonsterTable.Story.Skip(FirstNo - Town01FirstNo), Town02Species.All.Select(species => species.Definition));
+            CollectionAssert.AreEqual(MonsterTable.Story.Skip(FirstNo - Town01FirstNo).Take(Count), Town02Species.All.Select(species => species.Definition));
         }
 
         [Test]

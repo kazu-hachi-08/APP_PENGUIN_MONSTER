@@ -123,7 +123,7 @@ namespace PenguinMonster.View.Story
         {
             StoryItem? chosen = null;
             bool back = false;
-            _bag.Show(state.Bag, item => StoryItems.Get(item).IsMedicine, item => chosen = item, () => back = true);
+            _bag.Show(state.Bag, BagPocket.Medicine, item => StoryItems.Get(item).IsMedicine, item => chosen = item, () => back = true);
             yield return new WaitUntil(() => chosen.HasValue || back);
             if (chosen.HasValue)
             {

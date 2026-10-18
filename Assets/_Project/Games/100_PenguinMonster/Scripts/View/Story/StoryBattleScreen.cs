@@ -23,6 +23,8 @@ namespace PenguinMonster.View.Story
         [SerializeField] private float _fadeSeconds = 0.4f;
 
         public bool PlayerWon { get; private set; }
+        /// <summary>野生の子を捕まえて終わった（台本の野生のバトルで、倒したのと同じく先へ進める）</summary>
+        public bool Caught { get; private set; }
         /// <summary>負けて、最後に回復した場所へ戻る（負けてもよい戦いでは false）</summary>
         public bool BlackedOut { get; private set; }
         /// <summary>戦いの後に戻すフィールドの曲。フィールドがマップを映すたびに入れる</summary>
@@ -51,6 +53,7 @@ namespace PenguinMonster.View.Story
                 state.MarkSeen(no);
             }
             PlayerWon = battle.PlayerWon;
+            Caught = battle.Caught != null;
             // 逃げた・捕まえたときは、勝ってはいないが負けでもない
             bool endedEarly = _battle.Fled || battle.Caught != null;
             BlackedOut = !PlayerWon && !endedEarly && !canLose;

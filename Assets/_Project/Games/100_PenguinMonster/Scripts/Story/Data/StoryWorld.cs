@@ -12,6 +12,7 @@ namespace PenguinMonster.Story
         {
             var maps = new List<FieldMap>(Town01Maps.CreateMaps());
             maps.AddRange(Town02Maps.CreateMaps());
+            maps.AddRange(Town03Maps.CreateMaps());
             return new FieldWorld(maps);
         }
 
@@ -19,6 +20,7 @@ namespace PenguinMonster.Story
         {
             var people = new List<FieldNpc>(Town01People.Create());
             people.AddRange(Town02People.Create());
+            people.AddRange(Town03People.Create());
             return people;
         }
     }

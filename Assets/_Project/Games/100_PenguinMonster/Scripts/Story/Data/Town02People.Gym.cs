@@ -63,10 +63,10 @@ namespace PenguinMonster.Story
                     EventStep.Say("……見事。あなたの 動きは 少しも 曇って いなかった"),
                     EventStep.Say("その 強さの 証に これを"),
                     EventStep.GiveBadge(Town02Trainers.BadgeId, Town02Trainers.BadgeDisplayName),
-                    EventStep.Say("次の 道場へは 町の 北から 5番道路を 進むと いいわ")),
+                    EventStep.Say("次の 道場は 町の 北の 5番道路を 抜けた 先、ユキオコシ町に あるわ")),
                 NpcPlacement.Always(GymLeaderSpot,
                     EventStep.Say("あなたなら きっと 次の 道場も 越えられる"),
-                    EventStep.Say("町の 北の 出口から 5番道路へ 進みなさい")));
+                    EventStep.Say("町の 北の 出口から 5番道路を 抜けて、ユキオコシ町へ 進みなさい")));
         }
     }
 }

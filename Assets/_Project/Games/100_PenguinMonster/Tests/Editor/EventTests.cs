@@ -87,6 +87,47 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void WildBattle_DefeatedOrCaught_ContinuesScript()
+        {
+            var state = new StoryState(Town01Maps.Start);
+            var runner = new EventRunner(state, new[] { EventStep.WildBattle(Chick, 10), EventStep.SetFlag(Flag), EventStep.Say("片付いた") });
+            Assert.AreEqual(EventStepKind.WildBattle, runner.Current.Kind);
+            Assert.AreSame(Chick, runner.Current.Species);
+            Assert.AreEqual(10, runner.Current.Level);
+
+            runner.FinishWildBattle(defeatedOrCaught: true);
+
+            Assert.IsTrue(state.Flags.Has(Flag));
+            Assert.AreEqual("片付いた", runner.Message);
+        }
+
+        [Test]
+        public void WildBattle_FledOrLost_EndsScriptWithoutFlag()
+        {
+            var state = new StoryState(Town01Maps.Start);
+            var runner = new EventRunner(state, new[] { EventStep.WildBattle(Chick, 10), EventStep.SetFlag(Flag) });
+
+            runner.FinishWildBattle(defeatedOrCaught: false);
+
+            Assert.IsTrue(runner.IsDone);
+            Assert.IsFalse(state.Flags.Has(Flag));
+        }
+
+        [Test]
+        public void GreetUntil_GreetsOnArrivalOnlyUntilFlag()
+        {
+            var state = new StoryState(Town01Maps.Start);
+            var spot = new FieldSpot(Town01Maps.Village, new GridPos(3, 3), Direction.Down);
+            var greeter = new FieldNpc("greeter", NpcLook.Mom, NpcPlacement.GreetUntil(Flag, spot, EventStep.SetFlag(Flag)));
+            var people = new FieldPeople(new[] { greeter }, state.Flags);
+
+            Assert.AreSame(greeter, people.GreeterOn(Town01Maps.Village)?.Npc);
+            Assert.IsNull(people.GreeterOn(Town01Maps.Lab));
+            new EventRunner(state, greeter.Placements[0].Script);
+            Assert.IsNull(people.GreeterOn(Town01Maps.Village));
+        }
+
+        [Test]
         public void Party_WhenFull_RefusesMore()
         {
             var party = new Party();

@@ -132,16 +132,18 @@ namespace PenguinMonster.Story
         /// 場の野生に捕獲タマゴを投げる（タマゴを1個使う）。捕まえたら Caught に、その時の HP・状態異常のまま入る。
         /// 外れたらターンの行動の代わりで、相手だけが動く
         /// </summary>
-        public CaptureResult ThrowEgg(Bag bag, Random random)
+        public CaptureResult ThrowEgg(Bag bag, StoryItem egg, Random random)
         {
-            if (!CanThrowEgg || !bag.Remove(StoryItem.CaptureEgg))
+            var definition = StoryItems.Get(egg);
+            if (!CanThrowEgg || !definition.IsCaptureEgg || !bag.Remove(egg))
             {
-                throw new InvalidOperationException("トレーナー戦か、捕獲タマゴを持っていない");
+                throw new InvalidOperationException("トレーナー戦か、捕獲タマゴではないか、持っていない");
             }
             var foeSide = State.Sides[FoeSide];
             var wild = foeSide.Active;
             var owned = _foes[foeSide.ActivePartyIndex];
-            var result = Capture.Roll(Capture.Odds(wild.MaxHp, wild.CurrentHp, owned.Species.CatchRate, wild.Status), random);
+            int eggPercent = definition.CatchPercentAgainst(owned.Species.Definition.Types);
+            var result = Capture.Roll(Capture.Odds(wild.MaxHp, wild.CurrentHp, owned.Species.CatchRate, wild.Status, eggPercent), random);
             if (result.Caught)
             {
                 owned.ApplyBattleResult(wild);

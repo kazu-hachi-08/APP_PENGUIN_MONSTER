@@ -25,6 +25,8 @@ namespace PenguinMonster.View.Story
         [SerializeField] private FieldMenu _menu;
         [Tooltip("1マス歩く秒数。ダイパの歩き（約16フレーム）に合わせる")]
         [SerializeField] private float _stepSeconds = 0.27f;
+        [Tooltip("走る ON のときの1マスの秒数（歩きの2倍の速さ）")]
+        [SerializeField] private float _runStepSeconds = 0.135f;
         [SerializeField] private float _doorFadeSeconds = 0.25f;
         [Tooltip("トレーナーと目が合ったとき「！」を出しておく秒数")]
         [SerializeField] private float _exclaimSeconds = 0.6f;
@@ -54,6 +56,12 @@ namespace PenguinMonster.View.Story
 
             while (true)
             {
+                // 切り替えは歩きと同じフレームで受ける（押しながら歩き出せるように）。台本でシューズをもらうこともあるので毎回出し直す
+                if (_input.ConsumeRunToggle())
+                {
+                    RunningShoes.Toggle(_state.Flags);
+                }
+                _input.ShowRun(RunningShoes.Has(_state.Flags), RunningShoes.IsOn(_state.Flags));
                 var direction = _input.HeldDirection;
                 if (_input.IsBDown)
                 {
@@ -98,7 +106,7 @@ namespace PenguinMonster.View.Story
                 yield break;
             }
 
-            yield return _avatar.Walk(_mapView.FeetPosition(_player.Position), direction, _stepSeconds);
+            yield return _avatar.Walk(_mapView.FeetPosition(_player.Position), direction, PlayerStepSeconds);
             var warp = _player.WarpHere;
             if (warp != null)
             {
@@ -118,6 +126,9 @@ namespace PenguinMonster.View.Story
                 yield return FightWild(wild);
             }
         }
+
+        /// <summary>建物の中・草むらでも走れる（どこでも同じ速さにする）</summary>
+        private float PlayerStepSeconds => RunningShoes.IsOn(_state.Flags) ? _runStepSeconds : _stepSeconds;
 
         private IEnumerator FightWild(OwnedMonster wild)
         {
@@ -210,6 +221,20 @@ namespace PenguinMonster.View.Story
             ShowCurrentMap();
             AutoSave();
             yield return _fade.FadeInCoroutine(_doorFadeSeconds);
+            var greeter = _player.GreeterHere();
+            if (greeter != null)
+            {
+                yield return Greet(greeter.Value);
+            }
+        }
+
+        /// <summary>入ったマップで待っていた人が話してくる（ユキオコシ町の母）。主人公は話してくる人の方を向く</summary>
+        private IEnumerator Greet(PlacedNpc greeter)
+        {
+            var facing = greeter.Placement.Spot.Facing;
+            _player.Face(facing.Opposite());
+            _avatar.Face(facing.Opposite());
+            yield return PlayScript(greeter.Placement.Script);
         }
 
         /// <summary>
