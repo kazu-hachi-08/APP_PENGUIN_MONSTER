@@ -31,6 +31,12 @@ namespace PenguinMonster.Editor
         private static readonly Color PadColor = new Color(0.45f, 0.6f, 0.85f, 0.8f);
         private static readonly Color AButtonColor = new Color(1f, 0.42f, 0.38f, 0.8f);
         private static readonly Color BButtonColor = new Color(1f, 0.72f, 0.25f, 0.8f);
+        // 走るの切り替えは十字キーの右上の空き（▲と▶の間の外側）。親指を少しずらせば押せて、歩くボタンと間違えない小ささにする
+        private static readonly Vector2 RunButtonPosition = PadCenter + new Vector2(PadSpacing, PadSpacing);
+        private static readonly Vector2 RunButtonSize = new Vector2(120f, 120f);
+        private const int RunFontSize = 36;
+        // ON は十字キーと違う色にして、走っているのがひと目でわかるようにする
+        private static readonly Color RunOnColor = new Color(1f, 0.6f, 0.2f, 0.9f);
 
         private static FieldController BuildStoryField(Camera camera, FieldInput input, FadeController fade, FieldEventPlayer events,
             BattleController battle)
@@ -132,6 +138,13 @@ namespace PenguinMonster.Editor
             so.FindProperty("_right").objectReferenceValue = CreatePadButton(touch, "Right", "▶", Vector2.zero, PadCenter + Vector2.right * PadSpacing, PadButtonSize, PadColor);
             so.FindProperty("_a").objectReferenceValue = CreatePadButton(touch, "A", "A", Vector2.right, AButtonPosition, ActionButtonSize, AButtonColor);
             so.FindProperty("_b").objectReferenceValue = CreatePadButton(touch, "B", "B", Vector2.right, BButtonPosition, ActionButtonSize, BButtonColor);
+            var run = CreatePadButton(touch, "Run", "走る", Vector2.zero, RunButtonPosition, RunButtonSize, PadColor);
+            run.GetComponentInChildren<UnityEngine.UI.Text>().fontSize = RunFontSize;
+            so.FindProperty("_run").objectReferenceValue = run;
+            so.FindProperty("_runImage").objectReferenceValue = run.GetComponent<UnityEngine.UI.Image>();
+            so.FindProperty("_runOffColor").colorValue = PadColor;
+            so.FindProperty("_runOnColor").colorValue = RunOnColor;
+            run.gameObject.SetActive(false);
             so.ApplyModifiedProperties();
 
             root.SetActive(false);

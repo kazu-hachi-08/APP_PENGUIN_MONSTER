@@ -120,6 +120,32 @@ namespace PenguinMonster.Story.Tests
             StringAssert.Contains("\"GreatEgg\"", JsonUtility.ToJson(data));
         }
 
+        [Test]
+        public void SaveThenLoad_KeepsRunningShoesAndRunOn()
+        {
+            var original = PlayedState();
+            RunningShoes.Give(original.Flags);
+
+            var restored = ThroughJson(StorySave.Capture(original, Standing));
+
+            Assert.IsTrue(RunningShoes.Has(restored.State.Flags));
+            Assert.IsTrue(RunningShoes.IsOn(restored.State.Flags));
+        }
+
+        [Test]
+        public void SaveThenLoad_RunOffStaysOff()
+        {
+            var original = PlayedState();
+            RunningShoes.Give(original.Flags);
+            RunningShoes.Toggle(original.Flags);
+
+            var restored = ThroughJson(StorySave.Capture(original, Standing));
+
+            // 下ろしたフラグは記録に入らないので、読み直しても ON に戻らない。シューズは持ったまま
+            Assert.IsTrue(RunningShoes.Has(restored.State.Flags));
+            Assert.IsFalse(RunningShoes.IsOn(restored.State.Flags));
+        }
+
         private static void AssertSameMonster(OwnedMonster expected, OwnedMonster actual)
         {
             Assert.AreEqual(expected.Species, actual.Species);
