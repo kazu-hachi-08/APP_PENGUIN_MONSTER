@@ -5,7 +5,7 @@ using UnityEngine;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 特性が働いたときの帯（仕様書 §7）。名前の枠と同じ見た目の小さな枠に「〇〇の / 特性の名前」の2段。
+    /// 特性が働いたときの帯。名前の枠と同じ見た目の小さな枠に「〇〇の / 特性の名前」の2段。
     /// ペンモンの絵と名前の枠の間の空いたところに置き、自分側は左から・相手側は右から滑り込ませる
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder

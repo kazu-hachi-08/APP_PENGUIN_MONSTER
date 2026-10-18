@@ -9,7 +9,7 @@ namespace PenguinMonster.Common.UI
     /// </summary>
     public class UIManager : SingletonMonoBehaviour<UIManager>
     {
-        [Header("UI Dialog Prefabs / References")]
+        [Header("UI Dialog References")]
         [SerializeField] private CommonDialog _commonDialog;
         [SerializeField] private PauseDialog _pauseDialog;
         [SerializeField] private ResultDialog _resultDialog;

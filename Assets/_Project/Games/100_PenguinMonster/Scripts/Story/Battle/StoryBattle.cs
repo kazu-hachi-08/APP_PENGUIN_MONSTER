@@ -22,7 +22,7 @@ namespace PenguinMonster.Story
 
     /// <summary>
     /// ストーリーの1戦。手持ち全員 vs 相手全員のシングルで、見せ合い・選出はない。
-    /// 手持ちの HP・状態異常から始め、終わったら持ち帰る。ターンは今までどおり BattleEngine が進め、
+    /// 手持ちの HP・状態異常から始め、終わったら持ち帰る。ターンは BattleEngine が進め、
     /// ここは「誰が誰と向き合ったか」を覚えて、経験値を出た子で分ける（出ていない子は学習装置で半分）
     /// </summary>
     public sealed class StoryBattle

@@ -1,7 +1,7 @@
 namespace PenguinMonster.View.Art
 {
     /// <summary>
-    /// 目の種類。全員が同じ目だとシルエットを変えても同じ顔に見えたので、1体ずつ選ぶ
+    /// 目の種類。シルエットだけでは顔が同じに見えるので、1体ずつ選ぶ
     /// </summary>
     public enum EyeStyle
     {

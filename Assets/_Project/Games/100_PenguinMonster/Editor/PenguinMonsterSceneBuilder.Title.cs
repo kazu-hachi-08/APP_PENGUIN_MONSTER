@@ -8,11 +8,11 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// タイトル画面。夜空に雪が降り、下の雪原をペンモンが歩く。
-    /// 上にロゴと飾りのペンモン、まん中に大きな「遊ぶ」ボタン3つと最高記録、下に小さなメニューの列
+    /// 上にロゴと飾りのペンモン、まん中に大きなメニューボタン3つ（ストーリー・勝ち抜き戦・オンライン対戦）と最高記録、下に小さなメニューの列
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
-        // 仕様書 §2 のメニュー。ストーリー・勝ち抜き戦・オンライン対戦を大きく出し、SubMenuLabels（ずかん〜設定）は下の列に並べる
+        // メニュー。ストーリー・勝ち抜き戦・オンライン対戦を大きく出し、SubMenuLabels（ずかん〜設定）は下の列に並べる
         private const string StoryMenu = "ストーリー";
         private const string SurvivalMenu = "勝ち抜き戦";
         private const string OnlineMenu = "オンライン対戦";

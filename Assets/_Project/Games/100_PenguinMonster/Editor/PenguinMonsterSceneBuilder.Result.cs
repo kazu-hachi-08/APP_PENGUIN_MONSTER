@@ -95,7 +95,7 @@ namespace PenguinMonster.Editor
         {
             var area = UIDialogBuilder.CreateUIObject("Confetti", parent);
             UIDialogBuilder.SetStretchAll(area.GetComponent<RectTransform>());
-            // 粒が毎フレーム動くので、別の Canvas に分けて、文字やボタンまで作り直しにならないようにする
+            // 粒は毎フレーム動くので別の Canvas に置く（理由は CreateTitleSnow と同じ）
             area.AddComponent<Canvas>();
 
             var pieces = new RectTransform[ConfettiCount];

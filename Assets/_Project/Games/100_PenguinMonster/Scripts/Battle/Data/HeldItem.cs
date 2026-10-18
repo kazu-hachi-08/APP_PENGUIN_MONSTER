@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 持ち物（仕様書 §4.6）。ドラフトの後に1チーム1個もらい、6体の中の1体に持たせる（ItemDraw）。
+    /// 持ち物。ドラフトの後に1チーム1個もらい、6体の中の1体に持たせる（ItemDraw）。
     /// 「1回だけ」のものは使うとそのバトル中は無くなる（試合ごとに戻る）。
     /// 効果の中身は BattleEngine.Items.cs と DamageCalculator（ダメージの倍率）・BattleMonster（すばやさ）
     /// </summary>

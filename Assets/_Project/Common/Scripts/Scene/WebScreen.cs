@@ -8,8 +8,9 @@ namespace PenguinMonster.Common.Scene
     public static class WebScreen
     {
         // UIの基準解像度(CanvasScaler)と同じ比率にする
-        private const int ShortSide = 9;
-        private const int LongSide = 16;
+        // StandaloneScreen と共有する（PC版も同じ比率で窓を作る）
+        internal const int ShortSide = 9;
+        internal const int LongSide = 16;
 
         public static void SetPortrait() => SetAspect(ShortSide, LongSide);
 

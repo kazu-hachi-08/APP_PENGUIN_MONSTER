@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 記録があるときの「続きから / 最初から」（PLAN_STORY_TOWN01.md フェーズ7）。シングル / ダブルスを選ぶ画面と同じ並び
+    /// 記録があるときの「続きから / 最初から」。シングル / ダブルスを選ぶ画面と同じ並び
     /// （タイトルと同じ夜空・雪原、上に見出し、まん中に大きなボタン2つ、左上に「戻る」）。最初からの確かめは手前に重ねる
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder

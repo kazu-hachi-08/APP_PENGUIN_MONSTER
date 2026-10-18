@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 特性（仕様書 §4.6）。ペンモンごとに1つ固定。名前は原作と被らないオリジナル（§1.2）。
+    /// 特性。ペンモンごとに1つ固定。名前は原作と被らないオリジナル。
     /// 効果の中身は BattleEngine.Abilities.cs（場に出たとき・攻撃を受けたとき・ターン終わり）と DamageCalculator（ダメージの倍率）
     /// </summary>
     public enum Ability

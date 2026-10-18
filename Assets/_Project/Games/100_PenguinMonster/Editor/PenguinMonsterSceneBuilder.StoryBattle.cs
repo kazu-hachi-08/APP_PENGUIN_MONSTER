@@ -10,9 +10,9 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// ストーリーのバトル（PLAN_STORY_TOWN01.md フェーズ5）。バトルの画面は対戦と同じものを使い、
+    /// ストーリーのバトル。バトルの画面は対戦と同じものを使い、
     /// コマンドの窓だけ「戦う / バッグ / ペンモン / 逃げる」の 2x2 を別に作る（対戦の窓と同じ場所・大きさ）。
-    /// バッグの一覧は交代の画面と同じ形（暗幕の上の縦の枠）にする（フェーズ6）
+    /// バッグの一覧は交代の画面と同じ形（暗幕の上の縦の枠）にする
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -74,7 +74,7 @@ namespace PenguinMonster.Editor
         }
 
         private const int BagEmptyFontSize = 40;
-        // バッグ（PLAN_STORY_TOWN03.md §3.4）: 上に「タマゴ / 薬」のタブ、6枠ずつのページ、下に ← 戻る →。
+        // バッグ: 上に「タマゴ / 薬」のタブ、6枠ずつのページ、下に ← 戻る →。
         // 窓は交代の画面と同じ大きさのまま、タブの1行ぶん枠を低くして収める
         private const int BagPageSize = 6;
         private static readonly string[] BagPocketLabels = { "タマゴ", "薬" };

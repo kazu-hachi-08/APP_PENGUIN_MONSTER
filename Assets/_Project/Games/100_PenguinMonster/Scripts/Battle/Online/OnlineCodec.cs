@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// オンラインで送る中身（行動・ペンモンの並び）と int 列の変換（仕様書 §8）。
+    /// オンラインで送る中身（行動・ペンモンの並び）と int 列の変換。
     /// 通信は int 列だけを運ぶので、ここで意味のある形に戻す
     /// </summary>
     public static class OnlineCodec

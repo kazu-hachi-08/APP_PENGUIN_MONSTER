@@ -12,11 +12,11 @@ namespace PenguinMonster.Story
     public static class Town01Species
     {
         // 捕まえやすさ（本家に合わせる）: 最初の3体・最後の進化 45 / 序盤のよくいる子 255 / 少し珍しい子 190 / 途中の段 120 / とてもまれ 30
-        private const int RareCatchRate = 45;
-        private const int CommonCatchRate = 255;
-        private const int UncommonCatchRate = 190;
-        private const int MiddleCatchRate = 120;
-        private const int VeryRareCatchRate = 30;
+        internal const int RareCatchRate = 45;
+        internal const int CommonCatchRate = 255;
+        internal const int UncommonCatchRate = 190;
+        internal const int MiddleCatchRate = 120;
+        internal const int VeryRareCatchRate = 30;
 
         public static readonly StorySpecies Kobune = Species(151, GrowthRate.MediumSlow, 62, RareCatchRate, new Evolution(16, 152),
             (1, Tackle), (1, Growl), (5, WaterGun), (9, Splash), (13, BubbleSpit), (20, DiveJet), (26, SeaGun), (32, Fluff), (40, Whirlpool));

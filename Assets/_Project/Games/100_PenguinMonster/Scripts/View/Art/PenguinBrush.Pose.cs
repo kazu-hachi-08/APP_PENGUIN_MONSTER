@@ -4,7 +4,7 @@ namespace PenguinMonster.View.Art
 {
     /// <summary>
     /// 正面の直立以外の姿勢を描くための筆（傾いた体・斜めの顔・ヒレ）。
-    /// 全員が正面立ちだと色違いに見えたので、姿勢とシルエットで描き分けるために足した。
+    /// 全員が正面立ちだと色違いに見えるので、姿勢とシルエットで描き分ける。
     /// 向き dir は -1 が画面の左。正面の絵は左（手前の自分側）を向かせ、後ろ姿は反転で右を向く
     /// </summary>
     public sealed partial class PenguinBrush

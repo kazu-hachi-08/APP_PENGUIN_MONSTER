@@ -15,7 +15,7 @@ namespace PenguinMonster.Story
         public const string Route01 = "Route01";
         public const string Town = "TsuraraTown";
         public const string TownHouse = "TsuraraHouse";
-        /// <summary>ぬくもり小屋・よろず屋（ツララ町）。名前は村に仮で置いていたときと同じにして、記録の戻り先をそのまま使えるようにする</summary>
+        /// <summary>ぬくもり小屋・よろず屋（ツララ町）。マップ ID は記録に入るので名前を変えない</summary>
         public const string WarmHut = "WarmHut";
         public const string Shop = "Shop";
         public const string Gym = "TsuraraGym";

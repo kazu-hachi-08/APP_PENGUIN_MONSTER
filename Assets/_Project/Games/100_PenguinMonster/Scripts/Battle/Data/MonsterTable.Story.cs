@@ -5,7 +5,7 @@ using static PenguinMonster.Battle.MoveTable;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ストーリーの子（No.151〜。PLAN_STORY_TOWN01.md §1・フェーズ8a）。ドラフトには出さないので All とは別の一覧にする。
+    /// ストーリーの子（No.151〜）。ドラフトには出さないので All とは別の一覧にする。
     /// 種族値の合計は 進化前（Young）250〜330 / 最後の進化 425〜530 / 途中の段はその間。
     /// ここの技は図鑑に出す代表の4つで、実際に覚える技はストーリーの定義表（Town01Species・Town02Species・Town03Species）の覚える技の表で決まる
     /// </summary>
@@ -13,7 +13,7 @@ namespace PenguinMonster.Battle
     {
         public static readonly IReadOnlyList<MonsterDefinition> Story = new[]
         {
-            // ---- 区切り1（151〜180） ----
+            // ---- 151〜180 ----
             // 最初の3体（海 → 火 → 苔 → 海 の三すくみ）。本家の最初の3体と同じ種族値の帯（309〜318 / 405 / 525〜530）
             Monster(151, "コブネペン", new[] { Sea }, new Stats(44, 48, 65, 50, 64, 43),
                 new[] { Tackle, Growl, WaterGun, BubbleSpit }, Ability.LastStand, MonsterRank.Young),
@@ -82,7 +82,7 @@ namespace PenguinMonster.Battle
             Monster(180, "ダイヤダストペン", new[] { Aurora }, new Stats(70, 50, 65, 95, 90, 85),
                 new[] { SparkleLaser, FrostKiss, AuroraHeal, AuroraDance }, Ability.Multiscale),
 
-            // ---- 区切り2（181〜210。PLAN_STORY_TOWN02.md §1） ----
+            // ---- 181〜210 ----
             // 3番・4番道路の子
             Monster(181, "ヒバリペン", new[] { Bird }, new Stats(40, 50, 35, 35, 35, 65),
                 new[] { Peck, Growl, DoublePeck, Whirlwind }, Ability.Tailwind, MonsterRank.Young),
@@ -153,7 +153,7 @@ namespace PenguinMonster.Battle
             Monster(210, "シンキロウペン", new[] { Aurora, Dark }, new Stats(70, 55, 65, 100, 80, 85),
                 new[] { SparkleLaser, PolarNight, ShadowStitch, AuroraDance }, Ability.Moody),
 
-            // ---- 区切り3（211〜240。PLAN_STORY_TOWN03.md §1） ----
+            // ---- 211〜240 ----
             // 5番・6番道路の子
             Monster(211, "マメデンペン", new[] { Thunder }, new Stats(40, 35, 35, 55, 40, 65),
                 new[] { StaticShock, Growl, ZapJab, NumbWave }, Ability.StaticBody, MonsterRank.Young),

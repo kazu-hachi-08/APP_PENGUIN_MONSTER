@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>段階4のふつう前半（No.76〜100）のデザイン</summary>
+    /// <summary>ふつう前半（No.76〜100）のデザイン</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 S4aWood = Rgb(150, 100, 60);

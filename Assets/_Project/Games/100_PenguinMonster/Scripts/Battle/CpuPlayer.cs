@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// CPU の行動（仕様書 §4.8）。賢さで技の選び方・交代を変える。ダブルスでは場の1体ずつ選ぶ。
+    /// CPU の行動。賢さで技の選び方・交代を変える。ダブルスでは場の1体ずつ選ぶ。
     /// ドラフトと選出は CpuPlayer.Draft.cs
     /// </summary>
     public sealed partial class CpuPlayer
@@ -61,7 +61,7 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// 攻撃より先に使う変化技（仕様書 §4.8）。HP が半分以下なら回復、HP が満タン（出てすぐ）でまだその天候でなければ天候の技。
+        /// 攻撃より先に使う変化技。HP が半分以下なら回復、HP が満タンでまだその天候でなければ天候の技。
         /// どちらも無ければ -1。それ以外の変化技は見込みダメージ 0 のまま、使わない
         /// </summary>
         private static int ChooseSupportMove(BattleMonster user)

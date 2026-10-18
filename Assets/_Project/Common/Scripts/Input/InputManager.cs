@@ -121,7 +121,7 @@ namespace PenguinMonster.Common.Input
 
             IsAction3Down = key3Down || v3Down;
 
-            // Action 4: 左Shiftキー / 仮想ボタン4（スライディングタックル用）
+            // Action 4: 左Shiftキー / 仮想ボタン4
             bool key4Down = keyboard != null && keyboard.leftShiftKey.wasPressedThisFrame;
             bool v4Down = _virtualAction4Button != null && _virtualAction4Button.IsDown;
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 持ち物の発動（仕様書 §4.6）。HPが減ったとき・状態異常になったとき・ターン終わりに呼ぶ。
+    /// 持ち物の発動。HPが減ったとき・状態異常になったとき・ターン終わりに呼ぶ。
     /// ダメージの倍率になる持ち物は DamageCalculator、かるいはね は BattleMonster.EffectiveSpeed
     /// </summary>
     public sealed partial class BattleEngine

@@ -52,7 +52,7 @@ namespace PenguinMonster.View.Story
             _input.SetPadVisible(true);
         }
 
-        /// <summary>台本の外から「はい / いいえ」だけ聞く（メニューの「やめる」の確かめ）</summary>
+        /// <summary>台本の外から「はい / いいえ」だけ聞く（メニューの「やめる」「記録する」の確かめ）</summary>
         public IEnumerator Confirm(string question, Action<bool> onAnswer)
         {
             ShowLayer();
@@ -70,7 +70,7 @@ namespace PenguinMonster.View.Story
             gameObject.SetActive(false);
         }
 
-        /// <summary>会話の層を出す。十字キーは下の窓と重なるので隠し、前に残った「はい / いいえ」も消しておく</summary>
+        /// <summary>会話の層を出す（十字キーを隠し、前に残った「はい / いいえ」も消す）</summary>
         private void ShowLayer()
         {
             _input.SetPadVisible(false);

@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ペンモンの強さのランク（仕様書 §3.5）。ドラフトの出やすさと、絵の大きさ・飾りに使う
+    /// ペンモンの強さのランク。ドラフトの出やすさと、絵の大きさ・飾りに使う
     /// </summary>
     public enum MonsterRank
     {

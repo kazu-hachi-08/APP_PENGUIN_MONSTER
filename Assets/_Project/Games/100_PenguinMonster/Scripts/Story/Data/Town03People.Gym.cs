@@ -3,17 +3,17 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// ユキオコシ町の道場（門下生2人・道場主ライゾウ）、5番道路の途中のユキトとの4戦目、発電所に居座る No.239（PLAN_STORY_TOWN03.md フェーズ5）。
+    /// ユキオコシ町の道場（門下生2人・道場主ライゾウ）、5番道路の途中のユキトとの4戦目、発電所に居座る No.239。
     /// 発電所の子を倒すか捕まえると電気が戻り、ライゾウが扉の前から道場の中へ戻る。ライゾウに勝つと羽章をもらえる
     /// </summary>
     public static partial class Town03People
     {
-        /// <summary>発電所に居座る子のレベル（PLAN_STORY_TOWN03.md §6）</summary>
+        /// <summary>発電所に居座る子のレベル</summary>
         public const int HesotoriLevel = 24;
 
         /// <summary>道場の扉の前。電気が戻るまで道場主ライゾウがここに立つ</summary>
         public static readonly FieldSpot LeaderAtGymDoor = Town01Maps.StepFrom(Town03Maps.Town, Town03Maps.GymDoor, Direction.Down);
-        /// <summary>道場主は奥の真ん中（区切り1・2の道場と同じ形）。主人公はその1つ手前で話しかける</summary>
+        /// <summary>道場主は奥の真ん中（ツララ町・カガミコ町の道場と同じ形）。主人公はその1つ手前で話しかける</summary>
         public static readonly FieldSpot GymLeaderSpot = new FieldSpot(Town03Maps.Gym, new GridPos(5, 1), Direction.Down);
         /// <summary>発電所の奥。No.239 が居座る。主人公はその1つ下で話す</summary>
         public static readonly FieldSpot PowerPlantCoreSpot = new FieldSpot(Town03Maps.PowerPlant, new GridPos(5, 1), Direction.Down);
@@ -60,7 +60,7 @@ namespace PenguinMonster.Story
         }
 
         /// <summary>
-        /// 発電所の機械に居座る No.239（PLAN_STORY_TOWN03.md §5）。倒すか捕まえると電気が戻る。
+        /// 発電所の機械に居座る No.239。倒すか捕まえると電気が戻る。
         /// 逃げた・負けたときは居座ったままなので、もう一度話しかければまた戦える
         /// </summary>
         private static FieldNpc PowerPlantHesotori()

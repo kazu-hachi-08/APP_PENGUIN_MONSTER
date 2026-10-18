@@ -3,7 +3,7 @@ using PenguinMonster.Battle;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り2のトレーナー（PLAN_STORY_TOWN02.md §3）。3番・4番道路の6人・ユキトの3戦目・道場の門下生2人と道場主サエ。
+    /// トレーナー。3番・4番道路の6人・ユキトの3戦目・道場の門下生2人と道場主サエ。
     /// 道路の子は CPU よわい、ユキトと道場は ふつう。技は覚える技の表から自動で決まる
     /// </summary>
     public static class Town02Trainers

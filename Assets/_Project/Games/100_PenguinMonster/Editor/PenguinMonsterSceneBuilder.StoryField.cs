@@ -10,13 +10,13 @@ using UnityEngine.Tilemaps;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// ストーリーのフィールド（PLAN_STORY_TOWN01.md フェーズ3）。マップと主人公は UI ではなくカメラに映す（Tilemap と SpriteRenderer）。
+    /// ストーリーのフィールド。マップと主人公は UI ではなくカメラに映す（Tilemap と SpriteRenderer）。
     /// フィールドに居る間はバトルの UI を隠すので、Canvas（Overlay）の後ろのカメラの絵が見える。
     /// 十字キーと A / B は Canvas に置く（タッチの端末だけ出す）
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
-        // 主人公はマップのタイルより手前に描く
+        // 主人公と村の人はマップのタイルより手前に描く
         private const int HeroSortingOrder = 1;
 
         // 十字キーは左下、A / B は右下（ダイパの手の位置。右手の親指で A を押しやすいよう A を外側の上に置く）

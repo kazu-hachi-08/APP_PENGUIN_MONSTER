@@ -1,6 +1,6 @@
 namespace PenguinMonster.Story
 {
-    /// <summary>区切り2のフラグ。名前は頭に town02. を付けて、区切り1のフラグと重ならないようにする</summary>
+    /// <summary>名前は頭に town02. を付けて、他の町のフラグと重ならないようにする</summary>
     public static class Town02Flags
     {
         /// <summary>4番道路の奥の出来事を見た。カガミコ町の道場の前の門下生がどく</summary>

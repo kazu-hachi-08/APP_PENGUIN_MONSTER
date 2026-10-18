@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// 村の人の絵。主人公と同じ形で、帽子・髪・上着の色だけ替える（人ごとに描き分けるのは後回し）。
+    /// 村の人の絵。主人公と同じ形で、帽子・髪・上着・縁取りと裾の色だけ替える（人ごとの描き分けはしていない）。
     /// 遠くからでも誰か分かるよう、上着の色を人ごとにはっきり変える
     /// </summary>
     public static class NpcArt

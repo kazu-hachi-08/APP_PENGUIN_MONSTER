@@ -29,7 +29,7 @@ namespace PenguinMonster.View.Art
             new Color32(250, 245, 225, 255), new Color32(120, 190, 235, 255), new Color32(40, 60, 110, 255),
             new Color(0.85f, 0.95f, 1f));
 
-        // 捕獲タマゴの種類ごと（PLAN_STORY_TOWN03.md §3.3）。タイプ特化のタマゴは効くタイプの色に寄せて見分けやすくする
+        // 捕獲タマゴの種類ごと。タイプ特化のタマゴは効くタイプの色に寄せて見分けやすくする
         private static readonly EggStyle Great = new EggStyle(
             new Color32(150, 205, 245, 255), new Color32(255, 255, 255, 255), new Color32(30, 70, 130, 255),
             new Color(0.8f, 0.95f, 1f));

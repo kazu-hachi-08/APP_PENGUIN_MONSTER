@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>区切り2の3番・4番道路の子（No.181〜196）。雲雀・湖の魚・湯たんぽ・ごろた石・冬の雷・冬芽・いたち</summary>
+    /// <summary>3番・4番道路の子（No.181〜196）。雲雀・湖の魚・湯たんぽ・ごろた石・冬の雷・冬芽・いたち</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 CastIron = Rgb(55, 55, 62);
@@ -219,7 +219,7 @@ namespace PenguinMonster.View.Art
             }
             b.Belly(30f, 17f, 9f, 10f);
             b.Line(0.7f, bodyShade, V(44, 30), V(40, 24), V(44, 18));
-            // 鍾乳石は山の裾の内側から下向きに垂らす（顔の近くだと涙に見えたため）
+            // 鍾乳石は山の裾の内側から下向きに垂らす（顔の近くだと涙に見えるので）
             b.Triangle(V(8, 14), V(12, 14), V(10, 6), SnowShade);
             b.Triangle(V(52, 14), V(56, 14), V(54, 5), SnowShade);
             b.Shaded(31f, 38f, 12f, 10f, body);

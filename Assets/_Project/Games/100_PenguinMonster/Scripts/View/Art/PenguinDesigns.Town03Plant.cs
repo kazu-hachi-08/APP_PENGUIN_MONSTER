@@ -4,7 +4,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 namespace PenguinMonster.View.Art
 {
     /// <summary>
-    /// 区切り3の残りの子（No.226〜240）。雪明かり・銀河・雪靴・かんじき・電線・雪の石・カイロ・暖炉と、
+    /// No.226〜240の子。雪明かり・銀河・雪靴・かんじき・電線・雪の石・カイロ・暖炉と、
     /// 道場主の切り札（発電・雷神）・町でもらう灯り・発電所に居座る子・セントエルモの火
     /// </summary>
     public static partial class PenguinDesigns
@@ -243,7 +243,7 @@ namespace PenguinMonster.View.Art
             var label = Rgb(235, 120, 60);
             b.Foot(27f, 4f, 20f, 0.55f);
             b.Foot(37f, 4f, -20f, 0.55f);
-            // 袋の体は角を丸めた四角。四隅の丸と2つの四角で作る
+            // 袋の体は角を丸めた四角。下の2隅を丸く、四角を重ねて作る
             b.Rect(20, 7, 24, 24, pouchShade);
             b.Rect(19, 8, 24, 23, pouch);
             b.Rect(20, 6, 22, 2, pouchShade);

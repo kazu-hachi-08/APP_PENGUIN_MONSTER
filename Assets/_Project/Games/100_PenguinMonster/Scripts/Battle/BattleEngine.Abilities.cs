@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 特性の発動（仕様書 §4.6）。場に出たとき・攻撃のあと・ターン終わりに呼ぶ。
+    /// 特性の発動。場に出たとき・攻撃のあと・ターン終わりに呼ぶ。
     /// ダメージの倍率になる特性（せとぎわ・ふかふかしぼう・かたいはね）は DamageCalculator、よふかし は StatusImmunity。
     /// 特性が働いたら必ず AbilityActivated を出し、画面に特性の帯を出す（文はその後の効果の文に任せる）
     /// </summary>

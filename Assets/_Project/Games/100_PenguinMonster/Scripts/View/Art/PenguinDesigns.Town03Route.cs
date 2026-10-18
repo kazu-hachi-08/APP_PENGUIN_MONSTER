@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>区切り3の5番・6番道路の子（No.211〜225）。豆電球・雷鳴・砂利・笹・燕・鰰・寒鰤・霰・氷雨・停電</summary>
+    /// <summary>5番・6番道路の子（No.211〜225）。豆電球・雷鳴・砂利・笹・燕・鰰・寒鰤・霰・氷雨・停電</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 Thundercloud = Rgb(110, 115, 135);

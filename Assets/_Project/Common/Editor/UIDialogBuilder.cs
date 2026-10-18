@@ -31,7 +31,7 @@ namespace PenguinMonster.Common.Editor
         }
 
         // 確認ダイアログは名前決定や終了確認など重要な判断に使うため、PauseDialog と同じくスマホの指で押せる大きさにする。
-        // 横画面(1920x1080, match 0.5)の縦に短い端末でも収まるよう、パネルの高さは PausePanel より低く抑える
+        // 横画面(1920x1080, match 0.5)の縦に短い端末でも収まるよう、パネルの高さは PauseDialog より低く抑える
         private const float CommonPanelWidth = 820f;
         private const float CommonPanelHeight = 520f;
         private const int CommonTitleFontSize = 44;
@@ -118,7 +118,7 @@ namespace PenguinMonster.Common.Editor
             return dialog;
         }
 
-        // スマホで指で操作しやすいサイズ。横画面(1920x1080, match 0.5)の縦に短い端末でも収まるよう、パネルの高さは約830に抑える
+        // スマホで指で操作しやすいサイズ。項目の合計で高さは約830になる
         private const float PausePanelWidth = 820f;
         private const int PausePanelPadding = 30;
         private const float PauseItemSpacing = 20f;

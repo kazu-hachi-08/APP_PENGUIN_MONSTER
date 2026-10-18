@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// タイトルから開く画面（Phase 8）。共通の枠（見出し・もどる）と、タイプ相性表・あそびかた・設定。ずかんは .Dex.cs
+    /// タイトルから開く画面。共通の枠（見出し・もどる）と、タイプ相性表・あそびかた・設定。ずかんは .Dex.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -156,7 +156,7 @@ namespace PenguinMonster.Editor
             return text;
         }
 
-        // 仕様書 §3.4 と同じ書き方（等倍は空欄）
+        // 等倍は空欄
         private static string ChartLabel(float multiplier)
         {
             return multiplier == 0f ? "0" : multiplier < 1f ? "½" : multiplier > 1f ? "2" : "";

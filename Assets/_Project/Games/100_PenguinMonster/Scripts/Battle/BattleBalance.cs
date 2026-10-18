@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// バトルの調整値。仕様書 §3.2 / §4.3 の数値をここに集める
+    /// バトルの調整値。数値をここに集める
     /// </summary>
     public static class BattleBalance
     {
@@ -17,11 +17,11 @@ namespace PenguinMonster.Battle
         /// <summary>選出する数（3vs3）</summary>
         public const int PartySize = 3;
 
-        // ドラフト（仕様書 §2.1）。3体の提示から1体取る × 6回
+        // ドラフト。3体の提示から1体取る × 6回
         public const int DraftOfferCount = 3;
         public const int DraftRounds = 6;
 
-        // ドラフトの出やすさの重み（仕様書 §2.1 / §3.5）。伝説はたまに出る「当たり」にするため小さく
+        // ドラフトの出やすさの重み。伝説はたまに出る「当たり」にするため小さく
         public const int DraftWeightHina = 10;
         public const int DraftWeightNormal = 10;
         public const int DraftWeightAce = 5;
@@ -29,7 +29,7 @@ namespace PenguinMonster.Battle
         /// <summary>伝説は1チームにこの数まで（伝説だけで固めた壊れたチームを防ぐ）</summary>
         public const int MaxLegendsPerTeam = 1;
 
-        // 勝ち抜き戦（仕様書 §2.3 / §4.8）。連勝数がこの数に届いたら CPU の賢さが1段上がる
+        // 勝ち抜き戦。連勝数がこの数に届いたら CPU の賢さが1段上がる
         public const int NormalCpuFromWins = 3;
         public const int StrongCpuFromWins = 6;
         /// <summary>この戦数ごとにボス（7戦目・14戦目…）</summary>
@@ -40,13 +40,13 @@ namespace PenguinMonster.Battle
         public const int CpuHealHpDenominator = 2;
         public const int PercentMax = 100;
 
-        // オンラインの制限時間（秒。仕様書 §2.1 / §2.2 / §4.7）。過ぎたら自動で決める
+        // オンラインの制限時間（秒）。過ぎたら自動で決める
         public const int OnlineDraftSeconds = 15;
         public const int OnlineSelectSeconds = 60;
         public const int OnlineTurnSeconds = 30;
 
         /// <summary>
-        /// バトル中に相手の返事をこれ以上待ったら、通信が止まったとみなす（仕様書 §8）。
+        /// バトル中に相手の返事をこれ以上待ったら、通信が止まったとみなす。
         /// 普通は制限時間（ダブルスで2体×30秒）＋再生の差で収まるので、それより十分長くする
         /// </summary>
         public const int OnlineReplyTimeoutSeconds = 180;
@@ -55,7 +55,7 @@ namespace PenguinMonster.Battle
         public const int SingleActiveCount = 1;
         public const int DoublesActiveCount = 2;
 
-        // ダブルス（仕様書 §4.9）。場に2体ずつなので、控えが残るよう選出は1体多くする
+        // ダブルス。場に2体ずつなので、控えが残るよう選出は1体多くする
         public const int DoublesPartySize = 4;
         /// <summary>相手全員に当たる技が、2体以上に当たったときのダメージの倍率</summary>
         public const float SpreadMultiplier = 0.75f;
@@ -75,12 +75,12 @@ namespace PenguinMonster.Battle
         /// <summary>ダメージ式の「2×Lv÷5＋2」の部分。攻撃する側のレベルで出す</summary>
         public static int LevelFactor(int level) => 2 * level / 5 + 2;
 
-        // 能力変化（仕様書 §4.5）。倍率は 能力 (2+n)/2、命中・回避 (3+n)/3（下がるときは分母に足す）
+        // 能力変化。倍率は 能力 (2+n)/2、命中・回避 (3+n)/3（下がるときは分母に足す）
         public const int MaxStatStage = 6;
         public const int StatStageBase = 2;
         public const int AccuracyStageBase = 3;
 
-        // 状態異常（仕様書 §4.4）。ダメージは最大HPを割る数
+        // 状態異常。ダメージは最大HPを割る数
         public const int ParalysisSpeedDivisor = 2;
         public const int ParalysisImmobileDenominator = 4;
         public const int PoisonDamageDenominator = 8;
@@ -98,7 +98,7 @@ namespace PenguinMonster.Battle
         public const int ConfusionSelfHitDenominator = 3;
         public const int ConfusionSelfHitPower = 40;
 
-        // 特性（仕様書 §4.6）
+        // 特性
         public const int IntimidateStages = -1;
         public const int TailwindStages = 1;
         public const int MomentumStages = 1;
@@ -113,7 +113,7 @@ namespace PenguinMonster.Battle
         /// <summary>仇討ち: 選出の味方が1体瀕死になるごとに掛ける倍率</summary>
         public const float AvengerMultiplierPerFainted = 1.3f;
 
-        // 持ち物（仕様書 §4.6）。回復・反動は最大HPを割る数
+        // 持ち物。回復・反動は最大HPを割る数
         public const int StarFishHealDenominator = 16;
         public const int SquidSnackHealDenominator = 4;
         /// <summary>おやつのイカ: HPが最大HPのこの分の1以下で使う</summary>
@@ -133,7 +133,7 @@ namespace PenguinMonster.Battle
         /// <summary>貝の首飾り: 与えたダメージのこの分の1を回復</summary>
         public const int ShellNecklaceHealDenominator = 8;
 
-        // 技の効果（仕様書 §4.2）。反動・吸収は与えたダメージを、回復は最大HPを割る数
+        // 技の効果。反動・吸収は与えたダメージを、回復は最大HPを割る数
         public const int RecoilDenominator = 3;
         public const int DrainDenominator = 2;
         public const int HealMoveDenominator = 2;
@@ -142,12 +142,12 @@ namespace PenguinMonster.Battle
         /// <summary>CPU が見込みダメージに掛ける 2〜5回の技の平均回数（上の確率から）</summary>
         public const float AverageMultiHits = 3.1f;
 
-        // 特性（Phase 11 で追加）
+        // 特性
         /// <summary>ひと休み: 交代で引っ込むと最大HPのこの分の1を回復</summary>
         public const int RestHealDenominator = 3;
         public const int WeatherSpeedMultiplier = 2;
 
-        // 特性（段階4 で追加）
+        // 特性
         /// <summary>小技名人: 威力がこれ以下の技が強くなる</summary>
         public const int TechnicianPowerMax = 60;
         public const float TechnicianMultiplier = 1.5f;
@@ -160,7 +160,7 @@ namespace PenguinMonster.Battle
         /// <summary>ちゃっかり: 変化技の優先度に足す数</summary>
         public const int PranksterPriorityBonus = 1;
 
-        // 天候（仕様書 §4.10）
+        // 天候
         public const int WeatherTurns = 5;
         /// <summary>お天気石を持った子が始めた天候のターン数</summary>
         public const int WeatherStoneTurns = 8;
@@ -172,7 +172,7 @@ namespace PenguinMonster.Battle
         /// <summary>吹雪のとき、氷タイプが物理技を受ける防御の倍率</summary>
         public const float SnowIceDefenseMultiplier = 1.5f;
 
-        // 戦況を変える技（仕様書 §4.2）
+        // 戦況を変える技
         /// <summary>追い風が続くターン（始めたターンも1と数える）</summary>
         public const int TailwindTurns = 4;
         public const int TailwindSpeedMultiplier = 2;

@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 状態異常（仕様書 §4.4）。1体に1つだけで、交代しても残る。
+    /// 状態異常。1体に1つだけで、交代しても残る。
     /// こんらんは交代で治る別枠なので、ここには入れず BattleMonster が持つ
     /// </summary>
     public enum StatusCondition
@@ -27,7 +27,7 @@ namespace PenguinMonster.Battle
 
     public static class StatusImmunity
     {
-        /// <summary>原作と同じく、ひ はやけど・こおり はこおり・かみなり はまひにならない。特性 よふかし は ねむりにならない</summary>
+        /// <summary>原作と同じく、ひタイプは やけどに、こおりタイプは こおりに、かみなりタイプは まひに ならない。特性 よふかし は ねむりにならない</summary>
         public static bool IsImmune(MonsterDefinition monster, StatusCondition status)
         {
             switch (status)

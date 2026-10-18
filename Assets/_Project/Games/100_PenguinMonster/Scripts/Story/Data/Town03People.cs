@@ -3,7 +3,6 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り3の人と落とし物（PLAN_STORY_TOWN03.md）。
     /// カガミコ町の北の出口は サエに勝つまで、ユキオコシ町の道場の扉は 発電所の出来事（Town03Flags.PowerRestored）まで人がふさぐ。
     /// 町の人・母のシューズ・道路のトレーナー・No.238 をくれる人は .Town.cs、道場・ユキトの4戦目・発電所の No.239 は .Gym.cs
     /// </summary>
@@ -22,7 +21,7 @@ namespace PenguinMonster.Story
             {
                 KagamikoNorthDisciple(),
                 Town01People.HutKeeper("yukiokoshiHutKeeper", Town03Maps.WarmHut),
-                // 区切り3から新しいタマゴ6種が並ぶ（PLAN_STORY_TOWN03.md §3.1）。区切り1・2の店は今のまま
+                // 新しいタマゴ6種を並べる。他の町の店は基本の5種のまま
                 Town01People.Clerk("yukiokoshiClerk", Town03Maps.Shop,
                     StoryItem.CaptureEgg, StoryItem.GreatEgg, StoryItem.UltraEgg, StoryItem.NetEgg, StoryItem.NightEgg,
                     StoryItem.HeavyEgg, StoryItem.SkyEgg, StoryItem.Potion, StoryItem.Antidote, StoryItem.ParalyzeHeal, StoryItem.Awakening),
@@ -38,7 +37,7 @@ namespace PenguinMonster.Story
             return people;
         }
 
-        /// <summary>区切り2の道場に勝つ前に 5番道路へ進ませないため、道場の決まりを口実に出口をふさぐ。勝つと居なくなる</summary>
+        /// <summary>カガミコ町の道場に勝つ前に 5番道路へ進ませないため、道場の決まりを口実に出口をふさぐ。勝つと居なくなる</summary>
         private static FieldNpc KagamikoNorthDisciple()
         {
             return new FieldNpc("kagamikoNorthDisciple", NpcLook.Disciple,

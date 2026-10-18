@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ペンモン1体の定義（仕様書 §3.1）。見た目は View 側が No から描き分ける
+    /// ペンモン1体の定義。見た目は View 側が No から描き分ける
     /// </summary>
     public sealed class MonsterDefinition
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 状態異常・こんらん（仕様書 §4.4）。技を出す前の判定と、ターン終わりのダメージ
+    /// 状態異常・こんらん。技を出す前の判定と、ターン終わりのダメージ
     /// </summary>
     public sealed partial class BattleEngine
     {
@@ -84,7 +84,7 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// ターン終わり。先に天候の残りを数え、続いて場の全員を すばやさの高い順に（同速は陣営0から）1体ずつ、
+        /// ターン終わり。先に天候と追い風の残りを数え、続いて場の全員を すばやさの高い順に（同速は陣営0から）1体ずつ、
         /// 吹雪のダメージ → どく・やけど のダメージ → 持ち物（ほしざかな）→ 特性（おいかぜのり）を全部済ませる
         /// </summary>
         private void ApplyEndOfTurn(List<BattleEvent> events)

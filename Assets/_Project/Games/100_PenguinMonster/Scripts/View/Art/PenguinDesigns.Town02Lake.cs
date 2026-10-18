@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>区切り2の湖のほとりと道場・町の子（No.197〜210）。月・はんてん・霜柱・湖の氷・白鳥・お守り・蜃気楼</summary>
+    /// <summary>湖のほとりと道場・町の子（No.197〜210）。月・はんてん・霜柱・湖の氷・白鳥・お守り・蜃気楼</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 MoonYellow = Rgb(250, 235, 160);
@@ -145,7 +145,7 @@ namespace PenguinMonster.View.Art
             b.Polygon(V(28, 22), IceLight, V(10, 6), V(14, 24), V(22, 28), V(26, 42), V(32, 40), V(30, 6));
             b.Shaded(32f, 34f, 11f, 10f, body);
             b.White(29f, 33f, 8.5f, 6.5f);
-            // とがった氷は肩の外側に立てる（頭のすぐ上だと耳に見えたため）
+            // とがった氷は肩の外側に立てる（頭のすぐ上だと耳に見えるので）
             b.Triangle(V(8, 24), V(16, 28), V(9, 40), IceLight);
             b.Triangle(V(48, 28), V(56, 24), V(55, 42), IceShade);
             b.Flipper(V(20, 30), V(8, 34), 3f, bodyShade);

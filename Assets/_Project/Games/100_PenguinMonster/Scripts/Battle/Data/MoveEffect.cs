@@ -71,7 +71,7 @@ namespace PenguinMonster.Battle
         public static MoveEffect Heal()
             => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, heals: true);
 
-        /// <summary>場全体にかかるが、相手の回避で外れないよう自分にかける技として扱う</summary>
+        /// <summary>場全体にかかる天候（回避の扱いは下の Protect() と同じ）</summary>
         public static MoveEffect SetWeather(Weather weather)
             => new MoveEffect(EffectTarget.Self, AlwaysPercent, StatusCondition.None, false, default, 0, weather: weather);
 

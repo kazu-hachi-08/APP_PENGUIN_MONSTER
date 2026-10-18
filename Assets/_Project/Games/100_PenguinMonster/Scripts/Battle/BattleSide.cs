@@ -21,7 +21,7 @@ namespace PenguinMonster.Battle
         public BattleMonster Active => ActiveAt(0);
         public int ActivePartyIndex => _activePartyIndices[0];
 
-        /// <summary>追い風が止むまでの残りターン。0 なら吹いていない（仕様書 §4.2）</summary>
+        /// <summary>追い風が止むまでの残りターン。0 なら吹いていない</summary>
         public int TailwindTurns { get; private set; }
         public bool HasTailwind => TailwindTurns > 0;
 

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 場の天候の層（仕様書 §4.10）。場全体に重ねる色と、降らせる粒。色・速さは WeatherView の SerializeField で調整する
+    /// 場の天候の層。場全体に重ねる色と、降らせる粒。色・速さは WeatherView の SerializeField で調整する
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -17,7 +17,7 @@ namespace PenguinMonster.Editor
         {
             var layer = UIDialogBuilder.CreateUIObject("Weather", parent);
             UIDialogBuilder.SetStretchAll(layer.GetComponent<RectTransform>());
-            // 粒が毎フレーム動くので、別の Canvas に分けて、場の他の部品まで作り直しにならないようにする
+            // 粒は毎フレーム動くので別の Canvas に置く（理由は CreateTitleSnow と同じ）
             layer.AddComponent<Canvas>();
 
             var tint = CreateImage(layer.transform, "Tint", Color.clear);

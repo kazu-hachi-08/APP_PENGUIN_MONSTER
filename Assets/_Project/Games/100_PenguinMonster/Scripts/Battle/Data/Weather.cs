@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 天候（仕様書 §4.10）。場全体に1つだけで、技か特性で始まり、数ターンで止む
+    /// 天候。場全体に1つだけで、技か特性で始まり、数ターンで止む
     /// </summary>
     public enum Weather
     {

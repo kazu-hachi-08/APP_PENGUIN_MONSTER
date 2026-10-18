@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>段階4のヒナ・エース・伝説（No.126〜150）のデザイン</summary>
+    /// <summary>ヒナ・エース・伝説（No.126〜150）のデザイン</summary>
     public static partial class PenguinDesigns
     {
         /// <summary>No.126 タマゴペン: のんびりした生まれたて。下半分の割れた殻に座ったまま顔を出し、殻のかけらを帽子にかぶる。ギザギザの殻のふちが横一文字に走るシルエット</summary>

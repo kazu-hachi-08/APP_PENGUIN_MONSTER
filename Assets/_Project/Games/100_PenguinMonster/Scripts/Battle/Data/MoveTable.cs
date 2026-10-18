@@ -7,11 +7,11 @@ using static PenguinMonster.Battle.StatusCondition;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 技の定義表（150体ぶん）。技名は原作と被らないオリジナル（仕様書 §1.2）。
+    /// 技の定義表（150体ぶん）。技名は原作と被らないオリジナル。
     /// 変化技の威力は 0、自分にかける変化技の命中は使わない（必ず決まる）。
     /// hitsAllFoes はダブルスで相手2体に当たる技（波・吹雪・噴火・声・風・落石など、広がるイメージのもの）。
-    /// 反動・吸収・連続・回復・天候の技は Phase 11 で足した（威力は原作の同じ役割の技に合わせた）。
-    /// 段階4（76〜150）では、タイプごとに足りなかった役割（岩とノーマルの特殊・オーロラの物理・先制・積み技など）を埋めた
+    /// 反動・吸収・連続・回復・天候の技は、威力を原作の同じ役割の技に合わせている。
+    /// タイプごとの役割（岩とノーマルの特殊・オーロラの物理・先制・積み技など）を補っている
     /// </summary>
     public static partial class MoveTable
     {
@@ -53,7 +53,7 @@ namespace PenguinMonster.Battle
         // 伝説 ハジマリペン の専用技。自分の能力が下がるが、ひねくれ者なら上がる
         public static readonly MoveDefinition FirstRoar = new MoveDefinition("始まりの咆哮", Normal, Special, 120, 90,
             effects: new[] { SelfStat(SpAttack, -1), SelfStat(SpDefense, -1) });
-        // 戦況を変える技（守る・手助け）。ダブルスで読み合いと連携を生むために足した
+        // 戦況を変える技（守る・手助け）。ダブルスで読み合いと連携を生むため
         public static readonly MoveDefinition FeatherWrap = new MoveDefinition("羽でくるまる", Normal, Status, 0, Sure,
             priority: ProtectPriority, effects: new[] { Protect() });
         public static readonly MoveDefinition Cheer = new MoveDefinition("声援", Normal, Status, 0, Sure,

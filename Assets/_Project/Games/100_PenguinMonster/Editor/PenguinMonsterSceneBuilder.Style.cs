@@ -8,7 +8,7 @@ namespace PenguinMonster.Editor
 {
     /// <summary>
     /// タイトル以外の画面もタイトルと同じ見た目にそろえる部品: 夜空と雪の背景・ロゴ風の見出し・ぷっくりボタン・
-    /// 「ぽよん」と滑り込みの演出（仕様書 §7）
+    /// 「ぽよん」と滑り込みの演出
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {

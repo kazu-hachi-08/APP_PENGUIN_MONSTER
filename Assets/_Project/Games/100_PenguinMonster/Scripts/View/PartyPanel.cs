@@ -52,6 +52,10 @@ namespace PenguinMonster.View
             Show(side, onSelect, onBack, canPick: canPick);
         }
 
+        /// <summary>
+        /// 交代先を選ぶ（自分で交代するときは もどれる、ひんしの入れ替えは もどれない）。
+        /// canPick があれば道具を使う相手を選ぶ画面になる
+        /// </summary>
         /// <param name="onBack">null ならもどれない（ひんしの入れ替え）</param>
         /// <param name="reserved">ダブルスで同じターンにもう1体が選んだ子（選べなくする）</param>
         /// <param name="canPick">道具を使う相手を選ぶときだけ。null なら交代先を選ぶ</param>

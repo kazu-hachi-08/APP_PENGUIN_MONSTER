@@ -21,7 +21,7 @@ namespace PenguinMonster.Common.Online
         [SerializeField] private Button _hostButton;
         [SerializeField] private Button _joinButton;
         [SerializeField] private InputField _codeInput;
-        [Tooltip("ゲームに入った直後に遊ばずに抜けられるようにする。未設定なら出さない（再生成前のSceneでも壊れないように）")]
+        [Tooltip("ゲームに入った直後に遊ばずに抜けられるようにする。未設定なら出さない（シーンに置いていなくても壊れないように）")]
         [SerializeField] private Button _titleButton;
 
         [Header("Waiting")]

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// フィールドのメニュー（PLAN_STORY_TOWN01.md フェーズ6）。奥から 項目の窓（右上）→ 手持ちの画面 → バッグ。
+    /// フィールドのメニュー。奥から 項目の窓（右上）→ 手持ちの画面 → バッグ。
     /// 十字キーより手前、会話の層より奥に置く（「やめる」の はい / いいえ を会話窓で聞くため）
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// オンラインでホストが「ドラフト / 自分のチーム」を選ぶ画面（PLAN_STORY_TOWN01.md フェーズ9）。
+    /// オンラインでホストが「ドラフト / 自分のチーム」を選ぶ画面。
     /// シングル / ダブルスの画面の続きに見えるよう、並びと大きさはそちらと同じにし、下に選べない理由の文を置く
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder

@@ -24,7 +24,7 @@ namespace PenguinMonster.Editor
         private const float DexBodyBottom = 40f;
         private const float DexListLeft = 40f;
         private const float DexListWidth = 870f;
-        // 150 体に増えたため、見やすい大きさ（マス 100）にして縦スクロールできるようにする
+        // 体数が多いので、見やすい大きさ（マス 100）にして縦スクロールできるようにする
         private const int DexListColumns = 8;
         private static readonly Vector2 DexCellSize = new Vector2(100f, 100f);
         private const float DexCellSpacing = 6f;

@@ -4,7 +4,7 @@ namespace PenguinMonster.Battle
 {
     /// <summary>
     /// バトル中のペンモン1体（定義＋現在のHP・状態異常・ランク・持ち物を使ったか）。
-    /// 状態異常は交代しても残り、ランク・こんらん・もうどくの段階は交代で戻る（仕様書 §4.4 / §4.5）
+    /// 状態異常は交代しても残り、ランク・こんらん・もうどくの段階は交代で戻る
     /// </summary>
     public sealed class BattleMonster
     {
@@ -123,7 +123,7 @@ namespace PenguinMonster.Battle
         /// <summary>その持ち物をまだ持っている（1回だけのものは使ったら false）</summary>
         public bool HasItem(HeldItem item) => Definition.Item == item && !ItemUsed;
 
-        /// <summary>攻撃側の能力。急所のときは下がったランクを無視する（仕様書 §4.3）</summary>
+        /// <summary>攻撃側の能力。急所のときは下がったランクを無視する</summary>
         public int AttackStat(bool isPhysical, bool isCritical)
         {
             var kind = isPhysical ? StatKind.Attack : StatKind.SpAttack;
@@ -226,7 +226,7 @@ namespace PenguinMonster.Battle
 
         internal void ReceiveHelp() => IsHelped = true;
 
-        /// <summary>ターンの最後に、そのターンだけの守る・手助けを消し、守ったかどうかを前のターンの記録へ移す</summary>
+        /// <summary>守ったかどうかを前のターンの記録へ移す</summary>
         internal void EndTurn()
         {
             ProtectedLastTurn = IsProtecting;

@@ -71,7 +71,6 @@ namespace PenguinMonster.View
             return list;
         }
 
-        /// <summary>打つ: 星が3つ、少しずつずれて「バシッ」と弾ける</summary>
         private static void Impact(List<Particle> list)
         {
             for (int i = 0; i < 3; i++)
@@ -83,7 +82,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>集まって刺さる: まわりから粒が飛んできて刺さる</summary>
         private static void Shards(List<Particle> list)
         {
             const int count = 6;
@@ -98,7 +96,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>飛び散る: 真ん中から粒が山なりに飛び散る</summary>
         private static void Splash(List<Particle> list)
         {
             for (int i = 0; i < 8; i++)
@@ -111,7 +108,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>立ちのぼる: 足元から粒が立ちのぼり、小さくなって消える</summary>
         private static void Flames(List<Particle> list)
         {
             const int count = 7;
@@ -125,7 +121,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>一撃で落ちる: 上から大きな粒が1つ落ち、少し残ってまわりに散る</summary>
         private static void Strike(List<Particle> list)
         {
             const float landing = 0.12f;
@@ -146,7 +141,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>渦: 粒が渦を巻きながら集まる</summary>
         private static void LeafSwirl(List<Particle> list)
         {
             const int count = 6;
@@ -160,7 +154,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>落ちる: 上から粒が次々に落ちてくる</summary>
         private static void Rockfall(List<Particle> list)
         {
             for (int i = 0; i < 4; i++)
@@ -173,7 +166,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>吹き抜ける: 使った側から粒が風に乗って吹き抜ける</summary>
         private static void Gust(List<Particle> list, Vector2 toward)
         {
             const int count = 6;
@@ -189,7 +181,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>切る: 切り傷が3本、斜めに走る</summary>
         private static void Claws(List<Particle> list)
         {
             var stroke = new Vector2(0.15f, -0.15f);
@@ -202,7 +193,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>またたく: まわりで粒がまたたく（オーロラの虹色は Stages で付ける）</summary>
         private static void Sparkles(List<Particle> list)
         {
             for (int i = 0; i < 8; i++)
@@ -214,7 +204,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>突く: 使った側から粒が3回、少しずつずれて突き刺さる</summary>
         private static void Pierce(List<Particle> list, Vector2 toward)
         {
             var across = new Vector2(-toward.y, toward.x);
@@ -229,7 +218,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>噛む: 上下の牙が2回かみ合う。下の牙は同じ絵を逆さにして使う</summary>
         private static void Bite(List<Particle> list)
         {
             const float gap = 0.06f;
@@ -247,7 +235,6 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>撃ち出す: 使った側から粒が一列に飛んできて、当たったところで弾ける</summary>
         private static void Shot(List<Particle> list, Vector2 toward)
         {
             const int stream = 6;

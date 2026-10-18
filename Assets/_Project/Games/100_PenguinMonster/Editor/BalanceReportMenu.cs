@@ -7,7 +7,7 @@ using UnityEngine;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// バランス確認用（Phase 9）。CPU どうしを大量に戦わせ、ペンモンごとの勝率をランク別に Console へ出す。
+    /// バランス確認用。CPU どうしを大量に戦わせ、ペンモンごとの勝率をランク別に Console へ出す。
     /// 同じランクの平均から大きく外れた子に印を付けて、種族値・技を見直す目安にする
     /// </summary>
     public static class BalanceReportMenu

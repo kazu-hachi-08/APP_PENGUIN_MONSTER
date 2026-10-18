@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ドラフトの後に配る持ち物（仕様書 §4.6）。1チーム1個を候補から等確率で引き、6体の中の1体に持たせる
+    /// ドラフトの後に配る持ち物。1チーム1個を候補から等確率で引き、6体の中の1体に持たせる
     /// </summary>
     public static class ItemDraw
     {

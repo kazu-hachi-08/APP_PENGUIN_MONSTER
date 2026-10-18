@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// よろず屋・あずかり箱の画面（PLAN_STORY_TOWN01.md フェーズ6）。最初の3体を選ぶ画面と同じく夜空の上に置き、
+    /// よろず屋・あずかり箱の画面。最初の3体を選ぶ画面と同じく夜空の上に置き、
     /// 画面の下は会話窓（結果の文を出す）のために空ける
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -21,7 +21,7 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 StoryCloseButtonSize = new Vector2(260f, 90f);
 
         // よろず屋: 左に品の一覧（6個ずつのページ）、右にお金と「買う / 売る / ◀ ▶ / やめる」。
-        // 区切り3で品が 11 個になり1列に入らないため、ページ送りにして枠を少し低くした
+        // 品が 11 個あって1列に入らないため、ページ送りにし、枠を少し低くしている
         private const int ShopPageSize = 6;
         private static readonly Vector2 ShopListSize = new Vector2(1100f, 640f);
         private static readonly Vector2 ShopSlotSize = new Vector2(1040f, 88f);

@@ -3,11 +3,11 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// カガミコ町の人・3番と4番道路のトレーナー・No.209（オマモリペン）をくれる家のおじいさん（PLAN_STORY_TOWN02.md フェーズ4）
+    /// カガミコ町の人・3番と4番道路のトレーナー・No.209（オマモリペン）をくれる家のおじいさん
     /// </summary>
     public static partial class Town02People
     {
-        /// <summary>もらう子のレベル（PLAN_STORY_TOWN02.md §1。3番道路の野生より少し上で、すぐ戦える）</summary>
+        /// <summary>もらう子のレベル（3番道路の野生より少し上で、すぐ戦える）</summary>
         public const int OmamoriLevel = 15;
 
         /// <summary>家のおじいさんの場所。主人公はその1つ下で話す</summary>

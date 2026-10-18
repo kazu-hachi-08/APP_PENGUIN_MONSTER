@@ -23,11 +23,11 @@ namespace PenguinMonster.Battle
     }
 
     /// <summary>
-    /// ダメージ計算（仕様書 §4.3）
+    /// ダメージ計算
     /// </summary>
     public static class DamageCalculator
     {
-        /// <param name="targetMultiplier">全体技が2体に当たったときの倍率（仕様書 §4.9）。特性・持ち物の倍率と一緒に最後に掛ける</param>
+        /// <param name="targetMultiplier">全体技が2体に当たったときの倍率。特性・持ち物の倍率と一緒に最後に掛ける</param>
         public static DamageResult Calculate(BattleMonster attacker, BattleMonster defender, MoveDefinition move, Random random,
             float targetMultiplier = 1f)
         {
@@ -113,7 +113,7 @@ namespace PenguinMonster.Battle
             return isPhysical && attacker.Status == StatusCondition.Burn;
         }
 
-        /// <summary>特性・持ち物によるダメージの倍率をまとめたもの（仕様書 §4.6）。1 なら変化なし</summary>
+        /// <summary>特性・持ち物によるダメージの倍率をまとめたもの。1 なら変化なし</summary>
         private static float Modifier(BattleMonster attacker, BattleMonster defender, MoveDefinition move, float effectiveness)
         {
             return WeatherModifier(attacker.CurrentWeather, move.Type)

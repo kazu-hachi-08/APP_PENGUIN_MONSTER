@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// CPU の賢さ（仕様書 §4.8）。勝ち抜き戦では連勝数で上がる
+    /// CPU の賢さ。勝ち抜き戦では連勝数で上がる
     /// </summary>
     public enum CpuLevel
     {

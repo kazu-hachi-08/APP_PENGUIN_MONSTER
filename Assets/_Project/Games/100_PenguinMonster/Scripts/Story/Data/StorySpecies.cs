@@ -5,7 +5,7 @@ namespace PenguinMonster.Story
 {
     /// <summary>
     /// ストーリーに出る種（No.151〜）の、バトルの定義に足す育成の情報。
-    /// 種族値・タイプ・特性は今までどおり MonsterDefinition に持ち、ここでは包むだけにする
+    /// 種族値・タイプ・特性は MonsterDefinition に持ち、ここでは包むだけにする
     /// </summary>
     public sealed class StorySpecies
     {

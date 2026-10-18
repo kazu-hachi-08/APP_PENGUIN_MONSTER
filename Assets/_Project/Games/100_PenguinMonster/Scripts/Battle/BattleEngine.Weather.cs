@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 天候（仕様書 §4.10）。技か特性で始まり、ターン終わりに残りを数えて止む。
+    /// 天候。技か特性で始まり、ターン終わりに残りを数えて止む。
     /// ダメージの倍率は DamageCalculator、すばやさ2倍の特性は BattleMonster.EffectiveSpeed
     /// </summary>
     public sealed partial class BattleEngine

@@ -35,7 +35,7 @@ namespace PenguinMonster.Online
     {
         private const string MessageName = "penmon.link";
         private const int InitialMessageSize = 256;
-        // 1ターンのイベントは多くても数十個（1個 8 int）。余裕を持たせ、MTU を超える分は分割して送る
+        // 1ターンのイベントは多くても数十個（1個 9 int）。余裕を持たせ、MTU を超える分は分割して送る
         private const int MaxMessageSize = 64 * 1024;
 
         private readonly Dictionary<LinkMessage, Queue<int[]>> _inbox = new Dictionary<LinkMessage, Queue<int[]>>();

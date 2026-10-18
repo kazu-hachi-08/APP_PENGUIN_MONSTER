@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ペンモン・技のタイプ（仕様書 §3.3）。
+    /// ペンモン・技のタイプ。
     /// 並び順は TypeChart の表の行・列と一致させること
     /// </summary>
     public enum MonsterType

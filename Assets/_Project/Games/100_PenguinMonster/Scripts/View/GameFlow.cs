@@ -15,7 +15,7 @@ namespace PenguinMonster.View
     /// </summary>
     public partial class GameFlow : MonoBehaviour
     {
-        /// <summary>最高連勝数の保存キー（共通基盤の BestScore）。シングルはダブルスを足す前と同じキーのまま（記録を引き継ぐため）、ダブルスは別に数える</summary>
+        /// <summary>最高連勝数の保存キー（共通基盤の BestScore）。シングルは従来と同じキーのまま（記録を引き継ぐため）、ダブルスは別に数える</summary>
         private const string BestWinsKey = "PenguinMonster.SurvivalWins";
         private const string BestDoubleWinsKey = "PenguinMonster.SurvivalWins.Double";
         private const string SurvivalQuitMessage = "勝ち抜き戦は ここで 終わります\n（最高記録は 残ります）";
