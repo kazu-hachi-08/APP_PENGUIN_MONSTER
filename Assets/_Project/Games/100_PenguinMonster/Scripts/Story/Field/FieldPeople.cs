@@ -98,6 +98,19 @@ namespace PenguinMonster.Story
             return 0;
         }
 
+        /// <summary>そのマップに入ったときに向こうから話してくる人。居なければ null</summary>
+        public PlacedNpc? GreeterOn(string mapId)
+        {
+            foreach (var placed in On(mapId))
+            {
+                if (placed.Placement.GreetsOnArrival)
+                {
+                    return placed;
+                }
+            }
+            return null;
+        }
+
         /// <summary>そのマスに立っている人。居なければ null</summary>
         public PlacedNpc? At(string mapId, GridPos pos)
         {

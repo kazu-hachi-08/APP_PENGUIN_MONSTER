@@ -221,6 +221,20 @@ namespace PenguinMonster.View.Story
             ShowCurrentMap();
             AutoSave();
             yield return _fade.FadeInCoroutine(_doorFadeSeconds);
+            var greeter = _player.GreeterHere();
+            if (greeter != null)
+            {
+                yield return Greet(greeter.Value);
+            }
+        }
+
+        /// <summary>入ったマップで待っていた人が話してくる（ユキオコシ町の母）。主人公は話してくる人の方を向く</summary>
+        private IEnumerator Greet(PlacedNpc greeter)
+        {
+            var facing = greeter.Placement.Spot.Facing;
+            _player.Face(facing.Opposite());
+            _avatar.Face(facing.Opposite());
+            yield return PlayScript(greeter.Placement.Script);
         }
 
         /// <summary>

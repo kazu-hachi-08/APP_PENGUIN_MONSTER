@@ -95,6 +95,9 @@ namespace PenguinMonster.Story
         /// <summary>今の場所で目が合ったトレーナー。居なければ null</summary>
         public TrainerSighting? SpottedBy() => _people?.SpottedBy(Map, Position);
 
+        /// <summary>今のマップに入ったときに向こうから話してくる人。居なければ null</summary>
+        public PlacedNpc? GreeterHere() => _people?.GreeterOn(Map.Id);
+
         /// <summary>その場で向きだけ変える（近づいてきたトレーナーの方を向く）</summary>
         public void Face(Direction direction)
         {

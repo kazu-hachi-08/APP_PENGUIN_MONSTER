@@ -58,6 +58,12 @@ namespace PenguinMonster.View.Story
         private static readonly Color32 MarkRed = new Color32(220, 50, 50, 255);
         private static Sprite _exclamation;
 
+        /// <summary>人の絵。野生のペンモン（NpcLook.Wild）は図鑑・バトルと同じ正面の絵を出す（どの向きでも同じ。1マスの大きさになる）</summary>
+        public static Sprite Get(FieldNpc npc, Direction facing, int frame = 0)
+        {
+            return npc.Look == NpcLook.Wild ? MonsterSprites.Front(npc.Monster.Definition) : Get(npc.Look, facing, frame);
+        }
+
         /// <param name="frame">0 が立ち、1 が歩き（目が合ったトレーナーが近づくときだけ歩く）</param>
         public static Sprite Get(NpcLook look, Direction facing, int frame = 0)
         {

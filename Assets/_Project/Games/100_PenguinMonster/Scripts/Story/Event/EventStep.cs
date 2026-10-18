@@ -26,6 +26,8 @@ namespace PenguinMonster.Story
         Storage,
         /// <summary>羽章をもらう（Flag の名前で StoryState.Badges に足す）。「〇〇を もらった！」を出す</summary>
         GiveBadge,
+        /// <summary>野生のペンモン（Species・Level）と戦う。タマゴも投げられ、逃げられる。倒すか捕まえたときだけ台本を続ける</summary>
+        WildBattle,
     }
 
     /// <summary>
@@ -41,11 +43,11 @@ namespace PenguinMonster.Story
         public string Text { get; }
         /// <summary>SetFlag のフラグ。ChooseStarter では、選んだ子の No を後ろに付けて立てるフラグの頭。GiveBadge では羽章の名前</summary>
         public string Flag { get; }
-        /// <summary>Give でもらう子</summary>
+        /// <summary>Give でもらう子。WildBattle では戦う野生の子</summary>
         public StorySpecies Species { get; }
         /// <summary>ChooseStarter の候補（海・火・苔の順）</summary>
         public IReadOnlyList<StorySpecies> Choices { get; }
-        /// <summary>Give / ChooseStarter でもらう子のレベル</summary>
+        /// <summary>Give / ChooseStarter でもらう子のレベル。WildBattle では野生の子のレベル</summary>
         public int Level { get; }
         /// <summary>Ask でいいえを選んだときに流す台本</summary>
         public IReadOnlyList<EventStep> OnNo { get; }
@@ -105,6 +107,12 @@ namespace PenguinMonster.Story
         public static EventStep Battle(TrainerDefinition trainer, bool canLose = false)
         {
             return new EventStep(EventStepKind.Battle, trainer: trainer, canLose: canLose);
+        }
+
+        /// <summary>台本から野生と戦う（発電所に居座る子など、草むらではない所の1回だけの子）</summary>
+        public static EventStep WildBattle(StorySpecies species, int level)
+        {
+            return new EventStep(EventStepKind.WildBattle, species: species, level: level);
         }
 
         /// <param name="returnSpot">これから全滅したときに戻る場所</param>

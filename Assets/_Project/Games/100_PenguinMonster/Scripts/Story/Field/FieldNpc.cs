@@ -22,6 +22,8 @@ namespace PenguinMonster.Story
         GymLeader,
         /// <summary>道路の落とし物（人ではなく道具の袋。前から A で拾う）</summary>
         Item,
+        /// <summary>台本で戦う野生のペンモン（FieldNpc.Monster の絵で描く）</summary>
+        Wild,
     }
 
     /// <summary>
@@ -37,13 +39,16 @@ namespace PenguinMonster.Story
         public IReadOnlyList<EventStep> Script { get; }
         /// <summary>台本で戦うトレーナー。目が合ったら近づいてくる（SightRange が 0 なら来ない）。戦わない置き場所なら null</summary>
         public TrainerDefinition Trainer { get; }
+        /// <summary>そのマップに入ったとき、話しかけなくても向こうから話してくる（ユキオコシ町の入口で待つ母）</summary>
+        public bool GreetsOnArrival { get; }
 
-        private NpcPlacement(FieldSpot spot, EventStep[] script, string requiredFlag, string missingFlag)
+        private NpcPlacement(FieldSpot spot, EventStep[] script, string requiredFlag, string missingFlag, bool greetsOnArrival = false)
         {
             Spot = spot;
             Script = script;
             _requiredFlag = requiredFlag;
             _missingFlag = missingFlag;
+            GreetsOnArrival = greetsOnArrival;
             Trainer = FindTrainer(script);
         }
 
@@ -64,6 +69,15 @@ namespace PenguinMonster.Story
         /// <summary>フラグが立つまで</summary>
         public static NpcPlacement Until(string flag, FieldSpot spot, params EventStep[] script) => new NpcPlacement(spot, script, null, flag);
 
+        /// <summary>
+        /// フラグが立つまで。マップに入ると向こうから話してくる。台本でそのフラグを立てて、1回だけにする
+        /// （入口の横へずれても避けられないように、目が合うのではなく入ったときに話す）
+        /// </summary>
+        public static NpcPlacement GreetUntil(string flag, FieldSpot spot, params EventStep[] script)
+        {
+            return new NpcPlacement(spot, script, null, flag, greetsOnArrival: true);
+        }
+
         /// <summary>required が立っていて、missing がまだ立っていない間</summary>
         public static NpcPlacement Between(string required, string missing, FieldSpot spot, params EventStep[] script)
         {
@@ -82,12 +96,25 @@ namespace PenguinMonster.Story
         public string Id { get; }
         public NpcLook Look { get; }
         public IReadOnlyList<NpcPlacement> Placements { get; }
+        /// <summary>NpcLook.Wild のときに描くペンモン。人なら null</summary>
+        public StorySpecies Monster { get; }
 
         public FieldNpc(string id, NpcLook look, params NpcPlacement[] placements)
         {
             Id = id;
             Look = look;
             Placements = placements;
+        }
+
+        private FieldNpc(string id, StorySpecies monster, NpcPlacement[] placements) : this(id, NpcLook.Wild, placements)
+        {
+            Monster = monster;
+        }
+
+        /// <summary>フィールドに姿を見せている野生のペンモン（発電所に居座る子）。人の代わりにその子の絵で立つ</summary>
+        public static FieldNpc WildMonster(string id, StorySpecies monster, params NpcPlacement[] placements)
+        {
+            return new FieldNpc(id, monster, placements);
         }
 
         /// <summary>今のフラグで立つ場所。どれも合わなければ null（どこにも居ない）</summary>
