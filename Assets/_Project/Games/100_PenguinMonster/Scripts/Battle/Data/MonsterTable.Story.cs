@@ -7,7 +7,7 @@ namespace PenguinMonster.Battle
     /// <summary>
     /// ストーリーの子（No.151〜。PLAN_STORY_TOWN01.md §1・フェーズ8a）。ドラフトには出さないので All とは別の一覧にする。
     /// 種族値の合計は 進化前（Young）250〜330 / 最後の進化 425〜530 / 途中の段はその間。
-    /// ここの技は図鑑に出す代表の4つで、実際に覚える技はストーリーの定義表（Town01Species・Town02Species）の覚える技の表で決まる
+    /// ここの技は図鑑に出す代表の4つで、実際に覚える技はストーリーの定義表（Town01Species・Town02Species・Town03Species）の覚える技の表で決まる
     /// </summary>
     public static partial class MonsterTable
     {
@@ -152,6 +152,82 @@ namespace PenguinMonster.Battle
             // 4番道路の奥の とてもまれな不思議な子（進化しない）
             Monster(210, "シンキロウペン", new[] { Aurora, Dark }, new Stats(70, 55, 65, 100, 80, 85),
                 new[] { SparkleLaser, PolarNight, ShadowStitch, AuroraDance }, Ability.Moody),
+
+            // ---- 区切り3（211〜240。PLAN_STORY_TOWN03.md §1） ----
+            // 5番・6番道路の子
+            Monster(211, "マメデンペン", new[] { Thunder }, new Stats(40, 35, 35, 55, 40, 65),
+                new[] { StaticShock, Growl, ZapJab, NumbWave }, Ability.StaticBody, MonsterRank.Young),
+            Monster(212, "ゴロゴロペン", new[] { Thunder }, new Stats(60, 55, 55, 80, 60, 80),
+                new[] { SparkWing, SparkBeak, ChargeDance, NumbWave }, Ability.StaticBody),
+            Monster(213, "ナルカミペン", new[] { Thunder }, new Stats(85, 75, 75, 115, 85, 90),
+                new[] { StormDrop, Discharge, SparkBeak, ChargeDance }, Ability.StaticBody),
+            // 雷の道場の対策になる岩の子。岩石頭突きの反動を石頭で受けない
+            Monster(214, "ジャリペン", new[] { Rock }, new Stats(50, 60, 70, 25, 30, 35),
+                new[] { Tackle, RockThrow, PebbleShot, SandSmoke }, Ability.RockHead, MonsterRank.Young),
+            Monster(215, "ガンペキペン", new[] { Rock }, new Stats(90, 105, 120, 40, 65, 45),
+                new[] { RockHeadbutt, CliffBreak, Boulder, RockSkin }, Ability.RockHead),
+            Monster(216, "ササペン", new[] { Moss }, new Stats(50, 55, 50, 40, 50, 45),
+                new[] { MossPellet, Growl, Fluff, SeedBarrage }, Ability.Photosynthesis, MonsterRank.Young),
+            Monster(217, "クマザサペン", new[] { Moss }, new Stats(85, 100, 85, 60, 75, 70),
+                new[] { MossWhip, SeedBarrage, FlapDance, RecklessTackle }, Ability.Photosynthesis),
+            Monster(218, "ツバメペン", new[] { Bird }, new Stats(40, 55, 30, 30, 30, 85),
+                new[] { Peck, TailWag, BellySlide, DoublePeck }, Ability.Technician, MonsterRank.Young),
+            Monster(219, "ハヤブサペン", new[] { Bird }, new Stats(70, 100, 60, 50, 60, 120),
+                new[] { DiveBeak, PeckDrain, BraveDive, SkyDream }, Ability.Technician),
+            // 雷の季節に獲れる魚（鰰）。海の子だが体に電気をためている
+            Monster(220, "ハタハタペン", new[] { Sea }, new Stats(50, 40, 45, 55, 50, 60),
+                new[] { WaterGun, Growl, BubbleSpit, StaticShock }, Ability.StaticBody, MonsterRank.Young),
+            Monster(221, "カンブリペン", new[] { Sea }, new Stats(90, 95, 75, 70, 70, 85),
+                new[] { Whirlpool, SeaGun, SparkBeak, BigWave }, Ability.StaticBody),
+            Monster(222, "アラレペン", new[] { Ice }, new Stats(45, 40, 40, 60, 50, 55),
+                new[] { PowderSnow, SnowPellet, IcicleBarrage, ColdBreath }, Ability.Technician, MonsterRank.Young),
+            Monster(223, "ヒサメペン", new[] { Ice }, new Stats(80, 70, 70, 105, 85, 90),
+                new[] { BlizzardBreath, FrostKiss, SnowCall, IcicleBeak }, Ability.SnowSlide),
+            // 停電の暗がりにひそむ子（夜タマゴの見せ場）
+            Monster(224, "テイデンペン", new[] { Dark }, new Stats(45, 50, 40, 50, 40, 65),
+                new[] { Pester, Sneak, DarkWhisper, StaticShock }, Ability.NightOwl, MonsterRank.Young),
+            Monster(225, "クラヤミペン", new[] { Dark }, new Stats(75, 80, 70, 100, 80, 95),
+                new[] { PolarNight, LifeSap, Scheme, SparkWing }, Ability.NightOwl),
+            Monster(226, "ユキアカリペン", new[] { Aurora }, new Stats(50, 30, 45, 65, 65, 45),
+                new[] { Twinkle, QuietPrayer, ShootingStar, AuroraHeal }, Ability.Rest, MonsterRank.Young),
+            Monster(227, "ギンガペン", new[] { Aurora }, new Stats(85, 50, 80, 115, 105, 75),
+                new[] { SparkleLaser, AuroraWave, AuroraDance, AuroraHeal }, Ability.Rest),
+            Monster(228, "ユキグツペン", new[] { MonsterType.Normal }, new Stats(55, 55, 45, 30, 40, 55),
+                new[] { Tackle, TailWag, BellySlide, IceStep }, Ability.Momentum, MonsterRank.Young),
+            Monster(229, "カンジキペン", new[] { MonsterType.Normal }, new Stats(85, 95, 75, 45, 65, 85),
+                new[] { PenguinPress, RecklessTackle, FlipperSlap, IceStep }, Ability.Momentum),
+            // 電線にとまる鳥 → 鉄塔
+            Monster(230, "デンセンペン", new[] { Thunder, Bird }, new Stats(40, 40, 35, 55, 40, 70),
+                new[] { Peck, StaticShock, Whirlwind, ZapJab }, Ability.Tailwind, MonsterRank.Young),
+            Monster(231, "テットウペン", new[] { Thunder, Bird }, new Stats(80, 75, 90, 100, 80, 75),
+                new[] { Discharge, WindCutter, StormDrop, NorthWindCall }, Ability.Tailwind),
+            // 5番道路の岩場の子（重いタマゴの見せ場）
+            Monster(232, "ユキイシペン", new[] { Rock, Ice }, new Stats(55, 60, 75, 25, 35, 25),
+                new[] { Tackle, PowderSnow, RockThrow, SnowPellet }, Ability.ThickFat, MonsterRank.Young),
+            Monster(233, "ヒョウヘキペン", new[] { Rock, Ice }, new Stats(95, 105, 125, 40, 65, 35),
+                new[] { IcebergDrop, CliffBreak, Boulder, RockSkin }, Ability.ThickFat),
+            Monster(234, "カイロペン", new[] { Fire }, new Stats(45, 45, 45, 55, 45, 55),
+                new[] { Ember, Fluff, WispFlame, FlareUp }, Ability.Reckless, MonsterRank.Young),
+            Monster(235, "ダンロペン", new[] { Fire }, new Stats(90, 100, 80, 85, 70, 60),
+                new[] { FlameRush, CampfireBreath, Eruption, BraceUp }, Ability.Reckless),
+
+            // 道場主ライゾウの切り札（野生では出ない）。道場では Lv26 の進化前で出る。充電ダンスを積んで撃つ
+            Monster(236, "ハツデンペン", new[] { Thunder }, new Stats(55, 45, 50, 65, 55, 60),
+                new[] { Discharge, SparkWing, ChargeDance, NumbWave }, Ability.StaticBody, MonsterRank.Young),
+            Monster(237, "ライジンペン", new[] { Thunder }, new Stats(85, 70, 85, 120, 95, 75),
+                new[] { StormDrop, Discharge, Shout, ChargeDance }, Ability.StaticBody),
+
+            // ユキオコシ町の人から1回だけもらえる子（進化しない。Lv20 でもらう）。停電の町の灯り
+            Monster(238, "カンテラペン", new[] { MonsterType.Normal }, new Stats(70, 60, 70, 85, 80, 65),
+                new[] { Shout, Ember, Preen, FeatherWrap }, Ability.NightOwl),
+
+            // 発電所に居座る子（進化しない。1回だけ Lv24 で戦う）。雷様のようにへそを狙う、強めの子
+            Monster(239, "ヘソトリペン", new[] { Thunder }, new Stats(80, 100, 75, 95, 70, 70),
+                new[] { SparkBeak, Discharge, SharpGlare, ZapJab }, Ability.Intimidate),
+
+            // 6番道路の奥の とてもまれな不思議な子（進化しない）
+            Monster(240, "セントエルモペン", new[] { Thunder, Aurora }, new Stats(65, 50, 65, 105, 85, 90),
+                new[] { SparkleLaser, Discharge, AuroraWave, ChargeDance }, Ability.Prankster),
         };
 
         private static IReadOnlyList<MonsterDefinition> _dex;
