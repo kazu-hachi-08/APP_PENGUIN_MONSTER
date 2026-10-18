@@ -9,7 +9,8 @@ namespace PenguinMonster.View.Story
     /// <summary>
     /// フィールドの進行役。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
     /// A で向いている先の人・看板を調べ、台本を FieldEventPlayer で見せる。草むらでは1歩ごとに野生に出会い、StoryBattleScreen で戦う。
-    /// 全滅したら最後に回復した場所へ戻る。B でメニュー（FieldMenu）を開き、「やめる」で はい と答えたら Run を抜ける（タイトルへ戻る）
+    /// 全滅したら最後に回復した場所へ戻る。B でメニュー（FieldMenu）を開き、「やめる」で はい と答えたら Run を抜ける（タイトルへ戻る）。
+    /// マップを移ったとき・野生とのバトルの後・台本の後に自動で記録する（アプリを閉じられても進み具合を失わないように）
     /// </summary>
     public class FieldController : MonoBehaviour
     {
@@ -124,6 +125,7 @@ namespace PenguinMonster.View.Story
             _input.SetPadVisible(false);
             yield return _battles.Fight(_state, new List<OwnedMonster> { wild }, null, canLose: false, _random);
             yield return AfterBattle(_battles.BlackedOut);
+            AutoSave();
         }
 
         /// <summary>暗転したままのバトルの後。全滅なら最後に回復した場所へ移してから明ける</summary>
@@ -188,6 +190,8 @@ namespace PenguinMonster.View.Story
             }
             // フラグで人が動いたかもしれないので並べ直す
             DrawPeople();
+            // もらった・勝った・買った・回復したなどは台本の中で起きるので、台本が終わるたびに記録する
+            AutoSave();
             // 出来事の後に目が合うこともある（最初の1体をもらった直後のライバル）
             var sighting = _player.SpottedBy();
             if (sighting != null)
@@ -204,7 +208,17 @@ namespace PenguinMonster.View.Story
             yield return _fade.FadeOutCoroutine(_doorFadeSeconds);
             _player.Enter(warp);
             ShowCurrentMap();
+            AutoSave();
             yield return _fade.FadeInCoroutine(_doorFadeSeconds);
+        }
+
+        /// <summary>
+        /// 黙って今の場所ごと記録する。歩いている状態（バトル・会話の途中でない）のときだけ呼ぶ
+        /// （続きから始めたとき、途中の場面から再開できないため）
+        /// </summary>
+        private void AutoSave()
+        {
+            StorySaveStore.Save(StorySave.Capture(_state, _player.Spot));
         }
 
         private void ShowCurrentMap()

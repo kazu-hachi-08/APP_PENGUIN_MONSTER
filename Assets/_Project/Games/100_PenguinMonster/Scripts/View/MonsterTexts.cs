@@ -11,6 +11,7 @@ namespace PenguinMonster.View
         private const string HasEffectsMark = "　＋効果";
         private const string TraitInlineSeparator = "　";
         private const string ItemUsedMark = "（使った）";
+        private const string NoEffectsText = "特別な 効果は ない";
 
         /// <summary>種族値を1行ずつ。見出し（HP・こうげき…）はシーン側の別の Text に並べてある</summary>
         public static string StatValues(Stats s)
@@ -46,6 +47,14 @@ namespace PenguinMonster.View
             if (move.IsStatus) return StatusMoveText;
             string mark = move.Effects().Length > 0 ? HasEffectsMark : "";
             return $"{move.Category.CategoryName()} 威力 {move.Power}{mark}";
+        }
+
+        /// <summary>技の説明（名前・タイプ / 分類・威力・命中 / 効果）。技ボタンの長押しと、覚えるときの新しい技の窓で同じ文にする</summary>
+        public static string MoveHint(MoveDefinition move)
+        {
+            string effects = move.Effects();
+            return $"{move.Name}　{move.Type.ToJapanese()}\n{move.Numbers()}\n"
+                + (effects.Length > 0 ? effects : NoEffectsText);
         }
 
         private static string Line(string label, string name, string description, int descriptionSize, string separator)

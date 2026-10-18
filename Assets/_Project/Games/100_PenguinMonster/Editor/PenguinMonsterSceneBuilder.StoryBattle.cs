@@ -29,6 +29,9 @@ namespace PenguinMonster.Editor
         private const float LevelUpPadding = 28f;
         private const int LevelUpFontSize = 40;
 
+        // 覚える技の説明は、技の長押しの説明（下の窓の上の左・幅 1100）と並ぶよう右に置く
+        private static readonly Vector2 NewMoveWindowSize = new Vector2(680f, 240f);
+
         private static CommandPanel CreateStoryCommandPanel(Transform parent)
         {
             var frame = CreateFramedBox(parent, "StoryCommandPanel", InfoBoxColor, out var inner);
@@ -131,6 +134,32 @@ namespace PenguinMonster.Editor
             var so = new SerializedObject(window);
             so.FindProperty("_names").objectReferenceValue = names;
             so.FindProperty("_values").objectReferenceValue = values;
+            so.ApplyModifiedProperties();
+
+            safe.gameObject.SetActive(false);
+            return window;
+        }
+
+        private static NewMoveWindow CreateNewMoveWindow(Transform parent)
+        {
+            var safe = CreateSafeContent(parent);
+            safe.name = "NewMove";
+            var frame = CreateFramedBox(safe, "NewMoveWindow", MessageBoxColor, out var inner);
+            frame.raycastTarget = false;
+            var rect = frame.rectTransform;
+            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
+            rect.pivot = new Vector2(1f, 0f);
+            rect.anchoredPosition = new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap);
+            rect.sizeDelta = NewMoveWindowSize;
+
+            var text = CreateText(inner, "Text", "", MoveHintFontSize, BoxTextColor, TextAnchor.MiddleLeft);
+            text.raycastTarget = false;
+            text.rectTransform.offsetMin = new Vector2(MoveHintPadding, 0f);
+            text.rectTransform.offsetMax = new Vector2(-MoveHintPadding, 0f);
+
+            var window = safe.gameObject.AddComponent<NewMoveWindow>();
+            var so = new SerializedObject(window);
+            so.FindProperty("_text").objectReferenceValue = text;
             so.ApplyModifiedProperties();
 
             safe.gameObject.SetActive(false);

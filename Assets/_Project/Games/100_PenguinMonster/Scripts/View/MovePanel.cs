@@ -17,7 +17,6 @@ namespace PenguinMonster.View
         private const string NotVeryEffectiveTag = "<color=#8E9AAF>今ひとつ</color>";
         private const string NoEffectTag = "<color=#6C6C7A>効果なし</color>";
         private const string HasEffectsMark = "　＋効果";
-        private const string NoEffectsText = "特別な 効果は ない";
 
         [SerializeField] private Button[] _moveButtons;
         [SerializeField] private Text[] _moveLabels;
@@ -112,10 +111,7 @@ namespace PenguinMonster.View
 
         private void ShowHint(int index)
         {
-            var move = _moves[index];
-            string effects = move.Effects();
-            _hintText.text = $"{move.Name}　{move.Type.ToJapanese()}\n{move.Numbers()}\n"
-                + (effects.Length > 0 ? effects : NoEffectsText);
+            _hintText.text = MonsterTexts.MoveHint(_moves[index]);
             _hintBox.SetActive(true);
         }
 

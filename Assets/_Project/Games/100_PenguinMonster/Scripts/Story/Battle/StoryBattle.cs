@@ -9,18 +9,21 @@ namespace PenguinMonster.Story
     {
         public readonly OwnedMonster Member;
         public readonly int Exp;
+        /// <summary>どの相手とも向き合わず、学習装置の分だけをもらった（文を1行にまとめて出すため）</summary>
+        public readonly bool FromBench;
 
-        public ExpReward(OwnedMonster member, int exp)
+        public ExpReward(OwnedMonster member, int exp, bool fromBench = false)
         {
             Member = member;
             Exp = exp;
+            FromBench = fromBench;
         }
     }
 
     /// <summary>
     /// ストーリーの1戦。手持ち全員 vs 相手全員のシングルで、見せ合い・選出はない。
     /// 手持ちの HP・状態異常から始め、終わったら持ち帰る。ターンは今までどおり BattleEngine が進め、
-    /// ここは「誰が誰と向き合ったか」を覚えて、経験値を出た子だけで分ける
+    /// ここは「誰が誰と向き合ったか」を覚えて、経験値を出た子で分ける（出ていない子は学習装置で半分）
     /// </summary>
     public sealed class StoryBattle
     {
@@ -149,11 +152,13 @@ namespace PenguinMonster.Story
 
         /// <summary>
         /// 倒した相手ごとの経験値を、向き合って最後まで立っていた子で山分けする（瀕死の子はもらえない）。
+        /// 向き合っていない子も、倒れていなければ学習装置（本家の第6世代式・いつも有効）で1体分の半分をもらう。
         /// 1体が何体分もらっても1行にまとめ、手持ちの順に返す
         /// </summary>
         public IReadOnlyList<ExpReward> ExpRewards()
         {
             var totals = new int[_party.Count];
+            var faced = new bool[_party.Count];
             for (int i = 0; i < _foes.Count; i++)
             {
                 if (!State.Sides[FoeSide].Party[i].IsFainted)
@@ -169,17 +174,32 @@ namespace PenguinMonster.Story
                 foreach (int member in earners)
                 {
                     totals[member] += Math.Max(1, exp / earners.Count);
+                    faced[member] = true;
                 }
+                AddBenchShare(totals, i, exp);
             }
             var rewards = new List<ExpReward>();
             for (int i = 0; i < totals.Length; i++)
             {
                 if (totals[i] > 0)
                 {
-                    rewards.Add(new ExpReward(_party.Members[i], totals[i]));
+                    rewards.Add(new ExpReward(_party.Members[i], totals[i], fromBench: !faced[i]));
                 }
             }
             return rewards;
+        }
+
+        /// <summary>その相手と向き合わず、倒れてもいない子に学習装置の分を配る（山分けしないので出た子の分は減らない）</summary>
+        private void AddBenchShare(int[] totals, int foeIndex, int exp)
+        {
+            int share = Math.Max(1, exp / StoryBalance.ExpShareDivisor);
+            for (int member = 0; member < totals.Length; member++)
+            {
+                if (!_facedBy[foeIndex].Contains(member) && !State.Sides[PlayerSide].Party[member].IsFainted)
+                {
+                    totals[member] += share;
+                }
+            }
         }
 
         private List<int> Earners(int foeIndex)
