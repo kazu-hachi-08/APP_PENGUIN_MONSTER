@@ -184,14 +184,7 @@ namespace PenguinMonster.View
 
         private int FirstReplaceable(List<int> reserved)
         {
-            for (int i = 0; i < Player.Party.Count; i++)
-            {
-                if (Player.CanSwitchTo(i) && !reserved.Contains(i))
-                {
-                    return i;
-                }
-            }
-            return -1;
+            return CommandPanel.FirstSwitchable(Player, reserved);
         }
 
         /// <summary>制限時間があるときだけ数える。時間切れなら開いている選択の窓を閉じてから代わりに決める</summary>

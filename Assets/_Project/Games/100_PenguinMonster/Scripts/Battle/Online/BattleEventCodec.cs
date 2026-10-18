@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// オンライン対戦で、ホストが計算した BattleEvent をゲストへ送るための int 列への変換（仕様書 §8）。
+    /// オンライン対戦で、ホストが計算した BattleEvent をゲストへ送るための int 列への変換。
     /// ペンモンは参照のままでは送れないので「陣営・選出の何番目か」、技は「4つのうち何番目か」で表す。
     /// ゲストは自分が手前（陣営 0）になるよう陣営を入れ替えた写し（BattleState）を持ち、受け取るたびに写しを更新する。
     /// 写しがあれば、交代の画面やひんしの入れ替えをオフラインと同じ BattleSide のまま扱える

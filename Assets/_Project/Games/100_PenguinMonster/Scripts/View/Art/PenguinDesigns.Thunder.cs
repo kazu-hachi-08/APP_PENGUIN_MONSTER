@@ -74,9 +74,7 @@ namespace PenguinMonster.View.Art
         {
             var cloud = Rgb(120, 125, 150);
             var cloudShade = PenguinPalette.Shade(cloud);
-            var bolt = new[] { V(30, 18), V(24, 12), V(29, 10), V(20, 1) };
-            b.Line(1.6f, BoltShade, bolt);
-            b.Line(0.8f, Bolt, bolt);
+            YamiBolt(b, BoltShade, Bolt, V(30, 18), V(24, 12), V(29, 10), V(20, 1));
             b.Line(0.6f, Water, V(42, 12), V(41, 9));
             b.Line(0.6f, Water, V(50, 14), V(49, 11));
             b.Line(0.6f, Water, V(56, 9), V(55, 6));
@@ -156,10 +154,8 @@ namespace PenguinMonster.View.Art
             var body = Rgb(60, 110, 170);
             var bodyShade = PenguinPalette.Shade(body);
             var cloud = Rgb(95, 100, 130);
-            b.Line(1.6f, BoltShade, V(18, 16), V(14, 10), V(19, 7), V(16, 2));
-            b.Line(0.8f, Bolt, V(18, 16), V(14, 10), V(19, 7), V(16, 2));
-            b.Line(1.6f, BoltShade, V(46, 16), V(50, 11), V(45, 7), V(48, 3));
-            b.Line(0.8f, Bolt, V(46, 16), V(50, 11), V(45, 7), V(48, 3));
+            YamiBolt(b, BoltShade, Bolt, V(18, 16), V(14, 10), V(19, 7), V(16, 2));
+            YamiBolt(b, BoltShade, Bolt, V(46, 16), V(50, 11), V(45, 7), V(48, 3));
             b.Shaded(32f, 31f, 11f, 9f, body);
             b.Belly(31f, 30f, 7.5f, 6.5f);
             b.Shaded(18f, 21f, 9f, 6f, cloud);

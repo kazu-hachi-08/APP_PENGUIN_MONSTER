@@ -6,11 +6,11 @@ using static PenguinMonster.Battle.MoveTable;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ペンモンの定義表（段階4の150体。仕様書 §3.5）。こおりは主役なので一番多くする（2タイプも数える）。
-    /// 51〜75 は Phase 11 で足した、反動・吸収・連続・回復・天候の技や特性を軸にした子たち。
-    /// 76〜150 は段階4で足した、新しい特性（小技名人・ひねくれ者など）と題材の幅（本物のペンギン・日本の物・妖怪など）で個性を出す子たち。
+    /// ペンモンの定義表（150体）。こおりは主役なので一番多くする（2タイプも数える）。
+    /// 51〜75 は反動・吸収・連続・回復・天候の技や特性を軸にした子たち。
+    /// 76〜150 は新しい特性（小技名人・ひねくれ者など）と題材の幅（本物のペンギン・日本の物・妖怪など）で個性を出す子たち。
     /// 種族値の合計はランクごとの帯（ヒナ 360〜400 / ふつう 425〜475 / エース 520〜540 / 伝説 580〜600）にそろえ、
-    /// 同じランクの中の差は技とタイプで付ける。特性は1体1つずつ。持ち物は定義に持たず、ドラフトの後に1チーム1個配る（仕様書 §4.6）
+    /// 同じランクの中の差は技とタイプで付ける。特性は1体1つずつ。持ち物は定義に持たず、ドラフトの後に1チーム1個配る
     /// </summary>
     public static partial class MonsterTable
     {
@@ -65,7 +65,7 @@ namespace PenguinMonster.Battle
             Monster(24, "オーロペン", new[] { Aurora }, new Stats(80, 55, 75, 105, 95, 65),
                 new[] { SparkleLaser, AuroraWave, QuietPrayer, FeatherWrap }, Ability.ThickFat),
 
-            // ---- 段階2: ふつう（25〜36）。闇・オーロラ・火・苔など少なかったタイプを埋める ----
+            // ---- ふつう（25〜36）。闇・オーロラ・火・苔など少なかったタイプを埋める ----
             Monster(25, "ツララペン", new[] { Ice }, new Stats(70, 55, 70, 100, 80, 85),
                 new[] { BlizzardBreath, ColdBreath, AuroraWave, QuietPrayer }, Ability.LastStand),
             Monster(26, "カマクラペン", new[] { Ice, Fire }, new Stats(85, 70, 85, 85, 80, 55),
@@ -127,7 +127,7 @@ namespace PenguinMonster.Battle
                 new[] { EndlessNight, OrcaBite, SparkleLaser, CampfireBreath }, Ability.Intimidate,
                 MonsterRank.Legend),
 
-            // ---- 段階3: ふつう（51〜67）。反動・連続・天候・回復で、同じタイプでも戦い方が違う子を作る ----
+            // ---- ふつう（51〜67）。反動・連続・天候・回復で、同じタイプでも戦い方が違う子を作る ----
             Monster(51, "ガンコペン", new[] { Rock }, new Stats(80, 105, 95, 40, 65, 60),
                 new[] { RockHeadbutt, RecklessTackle, PebbleShot, RockSkin }, Ability.RockHead),
             Monster(52, "ツツキペン", new[] { Bird }, new Stats(65, 95, 60, 45, 60, 110),
@@ -163,7 +163,7 @@ namespace PenguinMonster.Battle
             Monster(67, "ライウンペン", new[] { Thunder, Sea }, new Stats(75, 55, 70, 90, 80, 85),
                 new[] { StormDrop, BigWave, SparkWing, RainDance }, Ability.RainSurf),
 
-            // ---- 段階3: ヒナ（68〜70） ----
+            // ---- ヒナ（68〜70） ----
             Monster(68, "コツブヒナペン", new[] { Rock }, new Stats(70, 65, 75, 35, 60, 55),
                 new[] { PebbleShot, FlipperSlap, IcicleBarrage, RockSkin }, Ability.SkillLink, MonsterRank.Hina),
             Monster(69, "ネボスケヒナペン", new[] { Moss }, new Stats(90, 40, 70, 60, 75, 35),
@@ -171,7 +171,7 @@ namespace PenguinMonster.Battle
             Monster(70, "ポカポカヒナペン", new[] { Fire }, new Stats(75, 40, 60, 75, 70, 65),
                 new[] { CampfireBreath, WispFlame, FeatherRelay, Preen }, Ability.SunCall, MonsterRank.Hina),
 
-            // ---- 段階3: エース（71〜73）。天候に乗ると すばやさ 2 倍で暴れるが、4倍の弱点がある ----
+            // ---- エース（71〜73）。天候に乗ると すばやさ 2 倍で暴れるが、4倍の弱点がある ----
             Monster(71, "フブキオウペン", new[] { Ice, Bird }, new Stats(95, 120, 75, 60, 75, 115),
                 new[] { IcicleBarrage, BraveDive, IcicleBeak, SnowCall }, Ability.SnowSlide, MonsterRank.Ace),
             Monster(72, "ウミドリペン", new[] { Sea, Bird }, new Stats(90, 110, 80, 65, 75, 110),
@@ -179,14 +179,14 @@ namespace PenguinMonster.Battle
             Monster(73, "ジュカイペン", new[] { Moss, Bird }, new Stats(95, 120, 80, 90, 75, 80),
                 new[] { BraveDive, MossDrain, CliffBreak, Sunbathe }, Ability.Photosynthesis, MonsterRank.Ace),
 
-            // ---- 段階3: 伝説（74〜75）。天候を呼ぶボスの切り札 ----
+            // ---- 伝説（74〜75）。天候を呼ぶボスの切り札 ----
             Monster(74, "ワダツミペン", new[] { Sea }, new Stats(110, 90, 95, 120, 105, 70),
                 new[] { SeaGodVortex, StormDrop, LifeSap, Preen }, Ability.RainCall, MonsterRank.Legend),
             Monster(75, "アマテラスペン", new[] { Fire, Aurora }, new Stats(100, 120, 95, 100, 90, 85),
                 new[] { SunWheelFlame, CliffBreak, SparkleLaser, FlapDance }, Ability.SunCall,
                 MonsterRank.Legend),
 
-            // ---- 段階4: ふつう（76〜125）。新しい特性（小技名人・向こう見ず・ひねくれ者・気まぐれ・ちゃっかり・まっさら）と、
+            // ---- ふつう（76〜125）。新しい特性（小技名人・向こう見ず・ひねくれ者・気まぐれ・ちゃっかり・まっさら）と、
             // 本物のペンギン・日本の物・仕事・妖怪などを題材にした子。同じタイプでも題材と戦い方で見分けられるようにする ----
             Monster(76, "スノードームペン", new[] { Ice, Aurora }, new Stats(80, 50, 85, 90, 100, 55),
                 new[] { BlizzardBreath, AuroraWave, FrostKiss, AuroraHeal }, Ability.Multiscale),
@@ -289,7 +289,7 @@ namespace PenguinMonster.Battle
             Monster(125, "サイコロペン", new[] { MonsterType.Normal }, new Stats(75, 75, 75, 75, 75, 75),
                 new[] { PenguinPress, Shout, IcicleBeak, BellySlide }, Ability.Moody),
 
-            // ---- 段階4: ヒナ（126〜135）。新しい特性や積み技で「化ける」 ----
+            // ---- ヒナ（126〜135）。新しい特性や積み技で「化ける」 ----
             Monster(126, "タマゴペン", new[] { MonsterType.Normal }, new Stats(75, 70, 80, 45, 70, 50),
                 new[] { ShellShed, RecklessTackle, IcicleBeak, BellySlide }, Ability.Multiscale, MonsterRank.Hina),
             Monster(127, "ギョウレツヒナペン", new[] { MonsterType.Normal }, new Stats(60, 70, 55, 40, 55, 100),
@@ -311,7 +311,7 @@ namespace PenguinMonster.Battle
             Monster(135, "ホシクズヒナペン", new[] { Aurora }, new Stats(60, 75, 55, 60, 60, 80),
                 new[] { ShootingStar, PrismKick, IceStep, FeatherRelay }, Ability.SkillLink, MonsterRank.Hina),
 
-            // ---- 段階4: エース（136〜145）。純粋に強いが、4倍などはっきりした弱点がある ----
+            // ---- エース（136〜145）。純粋に強いが、4倍などはっきりした弱点がある ----
             Monster(136, "ライセツペン", new[] { Ice, Thunder }, new Stats(85, 70, 80, 105, 85, 95),
                 new[] { BlizzardBreath, SparkWing, ColdBreath, ChargeDance }, Ability.SnowCloud, MonsterRank.Ace),
             Monster(137, "クジラノリペン", new[] { Sea, MonsterType.Normal }, new Stats(120, 105, 90, 60, 80, 70),
@@ -333,7 +333,7 @@ namespace PenguinMonster.Battle
             Monster(145, "ユーフォーペン", new[] { Aurora }, new Stats(80, 70, 75, 105, 85, 105),
                 new[] { SparkleLaser, SparkWing, ShadowStitch, AuroraHeal }, Ability.Moody, MonsterRank.Ace),
 
-            // ---- 段階4: 伝説（146〜150）。後半のボスの切り札 ----
+            // ---- 伝説（146〜150）。後半のボスの切り札 ----
             Monster(146, "コダイオウペン", new[] { Rock, Ice }, new Stats(120, 135, 115, 60, 80, 80),
                 new[] { AncientCharge, IcebergDrop, DiveJet, BraceUp }, Ability.Reckless, MonsterRank.Legend),
             Monster(147, "セカイジュペン", new[] { Moss }, new Stats(120, 70, 105, 115, 110, 75),

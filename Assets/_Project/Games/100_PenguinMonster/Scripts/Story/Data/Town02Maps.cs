@@ -3,8 +3,8 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り2のマップ（PLAN_STORY_TOWN02.md §2）。2番道路の奥 → 3番道路（北）→ カガミコ町、町の東から 4番道路（行き止まり）。
-    /// 町の北から 5番道路（区切り3。サエに勝つまで門下生がふさぐ）。文字は Town01Maps と同じ。
+    /// マップ。2番道路の奥 → 3番道路（北）→ カガミコ町、町の東から 4番道路（行き止まり）。
+    /// 町の北から 5番道路（サエに勝つまで門下生がふさぐ）。文字は Town01Maps と同じ。
     /// マップ ID は記録に入るので、一度出したら名前を変えないこと
     /// </summary>
     public static class Town02Maps
@@ -102,7 +102,7 @@ namespace PenguinMonster.Story
         private static readonly GridPos TownHouseDoor = new GridPos(3, 18);
         /// <summary>北の出口（5番道路）。サエに勝つまで門下生が手前でふさぐ</summary>
         public static readonly GridPos Route05Exit = new GridPos(11, 0);
-        /// <summary>北の出口の横の看板。区切り2では出口の上に立って道を止めていたが、区切り3で道の横へずらした</summary>
+        /// <summary>北の出口の横の看板。出口の上に立つと道をふさぐので、道の横に置く</summary>
         public static readonly GridPos Route05Sign = new GridPos(12, 1);
 
         private static FieldMap CreateTown()

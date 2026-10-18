@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 戦況を変える技（仕様書 §4.2）。守る・手助けはそのターンだけ、追い風は陣営に数ターンかかる。
+    /// 戦況を変える技。守る・手助けはそのターンだけ、追い風は陣営に数ターンかかる。
     /// 追い風のすばやさ2倍は BattleMonster.EffectiveSpeed、手助けのダメージ倍率は DamageCalculator
     /// </summary>
     public sealed partial class BattleEngine

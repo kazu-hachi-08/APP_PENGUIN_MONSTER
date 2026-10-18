@@ -24,7 +24,7 @@ namespace PenguinMonster.Editor
         private const float DexBodyBottom = 40f;
         private const float DexListLeft = 40f;
         private const float DexListWidth = 870f;
-        // 150 体に増えたため、見やすい大きさ（マス 100）にして縦スクロールできるようにする
+        // 体数が多いので、見やすい大きさ（マス 100）にして縦スクロールできるようにする
         private const int DexListColumns = 8;
         private static readonly Vector2 DexCellSize = new Vector2(100f, 100f);
         private const float DexCellSpacing = 6f;
@@ -104,8 +104,7 @@ namespace PenguinMonster.Editor
 
         private static Button CreateDexFilterButton(Transform row, string label, Color color)
         {
-            var obj = CreateButton(row, $"Btn_{label}", label, DexFilterSize, color);
-            obj.GetComponentInChildren<Text>().fontSize = DexFilterFontSize;
+            var obj = CreateButton(row, $"Btn_{label}", label, DexFilterSize, color, fontSize: DexFilterFontSize);
             return obj.GetComponent<Button>();
         }
 
@@ -316,21 +315,13 @@ namespace PenguinMonster.Editor
         {
             var row = UIDialogBuilder.CreateUIObject("Types", parent);
             PlaceTopBand(row.GetComponent<RectTransform>(), DexBadgeTop, DexBadgeSize.y);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = DexBadgeSpacing;
-            layout.childAlignment = TextAnchor.MiddleLeft;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, DexBadgeSpacing, TextAnchor.MiddleLeft);
 
             badges = new Image[TypeColors.BadgesPerMonster];
             labels = new Text[badges.Length];
             for (int k = 0; k < badges.Length; k++)
             {
-                badges[k] = CreateImage(row.transform, $"Type{k}", Color.gray);
-                badges[k].raycastTarget = false;
-                badges[k].rectTransform.sizeDelta = DexBadgeSize;
-                labels[k] = CreateText(badges[k].transform, "Label", "", DexBadgeFontSize, Color.white, TextAnchor.MiddleCenter);
-                labels[k].fontStyle = FontStyle.Bold;
+                CreateTypeBadge(row.transform, k, DexBadgeSize, DexBadgeFontSize, out badges[k], out labels[k]);
             }
         }
     }

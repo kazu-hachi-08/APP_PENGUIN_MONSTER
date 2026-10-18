@@ -62,10 +62,8 @@ namespace PenguinMonster.Editor
             Place(detail.rectTransform, Center, ResultDetailPosition, ResultDetailSize);
 
             var row = CreateCenteredRow(content, "Buttons", Center, ResultButtonRowPosition, ResultRetrySize.y, ResultButtonSpacing);
-            var retry = CreateButton(row, "Btn_Retry", NextBattleLabel, ResultRetrySize, SurvivalColor);
-            retry.GetComponentInChildren<Text>().fontSize = ResultButtonFontSize;
-            var toTitle = CreateButton(row, "Btn_Title", ResultTitleLabel, ResultBackSize, MenuColor);
-            toTitle.GetComponentInChildren<Text>().fontSize = ResultButtonFontSize;
+            var retry = CreateButton(row, "Btn_Retry", NextBattleLabel, ResultRetrySize, SurvivalColor, fontSize: ResultButtonFontSize);
+            var toTitle = CreateButton(row, "Btn_Title", ResultTitleLabel, ResultBackSize, MenuColor, fontSize: ResultButtonFontSize);
 
             var dialog = back.gameObject.AddComponent<ResultDialog>();
             var so = new SerializedObject(dialog);
@@ -95,7 +93,7 @@ namespace PenguinMonster.Editor
         {
             var area = UIDialogBuilder.CreateUIObject("Confetti", parent);
             UIDialogBuilder.SetStretchAll(area.GetComponent<RectTransform>());
-            // 粒が毎フレーム動くので、別の Canvas に分けて、文字やボタンまで作り直しにならないようにする
+            // 粒は毎フレーム動くので別の Canvas に置く（理由は CreateTitleSnow と同じ）
             area.AddComponent<Canvas>();
 
             var pieces = new RectTransform[ConfettiCount];

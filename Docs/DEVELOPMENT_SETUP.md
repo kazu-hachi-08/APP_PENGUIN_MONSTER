@@ -40,13 +40,13 @@ Assets/
 │   ├── Common/                     # 共通基盤（PenguinMonster.Common.* 名前空間）
 │   │   ├── Scripts/                # Core / Audio / Input / Online / Profile / Scene / UI
 │   │   ├── Editor/                 # 共通ダイアログのシーン生成・デバッグメニュー
-│   │   ├── Plugins/WebGL/          # ブラウザ版の名前入力・全画面（.jslib）
+│   │   ├── Plugins/WebGL/          # ブラウザ版の名前入力・全画面・クリップボードへのコピー（.jslib）
 │   │   └── Resources/              # フォント等
 │   │
 │   └── Games/
 │       └── 100_PenguinMonster/     # ペンモン本体
 │           ├── Scripts/            # ゲームのコード
-│           ├── Editor/             # SceneBuilder・データの生成
+│           ├── Editor/             # SceneBuilder・アプリアイコン生成・バランスレポート
 │           ├── Data/ Sprites/ Audio/ Scenes/
 │           └── Tests/Editor/       # EditMode テスト
 │

@@ -17,7 +17,7 @@ namespace PenguinMonster.Story
         /// <summary>博士からもらう最初の1体のレベル（本家と同じ）</summary>
         public const int StarterLevel = 5;
 
-        // 倒したときの経験値（本家の第5世代の簡略版）＝ 基礎値 × 相手の Lv ÷ 5。トレーナー戦は 1.5 倍
+        // 倒したときの経験値を割る数（相手の Lv を割る）。式とトレーナー戦の扱いは Experience.Defeated を見る
         public const int ExpYieldLevelDivisor = 5;
         // 1.5 倍を整数で掛けるため分子・分母に分ける（小数の誤差で1ずれないように）
         public const int TrainerExpNumerator = 3;
@@ -41,8 +41,8 @@ namespace PenguinMonster.Story
         /// <summary>よろず屋で売ると 買う値段を この数で割った額（本家と同じく半分）</summary>
         public const int SellPriceDivisor = 2;
 
-        // 捕獲（本家の第3〜4世代の簡略版）: 値 ＝ (3×最大HP − 2×今の HP) × 捕まえやすさ × タマゴの倍率 ÷ (3×最大HP) × 状態異常の倍率。
-        // 255 以上なら必ず捕まえる。それより下なら 4回の揺れの判定を引く
+        // 捕獲（本家の第3〜4世代の簡略版）の定数。式は Capture.Odds を見る。
+        // CaptureMaxOdds 以上なら必ず捕まえる。それより下は CaptureChecks 回の揺れの判定を引く
         public const int CaptureMaxHpWeight = 3;
         public const int CaptureHpWeight = 2;
         public const int CaptureMaxOdds = 255;

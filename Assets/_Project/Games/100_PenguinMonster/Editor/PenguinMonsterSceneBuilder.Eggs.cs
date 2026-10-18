@@ -6,7 +6,7 @@ using UnityEngine;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 繰り出すときにタマゴを投げる層（仕様書 §7）
+    /// 繰り出すときにタマゴを投げる層
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {

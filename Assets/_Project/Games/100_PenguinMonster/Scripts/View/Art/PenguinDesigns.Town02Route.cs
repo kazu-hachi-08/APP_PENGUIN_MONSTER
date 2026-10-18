@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>区切り2の3番・4番道路の子（No.181〜196）。雲雀・湖の魚・湯たんぽ・ごろた石・冬の雷・冬芽・いたち</summary>
+    /// <summary>3番・4番道路の子（No.181〜196）。雲雀・湖の魚・湯たんぽ・ごろた石・冬の雷・冬芽・いたち</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 CastIron = Rgb(55, 55, 62);
@@ -69,8 +69,7 @@ namespace PenguinMonster.View.Art
             }
             b.Shaded(32f, 22f, 7f, 6.5f, body);
             b.White(30f, 21.5f, 5f, 4f);
-            b.Flipper(V(26, 12), V(19, 16), 2f, bodyShade);
-            b.Flipper(V(38, 12), V(45, 16), 2f, bodyShade);
+            b.Flipper2(V(26, 12), V(19, 16), 2f, bodyShade);
             b.Ellipse(32f, 4.5f, 10f, 1.5f, Water);
             b.TurnedFace(30f, 23f, FaceLeft, EyeStyle.Round, eyeGap: 5f);
             b.Ellipse(14f, 22f, 1.2f, 1.2f, IceLight);
@@ -147,8 +146,7 @@ namespace PenguinMonster.View.Art
                 b.Line(0.6f, bodyShade, V(22, y), V(42, y));
             }
             b.Belly(30f, 13f, 5f, 4.5f);
-            b.Flipper(V(21, 14), V(15, 10), 2f, bodyShade);
-            b.Flipper(V(43, 14), V(49, 10), 2f, bodyShade);
+            b.Flipper2(V(21, 14), V(15, 10), 2f, bodyShade);
             b.Shaded(31f, 27f, 7.5f, 6.5f, body);
             b.Shaded(33f, 34f, 3.5f, 2.5f, cap);
             b.White(29f, 26.5f, 5.5f, 4f);
@@ -175,8 +173,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(32f, 12f, 6.5f, 4.5f, FlameOuter);
             b.Ellipse(32f, 11f, 4.5f, 3f, FlameMiddle);
             b.Ellipse(32f, 10.5f, 2.5f, 1.5f, FlameInner);
-            b.Flipper(V(16, 24), V(6, 16), 3f, ironShade);
-            b.Flipper(V(48, 24), V(58, 16), 3f, ironShade);
+            b.Flipper2(V(16, 24), V(6, 16), 3f, ironShade);
             b.Shaded(32f, 39f, 12f, 10f, CastIron);
             b.White(30f, 38f, 9f, 6.5f);
             b.TurnedFace(29f, 39f, FaceLeft, EyeStyle.Line, eyeGap: 7f);
@@ -195,8 +192,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(32f, 3f, 8f, 3f, Stone);
             b.Shaded(32f, 13f, 11f, 9f, body);
             b.Belly(30f, 12f, 6f, 5f);
-            b.Flipper(V(22, 13), V(15, 9), 2f, bodyShade);
-            b.Flipper(V(42, 13), V(49, 9), 2f, bodyShade);
+            b.Flipper2(V(22, 13), V(15, 9), 2f, bodyShade);
             b.Shaded(31f, 25f, 8f, 6.5f, body);
             b.White(29f, 24.5f, 6f, 4f);
             b.Line(0.6f, bodyShade, V(36, 29), V(38, 26));
@@ -219,14 +215,13 @@ namespace PenguinMonster.View.Art
             }
             b.Belly(30f, 17f, 9f, 10f);
             b.Line(0.7f, bodyShade, V(44, 30), V(40, 24), V(44, 18));
-            // 鍾乳石は山の裾の内側から下向きに垂らす（顔の近くだと涙に見えたため）
+            // 鍾乳石は山の裾の内側から下向きに垂らす（顔の近くだと涙に見えるので）
             b.Triangle(V(8, 14), V(12, 14), V(10, 6), SnowShade);
             b.Triangle(V(52, 14), V(56, 14), V(54, 5), SnowShade);
             b.Shaded(31f, 38f, 12f, 10f, body);
             b.Shaded(31f, 46f, 9f, 4f, Stone);
             b.White(29f, 37f, 9f, 6.5f);
-            b.Flipper(V(18, 24), V(8, 18), 3f, bodyShade);
-            b.Flipper(V(46, 24), V(56, 18), 3f, bodyShade);
+            b.Flipper2(V(18, 24), V(8, 18), 3f, bodyShade);
             b.TurnedFace(28f, 38f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
         }
 
@@ -235,15 +230,13 @@ namespace PenguinMonster.View.Art
         {
             var body = Rgb(250, 180, 70);
             var bodyShade = PenguinPalette.Shade(body);
-            b.Foot(28f, 6f, 30f, 0.55f);
-            b.Foot(37f, 6f, -30f, 0.55f);
+            b.SplayedFeet(28f, 37f, 6f, 30f, 0.55f);
             b.Shaded(32f, 15f, 8f, 7.5f, body);
             b.Belly(30f, 14f, 5f, 5f);
             b.Shaded(32f, 26f, 8f, 7.5f, body);
             b.Line(0.8f, Bolt, V(30, 33), V(33, 37), V(31, 39), V(35, 43));
             b.White(30f, 25.5f, 6f, 4.5f);
-            b.Flipper(V(25, 17), V(16, 24), 2f, bodyShade);
-            b.Flipper(V(39, 17), V(48, 24), 2f, bodyShade);
+            b.Flipper2(V(25, 17), V(16, 24), 2f, bodyShade);
             b.TurnedFace(30f, 27f, FaceLeft, EyeStyle.Round, eyeGap: 5f, open: true);
             b.Sparkle(12, 30, Bolt);
             b.Sparkle(52, 30, Bolt);
@@ -299,8 +292,7 @@ namespace PenguinMonster.View.Art
             b.Line(1f, Bolt, V(24, 24), V(30, 20), V(26, 16), V(32, 10));
             b.Shaded(32f, 37f, 11.5f, 10f, body);
             b.White(29f, 36f, 8.5f, 6.5f);
-            b.Flipper(V(20, 26), V(10, 36), 3f, bodyShade);
-            b.Flipper(V(44, 26), V(54, 36), 3f, bodyShade);
+            b.Flipper2(V(20, 26), V(10, 36), 3f, bodyShade);
             b.TurnedFace(29f, 37f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f, open: true);
             Snowflake(b, 20f, 6f, 3f, SnowWhite);
             Snowflake(b, 50f, 8f, 3f, SnowWhite);

@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// タイトルから開く画面（Phase 8）。共通の枠（見出し・もどる）と、タイプ相性表・あそびかた・設定。ずかんは .Dex.cs
+    /// タイトルから開く画面。共通の枠（見出し・もどる）と、タイプ相性表・あそびかた・設定。ずかんは .Dex.cs
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -81,10 +81,7 @@ namespace PenguinMonster.Editor
             var back = CreateNightBack(parent, name);
             content = CreateSafeContent(back.transform);
 
-            var titleText = CreateText(content, "Title", title, SubMenuTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(titleText);
-            titleText.rectTransform.anchorMin = new Vector2(0f, 1f);
-            titleText.rectTransform.offsetMin = new Vector2(0f, -SubMenuTitleHeight);
+            CreateTopTitle(content, title, SubMenuTitleFontSize, SubMenuTitleHeight);
 
             var backObj = CreateButton(content, "Btn_Back", "戻る", SubMenuBackSize, SubMenuButtonColor);
             Place(backObj.GetComponent<RectTransform>(), new Vector2(0f, 1f), SubMenuBackPosition, SubMenuBackSize);
@@ -156,7 +153,7 @@ namespace PenguinMonster.Editor
             return text;
         }
 
-        // 仕様書 §3.4 と同じ書き方（等倍は空欄）
+        // 等倍は空欄
         private static string ChartLabel(float multiplier)
         {
             return multiplier == 0f ? "0" : multiplier < 1f ? "½" : multiplier > 1f ? "2" : "";
@@ -240,11 +237,7 @@ namespace PenguinMonster.Editor
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = position;
             rect.sizeDelta = new Vector2(0f, height);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = spacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, spacing, TextAnchor.MiddleCenter);
             return row.transform;
         }
     }

@@ -9,7 +9,7 @@ namespace PenguinMonster.Common.UI
     /// </summary>
     public class UIManager : SingletonMonoBehaviour<UIManager>
     {
-        [Header("UI Dialog Prefabs / References")]
+        [Header("UI Dialog References")]
         [SerializeField] private CommonDialog _commonDialog;
         [SerializeField] private PauseDialog _pauseDialog;
         [SerializeField] private ResultDialog _resultDialog;
@@ -31,22 +31,7 @@ namespace PenguinMonster.Common.UI
             }
             else
             {
-                Debug.LogWarning("[UIManager] CommonDialog参照が設定されていません。");
-            }
-        }
-
-        /// <summary>
-        /// 単一ボタンOKアラートの表示
-        /// </summary>
-        public void ShowAlertDialog(
-            string title,
-            string message,
-            Action onOk = null,
-            string okText = "OK")
-        {
-            if (_commonDialog != null)
-            {
-                _commonDialog.Show(title, message, onOk, null, okText, "", showCancelButton: false);
+                WarnMissingDialog("CommonDialog");
             }
         }
 
@@ -62,7 +47,7 @@ namespace PenguinMonster.Common.UI
             }
             else
             {
-                Debug.LogWarning("[UIManager] PauseDialog参照が設定されていません。");
+                WarnMissingDialog("PauseDialog");
             }
         }
 
@@ -93,18 +78,14 @@ namespace PenguinMonster.Common.UI
             }
             else
             {
-                Debug.LogWarning("[UIManager] ResultDialog参照が設定されていません。");
+                WarnMissingDialog("ResultDialog");
             }
         }
 
-        /// <summary>
-        /// 各ダイアログのインスタンスをランタイム登録
-        /// </summary>
-        public void RegisterDialogs(CommonDialog commonDialog = null, PauseDialog pauseDialog = null, ResultDialog resultDialog = null)
+        // 参照未設定の警告文を1か所にまとめる（出る文字列はダイアログごとに従来どおり）
+        private static void WarnMissingDialog(string dialogName)
         {
-            if (commonDialog != null) _commonDialog = commonDialog;
-            if (pauseDialog != null) _pauseDialog = pauseDialog;
-            if (resultDialog != null) _resultDialog = resultDialog;
+            Debug.LogWarning($"[UIManager] {dialogName}参照が設定されていません。");
         }
     }
 }

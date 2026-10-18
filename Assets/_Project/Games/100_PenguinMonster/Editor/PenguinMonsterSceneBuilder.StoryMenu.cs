@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// フィールドのメニュー（PLAN_STORY_TOWN01.md フェーズ6）。奥から 項目の窓（右上）→ 手持ちの画面 → バッグ。
+    /// フィールドのメニュー。奥から 項目の窓（右上）→ 手持ちの画面 → バッグ。
     /// 十字キーより手前、会話の層より奥に置く（「やめる」の はい / いいえ を会話窓で聞くため）
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -91,11 +91,7 @@ namespace PenguinMonster.Editor
             rect.anchorMin = rect.anchorMax = rect.pivot = Vector2.one;
             rect.anchoredPosition = new Vector2(-FieldMenuMargin, -FieldMenuMargin);
             rect.sizeDelta = new Vector2(FieldMenuButtonSize.x + FieldMenuPadding * 2, height);
-            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = FieldMenuSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<VerticalLayoutGroup>(inner.gameObject, FieldMenuSpacing, TextAnchor.MiddleCenter);
 
             buttons = new Button[labels.Length];
             for (int i = 0; i < labels.Length; i++)
@@ -117,17 +113,7 @@ namespace PenguinMonster.Editor
             var buttons = new Button[StoryBalance.MaxPartySize];
             var labels = new Text[buttons.Length];
             var icons = new Image[buttons.Length];
-            for (int i = 0; i < buttons.Length; i++)
-            {
-                var slot = CreateButton(list, $"Btn_Slot{i}", "", PartyListSlotSize, SlotColor);
-                buttons[i] = slot.GetComponent<Button>();
-                labels[i] = slot.GetComponentInChildren<Text>();
-                labels[i].rectTransform.offsetMin = new Vector2(BoxIconSize + 24f, 0f);
-                labels[i].rectTransform.offsetMax = new Vector2(-SlotTextRightPadding, 0f);
-                labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
-                icons[i] = CreatePartyIcon(slot.transform);
-                icons[i].rectTransform.sizeDelta = Vector2.one * BoxIconSize;
-            }
+            CreatePartySlots(list, PartyListSlotSize, buttons, labels, icons);
 
             var actionsColumn = CreateStoryScreenColumn(safe, "Actions", new Vector2(PartyRightColumnX, StoryScreenTop), PartyActionsSize, FieldMenuSpacing);
             var detailButton = CreateButton(actionsColumn, "Btn_Detail", "詳しく 見る", PartyActionButtonSize, SlotColor);

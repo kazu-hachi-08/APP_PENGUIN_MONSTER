@@ -41,16 +41,8 @@ namespace PenguinMonster.View.Story
 
         private void Awake()
         {
-            for (int i = 0; i < _partyButtons.Length; i++)
-            {
-                int index = i;
-                _partyButtons[i].onClick.AddListener(() => Deposit(index));
-            }
-            for (int i = 0; i < _boxButtons.Length; i++)
-            {
-                int index = i;
-                _boxButtons[i].onClick.AddListener(() => Withdraw(index));
-            }
+            ButtonHighlight.AddIndexedClick(_partyButtons, Deposit);
+            ButtonHighlight.AddIndexedClick(_boxButtons, Withdraw);
             _prevButton.onClick.AddListener(() => TurnPage(-1));
             _nextButton.onClick.AddListener(() => TurnPage(1));
             _closeButton.onClick.AddListener(() =>

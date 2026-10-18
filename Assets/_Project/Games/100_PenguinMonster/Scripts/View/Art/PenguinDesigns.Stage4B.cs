@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>段階4のふつう後半（No.101〜125）のデザイン</summary>
+    /// <summary>ふつう後半（No.101〜125）のデザイン</summary>
     public static partial class PenguinDesigns
     {
         /// <summary>No.101 サカダチペン: ひねくれ者。両ヒレで地面を突いて逆立ちし、頭が下・足が上。上の足先にろうそくの炎がともる</summary>
@@ -19,8 +19,7 @@ namespace PenguinMonster.View.Art
             b.ShadedTilted(32f, 36f, 11f, 14f, -6f, body);
             b.BellyTilted(30f, 36f, 7f, 10f, -6f);
             // ヒレは付け根を太くして地面へ突っ張らせ、体を支えているのが分かるようにする
-            b.Flipper(V(22, 30), V(11, 4), 4f, bodyShade);
-            b.Flipper(V(42, 30), V(53, 4), 4f, bodyShade);
+            b.Flipper2(V(22, 30), V(11, 4), 4f, bodyShade);
             b.Shaded(31f, 15f, 10.5f, 10f, body);
             b.White(29f, 14f, 7.5f, 6f);
             SakadachiFace(b, 29f, 12f);
@@ -72,7 +71,7 @@ namespace PenguinMonster.View.Art
             YakiimoBand(b, 33f, 47f);
             // 芋は体の前を斜めに横切らせ、抱えた大きさで丸い体の輪郭を崩す
             b.ShadedTilted(28f, 21f, 22f, 8.5f, 28f, skin);
-            // 割れ目は芋の長さに沿ったギザギザの裂け目にする。丸い塊だとチーズに見えたため
+            // 割れ目は芋の長さに沿ったギザギザの裂け目にする。丸い塊だとチーズに見えるので
             b.Line(1.4f, flesh, V(14, 15), V(18, 19), V(21, 17), V(25, 22), V(28, 20), V(32, 25), V(35, 23), V(39, 27));
             b.Line(0.5f, Rgb(255, 245, 190), V(18, 19), V(21, 17), V(25, 22), V(28, 20), V(32, 25));
             b.Line(0.6f, PenguinPalette.Darken(skin, 0.8f), V(42, 30), V(46, 28));
@@ -190,8 +189,7 @@ namespace PenguinMonster.View.Art
             b.Rect(24, 7, 16, 4, frame);
             b.Line(0.8f, frame, V(32, 7), V(31, 2));
             b.Ellipse(31f, 2f, 1.5f, 1.5f, paper);
-            b.Flipper(V(16, 28), V(8, 21), 2.5f, paperShade);
-            b.Flipper(V(48, 28), V(56, 21), 2.5f, paperShade);
+            b.Flipper2(V(16, 28), V(8, 21), 2.5f, paperShade);
             b.White(27f, 34f, 7.5f, 6f);
             b.TurnedFace(27f, 35f, FaceLeft, EyeStyle.Sleepy, eyeGap: 6f);
             b.Ellipse(55f, 46f, 2.5f, 2.5f, wisp);
@@ -431,8 +429,7 @@ namespace PenguinMonster.View.Art
                 b.Triangle(OnEllipse(31f, 31f, 17f, 16f, angle - 0.14f), OnEllipse(31f, 31f, 17f, 16f, angle + 0.14f), OnEllipse(31f, 31f, 22f, 21f, angle), fluff);
             }
             b.Ellipse(31f, 31f, 18f, 17f, fluff);
-            b.Flipper(V(14, 26), V(8, 20), 2.5f, fluffShade);
-            b.Flipper(V(50, 26), V(56, 20), 2.5f, fluffShade);
+            b.Flipper2(V(14, 26), V(8, 20), 2.5f, fluffShade);
             b.White(28f, 33f, 9f, 7f);
             b.TurnedFace(28f, 34f, FaceLeft, EyeStyle.Worried, eyeGap: 7f);
             PachipachiSpark(b, spark, V(6, 46));
@@ -455,7 +452,7 @@ namespace PenguinMonster.View.Art
             var bodyShade = PenguinPalette.Shade(body);
             var cloud = Rgb(175, 180, 200);
             var cloudShade = PenguinPalette.Shade(cloud);
-            // うずは2本の腕が中心へ巻き込む形にし、外ほど太くして台風の雲に見せる
+            // うずは2本の腕が中心へ巻き込む形にし、弧の中ほどを太くして台風の雲に見せる
             TaifuuArm(b, cloudShade, cloud, 0f);
             TaifuuArm(b, cloudShade, cloud, Mathf.PI);
             b.Line(0.6f, Water, V(6, 30), V(5, 26));
@@ -470,8 +467,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(31f, 38f, 8f, 7.5f, body);
             b.White(29f, 37f, 6f, 4.5f);
             b.TurnedFace(29f, 38f, FaceLeft, EyeStyle.Line, eyeGap: 5f);
-            b.Flipper(V(25, 28), V(21, 22), 2f, bodyShade);
-            b.Flipper(V(39, 28), V(43, 22), 2f, bodyShade);
+            b.Flipper2(V(25, 28), V(21, 22), 2f, bodyShade);
         }
 
         /// <summary>うずまきの腕1本。外から中心へ半径を縮めながら、雲の玉を並べる</summary>
@@ -794,8 +790,7 @@ namespace PenguinMonster.View.Art
             b.Line(1.8f, clay, V(42, 31), V(50, 29), V(51, 18));
             if (b.Front)
             {
-                // 普通の目の代わりに縦長の黒い穴を2つあけ、くちばしだけを残す（指示書の例外）
-                b.Ellipse(26f, 46f, 1.8f, 2.8f, hole);
+                // 普通の目の代わりに縦長の黒い穴を2つあけ、くちばしだけを残す                b.Ellipse(26f, 46f, 1.8f, 2.8f, hole);
                 b.Ellipse(34f, 46f, 1.8f, 2.8f, hole);
                 b.SideBeak(29f, 40f, FaceLeft, false, 3f);
             }
@@ -821,7 +816,7 @@ namespace PenguinMonster.View.Art
             DoguSpiral(b, clayShade, 25f, 22f);
             DoguSpiral(b, clayShade, 39f, 22f);
             b.Line(0.5f, clayShade, V(22, 14), V(42, 14));
-            // 冠は台形の上に平たいまげを乗せる。頭の両脇に丸いこぶを置くとクマの耳に見えたため
+            // 冠は台形の上に平たいまげを乗せる。頭の両脇に丸いこぶを置くとクマの耳に見えるので
             b.Polygon(V(32, 50), clayShade, V(19, 46), V(45, 46), V(40, 56), V(24, 56));
             b.Polygon(V(31, 50), clay, V(20, 47), V(43, 47), V(39, 55), V(25, 55));
             b.Line(0.5f, clayShade, V(23, 51), V(26, 54), V(29, 51), V(32, 54), V(35, 51), V(38, 54), V(41, 51));

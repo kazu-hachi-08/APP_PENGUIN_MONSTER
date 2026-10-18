@@ -4,7 +4,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 namespace PenguinMonster.View.Art
 {
     /// <summary>
-    /// ストーリーの最初の3体（No.151〜159）。
+    /// ストーリーの最初の3体の3段進化（No.151〜159）。
     /// 進化で育つのが見て分かるよう、体を 進化前 ヒナくらい → 途中 ひと回り大きく → 最後 ふつうより大きく、と段ごとに大きくする
     /// </summary>
     public static partial class PenguinDesigns
@@ -158,7 +158,7 @@ namespace PenguinMonster.View.Art
             b.Foot(30f, 3f, 10f);
             b.ShadedTilted(37f, 19f, 14f, 15f, -6f, body);
             b.BellyTilted(34f, 19f, 9.5f, 11f, -6f);
-            // 前掛けはおなかの下半分だけにして、白いおなかを残す（全部覆うと樽のように見えたため）
+            // 前掛けはおなかの下半分だけにして、白いおなかを残す（全部覆うと樽のように見えるので）
             if (b.Front)
             {
                 b.Polygon(V(34, 12), apron, V(25, 17), V(43, 18), V(42, 7), V(27, 6));
@@ -196,8 +196,7 @@ namespace PenguinMonster.View.Art
             b.Foot(37f, 4f, 0f, 0.6f);
             b.Shaded(32f, 12f, 8.5f, 7.5f, body);
             b.Belly(30f, 11f, 5.5f, 5f);
-            b.Flipper(V(25, 13), V(20, 8), 2f, bodyShade);
-            b.Flipper(V(39, 13), V(44, 8), 2f, bodyShade);
+            b.Flipper2(V(25, 13), V(20, 8), 2f, bodyShade);
             b.Shaded(32f, 23f, 8f, 7.5f, body);
             b.White(30f, 22.5f, 6f, 4.5f);
             b.Line(0.8f, PenguinPalette.Shade(leaf), V(32, 30), V(32, 35));

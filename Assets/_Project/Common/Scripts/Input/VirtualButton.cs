@@ -13,9 +13,6 @@ namespace PenguinMonster.Common.Input
         public bool IsHeld { get; private set; }
         public bool IsUp { get; private set; }
 
-        public event Action OnPressed;
-        public event Action OnReleased;
-
         private bool _wasPressedThisFrame = false;
         private bool _wasReleasedThisFrame = false;
 
@@ -23,14 +20,12 @@ namespace PenguinMonster.Common.Input
         {
             _wasPressedThisFrame = true;
             IsHeld = true;
-            OnPressed?.Invoke();
         }
 
         public void OnPointerUp(PointerEventData eventData)
         {
             _wasReleasedThisFrame = true;
             IsHeld = false;
-            OnReleased?.Invoke();
         }
 
         private void LateUpdate()

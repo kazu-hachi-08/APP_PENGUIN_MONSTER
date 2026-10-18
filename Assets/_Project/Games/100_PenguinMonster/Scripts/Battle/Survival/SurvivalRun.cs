@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 勝ち抜き戦1回ぶん（仕様書 §2.3）。最初のドラフトの6体で、負けるまで連勝数を数える。
+    /// 勝ち抜き戦1回ぶん。最初のドラフトの6体で、負けるまで連勝数を数える。
     /// 相手の強さ（CPU の賢さ・ドラフトの取り方・ボス）は連勝数で決める
     /// </summary>
     public sealed class SurvivalRun

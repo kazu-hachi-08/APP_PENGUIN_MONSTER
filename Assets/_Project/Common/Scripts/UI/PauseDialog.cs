@@ -75,25 +75,18 @@ namespace PenguinMonster.Common.UI
             gameObject.SetActive(false);
         }
 
-        private void OnResumeClicked()
-        {
-            if (AudioManager.HasInstance) AudioManager.Instance.PlaySe(SeId.ButtonClick);
-            Hide();
-            _onResume?.Invoke();
-        }
+        private void OnResumeClicked() => HideAndInvoke(_onResume);
 
-        private void OnRestartClicked()
-        {
-            if (AudioManager.HasInstance) AudioManager.Instance.PlaySe(SeId.ButtonClick);
-            Hide();
-            _onRestart?.Invoke();
-        }
+        private void OnRestartClicked() => HideAndInvoke(_onRestart);
 
-        private void OnTitleClicked()
+        private void OnTitleClicked() => HideAndInvoke(_onTitle);
+
+        // 先に閉じてからコールバックを呼ぶ（コールバック側で次の画面を開いても、このダイアログが残らないようにする）
+        private void HideAndInvoke(Action callback)
         {
-            if (AudioManager.HasInstance) AudioManager.Instance.PlaySe(SeId.ButtonClick);
+            AudioManager.PlaySeIfAvailable(SeId.ButtonClick);
             Hide();
-            _onTitle?.Invoke();
+            callback?.Invoke();
         }
 
         private void OnBgmSliderChanged(float value)

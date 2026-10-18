@@ -17,6 +17,8 @@ namespace PenguinMonster.View.Art
         // 複数のファイルのデザインで使う色
         private static readonly Color32 SnowWhite = Rgb(240, 246, 252);
         private static readonly Color32 HinaGrayFluff = Rgb(170, 172, 186);
+        // 影は毎回作り直さず1回だけ計算する（同じ色のため値は変わらない）
+        private static readonly Color32 HinaGrayFluffShade = PenguinPalette.Shade(HinaGrayFluff);
 
         private static readonly Dictionary<int, Action<PenguinBrush>> ByNo = new Dictionary<int, Action<PenguinBrush>>
         {

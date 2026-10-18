@@ -111,6 +111,15 @@ namespace PenguinMonster.View.Art
             Rect(x, y - 1, 1, 3, color);
         }
 
+        /// <summary>同じ色のきらめきを複数の点に打つ。座標は (int) で切り捨て、ドットの位置にそろえる</summary>
+        public void Sparkles(Color32 color, params Vector2[] points)
+        {
+            foreach (var p in points)
+            {
+                Sparkle((int)p.x, (int)p.y, color);
+            }
+        }
+
         public void Feet(float x, float offsetX, float y = 3f)
         {
             Ellipse(x - offsetX, y, FootRadiusX, FootRadiusY, PenguinPalette.Beak);

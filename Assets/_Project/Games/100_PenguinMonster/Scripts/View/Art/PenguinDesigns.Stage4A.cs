@@ -3,7 +3,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 
 namespace PenguinMonster.View.Art
 {
-    /// <summary>段階4のふつう前半（No.76〜100）のデザイン</summary>
+    /// <summary>ふつう前半（No.76〜100）のデザイン</summary>
     public static partial class PenguinDesigns
     {
         private static readonly Color32 S4aWood = Rgb(150, 100, 60);
@@ -59,8 +59,7 @@ namespace PenguinMonster.View.Art
             b.Polygon(V(25, 44), Rgb(230, 60, 70), V(23, 51), V(29, 53), V(26, 44), V(22, 38), V(19, 42));
             b.Polygon(V(31, 47), Rgb(90, 200, 90), V(28, 54), V(33, 54), V(34, 44), V(31, 38), V(29, 45));
             b.Polygon(V(37, 46), Rgb(250, 220, 80), V(32, 55), V(36, 52), V(41, 42), V(40, 36), V(37, 44));
-            b.Flipper(V(14, 24), V(8, 30), 2.5f, ice);
-            b.Flipper(V(50, 24), V(56, 30), 2.5f, ice);
+            b.Flipper2(V(14, 24), V(8, 30), 2.5f, ice);
             b.White(28f, 28f, 10f, 7.5f);
             b.TurnedFace(28f, 29f, FaceLeft, EyeStyle.Round, eyeGap: 7f);
             // 器は氷より手前。縁を少しかぶせて、氷が器から盛り上がっているのを見せる

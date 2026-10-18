@@ -20,11 +20,7 @@ namespace PenguinMonster.View
 
         private void Awake()
         {
-            for (int i = 0; i < _targetButtons.Length; i++)
-            {
-                int slot = i;
-                _targetButtons[i].onClick.AddListener(() => Choose(() => _onSelect?.Invoke(slot)));
-            }
+            ButtonHighlight.AddIndexedClick(_targetButtons, slot => Choose(() => _onSelect?.Invoke(slot)));
             _backButton.onClick.AddListener(() => Choose(_onBack));
         }
 

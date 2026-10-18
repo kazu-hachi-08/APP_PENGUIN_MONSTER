@@ -4,7 +4,7 @@ using static PenguinMonster.View.Art.PenguinBrush;
 namespace PenguinMonster.View.Art
 {
     /// <summary>
-    /// 区切り3の残りの子（No.226〜240）。雪明かり・銀河・雪靴・かんじき・電線・雪の石・カイロ・暖炉と、
+    /// No.226〜240の子。雪明かり・銀河・雪靴・かんじき・電線・雪の石・カイロ・暖炉と、
     /// 道場主の切り札（発電・雷神）・町でもらう灯り・発電所に居座る子・セントエルモの火
     /// </summary>
     public static partial class PenguinDesigns
@@ -59,8 +59,7 @@ namespace PenguinMonster.View.Art
             }
             b.Line(0.5f, milky, V(20, 10), V(28, 20), V(34, 32), V(42, 40));
             b.White(28f, 36f, 8f, 6.5f);
-            b.Flipper(V(18, 24), V(8, 18), 3.5f, bodyShade);
-            b.Flipper(V(46, 24), V(56, 18), 3.5f, bodyShade);
+            b.Flipper2(V(18, 24), V(8, 18), 3.5f, bodyShade);
             b.TurnedFace(28f, 38f, FaceLeft, EyeStyle.Cross, eyeGap: 7f);
             b.Star(8f, 52f, 3f, 1.2f, MoonYellow);
             b.Star(56f, 54f, 2.5f, 1f, AuroraPink);
@@ -146,8 +145,7 @@ namespace PenguinMonster.View.Art
             {
                 b.Ellipse(23f, 25f, 1.8f, 1.5f, Bolt);
             }
-            b.Flipper(V(25, 18), V(18, 14), 2f, bodyShade);
-            b.Flipper(V(39, 18), V(46, 14), 2f, bodyShade);
+            b.Flipper2(V(25, 18), V(18, 14), 2f, bodyShade);
             b.TurnedFace(30f, 28f, FaceLeft, EyeStyle.Round, eyeGap: 5f);
             b.Line(0.5f, Bolt, V(10, 12), V(12, 14), V(10, 16));
             b.Line(0.5f, Bolt, V(54, 12), V(52, 14), V(54, 16));
@@ -179,8 +177,7 @@ namespace PenguinMonster.View.Art
             b.Belly(30f, 18f, 8.5f, 9f);
             b.Shaded(31f, 35f, 10f, 9f, body);
             b.White(28f, 34f, 7.5f, 6f);
-            b.Flipper(V(19, 24), V(6, 34), 3.5f, bodyShade);
-            b.Flipper(V(45, 24), V(58, 34), 3.5f, bodyShade);
+            b.Flipper2(V(19, 24), V(6, 34), 3.5f, bodyShade);
             b.TurnedFace(28f, 36f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
             b.Line(0.6f, Bolt, V(4, 38), V(2, 34), V(5, 32));
             b.Line(0.6f, Bolt, V(60, 38), V(62, 34), V(59, 32));
@@ -206,8 +203,7 @@ namespace PenguinMonster.View.Art
                 b.Line(0.4f, bodyShade, V(36, 10), V(38, 14), V(37, 16));
             }
             b.White(30f, 23.5f, 6f, 4f);
-            b.Flipper(V(22, 14), V(18, 8), 2f, bodyShade);
-            b.Flipper(V(42, 14), V(46, 8), 2f, bodyShade);
+            b.Flipper2(V(22, 14), V(18, 8), 2f, bodyShade);
             b.TurnedFace(30f, 25f, FaceLeft, EyeStyle.Dot, eyeGap: 5f);
         }
 
@@ -230,8 +226,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(31f, 40f, 10f, 8.5f, rock);
             b.Triangle(V(24, 46), V(38, 46), V(31, 54), ice);
             b.White(28f, 39f, 7.5f, 5.5f);
-            b.Flipper(V(17, 20), V(8, 10), 4f, rockShade);
-            b.Flipper(V(47, 20), V(56, 10), 4f, rockShade);
+            b.Flipper2(V(17, 20), V(8, 10), 4f, rockShade);
             b.TurnedFace(28f, 41f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
         }
 
@@ -243,7 +238,7 @@ namespace PenguinMonster.View.Art
             var label = Rgb(235, 120, 60);
             b.Foot(27f, 4f, 20f, 0.55f);
             b.Foot(37f, 4f, -20f, 0.55f);
-            // 袋の体は角を丸めた四角。四隅の丸と2つの四角で作る
+            // 袋の体は角を丸めた四角。下の2隅を丸く、四角を重ねて作る
             b.Rect(20, 7, 24, 24, pouchShade);
             b.Rect(19, 8, 24, 23, pouch);
             b.Rect(20, 6, 22, 2, pouchShade);
@@ -304,8 +299,7 @@ namespace PenguinMonster.View.Art
                 b.Triangle(V(26, 12), V(34, 12), V(30, 19), FlameOuter);
             }
             b.White(28f, 37f, 8f, 6f);
-            b.Flipper(V(18, 24), V(8, 16), 4f, brickShade);
-            b.Flipper(V(46, 24), V(56, 16), 4f, brickShade);
+            b.Flipper2(V(18, 24), V(8, 16), 4f, brickShade);
             b.TurnedFace(28f, 39f, FaceLeft, EyeStyle.Line, eyeGap: 7f, open: true);
         }
 
@@ -315,8 +309,7 @@ namespace PenguinMonster.View.Art
             var body = Rgb(240, 220, 110);
             var bodyShade = PenguinPalette.Shade(body);
             var blade = Rgb(240, 245, 250);
-            b.Foot(28f, 6f, 30f, 0.55f);
-            b.Foot(37f, 6f, -30f, 0.55f);
+            b.SplayedFeet(28f, 37f, 6f, 30f, 0.55f);
             b.Shaded(32f, 15f, 8.5f, 7.5f, body);
             b.Belly(30f, 14f, 5f, 5f);
             // 頭の風車。軸を立て、3枚の羽根を斜めに回す
@@ -327,8 +320,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(32f, 42f, 2f, 2f, CastIron);
             b.Shaded(32f, 26f, 8f, 7.5f, body);
             b.White(30f, 25.5f, 6f, 4.5f);
-            b.Flipper(V(25, 17), V(17, 23), 2f, bodyShade);
-            b.Flipper(V(39, 17), V(47, 23), 2f, bodyShade);
+            b.Flipper2(V(25, 17), V(17, 23), 2f, bodyShade);
             b.TurnedFace(30f, 27f, FaceLeft, EyeStyle.Round, eyeGap: 5f, open: true);
             b.Line(0.5f, BoltShade, V(14, 30), V(16, 28), V(14, 26));
             b.Line(0.5f, BoltShade, V(50, 30), V(48, 28), V(50, 26));
@@ -427,8 +419,7 @@ namespace PenguinMonster.View.Art
             b.Triangle(V(26, 12), V(38, 12), V(32, 6), bodyShade);
             b.Shaded(32f, 32f, 9f, 8f, body);
             b.White(30f, 31f, 6.5f, 5f);
-            b.Flipper(V(23, 22), V(12, 30), 2.5f, bodyShade);
-            b.Flipper(V(41, 22), V(52, 30), 2.5f, bodyShade);
+            b.Flipper2(V(23, 22), V(12, 30), 2.5f, bodyShade);
             // 頭とヒレの先の炎。外を青白く、内を緑に光らせる
             foreach (var p in new[] { V(32, 44), V(11, 33), V(53, 33) })
             {

@@ -96,8 +96,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(32f, 11f, 14f, 9.5f, Mochi);
             b.Shaded(39f, 21f, 4f, 3.5f, Mochi);
             b.Ellipse(39f, 22f, 2.5f, 1.8f, toast);
-            b.Flipper(V(20, 10), V(14, 6), 2f, mochiShade);
-            b.Flipper(V(44, 10), V(50, 6), 2f, mochiShade);
+            b.Flipper2(V(20, 10), V(14, 6), 2f, mochiShade);
             b.TurnedFace(28f, 13f, FaceLeft, EyeStyle.Line, eyeGap: 6f);
         }
 
@@ -114,8 +113,7 @@ namespace PenguinMonster.View.Art
             b.Triangle(V(8, 9), V(56, 9), V(32, 4), SnowWhite);
             b.Line(0.6f, paperRed, V(8, 9), V(56, 9));
             b.Shaded(32f, 17f, 18f, 9f, Mochi);
-            b.Flipper(V(16, 17), V(6, 22), 2.5f, mochiShade);
-            b.Flipper(V(48, 17), V(58, 22), 2.5f, mochiShade);
+            b.Flipper2(V(16, 17), V(6, 22), 2.5f, mochiShade);
             b.Shaded(32f, 32f, 13f, 8.5f, Mochi);
             b.Shaded(33f, 44f, 5f, 4.5f, orange);
             b.Tilted(37f, 49f, 3f, 1.5f, -20f, leaf);
@@ -136,10 +134,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(32f, 29f, 8f, 7.5f, body);
             b.White(30f, 28.5f, 6f, 4.5f);
             b.TurnedFace(30f, 30f, FaceLeft, EyeStyle.Sleepy, eyeGap: 5f);
-            foreach (var flake in new[] { V(10, 40), V(16, 14), V(52, 44), V(56, 16), V(44, 52), V(22, 48), V(8, 26) })
-            {
-                b.Sparkle((int)flake.x, (int)flake.y, IceLight);
-            }
+            b.Sparkles(IceLight, V(10, 40), V(16, 14), V(52, 44), V(56, 16), V(44, 52), V(22, 48), V(8, 26));
         }
 
         /// <summary>No.166 ボタンユキペン: くるくる踊るおしゃれさん。大きな雪の結晶の冠をかぶり、片足でつま先立ちして回る</summary>
@@ -173,8 +168,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(42f, 59f, 8f, 5f, cloud);
             b.Ellipse(51f, 56f, 6f, 4f, cloud);
             b.Ellipse(33f, 55f, 18f, 3f, PenguinPalette.Shade(cloud));
-            b.Flipper(V(44, 34), V(54, 50), 3f, bodyShade);
-            b.Flipper(V(20, 34), V(10, 50), 3f, bodyShade);
+            b.Flipper2(V(44, 34), V(54, 50), 3f, bodyShade);
             b.Foot(38f, 3f);
             b.Foot(26f, 3f);
             b.Shaded(32f, 19f, 14f, 15f, body);

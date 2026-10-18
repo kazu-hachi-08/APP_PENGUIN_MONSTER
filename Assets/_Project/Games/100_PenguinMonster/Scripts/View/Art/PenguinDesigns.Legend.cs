@@ -169,8 +169,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(32f, 19f, 15f, 14f, body);
             b.Belly(31f, 18f, 10f, 10f);
             NightArc(b, teal, 32f, 18f, 27f, 6f, 180f, 360f);
-            b.Flipper(V(19, 24), V(6, 31), 3.5f, bodyShade);
-            b.Flipper(V(45, 24), V(58, 31), 3.5f, bodyShade);
+            b.Flipper2(V(19, 24), V(6, 31), 3.5f, bodyShade);
             b.Shaded(31f, 37f, 11f, 10.5f, body);
             b.White(29f, 36f, 8f, 6.5f);
             b.TurnedFace(29f, 37f, FaceLeft, EyeStyle.Round, eyeGap: 6f);

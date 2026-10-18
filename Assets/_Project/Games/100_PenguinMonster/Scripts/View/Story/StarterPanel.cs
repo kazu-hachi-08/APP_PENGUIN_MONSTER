@@ -35,11 +35,7 @@ namespace PenguinMonster.View.Story
 
         private void Awake()
         {
-            for (int i = 0; i < _cardButtons.Length; i++)
-            {
-                int index = i;
-                _cardButtons[i].onClick.AddListener(() => OnCardClicked(index));
-            }
+            ButtonHighlight.AddIndexedClick(_cardButtons, OnCardClicked);
             _decideButton.onClick.AddListener(Decide);
         }
 

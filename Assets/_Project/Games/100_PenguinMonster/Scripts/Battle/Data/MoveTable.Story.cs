@@ -7,7 +7,7 @@ using static PenguinMonster.Battle.StatusCondition;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ストーリーの序盤の技（PLAN_STORY_TOWN01.md フェーズ8a）。ドラフトの技は Lv50 で戦う前提で強いので、
+    /// ストーリーの序盤の技。ドラフトの技は Lv50 で戦う前提で強いので、
     /// Lv5 前後で覚える弱い技（威力 40 前後）を各タイプ1つずつと、相手の能力を1段だけ下げる技を足す
     /// </summary>
     public static partial class MoveTable

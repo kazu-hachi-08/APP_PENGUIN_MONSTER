@@ -1,5 +1,4 @@
 using PenguinMonster.Common.Editor;
-using PenguinMonster.Story;
 using PenguinMonster.View;
 using PenguinMonster.View.Story;
 using UnityEditor;
@@ -9,7 +8,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// よろず屋・あずかり箱の画面（PLAN_STORY_TOWN01.md フェーズ6）。最初の3体を選ぶ画面と同じく夜空の上に置き、
+    /// よろず屋・あずかり箱の画面。最初の3体を選ぶ画面と同じく夜空の上に置き、
     /// 画面の下は会話窓（結果の文を出す）のために空ける
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -21,7 +20,7 @@ namespace PenguinMonster.Editor
         private static readonly Vector2 StoryCloseButtonSize = new Vector2(260f, 90f);
 
         // よろず屋: 左に品の一覧（6個ずつのページ）、右にお金と「買う / 売る / ◀ ▶ / やめる」。
-        // 区切り3で品が 11 個になり1列に入らないため、ページ送りにして枠を少し低くした
+        // 品が 11 個あって1列に入らないため、ページ送りにし、枠を少し低くしている
         private const int ShopPageSize = 6;
         private static readonly Vector2 ShopListSize = new Vector2(1100f, 640f);
         private static readonly Vector2 ShopSlotSize = new Vector2(1040f, 88f);
@@ -95,11 +94,7 @@ namespace PenguinMonster.Editor
         {
             var row = UIDialogBuilder.CreateUIObject("Pages", parent);
             row.GetComponent<RectTransform>().sizeDelta = ShopTabSize;
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = ShopSlotSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, ShopSlotSpacing, TextAnchor.MiddleCenter);
             return row.transform;
         }
 
@@ -155,12 +150,8 @@ namespace PenguinMonster.Editor
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
             rect.anchoredPosition = new Vector2(topLeft.x, topLeft.y);
             rect.sizeDelta = size;
-            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = spacing;
+            var layout = AddChildLayout<VerticalLayoutGroup>(inner.gameObject, spacing, TextAnchor.UpperCenter);
             layout.padding = new RectOffset(0, 0, (int)spacing, (int)spacing);
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
             return inner;
         }
 
@@ -172,17 +163,7 @@ namespace PenguinMonster.Editor
             buttons = new Button[BoxPageSize];
             labels = new Text[BoxPageSize];
             icons = new Image[BoxPageSize];
-            for (int i = 0; i < BoxPageSize; i++)
-            {
-                var slot = CreateButton(column, $"Btn_Slot{i}", "", BoxSlotSize, SlotColor);
-                buttons[i] = slot.GetComponent<Button>();
-                labels[i] = slot.GetComponentInChildren<Text>();
-                labels[i].rectTransform.offsetMin = new Vector2(BoxIconSize + 24f, 0f);
-                labels[i].rectTransform.offsetMax = new Vector2(-SlotTextRightPadding, 0f);
-                labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
-                icons[i] = CreatePartyIcon(slot.transform);
-                icons[i].rectTransform.sizeDelta = Vector2.one * BoxIconSize;
-            }
+            CreatePartySlots(column, BoxSlotSize, buttons, labels, icons);
             return column;
         }
 

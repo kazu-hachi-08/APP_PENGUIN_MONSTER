@@ -26,8 +26,8 @@ namespace PenguinMonster.Battle
         }
 
         /// <summary>
-        /// 種族値とレベルから実数値を出す（仕様書 §3.2）。
-        /// 努力値の育成は無いので、本家の式の個体値31・努力値0 で固定する。Lv50 なら今までの値（種族値＋75 / ＋20）と同じ
+        /// 種族値とレベルから実数値を出す。
+        /// 努力値の育成は無いので、本家の式の個体値31・努力値0 で固定する。Lv50 では HP は種族値＋75、ほかは種族値＋20 になる
         /// </summary>
         public static Stats FromBase(Stats baseStats, int level = BattleBalance.Level)
         {

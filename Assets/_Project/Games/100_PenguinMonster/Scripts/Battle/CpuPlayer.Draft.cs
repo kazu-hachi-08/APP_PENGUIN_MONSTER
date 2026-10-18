@@ -25,7 +25,7 @@ namespace PenguinMonster.Battle
 
         /// <summary>
         /// 候補からバトルに出す数をランダムに選ぶ。並びがそのまま出す順（先頭が1番目）。
-        /// trumpCard を渡すと必ず入れて最後に出す（ボスの切り札。仕様書 §2.3）。partySize はシングル 3・ダブルス 4
+        /// trumpCard を渡すと必ず入れて最後に出す（ボスの切り札）。partySize はシングル 3・ダブルス 4
         /// </summary>
         public List<MonsterDefinition> ChooseTeam(IReadOnlyList<MonsterDefinition> candidates, MonsterDefinition trumpCard = null,
             int partySize = BattleBalance.PartySize)

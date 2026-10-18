@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,6 +27,16 @@ namespace PenguinMonster.View
             for (int i = 0; i < buttons.Length; i++)
             {
                 buttons[i].image.color = i == selected ? baseColors[i] : Color.Lerp(baseColors[i], Color.black, DimRate);
+            }
+        }
+
+        /// <summary>並んだボタンのそれぞれに、押されたら自分の番号で onClick を呼ぶ処理をつける。番号は押したときの値を使う（ループ変数を閉じ込めないため）</summary>
+        public static void AddIndexedClick(Button[] buttons, Action<int> onClick)
+        {
+            for (int i = 0; i < buttons.Length; i++)
+            {
+                int index = i;
+                buttons[i].onClick.AddListener(() => onClick(index));
             }
         }
     }

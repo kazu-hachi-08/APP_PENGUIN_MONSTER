@@ -102,7 +102,7 @@ namespace PenguinMonster.View
             _egg.sprite = EggSprites.Get(kind);
             _egg.rectTransform.sizeDelta = Vector2.one * EggSprites.Size * dot;
             _egg.enabled = true;
-            yield return Tween(_flightSeconds, t =>
+            yield return MonsterView.Tween(_flightSeconds, t =>
             {
                 float lift = _arcHeight * 4f * t * (1f - t);
                 _egg.rectTransform.localPosition = Vector2.Lerp(from, to, t) + Vector2.up * lift;
@@ -118,22 +118,11 @@ namespace PenguinMonster.View
             _burst.rectTransform.localPosition = at;
             _burst.enabled = true;
             BattleSounds.Play(BattleSound.SendOut);
-            yield return Tween(_burstSeconds, t =>
+            yield return MonsterView.Tween(_burstSeconds, t =>
             {
                 _burst.rectTransform.localScale = Vector3.one * Mathf.Lerp(1f, _burstScale, t);
                 _burst.color = new Color(flash.r, flash.g, flash.b, 1f - t);
             });
             _burst.enabled = false;
-        }
-
-        private static IEnumerator Tween(float seconds, Action<float> step)
-        {
-            for (float elapsed = 0f; elapsed < seconds; elapsed += Time.deltaTime)
-            {
-                step(elapsed / seconds);
-                yield return null;
-            }
-            step(1f);
-        }
-    }
+        }    }
 }

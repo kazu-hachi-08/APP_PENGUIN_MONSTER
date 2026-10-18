@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 技を出す（仕様書 §4.2 / §4.9）。対象を決めて、相手ごとに 命中 → ダメージ → 追加効果 → 特性 を順に済ませる。
+    /// 技を出す。対象を決めて、相手ごとに 命中 → ダメージ → 追加効果 → 特性 を順に済ませる。
     /// 相手全員に当たる技は、ダブルスで2体に当たるとダメージが 0.75 倍
     /// </summary>
     public sealed partial class BattleEngine
@@ -207,7 +207,7 @@ namespace PenguinMonster.Battle
             return false;
         }
 
-        /// <summary>命中 × 命中ランク ÷ 回避ランク（仕様書 §4.3）。ランクは差を -6〜+6 に収めて1つの倍率にする</summary>
+        /// <summary>命中 × 命中ランク ÷ 回避ランク。ランクは差を -6〜+6 に収めて1つの倍率にする</summary>
         private bool RollHit(BattleMonster user, BattleMonster target, MoveDefinition move)
         {
             int stage = user.GetStage(StatKind.Accuracy) - target.GetStage(StatKind.Evasion);

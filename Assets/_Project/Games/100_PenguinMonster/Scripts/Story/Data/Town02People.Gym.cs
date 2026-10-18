@@ -3,12 +3,12 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// カガミコ町の道場（門下生2人・道場主サエ）と、4番道路の奥のユキトとの3戦目（PLAN_STORY_TOWN02.md フェーズ4）。
+    /// カガミコ町の道場（門下生2人・道場主サエ）と、4番道路の奥のユキトとの3戦目。
     /// 3戦目を終えると門下生が道場の前からどき、サエに勝つと羽章をもらえる
     /// </summary>
     public static partial class Town02People
     {
-        /// <summary>道場主は奥の真ん中（区切り1の道場と同じ形）。主人公はその1つ手前で話しかける</summary>
+        /// <summary>道場主は奥の真ん中（ツララ町の道場と同じ形）。主人公はその1つ手前で話しかける</summary>
         public static readonly FieldSpot GymLeaderSpot = new FieldSpot(Town02Maps.Gym, new GridPos(5, 1), Direction.Down);
 
         private static IEnumerable<FieldNpc> GymAndRival3()

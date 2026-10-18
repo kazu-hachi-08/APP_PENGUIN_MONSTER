@@ -118,14 +118,11 @@ namespace PenguinMonster.View.Story
 
         private void TurnPage(int delta)
         {
-            int page = Mathf.Clamp(_page + delta, 0, PageCount - 1);
-            if (page == _page)
+            if (PagedList.Turn(ref _page, delta, PageCount))
             {
-                return;
+                BattleSounds.Play(BattleSound.Cursor);
+                Refresh();
             }
-            BattleSounds.Play(BattleSound.Cursor);
-            _page = page;
-            Refresh();
         }
 
         private void Refresh()

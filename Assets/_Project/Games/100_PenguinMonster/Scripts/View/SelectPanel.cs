@@ -44,11 +44,7 @@ namespace PenguinMonster.View
 
         private void Awake()
         {
-            for (int i = 0; i < _cellButtons.Length; i++)
-            {
-                int index = i;
-                _cellButtons[i].onClick.AddListener(() => Toggle(index));
-            }
+            ButtonHighlight.AddIndexedClick(_cellButtons, Toggle);
             _randomButton.onClick.AddListener(PickRandom);
             _decideButton.onClick.AddListener(Decide);
         }

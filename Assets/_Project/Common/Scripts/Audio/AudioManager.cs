@@ -138,12 +138,6 @@ namespace PenguinMonster.Common.Audio
             PlayerPrefs.Save();
         }
 
-        public void SetMasterVolume(float volume)
-        {
-            MasterVolume = Mathf.Clamp01(volume);
-            ApplyVolumes();
-        }
-
         public void SetBgmVolume(float volume)
         {
             BgmVolume = Mathf.Clamp01(volume);
@@ -159,12 +153,6 @@ namespace PenguinMonster.Common.Audio
         public void SetMute(bool isMute)
         {
             IsMuted = isMute;
-            ApplyVolumes();
-        }
-
-        public void SetBgmOff(bool isOff)
-        {
-            IsBgmOff = isOff;
             ApplyVolumes();
         }
 
@@ -201,22 +189,6 @@ namespace PenguinMonster.Common.Audio
 
             CurrentBgmId = id;
             StartBgmRoutine(CrossfadeBgmRoutine(bgmData, fadeDuration));
-        }
-
-        /// <summary>
-        /// AudioClipを直接指定してBGM再生
-        /// </summary>
-        public void PlayBgmClip(AudioClip clip, float fadeDuration = 0.5f, float volumeRate = 1.0f)
-        {
-            if (clip == null)
-            {
-                StopBgm(fadeDuration);
-                return;
-            }
-
-            CurrentBgmId = BgmId.None;
-            var data = new BgmData { clip = clip, volume = volumeRate, id = BgmId.None };
-            StartBgmRoutine(CrossfadeBgmRoutine(data, fadeDuration));
         }
 
         /// <summary>
@@ -313,6 +285,19 @@ namespace PenguinMonster.Common.Audio
         }
 
         /// <summary>
+        /// 音声マネージャーがある時だけSEを鳴らす（UIのボタン音など、無くても画面が動く場面用）
+        /// </summary>
+        public static void PlaySeIfAvailable(SeId id)
+        {
+            // HasInstance を先に見る理由: Instance は無ければオブジェクトを勝手に生成するため、
+            // 音が要らない場面（ボタン押下時など）でAudioManagerが作られないようにする
+            if (HasInstance)
+            {
+                Instance.PlaySe(id);
+            }
+        }
+
+        /// <summary>
         /// AudioClip直接指定でSE再生
         /// </summary>
         public void PlaySeClip(AudioClip clip, float volumeScale = 1.0f, float pitch = 1.0f)
@@ -340,14 +325,6 @@ namespace PenguinMonster.Common.Audio
 
             // プールに空きがない場合は最初のを再利用
             return _seSourcePool.Count > 0 ? _seSourcePool[0] : null;
-        }
-
-        /// <summary>
-        /// ランタイムでのSEデータ登録用ヘルパー
-        /// </summary>
-        public void RegisterSe(SeId id, AudioClip clip, float volume = 1f)
-        {
-            _seDict[id] = new SeData { id = id, clip = clip, volume = volume };
         }
 
         /// <summary>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り3のマップ（PLAN_STORY_TOWN03.md §2）。カガミコ町の北 → 5番道路（北）→ ユキオコシ町、町の東から 6番道路（行き止まり）。
+    /// マップ。カガミコ町の北 → 5番道路（北）→ ユキオコシ町、町の東から 6番道路（行き止まり）。
     /// 6番道路の奥に発電所。町の北は 7番道路の看板で止まる。文字は Town01Maps と同じ。
     /// マップ ID は記録に入るので、一度出したら名前を変えないこと
     /// </summary>

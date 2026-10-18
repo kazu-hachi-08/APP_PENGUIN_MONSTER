@@ -1,6 +1,5 @@
 using PenguinMonster.Common.Editor;
 using PenguinMonster.Common.Scene;
-using PenguinMonster.Story;
 using PenguinMonster.View;
 using PenguinMonster.View.Story;
 using UnityEditor;
@@ -10,9 +9,9 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// ストーリーのバトル（PLAN_STORY_TOWN01.md フェーズ5）。バトルの画面は対戦と同じものを使い、
+    /// ストーリーのバトル。バトルの画面は対戦と同じものを使い、
     /// コマンドの窓だけ「戦う / バッグ / ペンモン / 逃げる」の 2x2 を別に作る（対戦の窓と同じ場所・大きさ）。
-    /// バッグの一覧は交代の画面と同じ形（暗幕の上の縦の枠）にする（フェーズ6）
+    /// バッグの一覧は交代の画面と同じ形（暗幕の上の縦の枠）にする
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
@@ -68,13 +67,12 @@ namespace PenguinMonster.Editor
 
         private static Button CreateStoryCommandButton(Transform parent, string name, string label, Color color)
         {
-            var button = CreateButton(parent, name, label, StoryCommandButtonSize, color);
-            button.GetComponentInChildren<Text>().fontSize = CommandFontSize;
+            var button = CreateButton(parent, name, label, StoryCommandButtonSize, color, fontSize: CommandFontSize);
             return button.GetComponent<Button>();
         }
 
         private const int BagEmptyFontSize = 40;
-        // バッグ（PLAN_STORY_TOWN03.md §3.4）: 上に「タマゴ / 薬」のタブ、6枠ずつのページ、下に ← 戻る →。
+        // バッグ: 上に「タマゴ / 薬」のタブ、6枠ずつのページ、下に ← 戻る →。
         // 窓は交代の画面と同じ大きさのまま、タブの1行ぶん枠を低くして収める
         private const int BagPageSize = 6;
         private static readonly string[] BagPocketLabels = { "タマゴ", "薬" };
@@ -90,12 +88,8 @@ namespace PenguinMonster.Editor
 
             var frame = CreateFramedBox(overlay.transform, "Box", InfoBoxColor, out var inner);
             Place(frame.rectTransform, Center, Vector2.zero, PartyBoxSize);
-            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = PartySlotSpacing;
+            var layout = AddChildLayout<VerticalLayoutGroup>(inner.gameObject, PartySlotSpacing, TextAnchor.UpperCenter);
             layout.padding = new RectOffset(0, 0, (int)PartySlotSpacing, 0);
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
 
             var tabs = CreateBagPocketTabs(inner);
             var empty = CreateText(inner, "Empty", "", BagEmptyFontSize, BoxTextColor, TextAnchor.MiddleCenter);
@@ -138,11 +132,7 @@ namespace PenguinMonster.Editor
         {
             var row = UIDialogBuilder.CreateUIObject("Tabs", parent);
             row.GetComponent<RectTransform>().sizeDelta = new Vector2(BagSlotSize.x, BagTabSize.y);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = PartySlotSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, PartySlotSpacing, TextAnchor.MiddleCenter);
 
             var tabs = new Button[BagPocketLabels.Length];
             for (int i = 0; i < tabs.Length; i++)
@@ -163,15 +153,9 @@ namespace PenguinMonster.Editor
         /// <summary>左の列に能力の名前、右の列に数（右寄せ）</summary>
         private static LevelUpWindow CreateLevelUpWindow(Transform parent)
         {
-            var safe = CreateSafeContent(parent);
-            safe.name = "LevelUp";
-            var frame = CreateFramedBox(safe, "LevelUpWindow", MessageBoxColor, out var inner);
+            var frame = CreateBottomRightWindow(parent, "LevelUp", "LevelUpWindow", new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap),
+                LevelUpWindowSize, out var safe, out var inner);
             frame.raycastTarget = false;
-            var rect = frame.rectTransform;
-            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(1f, 0f);
-            rect.anchoredPosition = new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap);
-            rect.sizeDelta = LevelUpWindowSize;
 
             var names = CreateLevelUpColumn(inner, "Names", TextAnchor.MiddleLeft);
             var values = CreateLevelUpColumn(inner, "Values", TextAnchor.MiddleRight);
@@ -188,15 +172,9 @@ namespace PenguinMonster.Editor
 
         private static NewMoveWindow CreateNewMoveWindow(Transform parent)
         {
-            var safe = CreateSafeContent(parent);
-            safe.name = "NewMove";
-            var frame = CreateFramedBox(safe, "NewMoveWindow", MessageBoxColor, out var inner);
+            var frame = CreateBottomRightWindow(parent, "NewMove", "NewMoveWindow", new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap),
+                NewMoveWindowSize, out var safe, out var inner);
             frame.raycastTarget = false;
-            var rect = frame.rectTransform;
-            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(1f, 0f);
-            rect.anchoredPosition = new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap);
-            rect.sizeDelta = NewMoveWindowSize;
 
             var text = CreateText(inner, "Text", "", MoveHintFontSize, BoxTextColor, TextAnchor.MiddleLeft);
             text.raycastTarget = false;

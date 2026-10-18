@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// オンラインでホストが「ドラフト / 自分のチーム」を選ぶ画面（PLAN_STORY_TOWN01.md フェーズ9）。
+    /// オンラインでホストが「ドラフト / 自分のチーム」を選ぶ画面。
     /// シングル / ダブルスの画面の続きに見えるよう、並びと大きさはそちらと同じにし、下に選べない理由の文を置く
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -25,14 +25,7 @@ namespace PenguinMonster.Editor
 
         private static TeamSourcePanel CreateTeamSourcePanel(Transform parent)
         {
-            var back = CreateNightBack(parent, "TeamSourcePanel");
-            CreateSnowField(back.transform);
-            CreateTitleWalkers(back.transform);
-            var content = CreateSafeContent(back.transform);
-
-            var title = CreateText(content, "Title", TeamSourceTitle, FormatTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            Place(title.rectTransform, new Vector2(0.5f, 1f), FormatTitlePosition, FormatTitleSize);
+            var content = CreateWalkerScreen(parent, "TeamSourcePanel", TeamSourceTitle, FormatTitleFontSize, FormatTitlePosition, FormatTitleSize, out var back);
 
             var row = CreateCenteredRow(content, "Sources", Center, FormatRowPosition, FormatButtonSize.y, FormatSpacing);
             var draft = CreateFormatButton(row, "Btn_Draft", DraftSourceLabel, DraftSourceColor);

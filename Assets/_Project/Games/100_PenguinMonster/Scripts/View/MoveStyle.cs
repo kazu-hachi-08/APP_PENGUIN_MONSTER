@@ -2,17 +2,17 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// 技のエフェクトの「型」（粒の動き方）。タイプをまたいで同じ動きの技は同じ型にする（ブレスは氷でも火でも「吹き抜ける」）。
-    /// 粒の絵は基本は技のタイプのもの。打つ・切る・噛むだけは形が大事なので型の絵を使い、タイプの色を付ける
+    /// 粒の絵はタイプの絵が基本。型の絵を使うかどうかは MoveEffectView.Stages.cs で決める
     /// </summary>
     public enum MoveStyle
     {
-        /// <summary>体当たり・叩く。「バシッ」の星が弾ける</summary>
+        /// <summary>体当たり・叩く。星が3つ、少しずつずれて「バシッ」と弾ける</summary>
         Hit,
-        /// <summary>クチバシで突く。使った側から粒が3回突き刺さる</summary>
+        /// <summary>クチバシで突く。使った側から粒が3回、少しずつずれて突き刺さる</summary>
         Pierce,
         /// <summary>切る・ひっかく。切り傷が3本、斜めに走る</summary>
         Slash,
-        /// <summary>噛む。上下の牙が2回かみ合う</summary>
+        /// <summary>噛む。上下の牙が2回かみ合う。下の牙は同じ絵を逆さにして使う</summary>
         Bite,
         /// <summary>まわりから粒が飛んできて刺さる</summary>
         Converge,
@@ -24,7 +24,7 @@ namespace PenguinMonster.View
         Fall,
         /// <summary>上から大きな粒が1つ落ち、まわりに散る</summary>
         Plunge,
-        /// <summary>足元から立ちのぼる</summary>
+        /// <summary>足元から粒が立ちのぼり、小さくなって消える</summary>
         Rise,
         /// <summary>真ん中から山なりに飛び散る</summary>
         Splash,

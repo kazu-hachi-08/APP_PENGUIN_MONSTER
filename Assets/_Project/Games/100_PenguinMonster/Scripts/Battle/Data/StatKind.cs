@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// ランクが変わる能力（仕様書 §4.5）。HP は変わらないので入れない
+    /// ランクが変わる能力。HP は変わらないので入れない
     /// </summary>
     public enum StatKind
     {

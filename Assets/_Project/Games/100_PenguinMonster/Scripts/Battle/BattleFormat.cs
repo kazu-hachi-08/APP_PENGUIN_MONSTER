@@ -1,7 +1,7 @@
 namespace PenguinMonster.Battle
 {
     /// <summary>
-    /// 対戦のルール（仕様書 §4.9）。シングルは 3体選出・場に1体、ダブルスは 4体選出・場に2体
+    /// 対戦のルール。シングルは 3体選出・場に1体、ダブルスは 4体選出・場に2体
     /// </summary>
     public enum BattleFormat
     {

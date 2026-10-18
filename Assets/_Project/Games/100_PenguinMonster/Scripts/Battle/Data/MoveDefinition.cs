@@ -12,7 +12,7 @@ namespace PenguinMonster.Battle
     }
 
     /// <summary>
-    /// 技の定義（仕様書 §4.2）
+    /// 技の定義
     /// </summary>
     public sealed class MoveDefinition
     {
@@ -26,11 +26,11 @@ namespace PenguinMonster.Battle
         /// <summary>相手全員に当たる（ダブルスで意味がある。シングルは相手が1体なので変わらない）</summary>
         public bool HitsAllFoes { get; }
         public IReadOnlyList<MoveEffect> Effects { get; }
-        /// <summary>与えたダメージの 1/3 を自分も受ける（仕様書 §4.2）</summary>
+        /// <summary>与えたダメージの 1/3 を自分も受ける</summary>
         public bool Recoils { get; }
         /// <summary>与えたダメージの半分回復する</summary>
         public bool Drains { get; }
-        /// <summary>1回の技で当たる回数。2〜5 回のものは乱数で決める（仕様書 §4.2）</summary>
+        /// <summary>1回の技で当たる回数。2〜5 回のものは乱数で決める</summary>
         public int MinHits { get; }
         public int MaxHits { get; }
 

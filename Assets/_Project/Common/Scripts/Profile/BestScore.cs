@@ -17,7 +17,7 @@ namespace PenguinMonster.Common.Profile
             if (score <= Get(key)) return false;
 
             PlayerPrefs.SetInt(KeyPrefix + key, score);
-            // ブラウザ版は Save しないとタブを閉じたときに消えることがあるため即書き込む
+            // 即書き込む（UserProfile.TrySave と同じ理由）
             PlayerPrefs.Save();
             return true;
         }

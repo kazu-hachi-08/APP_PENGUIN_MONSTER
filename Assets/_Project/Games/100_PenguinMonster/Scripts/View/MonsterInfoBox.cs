@@ -102,7 +102,7 @@ namespace PenguinMonster.View
             }
         }
 
-        /// <summary>上がった能力があれば ▲、下がった能力があれば ▼ を出す（両方なら ▲▼）。段数は一覧で見せる</summary>
+        /// <summary>上がった能力があれば ▲、下がった能力があれば ▼ を出す（両方なら ▲▼）</summary>
         public void UpdateStatStages(BattleMonster monster)
         {
             bool anyUp = false;

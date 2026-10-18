@@ -3,7 +3,6 @@ using System.Collections.Generic;
 namespace PenguinMonster.Story
 {
     /// <summary>
-    /// 区切り2の人と落とし物（PLAN_STORY_TOWN02.md）。
     /// 2番道路の出口は ガンテツに勝つまで、カガミコ町の道場の扉は 4番道路の奥の出来事（Town02Flags.Route04Cleared）まで人がふさぐ。
     /// 町の人・道路のトレーナー・No.209 をくれる人は .Town.cs、道場とユキトの3戦目は .Gym.cs
     /// </summary>
@@ -39,7 +38,7 @@ namespace PenguinMonster.Story
             return people;
         }
 
-        /// <summary>区切り1の道場に勝つ前に 3番道路へ進ませないため、雪かきを口実に出口をふさぐ。勝つと雪が片付いて居なくなる</summary>
+        /// <summary>ツララ町の道場に勝つ前に 3番道路へ進ませないため、雪かきを口実に出口をふさぐ。勝つと雪が片付いて居なくなる</summary>
         private static FieldNpc SnowShoveler()
         {
             return new FieldNpc("snowShoveler", NpcLook.Villager,

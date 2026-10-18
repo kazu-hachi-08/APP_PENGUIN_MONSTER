@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// 記録があるときの「続きから / 最初から」（PLAN_STORY_TOWN01.md フェーズ7）。シングル / ダブルスを選ぶ画面と同じ並び
+    /// 記録があるときの「続きから / 最初から」。シングル / ダブルスを選ぶ画面と同じ並び
     /// （タイトルと同じ夜空・雪原、上に見出し、まん中に大きなボタン2つ、左上に「戻る」）。最初からの確かめは手前に重ねる
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -18,14 +18,7 @@ namespace PenguinMonster.Editor
 
         private static StoryStartPanel CreateStoryStartPanel(Transform parent)
         {
-            var back = CreateNightBack(parent, "StoryStartPanel");
-            CreateSnowField(back.transform);
-            CreateTitleWalkers(back.transform);
-            var content = CreateSafeContent(back.transform);
-
-            var title = CreateText(content, "Title", StoryStartTitle, FormatTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            Place(title.rectTransform, new Vector2(0.5f, 1f), FormatTitlePosition, FormatTitleSize);
+            var content = CreateWalkerScreen(parent, "StoryStartPanel", StoryStartTitle, FormatTitleFontSize, FormatTitlePosition, FormatTitleSize, out var back);
 
             var row = CreateCenteredRow(content, "Choices", Center, FormatRowPosition, StoryStartButtonSize.y, FormatSpacing);
             var continueButton = CreateStoryStartButton(row, "Btn_Continue", "続きから", ContinueColor);
@@ -51,8 +44,7 @@ namespace PenguinMonster.Editor
 
         private static Button CreateStoryStartButton(Transform row, string name, string label, Color color)
         {
-            var obj = CreateButton(row, name, label, StoryStartButtonSize, color);
-            obj.GetComponentInChildren<Text>().fontSize = FormatButtonFontSize;
+            var obj = CreateButton(row, name, label, StoryStartButtonSize, color, fontSize: FormatButtonFontSize);
             return obj.GetComponent<Button>();
         }
     }

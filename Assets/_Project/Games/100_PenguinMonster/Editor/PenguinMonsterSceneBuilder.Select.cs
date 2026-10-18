@@ -50,15 +50,12 @@ namespace PenguinMonster.Editor
         {
             var back = CreateNightBack(parent, "SelectPanel");
 
-            var title = CreateText(back.transform, "Title", "", SelectTitleFontSize, SelectTitleColor, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            title.rectTransform.anchorMin = new Vector2(0f, 1f);
-            title.rectTransform.offsetMin = new Vector2(0f, -SelectTitleHeight);
+            var title = CreateTopTitle(back.transform, "", SelectTitleFontSize, SelectTitleHeight);
 
             var band = CreateOpponentBand(back.transform, out var opponentIcons, out var opponentLabels);
 
             int count = BattleBalance.DraftRounds;
-            var row = CreateSelectRow(back.transform);
+            var row = CreateCellRow(back.transform, "Own", SelectFooterHeight, SelectTitleHeight + OpponentBandHeight, SelectCellSpacing);
             var buttons = new Button[count];
             var icons = new Image[count];
             var labels = new Text[count];
@@ -125,11 +122,7 @@ namespace PenguinMonster.Editor
             var rowRect = row.GetComponent<RectTransform>();
             UIDialogBuilder.SetStretchAll(rowRect);
             rowRect.offsetMin = new Vector2(OpponentCaptionWidth, 0f);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = SelectCellSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, SelectCellSpacing, TextAnchor.MiddleCenter);
 
             int count = BattleBalance.DraftRounds;
             icons = new Image[count];
@@ -146,29 +139,13 @@ namespace PenguinMonster.Editor
             return band.gameObject;
         }
 
-        private static Transform CreateSelectRow(Transform parent)
-        {
-            var row = UIDialogBuilder.CreateUIObject("Own", parent);
-            var rect = row.GetComponent<RectTransform>();
-            UIDialogBuilder.SetStretchAll(rect);
-            rect.offsetMin = new Vector2(0f, SelectFooterHeight);
-            rect.offsetMax = new Vector2(0f, -(SelectTitleHeight + OpponentBandHeight));
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = SelectCellSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
-            return row.transform;
-        }
-
         /// <summary>1マス = 絵（上）＋名前とタイプ（下）＋選んだ順の数字（左上）</summary>
         private static void CreateSelectCell(Transform row, int index, out Button button, out Image icon, out Text label, out Text order)
         {
-            var cell = CreateButton(row, $"Btn_Select{index}", "", SelectCellSize, Color.white);
+            var cell = CreateButton(row, $"Btn_Select{index}", "", SelectCellSize, Color.white, fontSize: SelectNameFontSize);
             button = cell.GetComponent<Button>();
 
             label = cell.GetComponentInChildren<Text>();
-            label.fontSize = SelectNameFontSize;
             label.supportRichText = true;
             label.alignment = TextAnchor.LowerCenter;
             // 長い名前は折り返すと上の絵に重なるので、1行のまま縮める（TextFit）

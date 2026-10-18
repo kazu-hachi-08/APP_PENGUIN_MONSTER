@@ -132,7 +132,7 @@
   - 種族値と技を同時に並べるので切り替えボタンは無い（前の「押したらすぐ決定」のカードは、1枚に両方が入り切らず切り替えが要り、文字も小さくなったため作り直した）
   - バーの色は 60未満 赤橙 / 90未満 黄 / 110未満 緑 / それ以上 水色。150 で満タン（一番高い 135 でも振り切れない）
 - 時間切れのランダムは、選びかけのカードに関係なく3体から選ぶ
-- CPU のドラフトはランダム（プレイヤーとは別に提示を引く）
+- CPU のドラフトは、勝ち抜き戦では連勝1回ごとに 10%（上限 100%）の確率で、提示の中から種族値の合計が一番高いペンモンを取り、それ以外はランダムに取る（プレイヤーとは別に提示を引く）
 
 #### 2.1.1 持ち物
 
@@ -272,7 +272,7 @@
 1. 両者が同時に行動（技4つ / 交代）を選ぶ
 2. 交代が先、次に技の優先度が高い順、同じなら素早さが高い順（同速はランダム）
 3. 順に行動する。瀕死になったペンモンは行動しない
-4. ターン終わりの処理（毒・火傷のダメージ → 持ち物 → 特性。素早さの高い側から1体ずつ）
+4. ターン終わりの処理（天候と追い風の残りを数える → 素早さの高い側から1体ずつ、吹雪のダメージ → 毒・火傷のダメージ → 持ち物 → 特性）
 5. 瀕死になった側は次のペンモンを出す（控えがいなければ負け）
 
 ### 4.2 技
@@ -398,7 +398,7 @@
 | さっぱり昆布 | 状態異常になったらすぐ治す（1回だけ。混乱は治さない） | 状態異常になったとき |
 | 勇気の羽 | 物理技のダメージ 1.2 倍 | ダメージ計算 |
 | 賢い羽 | 特殊技のダメージ 1.2 倍 | ダメージ計算 |
-| 命のつらら | 攻撃技のダメージ 1.3 倍。当てるたびに自分の最大HPの 1/10 減る | ダメージ計算 / 攻撃したあと |
+| 命のつらら | 攻撃技のダメージ 1.3 倍。攻撃技が相手に当たったあとに1回だけ（全体技・連続技でも1回）自分の最大HPの 1/10 減る | ダメージ計算 / 攻撃したあと |
 | 目利きメガネ | 抜群の技のダメージ 1.2 倍 | ダメージ計算 |
 | 踏ん張りマフラー | HP 満タンのとき、たおれる攻撃を受けても HP1 で残る（1回だけ） | 攻撃を受けたとき |
 | 軽い羽 | 素早さ 1.2 倍（麻痺の後に掛ける） | 行動順 |
@@ -422,7 +422,7 @@
 | 賢さ | 行動 |
 | --- | --- |
 | よわい | 技をランダムに選ぶ。瀕死の後は控えの先頭を出す |
-| ふつう | 一番ダメージが出る技を選ぶ（乱数なし・急所なしで計算し、命中率を掛けた見込み。連続技は平均の回数 3.1（連打名人なら 5）を掛ける。変化技は 0 とみなし、全部 0 ならランダム）。ただし先に、HP が半分以下なら回復の技、HP が満タン（出てすぐ）でまだその天候でなければ天候の技を使う |
+| ふつう | 一番ダメージが出る技を選ぶ（乱数なし・急所なしで計算し、命中率を掛けた見込み。連続技は平均の回数 3.1（連打名人なら 5）を掛ける。変化技は 0 とみなし、全部 0 ならランダム）。ただし先に、HP が半分以下なら回復の技、HP が満タンで、まだその天候でなければ天候の技を使う |
 | つよい | ふつう ＋ 不利なら交代する。瀕死の後は相性のいいペンモンを出す |
 
 - 「不利」= 相手の攻撃技に 抜群 を取られていて、こちらの攻撃技はどれも 抜群 を取れないとき。タイプ相性だけで見る
@@ -562,7 +562,7 @@
 | ダメージ | 点滅してから HP バーが少しずつ減る |
 | 瀕死 | 台座の下へ沈んで消える |
 | 状態異常になる / 混乱する | その色にふわっと2回光る（麻痺 黄・毒 紫・火傷 赤・眠り 灰・氷 水色・混乱 ピンク）。名前の枠に印が付く |
-| 特性が働く | 特性の帯（名前の枠と同じ見た目の枠に「〇〇の / 特性の名前」の2段。相手側は「相手の 〇〇の」）を、自分側は左から・相手側は右から滑り込ませ、短い音を鳴らす。自分側は自分の絵と名前の枠の間、相手側は相手の名前の枠と相手の絵の間。読める間（約0.5秒）だけ待ってから続きの演出へ進み、帯は続きの間も出しておいて約1.6秒で引っ込める。続けて働いたら書き換える（AbilityBanner） |
+| 特性が働く | 特性の帯（名前の枠と同じ見た目の枠に「〇〇の / 特性の名前」の2段。相手側は「相手の 〇〇の」）を、自分側は左から・相手側は右から滑り込ませ、短い音を鳴らす。自分側は自分の絵と名前の枠の間、相手側は相手の名前の枠と相手の絵の間。読める間（滑り込みの約0.18秒の後、約0.45秒）だけ待ってから続きの演出へ進み、帯は続きの間も出しておいて約1.6秒で引っ込める。続けて働いたら書き換える（AbilityBanner） |
 | 能力が上がる / 下がる | 青 / 赤に光り、同時に青い ▲ が足元から立ちのぼる / 赤い ▼ が上から流れ落ちる（色だけだと向きが分かりにくいため。粒は技のエフェクトの層を使う） |
 | 毒・火傷・自分を攻撃・反動・吹雪 | 点滅して HP が減ってから、理由の文を出す |
 | 吸収・回復 | HP が増えてから、理由の文を出す |
@@ -654,7 +654,7 @@
 
 - Relay は約10秒通信が無いと切断する。スマホでアプリを裏に回す（チャットでコードを送りに行く・通知・電源ボタン）、ブラウザのタブを隠すと、Unity ごと止まって通信も止まる
   - 部屋を作った後の待機画面に「コードを送ったら すぐ戻ってきてください」と出す
-  - フレームが10秒以上止まっていたら（壁時計で測る）、戻ってきた時点で部屋を抜ける（`OnlineSession.OnConnectionLost`）。待機画面では「接続が切れました」、試合中は「通信が 切れました」で負け扱い。相手には切断が届いて勝ち扱いになる
+  - フレームが10秒以上止まっていたら（壁時計で測る）、戻ってきた時点で部屋を抜ける（`OnlineSession.Update` で検出し、抜けたあと `OnConnectionLost` を出す）。待機画面では「接続が切れました」、試合中は「通信が 切れました」で負け扱い。相手には切断が届いて勝ち扱いになる
   - Windows 版は裏でも動き続けるので、ウィンドウを切り替えても切れない
 - 相手が落ちたと気づくまでの時間（`UnityTransport.DisconnectTimeoutMS`）は10秒（既定の30秒だと固まったように見えるため）
 - バトル中に相手の返事（Action / Replace / Events）を180秒（`OnlineReplyTimeoutSeconds`）待っても届かなければ、通信が止まったとみなして「通信が 切れました」で負け扱いにし、部屋を抜ける
@@ -692,10 +692,11 @@ Scripts/
 │   ├── Draft/ItemDraw.cs   # ドラフトの後に配る持ち物（候補から1個引く / 6体の中の1体に持たせた写しを作る）
 │   ├── Balance/BalanceSimulator.cs  # バランス確認用。CPU どうしを大量に戦わせてペンモンごとの勝率を出す（Editor メニューから呼ぶ）
 │   ├── Survival/           # 勝ち抜き戦（SurvivalRun: 連勝数・賢さの切り替え・次の相手 / SurvivalOpponent）
-│   ├── Online/             # オンラインで送る中身と int 列の変換（BattleEventCodec: イベント＋ゲストの写しの更新 / OnlineCodec: 行動・ペンモンの並び）
-│   ├── Data/               # タマゴの種類（EggKind。見た目だけ）・タイプ・相性表・能力値・状態異常・ランクの種類と倍率・技（＋効果 MoveEffect・図鑑用の説明 MoveDescriptions）・特性（Ability）・持ち物（HeldItem）／ペンモンの定義・定義表（MoveTable / MonsterTable）・ボス（BossDefinition / BossTable）
+│   ├── Online/             # オンラインで送る中身と int 列の変換（BattleEventCodec: イベント＋ゲストの写しの更新 / OnlineCodec: 行動・ペンモンの並び / TeamSource: 6体の出どころ（ドラフト / 自分のチーム））
+│   ├── Data/               # タマゴの種類（EggKind。見た目だけ）・タイプ・相性表・能力値・状態異常・天候の種類（Weather）・ランクの種類と倍率・技（＋効果 MoveEffect・図鑑用の説明 MoveDescriptions）・特性（Ability）・持ち物（HeldItem）／ペンモンの定義・定義表（MoveTable / MonsterTable）・ボス（BossDefinition / BossTable）
 │   ├── BattleBalance.cs    # 調整値（Lv・ダメージ式の定数・選出数など）
 │   ├── BattleFormat.cs     # シングル / ダブルス（場の数・選出の数）
+│   ├── BattleAction.cs     # 場の行動（技 / 交代 / 何もしない）。ダブルスでは場の1体ごとに1つ選ぶ
 │   ├── BattleState / BattleSide / BattleMonster   # バトルの状態（場は配列で持ち、シングルは1）
 │   ├── BattleEngine(.Order/.Moves/.Status/.Effects/.Abilities/.Items/.Weather/.Field).cs   # ターンの解決（行動順 → 状態異常の判定 → 技の対象 → 命中 → ダメージ → 追加効果 → 特性・持ち物 → 瀕死 → ターン終わり → 勝敗）
 │   ├── DamageCalculator.cs
@@ -704,20 +705,26 @@ Scripts/
 │   └── CpuPlayer(.Draft).cs  # CPU の技選び・交代。ドラフト・選出は .Draft.cs
 ├── Online/OnlineLink.cs    # 相手と int 列を送り合う通信路（名前空間 PenguinMonster.Online。接続は共通基盤の OnlineSession）
 ├── Story/                  # ストーリーのルール（純C#、PenguinMonster.Story.asmdef、noEngineReferences。Battle を参照）
-│   ├── Field/              # マップ（文字の表 → マスの種類）・出入口・1マスずつの移動・人の置き場所と見張り（FieldMap / FieldWorld / FieldPlayer / FieldPeople）
+│   ├── Field/              # マップ（文字の表 → マスの種類）・出入口・1マスずつの移動・人の置き場所と見張り（FieldMap / FieldWorld / FieldPlayer / FieldPeople のほか、FieldNpc（人の見た目）・GridPos（マスの位置）・TileKind（マスの種類）・Direction（向き）・Warp（出入口・始まりの場所）・RunningShoes（走る設定））
 │   ├── Event/              # 出来事の台本（EventStep の並び）を進める EventRunner とフラグ（StoryFlags）
 │   ├── Battle/             # 草むらの出現表・トレーナーの定義・ストーリーの1戦（手持ち全員 vs 相手全員。経験値（学習装置の分も）・見た子を返す StoryBattle）
 │   ├── Party/              # 個体（OwnedMonster: 成長・技・セーブの形）・手持ち・あずかり箱・経験値の表・レベルアップの結果・オンラインの自分のチーム
 │   ├── Items/              # 道具・バッグ・捕獲の式・よろず屋の売り買い
 │   ├── Save/               # セーブの形（StorySaveData）と行き来（StorySave）
-│   ├── Data/               # ハツユキ村〜最初の道場の中身（Town01Maps / Town01People（.Town/.Gym）/ Town01Trainers / Town01Species / Town01Starters / Town01Flags）
+│   ├── Data/               # 最初の章（ハツユキ村〜最初の道場: Town01Maps / Town01People（.Town/.Gym）/ Town01Trainers / Town01Species / Town01Starters / Town01Flags）・2つ目の町と道場（Town02*）・3つ目の道場（Town03*。Town02・03 は Starters なし）、区切りをまたぐ種の情報（StorySpecies）・No から引く入口（StorySpeciesTable）・全区切りのマップと人（StoryWorld）・覚える技の表（LevelMove）
 │   ├── StoryState / StoryDex  # 進み具合（手持ち・バッグ・お金・フラグ・羽章・最後に回復した場所）と図鑑の 見た / 捕まえた
 │   └── StoryBalance.cs     # ストーリーの調整値（経験値・お金・逃げる・捕獲）
 └── View/                   # 表示（MonoBehaviour、名前空間 PenguinMonster.View）
     ├── GameFlow(.Result/.Online/.Story).cs  # 画面の流れ（タイトル → ドラフト → 持ち物 → [登場 → 選出 → バトル → 結果] をくり返す）と結果の文面、オンライン対戦・ストーリーの流れ
-    ├── Story/              # フィールド（FieldController: 歩く・調べる・出入口 / FieldMapView・FieldTileArt: タイル / FieldAvatar・HeroArt・NpcArt: 人の絵 / FieldCamera / FieldInput / FieldMusic: マップの曲）、台本の再生（FieldEventPlayer・YesNoWindow・StarterPanel）、ストーリーのバトルと成長の見せ方（StoryBattleScreen(.Growth)・LevelUpWindow）、メニュー（FieldMenu・PartyScreen・BagPanel）、小屋・店（BoxPanel・ShopPanel）、記録の保存場所（StorySaveStore）
+    ├── Story/              # フィールド（FieldController: 歩く・調べる・出入口 / FieldMapView・FieldTileArt: タイル / FieldAvatar・HeroArt・NpcArt: 人の絵 / FieldCamera / FieldInput / FieldMusic: マップの曲）、台本の再生（FieldEventPlayer・YesNoWindow・StarterPanel）、ストーリーのバトルと成長の見せ方（StoryBattleScreen(.Growth)・LevelUpWindow）、メニュー（FieldMenu・PartyScreen・BagPanel）、小屋・店（BoxPanel・ShopPanel）、記録の保存場所（StorySaveStore）、覚える技の窓（NewMoveWindow）、マップに立つ人の絵（FieldPeopleView）、1ページずつの一覧（PagedList。バッグ・よろず屋）
     ├── TitlePanel / FormatPanel / DraftPanel / ItemPanel / BattleIntroPanel / SelectPanel  # タイトル・シングル / ダブルスの選択・ドラフト・持ち物・試合前（N戦目・ボス登場）・見せ合いと選出の画面。結果は共通基盤の ResultDialog
     ├── SubMenuPanel / DexPanel / HowToPanel / SettingsPanel  # タイトルから開く画面（相性表は SubMenuPanel のまま。中身は生成時に焼く）
+    ├── AbilityBanner.cs    # 特性が働いたときの帯（名前の枠の間から滑り込ませ、読める間だけ止める）
+    ├── MoveHoldHint.cs     # 技ボタン・交代の枠の説明を出す長押しの合図（離すと消える。マウスは乗せている間）
+    ├── TeamSourcePanel.cs  # オンラインでホストが「ドラフト / 自分のチーム」を選ぶ画面
+    ├── DraftDetailView.cs  # ドラフトの右の大きな詳細（絵・タイプ・特性・種族値・技4つ）
+    ├── StoryStartPanel.cs  # 記録があるときの「続きから / 最初から」
+    ├── ResultBanner.cs     # 結果の画面の演出（見出しの色・紙吹雪・連勝バッジ。文面は ResultDialog）
     ├── GameSettings.cs     # メッセージの速さの保存
     ├── MonsterTexts / ButtonHighlight  # ドラフトと図鑑で共通の文面 / 並んだボタンから1つ選んだときの見た目
     ├── TextFit.cs          # 文が枠に入り切らないときだけ <size> ごと縮めて入れる（重なり防止。§7）

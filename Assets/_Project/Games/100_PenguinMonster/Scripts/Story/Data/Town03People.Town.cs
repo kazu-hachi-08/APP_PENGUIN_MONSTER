@@ -4,7 +4,6 @@ namespace PenguinMonster.Story
 {
     /// <summary>
     /// ユキオコシ町の人・母のランニングシューズ・5番と6番道路のトレーナー・No.238（カンテラペン）をくれる家のおばあさん
-    /// （PLAN_STORY_TOWN03.md フェーズ5）
     /// </summary>
     public static partial class Town03People
     {
@@ -37,7 +36,7 @@ namespace PenguinMonster.Story
         }
 
         /// <summary>
-        /// 初めて町に入ったとき、入口で待っていた母がランニングシューズをくれる（PLAN_STORY_TOWN03.md §4）。
+        /// 初めて町に入ったとき、入口で待っていた母がランニングシューズをくれる。
         /// もらってすぐ走れるよう、走る ON も立てる。渡したら村へ帰って居なくなる
         /// </summary>
         private static FieldNpc MomWithShoes()

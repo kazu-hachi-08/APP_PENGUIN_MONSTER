@@ -126,11 +126,7 @@ namespace PenguinMonster.Editor
 
             var row = UIDialogBuilder.CreateUIObject("Types", header.transform);
             PlaceBand(row.GetComponent<RectTransform>(), DraftDetailTextLeft, DraftDetailBadgeTop, DraftDetailBadgeSize.y, DraftDetailTextRight);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = DraftDetailBadgeSpacing;
-            layout.childAlignment = TextAnchor.MiddleLeft;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, DraftDetailBadgeSpacing, TextAnchor.MiddleLeft);
             var badges = new Image[TypesPerMonster];
             var labels = new Text[TypesPerMonster];
             for (int k = 0; k < TypesPerMonster; k++)
@@ -326,11 +322,10 @@ namespace PenguinMonster.Editor
 
         private static Button CreateDraftDecide(Transform inner)
         {
-            var obj = CreateButton(inner, "Btn_Decide", DraftDecideText, DraftDecideSize, SelectDecideColor);
+            var obj = CreateButton(inner, "Btn_Decide", DraftDecideText, DraftDecideSize, SelectDecideColor, fontSize: DraftDecideFontSize);
             var rect = obj.GetComponent<RectTransform>();
             Place(rect, new Vector2(0.5f, 0f), new Vector2(0f, DraftDecideBottom + DraftDecideSize.y / 2f), DraftDecideSize);
             var label = obj.GetComponentInChildren<Text>();
-            label.fontSize = DraftDecideFontSize;
             label.fontStyle = FontStyle.Bold;
             return obj.GetComponent<Button>();
         }

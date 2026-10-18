@@ -1,6 +1,5 @@
 using PenguinMonster.Battle;
 using PenguinMonster.Common.Editor;
-using PenguinMonster.View;
 using PenguinMonster.View.Story;
 using UnityEditor;
 using UnityEngine;
@@ -9,7 +8,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.Editor
 {
     /// <summary>
-    /// フィールドの出来事の層（PLAN_STORY_TOWN01.md フェーズ4・6）。奥から タップ領域 → 最初の3体を選ぶ画面・よろず屋・あずかり箱 → 会話窓 → はい / いいえ。
+    /// フィールドの出来事の層。奥から タップ領域 → 最初の3体を選ぶ画面・よろず屋・あずかり箱 → 会話窓 → はい / いいえ。
     /// 会話窓はバトルと同じ作り（CreateMessageWindow）。選ぶ画面の上に会話窓が重なるよう、選ぶ画面を奥に置く（「〇〇に しますか？」を画面の上で聞くため）
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
@@ -59,14 +58,8 @@ namespace PenguinMonster.Editor
 
         private static YesNoWindow CreateYesNoWindow(Transform parent, FieldInput input)
         {
-            var safe = CreateSafeContent(parent);
-            safe.name = "YesNo";
-            var frame = CreateFramedBox(safe, "YesNoWindow", MessageBoxColor, out var inner);
-            var rect = frame.rectTransform;
-            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(1f, 0f);
-            rect.anchoredPosition = new Vector2(-YesNoRightMargin, BottomAreaHeight + YesNoGap);
-            rect.sizeDelta = YesNoSize;
+            CreateBottomRightWindow(parent, "YesNo", "YesNoWindow", new Vector2(-YesNoRightMargin, BottomAreaHeight + YesNoGap), YesNoSize,
+                out var safe, out var inner);
 
             var yes = CreateYesNoRow(inner, "Yes", "はい", YesNoRowOffset, YesColor, out var yesCursor);
             var no = CreateYesNoRow(inner, "No", "いいえ", -YesNoRowOffset, BackColor, out var noCursor);

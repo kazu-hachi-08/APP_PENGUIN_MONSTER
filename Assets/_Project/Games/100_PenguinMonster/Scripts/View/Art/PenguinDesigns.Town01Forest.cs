@@ -89,8 +89,7 @@ namespace PenguinMonster.View.Art
                 b.Rect(26, 15, 10, 7, glow);
                 b.Rect(30, 15, 2, 7, stoneShade);
             }
-            b.Flipper(V(18, 24), V(8, 16), 3f, stoneShade);
-            b.Flipper(V(46, 24), V(56, 16), 3f, stoneShade);
+            b.Flipper2(V(18, 24), V(8, 16), 3f, stoneShade);
             b.Shaded(32f, 38f, 11f, 9.5f, Stone);
             b.White(29f, 37f, 8f, 6f);
             b.Polygon(V(32, 48), stoneShade, V(10, 44), V(54, 44), V(42, 52), V(22, 52));
@@ -169,8 +168,7 @@ namespace PenguinMonster.View.Art
             b.Foot(39f, 3f, -15f, 0.65f);
             b.Shaded(32f, 12f, 9f, 8f, body);
             b.Belly(30f, 11f, 6f, 5.5f);
-            b.Flipper(V(25, 14), V(18, 10), 2.2f, bodyShade);
-            b.Flipper(V(39, 14), V(46, 10), 2.2f, bodyShade);
+            b.Flipper2(V(25, 14), V(18, 10), 2.2f, bodyShade);
             b.Shaded(32f, 23f, 8.5f, 7.5f, body);
             // 瓦は頭の上の半円。前の端の丸い面に家紋を入れる
             b.Ellipse(32f, 28f, 11f, 6.5f, tileShade);
@@ -196,8 +194,7 @@ namespace PenguinMonster.View.Art
             // 腕組み: 両ヒレを胸の前で重ねる
             b.Flipper(V(17, 24), V(40, 20), 3f, bodyShade);
             b.Flipper(V(47, 24), V(24, 22), 3f, bodyShade);
-            b.Triangle(V(18, 46), V(23, 50), V(12, 61), tileShade);
-            b.Triangle(V(46, 46), V(41, 50), V(52, 61), tileShade);
+            b.Triangle2(V(18, 46), V(23, 50), V(12, 61), tileShade);
             b.Shaded(32f, 42f, 13f, 11f, Tile);
             b.White(29f, 40f, 9f, 6.5f);
             b.TurnedFace(29f, 41f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
@@ -231,10 +228,7 @@ namespace PenguinMonster.View.Art
             b.Polygon(V(31, 46), bodyShade, V(31, 51), V(35, 46), V(31, 41), V(27, 46));
             b.Polygon(V(31, 46), SnowWhite, V(31, 49), V(33, 46), V(31, 43), V(29, 46));
             b.TurnedFace(29f, 35f, FaceLeft, EyeStyle.Cross, eyeGap: 5f);
-            foreach (var spot in new[] { V(8, 48), V(16, 56), V(50, 52), V(56, 12), V(8, 8), V(46, 4), V(56, 24) })
-            {
-                b.Sparkle((int)spot.x, (int)spot.y, SnowWhite);
-            }
+            b.Sparkles(SnowWhite, V(8, 48), V(16, 56), V(50, 52), V(56, 12), V(8, 8), V(46, 4), V(56, 24));
         }
     }
 }

@@ -34,7 +34,7 @@ namespace PenguinMonster.Story
             };
         }
 
-        /// <summary>道路の落とし物。人と同じく前から A で調べると拾い、拾ったフラグ（区切りごとの頭 ＋ id）で消える</summary>
+        /// <summary>道路の落とし物。人と同じく前から A で調べると拾い、拾ったフラグ（町ごとの頭 ＋ id）で消える</summary>
         internal static FieldNpc DroppedItem(string flagPrefix, string id, FieldSpot spot, StoryItem item, int count)
         {
             string flag = flagPrefix + id;

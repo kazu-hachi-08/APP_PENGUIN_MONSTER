@@ -9,16 +9,10 @@ namespace PenguinMonster.Common.Scene
     /// </summary>
     public static class StandaloneScreen
     {
-        // UIの基準解像度(CanvasScaler)と同じ比率にする
-        private const int ShortSide = 9;
-        private const int LongSide = 16;
-
         // タイトルバーとタスクバーの分だけ余らせないと、縦長ウィンドウの下端が画面外に出る
         private const float MaxScreenRatio = 0.85f;
 
-        public static void SetPortrait() => SetAspect(ShortSide, LongSide);
-
-        public static void SetLandscape() => SetAspect(LongSide, ShortSide);
+        public static void SetLandscape() => SetAspect(WebScreen.LongSide, WebScreen.ShortSide);
 
 #if UNITY_STANDALONE && !UNITY_EDITOR
         private static void SetAspect(int aspectWidth, int aspectHeight)

@@ -50,11 +50,7 @@ namespace PenguinMonster.View
         {
             base.Awake();
             _filterColors = ButtonHighlight.CaptureColors(_filterButtons);
-            for (int i = 0; i < _filterButtons.Length; i++)
-            {
-                int index = i;
-                _filterButtons[i].onClick.AddListener(() => OnFilter(index));
-            }
+            ButtonHighlight.AddIndexedClick(_filterButtons, OnFilter);
             _listLabels = new Text[_listButtons.Length];
             for (int i = 0; i < _listButtons.Length; i++)
             {

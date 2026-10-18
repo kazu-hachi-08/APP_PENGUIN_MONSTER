@@ -13,7 +13,7 @@ namespace PenguinMonster.Battle
         public bool IsOver { get; private set; }
         /// <summary>勝った陣営。決着前は -1</summary>
         public int Winner { get; private set; } = -1;
-        /// <summary>場の天候（仕様書 §4.10）。場全体で1つ</summary>
+        /// <summary>場の天候。場全体で1つ</summary>
         public Weather Weather { get; private set; }
         /// <summary>天候が止むまでの残りターン</summary>
         public int WeatherTurns { get; private set; }
