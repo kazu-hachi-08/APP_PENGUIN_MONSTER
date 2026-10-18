@@ -159,13 +159,20 @@ namespace PenguinMonster.Story
             return EventStep.Ask("あずかり箱を 使いますか？", EventStep.Say(HutFarewell));
         }
 
-        /// <summary>よろず屋の店員。品ぞろえはどの町も同じ（区切り2までは同じ5種。PLAN_STORY_TOWN02.md §0）</summary>
-        internal static FieldNpc Clerk(string id, string shopMapId)
+        /// <summary>区切り1・2のよろず屋の品ぞろえ（どの町も同じ5種。PLAN_STORY_TOWN02.md §0）</summary>
+        private static readonly StoryItem[] BasicShopItems =
+            { StoryItem.CaptureEgg, StoryItem.Potion, StoryItem.Antidote, StoryItem.ParalyzeHeal, StoryItem.Awakening };
+
+        /// <summary>よろず屋の店員。品ぞろえは区切り1・2と同じ5種</summary>
+        internal static FieldNpc Clerk(string id, string shopMapId) => Clerk(id, shopMapId, BasicShopItems);
+
+        /// <summary>品ぞろえを指定するよろず屋の店員（区切り3から新しいタマゴが並ぶ）</summary>
+        internal static FieldNpc Clerk(string id, string shopMapId, params StoryItem[] items)
         {
             return new FieldNpc(id, NpcLook.Clerk,
                 NpcPlacement.Always(new FieldSpot(shopMapId, CounterSpot, Direction.Down),
                     EventStep.Say("いらっしゃいませ！ よろず屋です"),
-                    EventStep.Shop(StoryItem.CaptureEgg, StoryItem.Potion, StoryItem.Antidote, StoryItem.ParalyzeHeal, StoryItem.Awakening),
+                    EventStep.Shop(items),
                     EventStep.Say("まいど ありがとう ございました！")));
         }
 

@@ -41,6 +41,27 @@ namespace PenguinMonster.Story.Tests
             "\"CaughtNos\":[154,155,160,161]," +
             "\"Badges\":[\"town01.badge\"]}";
 
+        /// <summary>
+        /// 区切り2の終わりの記録（カガミコ町の北の看板の前・サエに勝って こおりかがみ羽章あり）。
+        /// 区切り2の版が書く形のまま残しておき、区切りを足しても読めることを守る（中身を書き換えないこと）
+        /// </summary>
+        private const string Town02EndJson =
+            "{\"Version\":1," +
+            "\"Position\":{\"MapId\":\"KagamikoTown\",\"X\":11,\"Y\":2,\"Facing\":1}," +
+            "\"LastHealSpot\":{\"MapId\":\"KagamikoWarmHut\",\"X\":3,\"Y\":2,\"Facing\":1}," +
+            "\"Party\":[" +
+            "{\"No\":155,\"Level\":24,\"Exp\":11000,\"Moves\":[\"腹ばいタックル\",\"火の粉\",\"ゆらゆら火\",\"火の粉ダイブ\"],\"Hp\":60,\"Status\":0,\"Item\":0}," +
+            "{\"No\":161,\"Level\":21,\"Exp\":8000,\"Moves\":[\"ついばみ\",\"ぴいぴい鳴く\",\"二段つつき\"],\"Hp\":45,\"Status\":0,\"Item\":0}]," +
+            "\"Box\":[{\"No\":181,\"Level\":12,\"Exp\":1500,\"Moves\":[\"ついばみ\",\"ぴいぴい鳴く\"],\"Hp\":30,\"Status\":0,\"Item\":0}]," +
+            "\"Bag\":[{\"Item\":\"CaptureEgg\",\"Count\":4},{\"Item\":\"Potion\",\"Count\":5},{\"Item\":\"ParalyzeHeal\",\"Count\":1}]," +
+            "\"Money\":5320," +
+            "\"Flags\":[\"town01.gotStarter\",\"town01.starter.154\",\"trainer.town01.rival1\",\"trainer.town01.rival2\"," +
+            "\"town01.route02Cleared\",\"trainer.town01.gym.leader\",\"town02.item.route03Potion\",\"trainer.town02.rival3\"," +
+            "\"town02.route04Cleared\",\"trainer.town02.gym.disciple1\",\"trainer.town02.gym.leader\"]," +
+            "\"SeenNos\":[154,155,160,161,165,181,205]," +
+            "\"CaughtNos\":[154,155,160,161,181]," +
+            "\"Badges\":[\"town01.badge\",\"town02.badge\"]}";
+
         private static StoryState PlayedState()
         {
             var state = new StoryState(Town01Maps.Start) { LastHealSpot = HutCounter };
@@ -225,6 +246,50 @@ namespace PenguinMonster.Story.Tests
             player.Enter(player.WarpHere);
 
             Assert.AreEqual(Town02Maps.Route03, player.Map.Id);
+        }
+
+        [Test]
+        public void Load_Town02EndSave_ContinuesWhereItWasSaved()
+        {
+            var restored = FromJson(Town02EndJson);
+
+            Assert.IsNotNull(restored);
+            Assert.AreEqual(new FieldSpot(Town02Maps.Town, new GridPos(11, 2), Direction.Up), restored.Position);
+            var state = restored.State;
+            Assert.AreEqual(new FieldSpot(Town02Maps.WarmHut, new GridPos(3, 2), Direction.Up), state.LastHealSpot);
+            Assert.AreEqual(Town01Species.Fuigo, state.Party.Members[0].Species);
+            Assert.AreEqual(Town02Species.Hibari, state.Box.Members[0].Species);
+            Assert.AreEqual(1, state.Bag.CountOf(StoryItem.ParalyzeHeal));
+            Assert.AreEqual(5320, state.Money);
+            Assert.IsTrue(state.Flags.Has(Town02Trainers.GymLeader.DefeatedFlag));
+            CollectionAssert.Contains(state.Badges, Town02Trainers.BadgeId);
+        }
+
+        [Test]
+        public void Load_Town02EndSave_CanWalkOnToRoute05()
+        {
+            // 区切り2の終わりで記録した人が、区切り3を足した版でそのまま 5番道路へ進めること（PLAN_STORY_TOWN03.md §7）。
+            // 看板が立っていたマスは道になり、看板は横へずれている
+            var restored = FromJson(Town02EndJson);
+            var people = new FieldPeople(StoryWorld.People(), restored.State.Flags);
+            var player = new FieldPlayer(_world, restored.Position, people);
+
+            for (int i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(StepResult.Moved, player.Step(Direction.Up), $"{player.Position}");
+            }
+            player.Enter(player.WarpHere);
+
+            Assert.AreEqual(Town03Maps.Route05, player.Map.Id);
+        }
+
+        [Test]
+        public void StoryWorld_HasEveryTown02Map()
+        {
+            foreach (var map in Town02Maps.CreateMaps())
+            {
+                Assert.IsTrue(_world.Contains(map.Id), map.Id);
+            }
         }
 
         [Test]
