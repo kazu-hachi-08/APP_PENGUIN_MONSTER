@@ -95,11 +95,7 @@ namespace PenguinMonster.Editor
         {
             var row = UIDialogBuilder.CreateUIObject("Pages", parent);
             row.GetComponent<RectTransform>().sizeDelta = ShopTabSize;
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = ShopSlotSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, ShopSlotSpacing, TextAnchor.MiddleCenter);
             return row.transform;
         }
 
@@ -155,12 +151,8 @@ namespace PenguinMonster.Editor
             rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(0f, 1f);
             rect.anchoredPosition = new Vector2(topLeft.x, topLeft.y);
             rect.sizeDelta = size;
-            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = spacing;
+            var layout = AddChildLayout<VerticalLayoutGroup>(inner.gameObject, spacing, TextAnchor.UpperCenter);
             layout.padding = new RectOffset(0, 0, (int)spacing, (int)spacing);
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
             return inner;
         }
 
@@ -172,17 +164,7 @@ namespace PenguinMonster.Editor
             buttons = new Button[BoxPageSize];
             labels = new Text[BoxPageSize];
             icons = new Image[BoxPageSize];
-            for (int i = 0; i < BoxPageSize; i++)
-            {
-                var slot = CreateButton(column, $"Btn_Slot{i}", "", BoxSlotSize, SlotColor);
-                buttons[i] = slot.GetComponent<Button>();
-                labels[i] = slot.GetComponentInChildren<Text>();
-                labels[i].rectTransform.offsetMin = new Vector2(BoxIconSize + 24f, 0f);
-                labels[i].rectTransform.offsetMax = new Vector2(-SlotTextRightPadding, 0f);
-                labels[i].horizontalOverflow = HorizontalWrapMode.Overflow;
-                icons[i] = CreatePartyIcon(slot.transform);
-                icons[i].rectTransform.sizeDelta = Vector2.one * BoxIconSize;
-            }
+            CreatePartySlots(column, BoxSlotSize, buttons, labels, icons);
             return column;
         }
 

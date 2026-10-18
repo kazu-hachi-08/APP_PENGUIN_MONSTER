@@ -50,36 +50,16 @@ namespace PenguinMonster.Common.Editor
             bgImg.color = new Color(0, 0, 0, 0.65f);
 
             // パネル本体
-            var panelObj = CreateUIObject("Panel", dialogObj.transform);
-            var pRect = panelObj.GetComponent<RectTransform>();
-            pRect.anchorMin = new Vector2(0.5f, 0.5f);
-            pRect.anchorMax = new Vector2(0.5f, 0.5f);
-            pRect.pivot = new Vector2(0.5f, 0.5f);
-            pRect.sizeDelta = new Vector2(CommonPanelWidth, CommonPanelHeight);
-            var panelImg = panelObj.AddComponent<Image>();
-            panelImg.color = new Color(0.14f, 0.16f, 0.22f);
+            var panelObj = CreateCenteredPanel(dialogObj.transform, new Vector2(CommonPanelWidth, CommonPanelHeight), new Color(0.14f, 0.16f, 0.22f));
 
             // タイトル
             var titleObj = CreateUIObject("TitleText", panelObj.transform);
-            var tRect = titleObj.GetComponent<RectTransform>();
-            tRect.anchorMin = new Vector2(0, 0.75f);
-            tRect.anchorMax = new Vector2(1, 1);
-            tRect.offsetMin = Vector2.zero;
-            tRect.offsetMax = Vector2.zero;
-            var titleText = titleObj.AddComponent<Text>();
-            titleText.text = "確認";
-            titleText.fontSize = CommonTitleFontSize;
-            titleText.fontStyle = FontStyle.Bold;
-            titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.color = Color.white;
+            SetAnchorRange(titleObj.GetComponent<RectTransform>(), new Vector2(0, 0.75f), new Vector2(1, 1));
+            var titleText = AddBoldCenteredText(titleObj, "確認", CommonTitleFontSize, Color.white);
 
             // メッセージ
             var msgObj = CreateUIObject("MessageText", panelObj.transform);
-            var mRect = msgObj.GetComponent<RectTransform>();
-            mRect.anchorMin = new Vector2(0.08f, 0.35f);
-            mRect.anchorMax = new Vector2(0.92f, 0.75f);
-            mRect.offsetMin = Vector2.zero;
-            mRect.offsetMax = Vector2.zero;
+            SetAnchorRange(msgObj.GetComponent<RectTransform>(), new Vector2(0.08f, 0.35f), new Vector2(0.92f, 0.75f));
             var msgText = msgObj.AddComponent<Text>();
             msgText.text = "メッセージ内容";
             msgText.fontSize = CommonMessageFontSize;
@@ -88,11 +68,7 @@ namespace PenguinMonster.Common.Editor
 
             // ボタンエリア
             var btnAreaObj = CreateUIObject("ButtonArea", panelObj.transform);
-            var bRect = btnAreaObj.GetComponent<RectTransform>();
-            bRect.anchorMin = new Vector2(0, 0);
-            bRect.anchorMax = new Vector2(1, 0.35f);
-            bRect.offsetMin = Vector2.zero;
-            bRect.offsetMax = Vector2.zero;
+            SetAnchorRange(btnAreaObj.GetComponent<RectTransform>(), new Vector2(0, 0), new Vector2(1, 0.35f));
             var layout = btnAreaObj.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = DialogButtonSpacing;
             layout.childAlignment = TextAnchor.MiddleCenter;
@@ -141,14 +117,7 @@ namespace PenguinMonster.Common.Editor
             var bgImg = dialogObj.AddComponent<Image>();
             bgImg.color = new Color(0, 0, 0, 0.75f);
 
-            var panelObj = CreateUIObject("Panel", dialogObj.transform);
-            var pRect = panelObj.GetComponent<RectTransform>();
-            pRect.anchorMin = new Vector2(0.5f, 0.5f);
-            pRect.anchorMax = new Vector2(0.5f, 0.5f);
-            pRect.pivot = new Vector2(0.5f, 0.5f);
-            pRect.sizeDelta = new Vector2(PausePanelWidth, 0);
-            var panelImg = panelObj.AddComponent<Image>();
-            panelImg.color = new Color(0.12f, 0.14f, 0.18f);
+            var panelObj = CreateCenteredPanel(dialogObj.transform, new Vector2(PausePanelWidth, 0), new Color(0.12f, 0.14f, 0.18f));
 
             // 項目を上から積むだけにして、サイズ調整のたびに座標を計算し直さなくて済むようにする
             var layout = panelObj.AddComponent<VerticalLayoutGroup>();
@@ -165,12 +134,7 @@ namespace PenguinMonster.Common.Editor
             // タイトル
             var titleObj = CreateUIObject("TitleText", panelObj.transform);
             titleObj.GetComponent<RectTransform>().sizeDelta = new Vector2(0, PauseTitleHeight);
-            var titleText = titleObj.AddComponent<Text>();
-            titleText.text = "PAUSE / 設定";
-            titleText.fontSize = PauseTitleFontSize;
-            titleText.fontStyle = FontStyle.Bold;
-            titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.color = Color.white;
+            AddBoldCenteredText(titleObj, "PAUSE / 設定", PauseTitleFontSize, Color.white);
 
             var bgmSlider = CreateVolumeSlider("BgmSlider", panelObj.transform, "BGM 音量");
             var seSlider = CreateVolumeSlider("SeSlider", panelObj.transform, "SE 音量");
@@ -218,47 +182,18 @@ namespace PenguinMonster.Common.Editor
             var bgImg = dialogObj.AddComponent<Image>();
             bgImg.color = new Color(0, 0, 0, 0.75f);
 
-            var panelObj = CreateUIObject("Panel", dialogObj.transform);
-            var pRect = panelObj.GetComponent<RectTransform>();
-            pRect.anchorMin = new Vector2(0.5f, 0.5f);
-            pRect.anchorMax = new Vector2(0.5f, 0.5f);
-            pRect.pivot = new Vector2(0.5f, 0.5f);
-            pRect.sizeDelta = new Vector2(ResultPanelWidth, ResultPanelHeight);
-            var panelImg = panelObj.AddComponent<Image>();
-            panelImg.color = new Color(0.12f, 0.15f, 0.2f);
+            var panelObj = CreateCenteredPanel(dialogObj.transform, new Vector2(ResultPanelWidth, ResultPanelHeight), new Color(0.12f, 0.15f, 0.2f));
 
             var titleObj = CreateUIObject("TitleText", panelObj.transform);
-            var tRect = titleObj.GetComponent<RectTransform>();
-            tRect.anchorMin = new Vector2(0, 0.8f);
-            tRect.anchorMax = new Vector2(1, 1);
-            tRect.offsetMin = Vector2.zero;
-            tRect.offsetMax = Vector2.zero;
-            var titleText = titleObj.AddComponent<Text>();
-            titleText.text = "RESULT";
-            titleText.fontSize = ResultTitleFontSize;
-            titleText.fontStyle = FontStyle.Bold;
-            titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.color = new Color(1f, 0.85f, 0.2f);
+            SetAnchorRange(titleObj.GetComponent<RectTransform>(), new Vector2(0, 0.8f), new Vector2(1, 1));
+            var titleText = AddBoldCenteredText(titleObj, "RESULT", ResultTitleFontSize, new Color(1f, 0.85f, 0.2f));
 
             var scoreObj = CreateUIObject("ScoreText", panelObj.transform);
-            var sRect = scoreObj.GetComponent<RectTransform>();
-            sRect.anchorMin = new Vector2(0.05f, 0.55f);
-            sRect.anchorMax = new Vector2(0.95f, 0.8f);
-            sRect.offsetMin = Vector2.zero;
-            sRect.offsetMax = Vector2.zero;
-            var scoreText = scoreObj.AddComponent<Text>();
-            scoreText.text = "SCORE: 100";
-            scoreText.fontSize = ResultScoreFontSize;
-            scoreText.fontStyle = FontStyle.Bold;
-            scoreText.alignment = TextAnchor.MiddleCenter;
-            scoreText.color = Color.white;
+            SetAnchorRange(scoreObj.GetComponent<RectTransform>(), new Vector2(0.05f, 0.55f), new Vector2(0.95f, 0.8f));
+            var scoreText = AddBoldCenteredText(scoreObj, "SCORE: 100", ResultScoreFontSize, Color.white);
 
             var detailObj = CreateUIObject("DetailText", panelObj.transform);
-            var dRect = detailObj.GetComponent<RectTransform>();
-            dRect.anchorMin = new Vector2(0.05f, 0.4f);
-            dRect.anchorMax = new Vector2(0.95f, 0.55f);
-            dRect.offsetMin = Vector2.zero;
-            dRect.offsetMax = Vector2.zero;
+            SetAnchorRange(detailObj.GetComponent<RectTransform>(), new Vector2(0.05f, 0.4f), new Vector2(0.95f, 0.55f));
             var detailText = detailObj.AddComponent<Text>();
             detailText.text = "クリアタイム: 01:23";
             detailText.fontSize = ResultDetailFontSize;
@@ -266,11 +201,7 @@ namespace PenguinMonster.Common.Editor
             detailText.color = new Color(0.7f, 0.75f, 0.85f);
 
             var btnArea = CreateUIObject("ButtonArea", panelObj.transform);
-            var bRect = btnArea.GetComponent<RectTransform>();
-            bRect.anchorMin = new Vector2(0.05f, 0.08f);
-            bRect.anchorMax = new Vector2(0.95f, 0.35f);
-            bRect.offsetMin = Vector2.zero;
-            bRect.offsetMax = Vector2.zero;
+            SetAnchorRange(btnArea.GetComponent<RectTransform>(), new Vector2(0.05f, 0.08f), new Vector2(0.95f, 0.35f));
             var layout = btnArea.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = DialogButtonSpacing;
             layout.childAlignment = TextAnchor.MiddleCenter;
@@ -293,6 +224,41 @@ namespace PenguinMonster.Common.Editor
 
             dialogObj.SetActive(false);
             return result;
+        }
+
+        // 3つのダイアログで同じ作り方のパネル（中央基準・固定サイズ）を1か所にまとめる
+        private static GameObject CreateCenteredPanel(Transform parent, Vector2 size, Color color)
+        {
+            var panelObj = CreateUIObject("Panel", parent);
+            var rect = panelObj.GetComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = size;
+            var img = panelObj.AddComponent<Image>();
+            img.color = color;
+            return panelObj;
+        }
+
+        // 伸縮範囲だけを指定し、余白は0に戻す（pivot は呼び出し側の値のまま）
+        private static void SetAnchorRange(RectTransform rect, Vector2 min, Vector2 max)
+        {
+            rect.anchorMin = min;
+            rect.anchorMax = max;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
+
+        // ラベル系の太字・中央寄せ文字。設定順は呼び出し前と同じ（text → fontSize → 太字 → 中央 → color）
+        private static Text AddBoldCenteredText(GameObject obj, string content, int fontSize, Color color)
+        {
+            var text = obj.AddComponent<Text>();
+            text.text = content;
+            text.fontSize = fontSize;
+            text.fontStyle = FontStyle.Bold;
+            text.alignment = TextAnchor.MiddleCenter;
+            text.color = color;
+            return text;
         }
 
         private static GameObject CreateDialogButton(Transform parent, string name, string label, float width, float height, int fontSize, Color color)

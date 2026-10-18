@@ -36,14 +36,7 @@ namespace PenguinMonster.Editor
 
         private static FormatPanel CreateFormatPanel(Transform parent)
         {
-            var back = CreateNightBack(parent, "FormatPanel");
-            CreateSnowField(back.transform);
-            CreateTitleWalkers(back.transform);
-            var content = CreateSafeContent(back.transform);
-
-            var title = CreateText(content, "Title", FormatTitle, FormatTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            Place(title.rectTransform, new Vector2(0.5f, 1f), FormatTitlePosition, FormatTitleSize);
+            var content = CreateWalkerScreen(parent, "FormatPanel", FormatTitle, FormatTitleFontSize, FormatTitlePosition, FormatTitleSize, out var back);
 
             var row = CreateCenteredRow(content, "Formats", Center, FormatRowPosition, FormatButtonSize.y, FormatSpacing);
             var single = CreateFormatButton(row, "Btn_Single", SingleLabel, SingleColor);
@@ -72,9 +65,8 @@ namespace PenguinMonster.Editor
 
         private static Button CreateFormatButton(Transform row, string name, string label, Color color)
         {
-            var obj = CreateButton(row, name, label, FormatButtonSize, color);
+            var obj = CreateButton(row, name, label, FormatButtonSize, color, fontSize: FormatButtonFontSize);
             var text = obj.GetComponentInChildren<Text>();
-            text.fontSize = FormatButtonFontSize;
             text.supportRichText = true;
             text.rectTransform.offsetMin = new Vector2(FormatIconAreaWidth, 0f);
             return obj.GetComponent<Button>();

@@ -20,14 +20,7 @@ namespace PenguinMonster.View.Art
 
         private static Sprite Get(int no, bool front)
         {
-            if (Cache.TryGetValue((no, front), out var sprite) && sprite != null)
-            {
-                return sprite;
-            }
-
-            sprite = PenguinDesigns.Paint(no, front).ToSprite(front ? "Penguin_Front" : "Penguin_Back", FootPivot);
-            Cache[(no, front)] = sprite;
-            return sprite;
+            return PixelCanvas.GetOrCache(Cache, (no, front), () => PenguinDesigns.Paint(no, front).ToSprite(front ? "Penguin_Front" : "Penguin_Back", FootPivot));
         }
     }
 }

@@ -246,8 +246,7 @@ namespace PenguinMonster.Editor
 
         private static Button CreateTitleMenuButton(Transform menu, string label, Color color, Vector2 size, int fontSize)
         {
-            var obj = CreateButton(menu, $"Btn_{label}", label, size, color);
-            obj.GetComponentInChildren<Text>().fontSize = fontSize;
+            var obj = CreateButton(menu, $"Btn_{label}", label, size, color, fontSize: fontSize);
             return obj.GetComponent<Button>();
         }
     }

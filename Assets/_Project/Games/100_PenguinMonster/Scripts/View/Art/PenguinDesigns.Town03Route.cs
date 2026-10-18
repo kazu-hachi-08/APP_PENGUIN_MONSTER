@@ -16,8 +16,7 @@ namespace PenguinMonster.View.Art
         {
             var body = Rgb(240, 200, 90);
             var bodyShade = PenguinPalette.Shade(body);
-            b.Foot(28f, 6f, 30f, 0.55f);
-            b.Foot(37f, 6f, -30f, 0.55f);
+            b.SplayedFeet(28f, 37f, 6f, 30f, 0.55f);
             b.Shaded(32f, 15f, 8f, 7.5f, body);
             b.Belly(30f, 14f, 5f, 5f);
             b.Shaded(32f, 26f, 8f, 7.5f, body);
@@ -56,8 +55,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(40f, 44f, 6f, 4.5f, Thundercloud);
             b.Shaded(32f, 47f, 7f, 5f, Thundercloud);
             b.White(29f, 32f, 7.5f, 6f);
-            b.Flipper(V(21, 22), V(12, 16), 3f, bodyShade);
-            b.Flipper(V(43, 22), V(52, 16), 3f, bodyShade);
+            b.Flipper2(V(21, 22), V(12, 16), 3f, bodyShade);
             b.TurnedFace(29f, 34f, FaceLeft, EyeStyle.Sharp, eyeGap: 6f);
         }
 
@@ -84,8 +82,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(14f, 34f, 7f, 5f, cloud);
             b.Shaded(50f, 34f, 7f, 5f, cloud);
             b.White(28f, 38f, 9f, 7f);
-            b.Flipper(V(18, 24), V(8, 14), 3.5f, bodyShade);
-            b.Flipper(V(46, 24), V(56, 14), 3.5f, bodyShade);
+            b.Flipper2(V(18, 24), V(8, 14), 3.5f, bodyShade);
             b.TurnedFace(28f, 40f, FaceLeft, EyeStyle.Sharp, eyeGap: 8f, open: true);
         }
 
@@ -111,8 +108,7 @@ namespace PenguinMonster.View.Art
                 b.Shaded(p.x, p.y, 1.8f, 1.5f, pebble);
             }
             b.White(30f, 25.5f, 6f, 4.5f);
-            b.Flipper(V(25, 17), V(17, 13), 2.5f, bodyShade);
-            b.Flipper(V(39, 17), V(47, 13), 2.5f, bodyShade);
+            b.Flipper2(V(25, 17), V(17, 13), 2.5f, bodyShade);
             b.TurnedFace(30f, 27f, FaceLeft, EyeStyle.Dot, eyeGap: 5f);
         }
 
@@ -136,8 +132,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(14f, 36f, 5f, 2f, SnowWhite);
             b.Ellipse(50f, 36f, 5f, 2f, SnowWhite);
             b.White(28f, 42f, 7.5f, 5.5f);
-            b.Flipper(V(12, 28), V(6, 14), 3.5f, rockShade);
-            b.Flipper(V(52, 28), V(58, 14), 3.5f, rockShade);
+            b.Flipper2(V(12, 28), V(6, 14), 3.5f, rockShade);
             b.TurnedFace(28f, 44f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
         }
 
@@ -158,8 +153,7 @@ namespace PenguinMonster.View.Art
             b.Line(0.6f, Wood, V(32, 33), V(32, 36));
             b.Shaded(32f, 26f, 8f, 7.5f, body);
             b.White(30f, 25.5f, 6f, 4.5f);
-            b.Flipper(V(25, 17), V(18, 11), 2f, bodyShade);
-            b.Flipper(V(39, 17), V(46, 11), 2f, bodyShade);
+            b.Flipper2(V(25, 17), V(18, 11), 2f, bodyShade);
             b.TurnedFace(30f, 27f, FaceLeft, EyeStyle.Sleepy, eyeGap: 5f);
         }
 
@@ -180,8 +174,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(31f, 37f, 11f, 9.5f, body);
             b.White(28f, 36f, 8f, 6.5f);
             // 力こぶを作るように、ヒレを太く曲げて上へ構える
-            b.Flipper(V(18, 24), V(10, 30), 4f, bodyShade);
-            b.Flipper(V(46, 24), V(54, 30), 4f, bodyShade);
+            b.Flipper2(V(18, 24), V(10, 30), 4f, bodyShade);
             b.Ellipse(10f, 31f, 3f, 3f, bodyShade);
             b.Ellipse(54f, 31f, 3f, 3f, bodyShade);
             b.TurnedFace(28f, 38f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f, open: true);
@@ -307,8 +300,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(32f, 22f, 12f, 12f, body);
             b.Belly(30f, 17f, 6f, 5f);
             b.White(30f, 24f, 7f, 5f);
-            b.Flipper(V(22, 20), V(14, 24), 2f, bodyShade);
-            b.Flipper(V(42, 20), V(50, 24), 2f, bodyShade);
+            b.Flipper2(V(22, 20), V(14, 24), 2f, bodyShade);
             b.TurnedFace(30f, 26f, FaceLeft, EyeStyle.Round, eyeGap: 5f, open: true);
             foreach (var p in new[] { V(10, 40), V(16, 48), V(48, 44), V(54, 36), V(40, 52) })
             {
@@ -357,8 +349,7 @@ namespace PenguinMonster.View.Art
             b.Rect(52, 22, 5, 4, IronLight);
             b.Rect(53, 26, 1, 3, Iron);
             b.Rect(55, 26, 1, 3, Iron);
-            b.Foot(28f, 6f, 30f, 0.55f);
-            b.Foot(37f, 6f, -30f, 0.55f);
+            b.SplayedFeet(28f, 37f, 6f, 30f, 0.55f);
             b.Shaded(32f, 15f, 8.5f, 7.5f, body);
             b.Belly(30f, 14f, 5f, 5f);
             b.Shaded(31f, 26f, 8f, 7.5f, body);

@@ -132,7 +132,8 @@ namespace PenguinMonster.View
             Rect.localScale = Vector3.one;
         }
 
-        private static IEnumerator Tween(float seconds, Action<float> step)
+        /// <summary>時間で0→1へ進めながら step を呼ぶ。EggThrowView と同じ動きを共有するため internal</summary>
+        internal static IEnumerator Tween(float seconds, Action<float> step)
         {
             for (float elapsed = 0f; elapsed < seconds; elapsed += Time.deltaTime)
             {

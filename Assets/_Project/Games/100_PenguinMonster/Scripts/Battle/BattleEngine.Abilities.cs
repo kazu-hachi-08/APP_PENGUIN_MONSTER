@@ -31,7 +31,7 @@ namespace PenguinMonster.Battle
             {
                 return;
             }
-            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
+            ShowAbility(side, monster, events);
             foreach (int foeSlot in foeSlots)
             {
                 ChangeStage(1 - side, foe.ActiveAt(foeSlot), StatKind.Attack, BattleBalance.IntimidateStages, true, events);
@@ -56,7 +56,7 @@ namespace PenguinMonster.Battle
             {
                 return;
             }
-            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
+            ShowAbility(side, monster, events);
             TryStartWeather(side, monster, weather, events);
         }
 
@@ -161,7 +161,7 @@ namespace PenguinMonster.Battle
                     TryContactStatus(attackerSide, attacker, defenderSide, defender, StatusCondition.Poison, events);
                     break;
                 case Ability.SpikySkin:
-                    events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, defenderSide, defender));
+                    ShowAbility(defenderSide, defender, events);
                     int damage = Math.Max(1, attacker.MaxHp / BattleBalance.SpikySkinDamageDenominator);
                     ApplyDirectDamage(attackerSide, attacker, damage, BattleEventKind.AbilityDamage, events);
                     break;
@@ -176,7 +176,7 @@ namespace PenguinMonster.Battle
             {
                 return;
             }
-            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, defenderSide, defender));
+            ShowAbility(defenderSide, defender, events);
             TryInflict(attackerSide, attacker, status, false, events);
         }
 
@@ -231,7 +231,7 @@ namespace PenguinMonster.Battle
             {
                 return;
             }
-            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
+            ShowAbility(side, monster, events);
             if (raised != null)
             {
                 ChangeStage(side, monster, raised.Value, BattleBalance.MoodyRaiseStages, false, events);
@@ -249,7 +249,7 @@ namespace PenguinMonster.Battle
             {
                 return;
             }
-            events.Add(BattleEvent.Of(BattleEventKind.AbilityActivated, side, monster));
+            ShowAbility(side, monster, events);
             ChangeStage(side, monster, stat, stages, false, events);
         }
     }

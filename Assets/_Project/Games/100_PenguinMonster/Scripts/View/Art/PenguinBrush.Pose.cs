@@ -56,8 +56,22 @@ namespace PenguinMonster.View.Art
             Ellipse(tip.x, tip.y, 1f, 1f, color);
         }
 
+        /// <summary>左右対称のヒレ。2本目は Mirror で写した位置に描く。Shaded2 / Triangle2 と同じく、片側だけ書けばよいようにするため</summary>
+        public void Flipper2(Vector2 root, Vector2 tip, float width, Color32 color)
+        {
+            Flipper(root, tip, width, color);
+            Flipper(Mirror(root), Mirror(tip), width, color);
+        }
+
         public void Foot(float x, float y, float angle = 0f, float size = 1f)
             => Tilted(x, y, FootRadiusX * size, FootRadiusY * size, angle, PenguinPalette.Beak);
+
+        /// <summary>左右対称に開いた1組の足。右だけ角度の符号を反対にして、左右の向きをそろえる</summary>
+        public void SplayedFeet(float leftX, float rightX, float y, float splay, float size)
+        {
+            Foot(leftX, y, splay, size);
+            Foot(rightX, y, -splay, size);
+        }
 
         public void TurnedFace(float x, float eyeY, int dir, EyeStyle eyes, float eyeGap = 7f, bool open = false)
             => TurnedFace(x, eyeY, dir, eyes, eyes, eyeGap, open);

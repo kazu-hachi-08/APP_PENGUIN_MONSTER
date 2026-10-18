@@ -30,14 +30,11 @@ namespace PenguinMonster.Editor
         {
             var back = CreateNightBack(parent, "ItemPanel");
 
-            var title = CreateText(back.transform, "Title", ItemTitleText, SelectTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            title.rectTransform.anchorMin = new Vector2(0f, 1f);
-            title.rectTransform.offsetMin = new Vector2(0f, -ItemTitleHeight);
+            CreateTopTitle(back.transform, ItemTitleText, SelectTitleFontSize, ItemTitleHeight);
 
             var card = CreateItemCard(back.transform, out var itemName, out var itemDescription);
 
-            var row = CreateItemRow(back.transform);
+            var row = CreateCellRow(back.transform, "Own", ItemRowBottom, ItemRowTop, SelectCellSpacing);
             int count = BattleBalance.DraftRounds;
             var buttons = new Button[count];
             var icons = new Image[count];
@@ -83,29 +80,13 @@ namespace PenguinMonster.Editor
             return card.gameObject;
         }
 
-        private static Transform CreateItemRow(Transform parent)
-        {
-            var row = UIDialogBuilder.CreateUIObject("Own", parent);
-            var rect = row.GetComponent<RectTransform>();
-            UIDialogBuilder.SetStretchAll(rect);
-            rect.offsetMin = new Vector2(0f, ItemRowBottom);
-            rect.offsetMax = new Vector2(0f, -ItemRowTop);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = SelectCellSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
-            return row.transform;
-        }
-
         /// <summary>1マス = 絵（上）＋名前（下）。マス全体が押せる</summary>
         private static void CreateItemCell(Transform row, int index, out Button button, out Image icon, out Text name)
         {
-            var cell = CreateButton(row, $"Btn_Holder{index}", "", SelectCellSize, ItemCellColor);
+            var cell = CreateButton(row, $"Btn_Holder{index}", "", SelectCellSize, ItemCellColor, fontSize: SelectNameFontSize);
             button = cell.GetComponent<Button>();
 
             name = cell.GetComponentInChildren<Text>();
-            name.fontSize = SelectNameFontSize;
             name.alignment = TextAnchor.LowerCenter;
             // 長い名前は折り返すと上の絵に重なるので、1行のまま縮める（TextFit）
             name.horizontalOverflow = HorizontalWrapMode.Overflow;

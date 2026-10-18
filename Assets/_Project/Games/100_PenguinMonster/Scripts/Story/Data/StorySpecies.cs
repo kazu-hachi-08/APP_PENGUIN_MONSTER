@@ -45,5 +45,19 @@ namespace PenguinMonster.Story
                 }
             }
         }
+
+        /// <summary>
+        /// 種の一覧から No で引ける辞書を作る。No が重なったら後ろの種で上書きする
+        /// （Add だと重複で例外になるので、インデクサで入れて従来どおり上書きにしている）
+        /// </summary>
+        public static Dictionary<int, StorySpecies> IndexByNo(IEnumerable<StorySpecies> all)
+        {
+            var byNo = new Dictionary<int, StorySpecies>();
+            foreach (var species in all)
+            {
+                byNo[species.No] = species;
+            }
+            return byNo;
+        }
     }
 }

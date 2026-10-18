@@ -28,11 +28,7 @@ namespace PenguinMonster.View
 
         private void Awake()
         {
-            for (int i = 0; i < _cellButtons.Length; i++)
-            {
-                int index = i;
-                _cellButtons[i].onClick.AddListener(() => Give(index));
-            }
+            ButtonHighlight.AddIndexedClick(_cellButtons, Give);
         }
 
         /// <param name="seconds">制限時間。0 なら制限なし（オフライン）</param>

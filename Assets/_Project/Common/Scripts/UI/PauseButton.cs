@@ -23,10 +23,7 @@ namespace PenguinMonster.Common.UI
         {
             if (_gameManager == null) return;
 
-            if (AudioManager.HasInstance)
-            {
-                AudioManager.Instance.PlaySe(SeId.ButtonClick);
-            }
+            AudioManager.PlaySeIfAvailable(SeId.ButtonClick);
 
             // ポーズ可否（リザルト中など）の判定は BaseGameManager 側に任せる
             _gameManager.PauseGame();

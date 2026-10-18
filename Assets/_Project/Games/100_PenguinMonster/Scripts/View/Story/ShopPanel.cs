@@ -44,11 +44,7 @@ namespace PenguinMonster.View.Story
 
         private void Awake()
         {
-            for (int i = 0; i < _slotButtons.Length; i++)
-            {
-                int index = i;
-                _slotButtons[i].onClick.AddListener(() => Trade(index));
-            }
+            ButtonHighlight.AddIndexedClick(_slotButtons, Trade);
             _prevButton.onClick.AddListener(() => TurnPage(-1));
             _nextButton.onClick.AddListener(() => TurnPage(1));
             _buyTab.onClick.AddListener(() => SetMode(false));
@@ -120,14 +116,11 @@ namespace PenguinMonster.View.Story
 
         private void TurnPage(int delta)
         {
-            int page = Mathf.Clamp(_page + delta, 0, PageCount - 1);
-            if (page == _page)
+            if (PagedList.Turn(ref _page, delta, PageCount))
             {
-                return;
+                BattleSounds.Play(BattleSound.Cursor);
+                Refresh();
             }
-            BattleSounds.Play(BattleSound.Cursor);
-            _page = page;
-            Refresh();
         }
 
         private void Trade(int slot)

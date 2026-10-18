@@ -15,6 +15,21 @@ namespace PenguinMonster.View.Story
             return Mathf.Max(1, (count + pageSize - 1) / pageSize);
         }
 
+        /// <summary>
+        /// ページを delta 送る。範囲内に収めて、変わったときだけ page を書き換えて true を返す
+        /// （端で押しても何も起きないように、呼ぶ側は true のときだけ音と再描画をする）
+        /// </summary>
+        public static bool Turn(ref int page, int delta, int pageCount)
+        {
+            int next = Mathf.Clamp(page + delta, 0, pageCount - 1);
+            if (next == page)
+            {
+                return false;
+            }
+            page = next;
+            return true;
+        }
+
         /// <summary>ページが1つしか無ければ ← → は出さない。端では押せなくする</summary>
         public static void ShowPageButtons(Button prev, Button next, int page, int pageCount)
         {

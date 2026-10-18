@@ -52,14 +52,14 @@ namespace PenguinMonster.Common.UI
 
         private void OnRetryClicked()
         {
-            if (AudioManager.HasInstance) AudioManager.Instance.PlaySe(SeId.ButtonClick);
+            AudioManager.PlaySeIfAvailable(SeId.ButtonClick);
             Hide();
             _onRetry?.Invoke();
         }
 
         private void OnTitleClicked()
         {
-            if (AudioManager.HasInstance) AudioManager.Instance.PlaySe(SeId.ButtonClick);
+            AudioManager.PlaySeIfAvailable(SeId.ButtonClick);
             Hide();
             _onTitle?.Invoke();
         }

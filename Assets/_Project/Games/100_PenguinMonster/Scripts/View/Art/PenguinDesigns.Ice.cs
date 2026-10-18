@@ -295,8 +295,7 @@ namespace PenguinMonster.View.Art
             var fluffShade = Rgb(180, 200, 228);
             b.Feet(32f, 6f, 6f);
             FluffBall(b, 32f, 28f, 17f, 16f, fluff, fluffShade);
-            b.Flipper(V(16, 26), V(8, 20), 2.5f, fluffShade);
-            b.Flipper(V(48, 26), V(56, 20), 2.5f, fluffShade);
+            b.Flipper2(V(16, 26), V(8, 20), 2.5f, fluffShade);
             if (b.Front)
             {
                 b.Ellipse(30f, 32f, 10f, 8f, PenguinPalette.BellyShade);

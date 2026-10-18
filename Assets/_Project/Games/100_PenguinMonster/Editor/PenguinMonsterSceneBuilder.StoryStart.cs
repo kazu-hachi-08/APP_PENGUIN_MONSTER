@@ -18,14 +18,7 @@ namespace PenguinMonster.Editor
 
         private static StoryStartPanel CreateStoryStartPanel(Transform parent)
         {
-            var back = CreateNightBack(parent, "StoryStartPanel");
-            CreateSnowField(back.transform);
-            CreateTitleWalkers(back.transform);
-            var content = CreateSafeContent(back.transform);
-
-            var title = CreateText(content, "Title", StoryStartTitle, FormatTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            Place(title.rectTransform, new Vector2(0.5f, 1f), FormatTitlePosition, FormatTitleSize);
+            var content = CreateWalkerScreen(parent, "StoryStartPanel", StoryStartTitle, FormatTitleFontSize, FormatTitlePosition, FormatTitleSize, out var back);
 
             var row = CreateCenteredRow(content, "Choices", Center, FormatRowPosition, StoryStartButtonSize.y, FormatSpacing);
             var continueButton = CreateStoryStartButton(row, "Btn_Continue", "続きから", ContinueColor);
@@ -51,8 +44,7 @@ namespace PenguinMonster.Editor
 
         private static Button CreateStoryStartButton(Transform row, string name, string label, Color color)
         {
-            var obj = CreateButton(row, name, label, StoryStartButtonSize, color);
-            obj.GetComponentInChildren<Text>().fontSize = FormatButtonFontSize;
+            var obj = CreateButton(row, name, label, StoryStartButtonSize, color, fontSize: FormatButtonFontSize);
             return obj.GetComponent<Button>();
         }
     }

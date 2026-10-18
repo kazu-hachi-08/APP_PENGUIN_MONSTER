@@ -156,8 +156,7 @@ namespace PenguinMonster.Editor
         /// </summary>
         private static VirtualButton CreatePadButton(Transform parent, string name, string label, Vector2 anchor, Vector2 position, Vector2 size, Color color)
         {
-            var obj = CreateButton(parent, $"Pad_{name}", label, size, color);
-            obj.GetComponentInChildren<UnityEngine.UI.Text>().fontSize = PadFontSize;
+            var obj = CreateButton(parent, $"Pad_{name}", label, size, color, fontSize: PadFontSize);
             Place(obj.GetComponent<RectTransform>(), anchor, position, size);
             return obj.AddComponent<VirtualButton>();
         }

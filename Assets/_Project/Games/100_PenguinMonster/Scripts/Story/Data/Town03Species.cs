@@ -116,15 +116,8 @@ namespace PenguinMonster.Story
             Hatsuden, Raijin, Kantera, Hesotori, SaintElmo,
         };
 
-        private static readonly Dictionary<int, StorySpecies> ByNumber = new Dictionary<int, StorySpecies>();
-
-        static Town03Species()
-        {
-            foreach (var species in All)
-            {
-                ByNumber[species.No] = species;
-            }
-        }
+        // All より後ろに置く（静的フィールドは上から順に初期化されるため、All が先に入っている必要がある）
+        private static readonly Dictionary<int, StorySpecies> ByNumber = StorySpecies.IndexByNo(All);
 
         /// <summary>No から種を引く。無ければ null</summary>
         public static StorySpecies ByNo(int no) => ByNumber.TryGetValue(no, out var species) ? species : null;
@@ -133,11 +126,7 @@ namespace PenguinMonster.Story
         private static StorySpecies Species(int no, GrowthRate growthRate, int baseExp, int catchRate, Evolution evolution,
             params (int Level, MoveDefinition Move)[] learnset)
         {
-            var moves = new LevelMove[learnset.Length];
-            for (int i = 0; i < learnset.Length; i++)
-            {
-                moves[i] = new LevelMove(learnset[i].Level, learnset[i].Move);
-            }
+            var moves = LevelMove.FromTable(learnset);
             return new StorySpecies(MonsterTable.ByNo(no), growthRate, baseExp, moves, evolution, catchRate);
         }
     }

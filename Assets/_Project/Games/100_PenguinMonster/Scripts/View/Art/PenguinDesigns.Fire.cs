@@ -170,8 +170,7 @@ namespace PenguinMonster.View.Art
             b.Feet(32f, 7f, 10f);
             b.Shaded(32f, 22f, 13f, 12f, body);
             b.Belly(31f, 21f, 9f, 9f);
-            b.Flipper(V(21, 27), V(10, 41), 3f, bodyShade);
-            b.Flipper(V(43, 27), V(54, 41), 3f, bodyShade);
+            b.Flipper2(V(21, 27), V(10, 41), 3f, bodyShade);
             b.Shaded(32f, 38f, 11f, 10.5f, body);
             b.White(31f, 37f, 8f, 6.5f);
             b.Face(31f, 38f, 4f, EyeStyle.Sharp);

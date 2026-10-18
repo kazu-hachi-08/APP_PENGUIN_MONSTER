@@ -67,14 +67,20 @@ namespace PenguinMonster.View
 
         private static bool CanSwitchAny(BattleSide side, ICollection<int> reserved)
         {
+            return FirstSwitchable(side, reserved) >= 0;
+        }
+
+        /// <summary>控えを前から見て、交代できて reserved に無い最初の番号。無ければ -1</summary>
+        public static int FirstSwitchable(BattleSide side, ICollection<int> reserved)
+        {
             for (int i = 0; i < side.Party.Count; i++)
             {
                 if (side.CanSwitchTo(i) && !reserved.Contains(i))
                 {
-                    return true;
+                    return i;
                 }
             }
-            return false;
+            return -1;
         }
     }
 }

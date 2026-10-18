@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace PenguinMonster.View.Art
@@ -159,6 +161,22 @@ namespace PenguinMonster.View.Art
 
             var sprite = Sprite.Create(texture, new Rect(0, 0, Width, Height), pivot, Width, 0, SpriteMeshType.FullRect, border);
             sprite.name = name;
+            return sprite;
+        }
+
+        /// <summary>
+        /// キャッシュにある絵を返す。無い・Destroy 済みのときだけ create で作って入れる。
+        /// 絵を描くのは重いので使い回すが、Destroy された絵を返すと表示が消えるので作り直す
+        /// </summary>
+        public static Sprite GetOrCache<TKey>(Dictionary<TKey, Sprite> cache, TKey key, Func<Sprite> create)
+        {
+            if (cache.TryGetValue(key, out var sprite) && sprite != null)
+            {
+                return sprite;
+            }
+
+            sprite = create();
+            cache[key] = sprite;
             return sprite;
         }
 

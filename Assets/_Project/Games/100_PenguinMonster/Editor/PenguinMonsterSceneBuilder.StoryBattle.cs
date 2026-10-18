@@ -68,8 +68,7 @@ namespace PenguinMonster.Editor
 
         private static Button CreateStoryCommandButton(Transform parent, string name, string label, Color color)
         {
-            var button = CreateButton(parent, name, label, StoryCommandButtonSize, color);
-            button.GetComponentInChildren<Text>().fontSize = CommandFontSize;
+            var button = CreateButton(parent, name, label, StoryCommandButtonSize, color, fontSize: CommandFontSize);
             return button.GetComponent<Button>();
         }
 
@@ -90,12 +89,8 @@ namespace PenguinMonster.Editor
 
             var frame = CreateFramedBox(overlay.transform, "Box", InfoBoxColor, out var inner);
             Place(frame.rectTransform, Center, Vector2.zero, PartyBoxSize);
-            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = PartySlotSpacing;
+            var layout = AddChildLayout<VerticalLayoutGroup>(inner.gameObject, PartySlotSpacing, TextAnchor.UpperCenter);
             layout.padding = new RectOffset(0, 0, (int)PartySlotSpacing, 0);
-            layout.childAlignment = TextAnchor.UpperCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
 
             var tabs = CreateBagPocketTabs(inner);
             var empty = CreateText(inner, "Empty", "", BagEmptyFontSize, BoxTextColor, TextAnchor.MiddleCenter);
@@ -138,11 +133,7 @@ namespace PenguinMonster.Editor
         {
             var row = UIDialogBuilder.CreateUIObject("Tabs", parent);
             row.GetComponent<RectTransform>().sizeDelta = new Vector2(BagSlotSize.x, BagTabSize.y);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = PartySlotSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, PartySlotSpacing, TextAnchor.MiddleCenter);
 
             var tabs = new Button[BagPocketLabels.Length];
             for (int i = 0; i < tabs.Length; i++)
@@ -163,15 +154,9 @@ namespace PenguinMonster.Editor
         /// <summary>左の列に能力の名前、右の列に数（右寄せ）</summary>
         private static LevelUpWindow CreateLevelUpWindow(Transform parent)
         {
-            var safe = CreateSafeContent(parent);
-            safe.name = "LevelUp";
-            var frame = CreateFramedBox(safe, "LevelUpWindow", MessageBoxColor, out var inner);
+            var frame = CreateBottomRightWindow(parent, "LevelUp", "LevelUpWindow", new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap),
+                LevelUpWindowSize, out var safe, out var inner);
             frame.raycastTarget = false;
-            var rect = frame.rectTransform;
-            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(1f, 0f);
-            rect.anchoredPosition = new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap);
-            rect.sizeDelta = LevelUpWindowSize;
 
             var names = CreateLevelUpColumn(inner, "Names", TextAnchor.MiddleLeft);
             var values = CreateLevelUpColumn(inner, "Values", TextAnchor.MiddleRight);
@@ -188,15 +173,9 @@ namespace PenguinMonster.Editor
 
         private static NewMoveWindow CreateNewMoveWindow(Transform parent)
         {
-            var safe = CreateSafeContent(parent);
-            safe.name = "NewMove";
-            var frame = CreateFramedBox(safe, "NewMoveWindow", MessageBoxColor, out var inner);
+            var frame = CreateBottomRightWindow(parent, "NewMove", "NewMoveWindow", new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap),
+                NewMoveWindowSize, out var safe, out var inner);
             frame.raycastTarget = false;
-            var rect = frame.rectTransform;
-            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(1f, 0f);
-            rect.anchoredPosition = new Vector2(-LevelUpRightMargin, BottomAreaHeight + LevelUpGap);
-            rect.sizeDelta = NewMoveWindowSize;
 
             var text = CreateText(inner, "Text", "", MoveHintFontSize, BoxTextColor, TextAnchor.MiddleLeft);
             text.raycastTarget = false;

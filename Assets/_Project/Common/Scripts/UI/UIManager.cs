@@ -31,7 +31,7 @@ namespace PenguinMonster.Common.UI
             }
             else
             {
-                Debug.LogWarning("[UIManager] CommonDialog参照が設定されていません。");
+                WarnMissingDialog("CommonDialog");
             }
         }
 
@@ -62,7 +62,7 @@ namespace PenguinMonster.Common.UI
             }
             else
             {
-                Debug.LogWarning("[UIManager] PauseDialog参照が設定されていません。");
+                WarnMissingDialog("PauseDialog");
             }
         }
 
@@ -93,8 +93,14 @@ namespace PenguinMonster.Common.UI
             }
             else
             {
-                Debug.LogWarning("[UIManager] ResultDialog参照が設定されていません。");
+                WarnMissingDialog("ResultDialog");
             }
+        }
+
+        // 参照未設定の警告文を1か所にまとめる（出る文字列はダイアログごとに従来どおり）
+        private static void WarnMissingDialog(string dialogName)
+        {
+            Debug.LogWarning($"[UIManager] {dialogName}参照が設定されていません。");
         }
 
         /// <summary>

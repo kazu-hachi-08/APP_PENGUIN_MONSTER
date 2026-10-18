@@ -81,10 +81,7 @@ namespace PenguinMonster.Editor
             var back = CreateNightBack(parent, name);
             content = CreateSafeContent(back.transform);
 
-            var titleText = CreateText(content, "Title", title, SubMenuTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(titleText);
-            titleText.rectTransform.anchorMin = new Vector2(0f, 1f);
-            titleText.rectTransform.offsetMin = new Vector2(0f, -SubMenuTitleHeight);
+            CreateTopTitle(content, title, SubMenuTitleFontSize, SubMenuTitleHeight);
 
             var backObj = CreateButton(content, "Btn_Back", "戻る", SubMenuBackSize, SubMenuButtonColor);
             Place(backObj.GetComponent<RectTransform>(), new Vector2(0f, 1f), SubMenuBackPosition, SubMenuBackSize);
@@ -240,11 +237,7 @@ namespace PenguinMonster.Editor
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.anchoredPosition = position;
             rect.sizeDelta = new Vector2(0f, height);
-            var layout = row.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = spacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(row, spacing, TextAnchor.MiddleCenter);
             return row.transform;
         }
     }

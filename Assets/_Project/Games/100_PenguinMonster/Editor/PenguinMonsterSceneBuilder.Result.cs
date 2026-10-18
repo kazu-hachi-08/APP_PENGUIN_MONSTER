@@ -62,10 +62,8 @@ namespace PenguinMonster.Editor
             Place(detail.rectTransform, Center, ResultDetailPosition, ResultDetailSize);
 
             var row = CreateCenteredRow(content, "Buttons", Center, ResultButtonRowPosition, ResultRetrySize.y, ResultButtonSpacing);
-            var retry = CreateButton(row, "Btn_Retry", NextBattleLabel, ResultRetrySize, SurvivalColor);
-            retry.GetComponentInChildren<Text>().fontSize = ResultButtonFontSize;
-            var toTitle = CreateButton(row, "Btn_Title", ResultTitleLabel, ResultBackSize, MenuColor);
-            toTitle.GetComponentInChildren<Text>().fontSize = ResultButtonFontSize;
+            var retry = CreateButton(row, "Btn_Retry", NextBattleLabel, ResultRetrySize, SurvivalColor, fontSize: ResultButtonFontSize);
+            var toTitle = CreateButton(row, "Btn_Title", ResultTitleLabel, ResultBackSize, MenuColor, fontSize: ResultButtonFontSize);
 
             var dialog = back.gameObject.AddComponent<ResultDialog>();
             var so = new SerializedObject(dialog);

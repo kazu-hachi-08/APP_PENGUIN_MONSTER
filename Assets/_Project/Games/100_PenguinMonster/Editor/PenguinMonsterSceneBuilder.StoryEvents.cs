@@ -59,14 +59,8 @@ namespace PenguinMonster.Editor
 
         private static YesNoWindow CreateYesNoWindow(Transform parent, FieldInput input)
         {
-            var safe = CreateSafeContent(parent);
-            safe.name = "YesNo";
-            var frame = CreateFramedBox(safe, "YesNoWindow", MessageBoxColor, out var inner);
-            var rect = frame.rectTransform;
-            rect.anchorMin = rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot = new Vector2(1f, 0f);
-            rect.anchoredPosition = new Vector2(-YesNoRightMargin, BottomAreaHeight + YesNoGap);
-            rect.sizeDelta = YesNoSize;
+            CreateBottomRightWindow(parent, "YesNo", "YesNoWindow", new Vector2(-YesNoRightMargin, BottomAreaHeight + YesNoGap), YesNoSize,
+                out var safe, out var inner);
 
             var yes = CreateYesNoRow(inner, "Yes", "はい", YesNoRowOffset, YesColor, out var yesCursor);
             var no = CreateYesNoRow(inner, "No", "いいえ", -YesNoRowOffset, BackColor, out var noCursor);

@@ -59,7 +59,7 @@ namespace PenguinMonster.Common.Profile
 
         private void OnDecideClicked()
         {
-            PlayClickSe();
+            AudioManager.PlaySeIfAvailable(SeId.ButtonClick);
             string name = UserProfile.Sanitize(_inputField.text);
             if (!UserProfile.IsValid(name)) return;
 
@@ -86,12 +86,5 @@ namespace PenguinMonster.Common.Profile
             _onDecided?.Invoke();
         }
 
-        private static void PlayClickSe()
-        {
-            if (AudioManager.HasInstance)
-            {
-                AudioManager.Instance.PlaySe(SeId.ButtonClick);
-            }
-        }
     }
 }

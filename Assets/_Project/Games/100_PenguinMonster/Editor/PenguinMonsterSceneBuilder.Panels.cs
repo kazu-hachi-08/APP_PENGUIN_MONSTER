@@ -124,15 +124,10 @@ namespace PenguinMonster.Editor
             rect.anchoredPosition = Vector2.zero;
             rect.sizeDelta = new Vector2(CommandPanelWidth, BottomAreaHeight);
 
-            var layout = inner.gameObject.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = CommandSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(inner.gameObject, CommandSpacing, TextAnchor.MiddleCenter);
 
-            var fight = CreateButton(inner, "Btn_Fight", "戦う", FightButtonSize, FightColor);
+            var fight = CreateButton(inner, "Btn_Fight", "戦う", FightButtonSize, FightColor, fontSize: CommandFontSize);
             var party = CreateButton(inner, "Btn_Party", "ペンモン", PartyButtonSize, PartyColor);
-            fight.GetComponentInChildren<Text>().fontSize = CommandFontSize;
 
             var panel = frame.gameObject.AddComponent<CommandPanel>();
             var so = new SerializedObject(panel);
@@ -214,11 +209,7 @@ namespace PenguinMonster.Editor
 
             var frame = CreateFramedBox(overlay.transform, "Box", InfoBoxColor, out var inner);
             Place(frame.rectTransform, Center, Vector2.zero, PartyBoxSize);
-            var layout = inner.gameObject.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = PartySlotSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<VerticalLayoutGroup>(inner.gameObject, PartySlotSpacing, TextAnchor.MiddleCenter);
 
             var buttons = new Button[PartySlotCount];
             var labels = new Text[buttons.Length];
@@ -273,11 +264,7 @@ namespace PenguinMonster.Editor
         {
             var frame = CreateFramedBox(parent, "TargetPanel", InfoBoxColor, out var inner);
             SetBottomArea(frame.rectTransform, 0f, 1f);
-            var layout = inner.gameObject.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = TargetSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(inner.gameObject, TargetSpacing, TextAnchor.MiddleCenter);
 
             var buttons = new Button[BattleBalance.DoublesActiveCount];
             var labels = new Text[buttons.Length];

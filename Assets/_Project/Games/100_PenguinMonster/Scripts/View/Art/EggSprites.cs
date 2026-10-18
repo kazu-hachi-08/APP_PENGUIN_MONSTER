@@ -76,14 +76,7 @@ namespace PenguinMonster.View.Art
 
         public static Sprite Get(EggKind kind)
         {
-            if (Cache.TryGetValue(kind, out var sprite) && sprite != null)
-            {
-                return sprite;
-            }
-
-            sprite = Paint(EggStyleTable.Get(kind)).ToSprite($"Egg_{kind}", MiddlePivot);
-            Cache[kind] = sprite;
-            return sprite;
+            return PixelCanvas.GetOrCache(Cache, kind, () => Paint(EggStyleTable.Get(kind)).ToSprite($"Egg_{kind}", MiddlePivot));
         }
 
         /// <summary>下がふくらんだ卵形（下の丸＋上の細い楕円）に斑点と光</summary>

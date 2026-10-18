@@ -11,11 +11,9 @@ namespace PenguinMonster.View.Art
         {
             var shell = Rgb(245, 235, 205);
             var shellShade = PenguinPalette.Darken(shell, 0.82f);
-            var fluffShade = PenguinPalette.Shade(HinaGrayFluff);
             b.Shaded(32f, 16f, 8.5f, 7f, HinaGrayFluff);
             // 小さなヒレは殻のふちの外へ出し、殻の中に体があるとわかるようにする
-            b.Flipper(V(24, 15), V(16, 19), 2f, fluffShade);
-            b.Flipper(V(40, 15), V(48, 19), 2f, fluffShade);
+            b.Flipper2(V(24, 15), V(16, 19), 2f, HinaGrayFluffShade);
             // 殻のふちはギザギザにして、割れたばかりの卵だとひと目でわかるようにする
             var rim = new[] { V(44, 9), V(41, 3), V(32, 1), V(23, 3), V(20, 9), V(20, 14), V(23, 18), V(26, 14), V(29, 18), V(32, 14), V(35, 18), V(38, 14), V(41, 18), V(44, 14) };
             b.Polygon(V(32, 9), shellShade, rim);
@@ -64,7 +62,6 @@ namespace PenguinMonster.View.Art
         {
             var pink = Rgb(250, 130, 170);
             var water = Rgb(150, 210, 245);
-            var fluffShade = PenguinPalette.Shade(HinaGrayFluff);
             b.Ellipse(32f, 8f, 28f, 6f, PenguinPalette.Shade(water));
             b.Ellipse(31f, 8.5f, 26f, 5f, water);
             b.Line(0.5f, PenguinPalette.Belly, V(6, 9), V(10, 10), V(14, 9));
@@ -74,8 +71,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(32f, 18f, 8f, 6.5f, HinaGrayFluff);
             b.Belly(31f, 17f, 5f, 4f);
             UkiwaRing(b, 180f, 360f, pink, false);
-            b.Flipper(V(25, 20), V(17, 18), 2f, fluffShade);
-            b.Flipper(V(39, 20), V(47, 18), 2f, fluffShade);
+            b.Flipper2(V(25, 20), V(17, 18), 2f, HinaGrayFluffShade);
             b.Shaded(31f, 28f, 8.5f, 7.5f, HinaGrayFluff);
             b.White(29f, 27f, 6f, 4.5f);
             b.TurnedFace(29f, 28f, FaceLeft, EyeStyle.Sparkle, eyeGap: 5f);
@@ -106,13 +102,11 @@ namespace PenguinMonster.View.Art
             var metal = Rgb(170, 172, 180);
             var metalShade = PenguinPalette.Shade(metal);
             var filament = Rgb(255, 140, 40);
-            var fluffShade = PenguinPalette.Shade(HinaGrayFluff);
             b.Foot(27f, 3f, -10f, 0.6f);
             b.Foot(37f, 3f, 10f, 0.6f);
             b.Shaded(32f, 10f, 8f, 7f, HinaGrayFluff);
             b.Belly(31f, 9f, 5f, 4.5f);
-            b.Flipper(V(25, 11), V(19, 6), 2f, fluffShade);
-            b.Flipper(V(39, 11), V(45, 6), 2f, fluffShade);
+            b.Flipper2(V(25, 11), V(19, 6), 2f, HinaGrayFluffShade);
             // 口金は首輪のように巻き、ねじの段を交互の色で見せる
             b.Rect(25, 15, 14, 5, metalShade);
             b.Rect(25, 16, 14, 1, metal);
@@ -210,7 +204,6 @@ namespace PenguinMonster.View.Art
             var soil = Rgb(140, 100, 70);
             var leaf = Rgb(120, 200, 90);
             var drop = Rgb(120, 200, 250);
-            var fluffShade = PenguinPalette.Shade(HinaGrayFluff);
             b.Shaded(32f, 4f, 20f, 7f, soil);
             b.Dot(16, 6, PenguinPalette.Darken(soil, 0.6f));
             b.Dot(44, 4, PenguinPalette.Darken(soil, 0.6f));
@@ -219,7 +212,7 @@ namespace PenguinMonster.View.Art
             // 足を前へ投げ出して、小山に腰を下ろしているのを見せる
             b.Foot(22f, 10f, 30f, 0.6f);
             b.Foot(27f, 9f, 15f, 0.6f);
-            b.Flipper(V(38, 15), V(44, 11), 2f, fluffShade);
+            b.Flipper(V(38, 15), V(44, 11), 2f, HinaGrayFluffShade);
             b.Shaded(31f, 26f, 8.5f, 7.5f, HinaGrayFluff);
             b.White(29f, 25f, 6f, 4.5f);
             b.TurnedFace(29f, 26f, FaceLeft, EyeStyle.Sparkle, eyeGap: 5f);
@@ -245,7 +238,6 @@ namespace PenguinMonster.View.Art
             var string_ = Rgb(240, 235, 220);
             var lens = Rgb(150, 220, 250);
             var strap = Rgb(80, 70, 70);
-            var fluffShade = PenguinPalette.Shade(HinaGrayFluff);
             // 崖は右下の角を埋める岩にし、左の面を切り立たせて「ふち」に見せる
             b.Polygon(V(52, 6), PenguinPalette.Shade(Stone), V(39, 14), V(46, 17), V(54, 15), V(62, 18), V(62, 0), V(41, 0), V(42, 7));
             b.Polygon(V(52, 8), Stone, V(41, 13), V(46, 16), V(54, 14), V(61, 16), V(61, 4), V(44, 4), V(43, 8));
@@ -257,7 +249,7 @@ namespace PenguinMonster.View.Art
             b.Polygon(V(48, 29), cardboard, V(40, 30), V(52, 33), V(60, 34), V(59, 33), V(55, 33), V(55, 29), V(50, 29), V(49, 25), V(45, 25), V(41, 24));
             b.Line(0.5f, cardboardShade, V(42, 28), V(56, 32));
             b.Foot(41f, 16f, -30f, 0.6f);
-            b.Line(1.5f, fluffShade, V(37, 15), V(41, 16));
+            b.Line(1.5f, HinaGrayFluffShade, V(37, 15), V(41, 16));
             b.Foot(28f, 9f, 20f, 0.6f);
             // 体を左へ大きく傾け、崖から身を投げ出した瞬間の重心にする
             b.ShadedTilted(32f, 18f, 8f, 7f, 30f, HinaGrayFluff);
@@ -265,7 +257,7 @@ namespace PenguinMonster.View.Art
             // 胴に巻いたひもで、背中にくくりつけてあるのを見せる
             b.Line(0.6f, string_, V(27, 22), V(38, 18));
             b.Line(0.6f, string_, V(28, 14), V(38, 22));
-            b.Flipper(V(26, 20), V(15, 26), 2f, fluffShade);
+            b.Flipper(V(26, 20), V(15, 26), 2f, HinaGrayFluffShade);
             b.Shaded(24f, 28f, 8f, 7.5f, HinaGrayFluff);
             b.White(22f, 27f, 5.5f, 4.5f);
             b.TurnedFace(22f, 28f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f, open: true);
@@ -350,10 +342,7 @@ namespace PenguinMonster.View.Art
             var bolt = new[] { V(48, 58), V(52, 46), V(46, 40), V(54, 30), V(50, 20) };
             b.Line(1.4f, BoltShade, bolt);
             b.Line(0.7f, Bolt, bolt);
-            foreach (var p in new[] { V(40, 50), V(58, 42), V(44, 28), V(58, 24), V(36, 58), V(54, 54) })
-            {
-                b.Sparkle((int)p.x, (int)p.y, PenguinPalette.Belly);
-            }
+            b.Sparkles(PenguinPalette.Belly, V(40, 50), V(58, 42), V(44, 28), V(58, 24), V(36, 58), V(54, 54));
             // 足は下へだらりと垂らし、風に乗って浮いているのを見せる
             b.Foot(24f, 7f, 80f, 0.8f);
             b.Foot(31f, 6f, 100f, 0.8f);

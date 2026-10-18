@@ -21,9 +21,7 @@ namespace PenguinMonster.Editor
         private static QuitButton CreateQuitButton(Transform parent)
         {
             // 押せる所はセーフエリアの内側。背景は無いので、ボタン以外のタップは下の画面へ通る
-            var root = UIDialogBuilder.CreateUIObject("QuitButton", parent);
-            UIDialogBuilder.SetStretchAll(root.GetComponent<RectTransform>());
-            root.AddComponent<SafeAreaFitter>();
+            var root = CreateSafeContent(parent, "QuitButton").gameObject;
             var buttonObj = CreateButton(root.transform, "Btn_Quit", "やめる", QuitButtonSize, QuitButtonColor);
             Place(buttonObj.GetComponent<RectTransform>(), TopRight, QuitButtonPosition, QuitButtonSize);
 

@@ -23,8 +23,7 @@ namespace PenguinMonster.View.Art
             b.Ellipse(34f, 35f, 5f, 5f, MoonYellow);
             b.Erase(36.5f, 36.5f, 4f, 4f);
             b.White(30f, 22.5f, 6f, 4.5f);
-            b.Flipper(V(25, 13), V(19, 8), 2f, bodyShade);
-            b.Flipper(V(39, 13), V(45, 8), 2f, bodyShade);
+            b.Flipper2(V(25, 13), V(19, 8), 2f, bodyShade);
             b.TurnedFace(30f, 24f, FaceLeft, EyeStyle.Sleepy, eyeGap: 5f);
             b.Sparkle(12, 30, MoonYellow);
             b.Sparkle(52, 22, MoonYellow);
@@ -46,8 +45,7 @@ namespace PenguinMonster.View.Art
             b.Belly(30f, 18f, 8.5f, 10f);
             b.Shaded(32f, 37f, 11f, 10f, body);
             b.White(29f, 36f, 8.5f, 6.5f);
-            b.Flipper(V(20, 24), V(8, 30), 3f, bodyShade);
-            b.Flipper(V(44, 24), V(56, 30), 3f, bodyShade);
+            b.Flipper2(V(20, 24), V(8, 30), 3f, bodyShade);
             b.Line(1f, haze, V(6, 32), V(14, 28), V(20, 20));
             b.Line(1f, haze, V(58, 32), V(50, 28), V(44, 20));
             b.TurnedFace(29f, 37f, FaceLeft, EyeStyle.Line, eyeGap: 7f);
@@ -75,8 +73,7 @@ namespace PenguinMonster.View.Art
             {
                 b.Dot((int)p.x, (int)p.y, pattern);
             }
-            b.Flipper(V(22, 15), V(15, 18), 2.5f, coatShade);
-            b.Flipper(V(42, 15), V(49, 18), 2.5f, coatShade);
+            b.Flipper2(V(22, 15), V(15, 18), 2.5f, coatShade);
             b.Shaded(32f, 26f, 7.5f, 7f, body);
             b.White(30f, 25.5f, 5.5f, 4.5f);
             b.TurnedFace(30f, 27f, FaceLeft, EyeStyle.Smile, eyeGap: 5f, open: true);
@@ -131,8 +128,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(32f, 36f, 7f, 3f, soil);
             b.Rect(28, 36, 2, 2, Rgb(90, 160, 80));
             b.White(30f, 27.5f, 5.5f, 4.5f);
-            b.Flipper(V(25, 20), V(17, 26), 2f, bodyShade);
-            b.Flipper(V(39, 20), V(47, 26), 2f, bodyShade);
+            b.Flipper2(V(25, 20), V(17, 26), 2f, bodyShade);
             b.TurnedFace(30f, 29f, FaceLeft, EyeStyle.Sharp, eyeGap: 5f);
         }
 
@@ -148,8 +144,7 @@ namespace PenguinMonster.View.Art
             // とがった氷は肩の外側に立てる（頭のすぐ上だと耳に見えるので）
             b.Triangle(V(8, 24), V(16, 28), V(9, 40), IceLight);
             b.Triangle(V(48, 28), V(56, 24), V(55, 42), IceShade);
-            b.Flipper(V(20, 30), V(8, 34), 3f, bodyShade);
-            b.Flipper(V(44, 30), V(56, 34), 3f, bodyShade);
+            b.Flipper2(V(20, 30), V(8, 34), 3f, bodyShade);
             b.TurnedFace(29f, 35f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
             b.Rect(0, 0, 64, 4, Water);
             b.Line(0.7f, DeepWater, V(0, 3), V(64, 3));
@@ -168,8 +163,7 @@ namespace PenguinMonster.View.Art
             b.Belly(30f, 14f, 5.5f, 4.5f);
             b.Shaded(32f, 25f, 8f, 7f, body);
             b.White(30f, 24.5f, 6f, 4.5f);
-            b.Flipper(V(24, 15), V(17, 12), 2f, bodyShade);
-            b.Flipper(V(40, 15), V(47, 12), 2f, bodyShade);
+            b.Flipper2(V(24, 15), V(17, 12), 2f, bodyShade);
             b.TurnedFace(30f, 26f, FaceLeft, EyeStyle.Line, eyeGap: 5f);
         }
 
@@ -200,8 +194,7 @@ namespace PenguinMonster.View.Art
             }
             b.Shaded(32f, 37f, 11.5f, 10f, body);
             b.White(29f, 36f, 8.5f, 6.5f);
-            b.Flipper(V(18, 22), V(8, 14), 3f, bodyShade);
-            b.Flipper(V(46, 22), V(56, 14), 3f, bodyShade);
+            b.Flipper2(V(18, 22), V(8, 14), 3f, bodyShade);
             b.TurnedFace(29f, 37f, FaceLeft, EyeStyle.Sharp, eyeGap: 7f);
         }
 
@@ -314,8 +307,7 @@ namespace PenguinMonster.View.Art
             b.Line(1f, cord, V(32, 34), V(28, 40), V(32, 38), V(36, 40), V(32, 34));
             b.Line(1f, cord, V(32, 34), V(30, 46));
             b.Line(1f, cord, V(32, 34), V(35, 46));
-            b.Flipper(V(18, 20), V(10, 14), 2.5f, clothShade);
-            b.Flipper(V(46, 20), V(54, 14), 2.5f, clothShade);
+            b.Flipper2(V(18, 20), V(10, 14), 2.5f, clothShade);
             b.White(31f, 25f, 7f, 4.5f);
             b.Face(31f, 26f, 3.5f, EyeStyle.Dot);
         }

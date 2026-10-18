@@ -29,24 +29,17 @@ namespace PenguinMonster.View.Art
 
         public static Sprite Get(MonsterType type)
         {
-            if (Cache.TryGetValue(type, out var sprite) && sprite != null)
-            {
-                return sprite;
-            }
-
-            sprite = Paint(type).ToSprite($"MoveEffect_{type}", MiddlePivot);
-            Cache[type] = sprite;
-            return sprite;
+            return PixelCanvas.GetOrCache(Cache, type, () => Paint(type).ToSprite($"MoveEffect_{type}", MiddlePivot));
         }
 
         /// <summary>形の粒。星以外は白っぽく描き、出すときにタイプの色を付ける</summary>
         public static Sprite Get(EffectShape shape)
         {
-            if (ShapeCache.TryGetValue(shape, out var sprite) && sprite != null)
-            {
-                return sprite;
-            }
+            return PixelCanvas.GetOrCache(ShapeCache, shape, () => PaintShape(shape).ToSprite($"MoveEffect_{shape}", MiddlePivot));
+        }
 
+        private static PixelCanvas PaintShape(EffectShape shape)
+        {
             var canvas = new PixelCanvas(Size, Size);
             switch (shape)
             {
@@ -55,9 +48,7 @@ namespace PenguinMonster.View.Art
                 case EffectShape.Arrow: PaintArrow(canvas); break;
                 default: PaintImpact(canvas); break;
             }
-            sprite = canvas.ToSprite($"MoveEffect_{shape}", MiddlePivot);
-            ShapeCache[shape] = sprite;
-            return sprite;
+            return canvas;
         }
 
         private static PixelCanvas Paint(MonsterType type)

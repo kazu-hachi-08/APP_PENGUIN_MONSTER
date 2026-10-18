@@ -97,10 +97,7 @@ namespace PenguinMonster.Editor
 
         private static Text CreateDraftTitle(Transform parent)
         {
-            var title = CreateText(parent, "Title", "", DraftTitleFontSize, Color.white, TextAnchor.MiddleLeft);
-            StyleHeading(title);
-            title.rectTransform.anchorMin = new Vector2(0f, 1f);
-            title.rectTransform.offsetMin = new Vector2(DraftSideMargin, -DraftTitleHeight);
+            var title = CreateTopTitle(parent, "", DraftTitleFontSize, DraftTitleHeight, TextAnchor.MiddleLeft, DraftSideMargin);
             title.rectTransform.offsetMax = new Vector2(-DraftTitleRightMargin, 0f);
             return title;
         }
@@ -125,11 +122,7 @@ namespace PenguinMonster.Editor
             rect.anchorMax = new Vector2(0f, 1f);
             rect.offsetMin = new Vector2(DraftSideMargin, DraftFooterHeight);
             rect.offsetMax = new Vector2(DraftSideMargin + DraftCardWidth, -DraftTitleHeight);
-            var layout = column.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = DraftCardSpacing;
-            layout.childAlignment = TextAnchor.MiddleCenter;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<VerticalLayoutGroup>(column, DraftCardSpacing, TextAnchor.MiddleCenter);
             return column.transform;
         }
 
@@ -163,11 +156,7 @@ namespace PenguinMonster.Editor
 
             var badgeRow = UIDialogBuilder.CreateUIObject("Types", card.transform);
             PlaceBand(badgeRow.GetComponent<RectTransform>(), DraftCardTextLeft, DraftCardBadgeTop, DraftCardBadgeSize.y);
-            var layout = badgeRow.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = DraftCardBadgeSpacing;
-            layout.childAlignment = TextAnchor.MiddleLeft;
-            layout.childControlWidth = false;
-            layout.childControlHeight = false;
+            AddChildLayout<HorizontalLayoutGroup>(badgeRow, DraftCardBadgeSpacing, TextAnchor.MiddleLeft);
             for (int k = 0; k < TypesPerMonster; k++)
             {
                 int badge = index * TypesPerMonster + k;

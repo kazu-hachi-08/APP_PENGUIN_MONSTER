@@ -58,14 +58,7 @@ namespace PenguinMonster.Editor
 
         private static ModeSelectPanel CreateRoomPanel(Transform canvas, OnlineSession session)
         {
-            var back = CreateNightBack(canvas, "ModeSelectPanel");
-            CreateSnowField(back.transform);
-            CreateTitleWalkers(back.transform);
-            var content = CreateSafeContent(back.transform);
-
-            var title = CreateText(content, "Title", RoomTitle, RoomTitleFontSize, Color.white, TextAnchor.MiddleCenter);
-            StyleHeading(title);
-            Place(title.rectTransform, new Vector2(0.5f, 1f), RoomTitlePosition, RoomTitleSize);
+            var content = CreateWalkerScreen(canvas, "ModeSelectPanel", RoomTitle, RoomTitleFontSize, RoomTitlePosition, RoomTitleSize, out var back);
 
             var menu = CreateRoomMenu(content, out var host, out var join, out var codeInput, out var toTitle, out var npc);
             var waiting = CreateRoomWaiting(content, out var status, out var copy, out var cancel);
@@ -97,9 +90,8 @@ namespace PenguinMonster.Editor
             var menu = UIDialogBuilder.CreateUIObject("Menu", parent);
             UIDialogBuilder.SetStretchAll(menu.GetComponent<RectTransform>());
 
-            var hostObj = CreateButton(menu.transform, "Btn_Host", RoomHostLabel, RoomCardSize, OnlineColor);
+            var hostObj = CreateButton(menu.transform, "Btn_Host", RoomHostLabel, RoomCardSize, OnlineColor, fontSize: RoomHostFontSize);
             Place(hostObj.GetComponent<RectTransform>(), Center, RoomHostPosition, RoomCardSize);
-            hostObj.GetComponentInChildren<Text>().fontSize = RoomHostFontSize;
             host = hostObj.GetComponent<Button>();
 
             var box = CreateFramedBox(menu.transform, "JoinBox", TitleBestFillColor, out var inner);

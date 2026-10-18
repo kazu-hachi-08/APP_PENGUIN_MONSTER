@@ -54,11 +54,7 @@ namespace PenguinMonster.View.Story
 
         private void Awake()
         {
-            for (int i = 0; i < _slotButtons.Length; i++)
-            {
-                int index = i;
-                _slotButtons[i].onClick.AddListener(() => OnSlot(index));
-            }
+            ButtonHighlight.AddIndexedClick(_slotButtons, OnSlot);
             _closeButton.onClick.AddListener(() => Tap(() => _closed = true));
             _detailButton.onClick.AddListener(() => Tap(ShowDetail));
             _swapButton.onClick.AddListener(() => Tap(StartSwap));

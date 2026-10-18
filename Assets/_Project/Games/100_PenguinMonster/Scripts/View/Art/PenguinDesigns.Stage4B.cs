@@ -19,8 +19,7 @@ namespace PenguinMonster.View.Art
             b.ShadedTilted(32f, 36f, 11f, 14f, -6f, body);
             b.BellyTilted(30f, 36f, 7f, 10f, -6f);
             // ヒレは付け根を太くして地面へ突っ張らせ、体を支えているのが分かるようにする
-            b.Flipper(V(22, 30), V(11, 4), 4f, bodyShade);
-            b.Flipper(V(42, 30), V(53, 4), 4f, bodyShade);
+            b.Flipper2(V(22, 30), V(11, 4), 4f, bodyShade);
             b.Shaded(31f, 15f, 10.5f, 10f, body);
             b.White(29f, 14f, 7.5f, 6f);
             SakadachiFace(b, 29f, 12f);
@@ -190,8 +189,7 @@ namespace PenguinMonster.View.Art
             b.Rect(24, 7, 16, 4, frame);
             b.Line(0.8f, frame, V(32, 7), V(31, 2));
             b.Ellipse(31f, 2f, 1.5f, 1.5f, paper);
-            b.Flipper(V(16, 28), V(8, 21), 2.5f, paperShade);
-            b.Flipper(V(48, 28), V(56, 21), 2.5f, paperShade);
+            b.Flipper2(V(16, 28), V(8, 21), 2.5f, paperShade);
             b.White(27f, 34f, 7.5f, 6f);
             b.TurnedFace(27f, 35f, FaceLeft, EyeStyle.Sleepy, eyeGap: 6f);
             b.Ellipse(55f, 46f, 2.5f, 2.5f, wisp);
@@ -431,8 +429,7 @@ namespace PenguinMonster.View.Art
                 b.Triangle(OnEllipse(31f, 31f, 17f, 16f, angle - 0.14f), OnEllipse(31f, 31f, 17f, 16f, angle + 0.14f), OnEllipse(31f, 31f, 22f, 21f, angle), fluff);
             }
             b.Ellipse(31f, 31f, 18f, 17f, fluff);
-            b.Flipper(V(14, 26), V(8, 20), 2.5f, fluffShade);
-            b.Flipper(V(50, 26), V(56, 20), 2.5f, fluffShade);
+            b.Flipper2(V(14, 26), V(8, 20), 2.5f, fluffShade);
             b.White(28f, 33f, 9f, 7f);
             b.TurnedFace(28f, 34f, FaceLeft, EyeStyle.Worried, eyeGap: 7f);
             PachipachiSpark(b, spark, V(6, 46));
@@ -470,8 +467,7 @@ namespace PenguinMonster.View.Art
             b.Shaded(31f, 38f, 8f, 7.5f, body);
             b.White(29f, 37f, 6f, 4.5f);
             b.TurnedFace(29f, 38f, FaceLeft, EyeStyle.Line, eyeGap: 5f);
-            b.Flipper(V(25, 28), V(21, 22), 2f, bodyShade);
-            b.Flipper(V(39, 28), V(43, 22), 2f, bodyShade);
+            b.Flipper2(V(25, 28), V(21, 22), 2f, bodyShade);
         }
 
         /// <summary>うずまきの腕1本。外から中心へ半径を縮めながら、雲の玉を並べる</summary>
