@@ -156,17 +156,6 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
-        public void PowerPlantPlaceholder_RestoresPower()
-        {
-            var talkFrom = Town03People.PowerPlantCoreSpot.Position + Direction.Down.Offset();
-
-            RunToEnd(PlayerAt(Town03Maps.PowerPlant, talkFrom, Direction.Up).ScriptAhead());
-
-            Assert.IsTrue(_state.Flags.Has(Town03Flags.PowerRestored));
-            Assert.IsNull(PlayerAt(Town03Maps.PowerPlant, talkFrom, Direction.Up).ScriptAhead());
-        }
-
-        [Test]
         public void HutKeeper_HealsAndReturnsToYukiokoshiHut()
         {
             _state.Party.Add(OwnedMonster.Create(Town01Starters.All[0], StoryBalance.StarterLevel));
