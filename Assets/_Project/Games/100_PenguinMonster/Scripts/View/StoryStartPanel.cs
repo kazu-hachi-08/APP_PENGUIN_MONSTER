@@ -7,12 +7,12 @@ namespace PenguinMonster.View
 {
     /// <summary>
     /// 記録があるときに「ストーリー」で出す「続きから / 最初から」。
-    /// 最初からは確かめる。前の記録は、次に記録したときに上書きされるまで残す（本家と同じ。ここでは消さない）
+    /// 最初からは確かめる。前の記録はここでは消さないが、目覚めの台本の後の自動の記録ですぐ上書きされる
     /// </summary>
     public class StoryStartPanel : MonoBehaviour
     {
         private const string NewGameTitle = "最初から 始めますか？";
-        private const string NewGameMessage = "前の 記録は\n次に 記録したときに 消えます";
+        private const string NewGameMessage = "前の 記録は\n消えて しまいます";
         private const string NewGameConfirm = "最初から";
         private const string NewGameCancel = "やめる";
 
