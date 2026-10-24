@@ -252,11 +252,12 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
-        public void StoryItems_EachItemIsEitherEggOrMedicine()
+        public void StoryItems_EachItemIsEggOrMedicineOrHeldItem()
         {
             foreach (var definition in StoryItems.Definitions)
             {
-                Assert.AreNotEqual(definition.IsCaptureEgg, definition.IsMedicine, definition.Name);
+                int kinds = (definition.IsCaptureEgg ? 1 : 0) + (definition.IsMedicine ? 1 : 0) + (definition.IsHeldItem ? 1 : 0);
+                Assert.AreEqual(1, kinds, definition.Name);
             }
         }
 

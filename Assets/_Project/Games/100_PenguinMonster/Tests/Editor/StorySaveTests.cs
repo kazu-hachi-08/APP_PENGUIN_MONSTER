@@ -62,6 +62,29 @@ namespace PenguinMonster.Story.Tests
             "\"CaughtNos\":[154,155,160,161,181]," +
             "\"Badges\":[\"town01.badge\",\"town02.badge\"]}";
 
+        /// <summary>
+        /// 区切り3の終わりの記録（ユキオコシ町の北の看板の前・ライゾウに勝って いなづま羽章あり・ランニングシューズで走っている）。
+        /// 区切り3の版が書く形のまま残しておき、区切りを足しても読めることを守る（中身を書き換えないこと）。
+        /// 区切り3までは持ち物を持たせられないので、全員 Item は 0
+        /// </summary>
+        private const string Town03EndJson =
+            "{\"Version\":1," +
+            "\"Position\":{\"MapId\":\"YukiokoshiTown\",\"X\":12,\"Y\":2,\"Facing\":1}," +
+            "\"LastHealSpot\":{\"MapId\":\"YukiokoshiWarmHut\",\"X\":3,\"Y\":2,\"Facing\":1}," +
+            "\"Party\":[" +
+            "{\"No\":155,\"Level\":30,\"Exp\":24000,\"Moves\":[\"腹ばいタックル\",\"火の粉\",\"ゆらゆら火\",\"火の粉ダイブ\"],\"Hp\":80,\"Status\":0,\"Item\":0}," +
+            "{\"No\":212,\"Level\":25,\"Exp\":13000,\"Moves\":[\"静電気\",\"電光ジャブ\",\"痺れの波動\",\"充電ダンス\"],\"Hp\":55,\"Status\":0,\"Item\":0}]," +
+            "\"Box\":[{\"No\":161,\"Level\":21,\"Exp\":8000,\"Moves\":[\"ついばみ\",\"ぴいぴい鳴く\",\"二段つつき\"],\"Hp\":45,\"Status\":0,\"Item\":0}]," +
+            "\"Bag\":[{\"Item\":\"CaptureEgg\",\"Count\":6},{\"Item\":\"GreatEgg\",\"Count\":2},{\"Item\":\"SkyEgg\",\"Count\":1}," +
+            "{\"Item\":\"Potion\",\"Count\":4},{\"Item\":\"Awakening\",\"Count\":1}]," +
+            "\"Money\":9840," +
+            "\"Flags\":[\"town01.gotStarter\",\"town01.starter.154\",\"trainer.town01.gym.leader\",\"trainer.town02.gym.leader\"," +
+            "\"town03.runningShoes\",\"story.runOn\",\"trainer.town03.rival4\",\"town03.powerRestored\"," +
+            "\"trainer.town03.gym.disciple1\",\"trainer.town03.gym.leader\"]," +
+            "\"SeenNos\":[154,155,160,161,165,181,205,211,212]," +
+            "\"CaughtNos\":[154,155,160,161,181,211,212]," +
+            "\"Badges\":[\"town01.badge\",\"town02.badge\",\"town03.badge\"]}";
+
         private static StoryState PlayedState()
         {
             var state = new StoryState(Town01Maps.Start) { LastHealSpot = HutCounter };
@@ -165,6 +188,41 @@ namespace PenguinMonster.Story.Tests
             // 下ろしたフラグは記録に入らないので、読み直しても ON に戻らない。シューズは持ったまま
             Assert.IsTrue(RunningShoes.Has(restored.State.Flags));
             Assert.IsFalse(RunningShoes.IsOn(restored.State.Flags));
+        }
+
+        [Test]
+        public void SaveThenLoad_KeepsHeldItemsOnMonstersAndInBag()
+        {
+            var original = PlayedState();
+            original.Party.Members[0].Item = HeldItem.None;
+            original.Bag.Add(StoryItem.HeldDriedFish);
+            original.Bag.Add(StoryItem.HeldWiseFeather, 2);
+            original.Party.GiveItem(0, StoryItem.HeldWiseFeather, original.Bag);
+
+            var data = StorySave.Capture(original, Standing);
+            var restored = ThroughJson(data);
+
+            Assert.IsNotNull(restored);
+            var state = restored.State;
+            Assert.AreEqual(HeldItem.WiseFeather, state.Party.Members[0].Item);
+            Assert.AreEqual(1, state.Bag.CountOf(StoryItem.HeldDriedFish));
+            Assert.AreEqual(1, state.Bag.CountOf(StoryItem.HeldWiseFeather));
+            // 外せばバッグへ戻る（読み直した後も持たせ替えできる）
+            Assert.IsTrue(state.Party.TakeItem(0, state.Bag));
+            Assert.AreEqual(2, state.Bag.CountOf(StoryItem.HeldWiseFeather));
+            // 道具は名前で書いていること
+            StringAssert.Contains("\"HeldDriedFish\"", JsonUtility.ToJson(data));
+        }
+
+        [Test]
+        public void HeldItem_NumbersStayTheSame()
+        {
+            // 子の持ち物（MonsterSave.Item）は JSON に番号で入る。並びが変わると古い記録の持ち物が別の物になる（CLAUDE.md §3.5）
+            Assert.AreEqual(1, (int)HeldItem.StarFish);
+            Assert.AreEqual(2, (int)HeldItem.SquidSnack);
+            Assert.AreEqual(3, (int)HeldItem.FreshKelp);
+            Assert.AreEqual(4, (int)HeldItem.BraveFeather);
+            Assert.AreEqual(5, (int)HeldItem.WiseFeather);
         }
 
         private static void AssertSameMonster(OwnedMonster expected, OwnedMonster actual)
@@ -281,6 +339,28 @@ namespace PenguinMonster.Story.Tests
             player.Enter(player.WarpHere);
 
             Assert.AreEqual(Town03Maps.Route05, player.Map.Id);
+        }
+
+        [Test]
+        public void Load_Town03EndSave_ContinuesWhereItWasSaved()
+        {
+            // 区切り4（持たせる道具）を足した版でも、区切り3の終わりの記録がそのまま読めること（PLAN_STORY_TOWN04.md §9）
+            var restored = FromJson(Town03EndJson);
+
+            Assert.IsNotNull(restored);
+            Assert.AreEqual(new FieldSpot(Town03Maps.Town, new GridPos(12, 2), Direction.Up), restored.Position);
+            var state = restored.State;
+            Assert.AreEqual(new FieldSpot(Town03Maps.WarmHut, new GridPos(3, 2), Direction.Up), state.LastHealSpot);
+            Assert.AreEqual(Town03Species.Gorogoro, state.Party.Members[1].Species);
+            foreach (var member in state.Party.Members)
+            {
+                Assert.AreEqual(HeldItem.None, member.Item, member.Name);
+            }
+            Assert.AreEqual(2, state.Bag.CountOf(StoryItem.GreatEgg));
+            Assert.AreEqual(9840, state.Money);
+            Assert.IsTrue(RunningShoes.IsOn(state.Flags));
+            Assert.IsTrue(state.Flags.Has(Town03Trainers.GymLeader.DefeatedFlag));
+            CollectionAssert.Contains(state.Badges, Town03Trainers.BadgeId);
         }
 
         [Test]

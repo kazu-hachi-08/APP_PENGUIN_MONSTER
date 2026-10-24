@@ -14,10 +14,10 @@ namespace PenguinMonster.Story
             return true;
         }
 
-        /// <summary>売る（買う値段の半分）。持っていなければ false</summary>
+        /// <summary>売る（買う値段の半分）。持っていない・売れない道具なら false</summary>
         public static bool Sell(StoryState state, StoryItem item)
         {
-            if (!state.Bag.Remove(item))
+            if (!StoryItems.Get(item).CanSell || !state.Bag.Remove(item))
             {
                 return false;
             }

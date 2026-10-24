@@ -3,16 +3,18 @@ using PenguinMonster.Battle;
 
 namespace PenguinMonster.Story
 {
-    /// <summary>トレーナーの手持ちの1体。技は覚える技の表から自動で決める</summary>
+    /// <summary>トレーナーの手持ちの1体。技は覚える技の表から自動で決める。持ち物は省いたら無し（道場主の切り札だけ持つ）</summary>
     public readonly struct TrainerMon
     {
         public readonly StorySpecies Species;
         public readonly int Level;
+        public readonly HeldItem Item;
 
-        public TrainerMon(StorySpecies species, int level)
+        public TrainerMon(StorySpecies species, int level, HeldItem item = HeldItem.None)
         {
             Species = species;
             Level = level;
+            Item = item;
         }
     }
 
@@ -56,7 +58,7 @@ namespace PenguinMonster.Story
             var party = new List<OwnedMonster>();
             foreach (var mon in Party)
             {
-                party.Add(OwnedMonster.Create(mon.Species, mon.Level));
+                party.Add(OwnedMonster.Create(mon.Species, mon.Level, mon.Item));
             }
             return party;
         }

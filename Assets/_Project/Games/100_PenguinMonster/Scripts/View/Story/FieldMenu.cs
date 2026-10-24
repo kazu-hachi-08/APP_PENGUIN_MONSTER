@@ -118,12 +118,13 @@ namespace PenguinMonster.View.Story
             _choice = choice;
         }
 
-        /// <summary>フィールドで使えるのは回復の道具だけ。選んだら手持ちから使う子を選ぶ</summary>
+        /// <summary>フィールドで使えるのは回復の道具と持たせる道具。選んだら手持ちから使う（持たせる）子を選ぶ</summary>
         private IEnumerator OpenBag(StoryState state)
         {
             StoryItem? chosen = null;
             bool back = false;
-            _bag.Show(state.Bag, BagPocket.Medicine, item => StoryItems.Get(item).IsMedicine, item => chosen = item, () => back = true);
+            _bag.Show(state.Bag, BagPocket.Medicine, item => StoryItems.Get(item).IsMedicine || StoryItems.Get(item).IsHeldItem,
+                item => chosen = item, () => back = true);
             yield return new WaitUntil(() => chosen.HasValue || back);
             if (chosen.HasValue)
             {

@@ -42,7 +42,7 @@ namespace PenguinMonster.View
         {
             _bagPanel.Show(_bag, BagPocket.Eggs, CanUseInBattle,
                 onSelect: item => ChooseBagItem(slot, reserved, item),
-                onBack: () => ShowCommands(slot, reserved));
+                onBack: () => ShowCommands(slot, reserved), showHeld: false);
         }
 
         /// <summary>タマゴはいつも押せる（トレーナー戦では断りの文を出す）。回復の道具は効く子がいるときだけ</summary>
