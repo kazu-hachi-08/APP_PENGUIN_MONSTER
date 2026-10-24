@@ -191,6 +191,33 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void SaveThenLoad_Outside_StaysOnBicycle()
+        {
+            var original = PlayedState();
+            Bicycle.Give(original.Flags);
+            Bicycle.Toggle(original.Flags, _world.Get(Standing.MapId));
+
+            var restored = ThroughJson(StorySave.Capture(original, Standing));
+
+            Assert.IsTrue(Bicycle.Has(restored.State.Flags));
+            Assert.IsTrue(Bicycle.IsOn(restored.State.Flags));
+        }
+
+        [Test]
+        public void SaveThenLoad_RidingIndoors_GetsOff()
+        {
+            // ふつうは扉をくぐった時点で降りるが、乗ったまま建物の中で記録されていても降りた状態で始める
+            var original = PlayedState();
+            Bicycle.Give(original.Flags);
+            original.Flags.Set(Bicycle.OnFlag);
+
+            var restored = ThroughJson(StorySave.Capture(original, HutCounter));
+
+            Assert.IsTrue(Bicycle.Has(restored.State.Flags));
+            Assert.IsFalse(Bicycle.IsOn(restored.State.Flags));
+        }
+
+        [Test]
         public void SaveThenLoad_KeepsHeldItemsOnMonstersAndInBag()
         {
             var original = PlayedState();

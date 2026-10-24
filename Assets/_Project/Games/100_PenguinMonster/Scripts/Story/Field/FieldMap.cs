@@ -23,6 +23,11 @@ namespace PenguinMonster.Story
             { 'D', TileKind.Door },
             { '_', TileKind.Floor },
             { 'S', TileKind.Sign },
+            // 橋は道（'='）と見分けるため '#' にする
+            { '#', TileKind.Bridge },
+            { 'I', TileKind.Railing },
+            { '>', TileKind.Downhill },
+            { '*', TileKind.Lookout },
         };
 
         private readonly TileKind[,] _tiles;
@@ -37,6 +42,8 @@ namespace PenguinMonster.Story
         public EncounterTable Encounters { get; private set; }
         /// <summary>深い草むらの出現表。深い草むらの無いマップは null</summary>
         public EncounterTable DeepEncounters { get; private set; }
+        /// <summary>建物の中（家・店・道場など）。自転車に乗れない</summary>
+        public bool IsIndoors { get; private set; }
 
         public FieldMap(string id, string[] rows, params Warp[] warps)
         {
@@ -98,6 +105,13 @@ namespace PenguinMonster.Story
         {
             Encounters = table;
             DeepEncounters = deep;
+            return this;
+        }
+
+        /// <summary>建物の中の印を付ける。表と続けて書けるよう、自分を返す</summary>
+        public FieldMap AsIndoors()
+        {
+            IsIndoors = true;
             return this;
         }
 

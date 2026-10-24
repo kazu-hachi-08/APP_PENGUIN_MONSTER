@@ -11,11 +11,19 @@ namespace PenguinMonster.Story
         Moved,
     }
 
+    /// <summary>1歩が坂を下るか上るか。速さを変えるのは View</summary>
+    public enum Slope
+    {
+        None,
+        Down,
+        Up,
+    }
+
     /// <summary>
     /// フィールドの主人公の位置と向き。1マスずつ歩き、出入口に乗ったらマップを移る。人の立っているマスは通れない。
     /// 歩く動き・暗転は View が受け持ち、ここはマスの上の位置だけを決める
     /// </summary>
-    public sealed class FieldPlayer
+    public sealed partial class FieldPlayer
     {
         private readonly FieldWorld _world;
         private readonly FieldPeople _people;
@@ -48,7 +56,7 @@ namespace PenguinMonster.Story
         {
             Facing = direction;
             var next = Position + direction.Offset();
-            if (!Map.IsWalkable(next) || _people?.At(Map.Id, next) != null)
+            if (!Map.IsWalkable(next) || HasPersonAt(next))
             {
                 return StepResult.Blocked;
             }
@@ -104,6 +112,9 @@ namespace PenguinMonster.Story
             Facing = direction;
         }
 
+        /// <summary>そのマスに人が立っているか（人の居ないマップでは居ない）</summary>
+        private bool HasPersonAt(GridPos pos) => _people?.At(Map.Id, pos) != null;
+
         public void Enter(Warp warp)
         {
             MoveTo(warp.To);
@@ -115,6 +126,8 @@ namespace PenguinMonster.Story
             Map = _world.Get(spot.MapId);
             Position = spot.Position;
             Facing = spot.Facing;
+            // 別のマスへ移ったら、もう景色は眺めていない
+            StopGazing();
         }
     }
 }

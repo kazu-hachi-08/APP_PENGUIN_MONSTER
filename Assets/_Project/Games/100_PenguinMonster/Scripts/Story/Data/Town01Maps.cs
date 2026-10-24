@@ -95,7 +95,7 @@ namespace PenguinMonster.Story
                 "W______W",
                 "WWWDWWWW",
             };
-            return new FieldMap(id, rows, Outside(HouseExit, outsideMap, outsideDoor));
+            return new FieldMap(id, rows, Outside(HouseExit, outsideMap, outsideDoor)).AsIndoors();
         }
 
         private static FieldMap CreateLab()
@@ -111,7 +111,7 @@ namespace PenguinMonster.Story
                 "W________W",
                 "WWWWDWWWWW",
             };
-            return new FieldMap(Lab, rows, Outside(LabExit, Village, LabDoor));
+            return new FieldMap(Lab, rows, Outside(LabExit, Village, LabDoor)).AsIndoors();
         }
 
         // ---- 1番道路（16x30）。西に川が流れ、川べりは深い草むら ----
@@ -239,7 +239,7 @@ namespace PenguinMonster.Story
                 "W__________W",
                 "WWWWWDWWWWWW",
             };
-            return new FieldMap(id, rows, Outside(GymExit, outsideMap, outsideDoor));
+            return new FieldMap(id, rows, Outside(GymExit, outsideMap, outsideDoor)).AsIndoors();
         }
 
         // ---- 2番道路（30x24）。雪の林。東の奥は暗い林で深い草むら。南東の奥の東の端から 3番道路へ ----

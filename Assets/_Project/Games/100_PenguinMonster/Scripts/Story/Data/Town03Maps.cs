@@ -215,7 +215,7 @@ namespace PenguinMonster.Story
                 "W__________W",
                 "WWWWWDWWWWWW",
             };
-            return new FieldMap(PowerPlant, rows, Town01Maps.Outside(PowerPlantExit, Route06, PowerPlantDoor));
+            return new FieldMap(PowerPlant, rows, Town01Maps.Outside(PowerPlantExit, Route06, PowerPlantDoor)).AsIndoors();
         }
     }
 }
