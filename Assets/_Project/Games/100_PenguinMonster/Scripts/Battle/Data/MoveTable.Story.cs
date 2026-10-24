@@ -29,5 +29,16 @@ namespace PenguinMonster.Battle
         public static readonly MoveDefinition Peck = new MoveDefinition("ついばみ", Bird, Physical, 35, Sure);
         public static readonly MoveDefinition Pester = new MoveDefinition("ちょっかい", Dark, Physical, 40, Sure);
         public static readonly MoveDefinition Twinkle = new MoveDefinition("きらきら", Aurora, Special, 40, Sure);
+
+        // 区切り4。区切り3までは相手の特攻を下げる技が無く、特防も追加効果の1つだけだったので、特殊の打ち合いに読み合いを足す
+        public static readonly MoveDefinition BlankStare = new MoveDefinition("ぽかん顔", Normal, Status, 0, Sure,
+            effects: new[] { FoeStat(SpAttack, -1) });
+        // 2段下げる代わりに外れることがある
+        public static readonly MoveDefinition ShrillVoice = new MoveDefinition("キンキン声", Normal, Status, 0, 85,
+            effects: new[] { FoeStat(SpDefense, -2) });
+        public static readonly MoveDefinition Headwind = new MoveDefinition("向かい風", Bird, Special, 55, 95,
+            effects: new[] { FoeStat(SpAttack, -1, 30) });
+        public static readonly MoveDefinition SeeThrough = new MoveDefinition("見透かし", Dark, Special, 60, Sure,
+            effects: new[] { FoeStat(SpDefense, -1, 30) });
     }
 }
