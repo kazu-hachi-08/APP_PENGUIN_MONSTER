@@ -175,7 +175,9 @@ namespace PenguinMonster.Story.Tests
         public void Clerk_SellsEveryItem_AndOlderShopsStayTheSame()
         {
             var shop = PlayerAt(Town03Maps.Shop, new GridPos(3, 2), Direction.Up).ScriptAhead().Single(step => step.Kind == EventStepKind.Shop);
-            CollectionAssert.AreEqual(System.Enum.GetValues(typeof(StoryItem)), shop.ShopItems.ToArray());
+            // 持たせる道具（区切り4）は売らないので、売れる道具だけを比べる
+            var sellable = System.Enum.GetValues(typeof(StoryItem)).Cast<StoryItem>().Where(item => StoryItems.Get(item).CanSell);
+            CollectionAssert.AreEqual(sellable.ToArray(), shop.ShopItems.ToArray());
 
             // 区切り1・2の店には新しいタマゴは並ばない（PLAN_STORY_TOWN03.md §3.1）
             foreach (var oldShop in new[] { Town01Maps.Shop, Town02Maps.Shop })

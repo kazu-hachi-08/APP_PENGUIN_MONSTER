@@ -8,7 +8,7 @@ namespace PenguinMonster.View.Story
 {
     /// <summary>
     /// フィールドの進行役。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
-    /// A で向いている先の人・看板を調べ、台本を FieldEventPlayer で見せる。草むらでは1歩ごとに野生に出会い、StoryBattleScreen で戦う。
+    /// A で向いている先の人・看板を調べ（水なら釣り竿で釣る。FieldController.Fishing）、台本を FieldEventPlayer で見せる。草むらでは1歩ごとに野生に出会い、StoryBattleScreen で戦う。
     /// 自転車・大橋の下り坂・展望マスは FieldController.Bicycle。
     /// 全滅したら最後に回復した場所へ戻る。B でメニュー（FieldMenu）を開き、「やめる」で はい と答えたら Run を抜ける（タイトルへ戻る）。
     /// マップを移ったとき・野生とのバトルの後・台本の後に自動で記録する（アプリを閉じられても進み具合を失わないように）
@@ -173,14 +173,13 @@ namespace PenguinMonster.View.Story
             yield return _battles.ReturnToField();
         }
 
-        /// <summary>向いている先の人・看板の台本を流す。人は話しかけた側を向く</summary>
+        /// <summary>向いている先の人・看板の台本を流す。人は話しかけた側を向く。どちらも無く水に向いていれば釣る</summary>
         private IEnumerator Inspect()
         {
             var script = _player.ScriptAhead();
             if (script == null)
             {
-                // 何も無い所で A を押したときも1フレーム進める（同じフレームの A をまた見て止まらないように）
-                yield return null;
+                yield return Fish();
                 yield break;
             }
             var person = _player.PersonAhead;

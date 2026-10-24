@@ -193,7 +193,10 @@ namespace PenguinMonster.Story
                         new EncounterSlot(Town03Species.Yukiakari, 19, 22, 9),
                         new EncounterSlot(Town03Species.SaintElmo, 19, 22, 1),
                         new EncounterSlot(Town02Species.Wakasagi, 19, 22, 15),
-                        new EncounterSlot(Town02Species.Itachi, 19, 22, 15)));
+                        new EncounterSlot(Town02Species.Itachi, 19, 22, 15)))
+                .WithFishing(EncounterTable.Fishing(
+                    new EncounterSlot(Town03Species.Hatahata, 18, 21, 70),
+                    new EncounterSlot(Town02Species.Wakasagi, 18, 21, 30)));
         }
 
         // ---- 発電所（12x10）。建物の中。並んだ機械（壁）の間を通って奥へ。野生は出ない ----

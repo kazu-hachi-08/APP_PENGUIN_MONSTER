@@ -38,6 +38,9 @@ namespace PenguinMonster.Story
 
         public const int Percent = 100;
 
+        /// <summary>釣り竿で1回釣ったときにかかる確率（％）。外れても A ですぐ投げ直せるので半分にする</summary>
+        public const int FishBitePercent = 50;
+
         /// <summary>よろず屋で売ると 買う値段を この数で割った額（本家と同じく半分）</summary>
         public const int SellPriceDivisor = 2;
 

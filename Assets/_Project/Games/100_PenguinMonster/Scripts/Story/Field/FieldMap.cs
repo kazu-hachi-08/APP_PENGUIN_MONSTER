@@ -42,6 +42,8 @@ namespace PenguinMonster.Story
         public EncounterTable Encounters { get; private set; }
         /// <summary>深い草むらの出現表。深い草むらの無いマップは null</summary>
         public EncounterTable DeepEncounters { get; private set; }
+        /// <summary>水の出現表（釣り竿で釣れる子）。釣れないマップは null</summary>
+        public EncounterTable FishingEncounters { get; private set; }
         /// <summary>建物の中（家・店・道場など）。自転車に乗れない</summary>
         public bool IsIndoors { get; private set; }
 
@@ -105,6 +107,13 @@ namespace PenguinMonster.Story
         {
             Encounters = table;
             DeepEncounters = deep;
+            return this;
+        }
+
+        /// <summary>水の出現表を付ける。表と続けて書けるよう、自分を返す</summary>
+        public FieldMap WithFishing(EncounterTable table)
+        {
+            FishingEncounters = table;
             return this;
         }
 

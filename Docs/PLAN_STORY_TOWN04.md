@@ -263,7 +263,7 @@
 - テスト: 下り坂に乗ると東へ進み続け、壁・人で止まる / 上下には動ける / 展望マスでは十字キーで動かない・B で戻る / 正しい順でコマンドが通る・違う順・歩きでは通らない / 建物の中では乗れない / `story.bikeOn` を保存・読み直し
 - やったこと: `Bicycle`（`Town04Flags.Bicycle` = `town04.bicycle`・`story.bikeOn`。もらった時点では乗らない）。`FieldMap.AsIndoors()` を家・研究所・道場・発電所に付けた。`FieldPlayer.NextStep`（下り坂で滑る向き）・`SlopeOf`（坂の上り下り）・`StartGazing` / `TurnWhileGazing` / `StopGazing`。`SecretCode`（押し間違えても打ち直せば通る）。コマンドが通ったときは今は「空の 向こうが 虹色に 光った！」の文だけ（フェーズ7でバトルに替える）。「自転車」ボタンは十字キーの左上（「走る」と左右対称）・PC は C キー。主人公と村の人の描く順を 1 → 2 にして、その下（1）に風の線
 
-### フェーズ4: 釣り竿（純C# ＋ 画面）
+### フェーズ4: 釣り竿（純C# ＋ 画面）（済）
 
 終わったときの状態: フラグを立てた記録なら、区切り1〜3の水辺で釣りができる。
 
@@ -271,6 +271,7 @@
 - 4b データ: 区切り1〜3の水辺のマップに水の出現表（その区切りの海の子）
 - 4c 画面: 「……」→「！」の短い間（`FieldEventPlayer`）・釣れたら野生のバトル
 - テスト: 竿が無いと釣らない / 水でないマスでは釣らない / 確率どおりにかかる / 水の出現表の No が定義表にある
+- やったこと: `FishingRod`（`Town04Flags.FishingRod` = `town04.fishingRod`）。`FieldMap.WithFishing` / `FishingEncounters`、`EncounterTable.Fishing`（かかる確率は表の `RatePercent` に `FishBitePercent` を入れて、1回釣るごとに引く）。`FieldPlayer.Fish`（`FishResult`: 釣らない / 何も釣れそうにない / 外れ / かかった）。A は人・看板が先で、どちらも無いときだけ釣る（`FieldController.Fishing`）。「……」の待ちは `FieldEventPlayer._fishWaitSeconds`（1.2秒・A で飛ばせない）。水の出現表は水のある6マップ（ハツユキ村・1番道路・ツララ町・3番道路・カガミコ町・6番道路）。中身はその区切りの海の子（区切り2の湖はハスハペンも）。テスト `FishingTests`（水のあるマップは全部釣れる・釣れる子は海タイプ）。ついでに、フェーズ2で持たせる道具を足してから崩れていた `Town03MapTests` の店のテストを「売れる道具だけ比べる」に直した
 
 ### フェーズ5: 30体（純C# ＋ 絵 ＋ 図鑑）
 

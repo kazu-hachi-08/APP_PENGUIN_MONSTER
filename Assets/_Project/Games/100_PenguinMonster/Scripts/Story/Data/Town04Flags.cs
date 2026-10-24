@@ -5,5 +5,8 @@ namespace PenguinMonster.Story
     {
         /// <summary>カザハナ町の自転車屋で自転車をもらった。ここから外のマップで自転車に乗れる</summary>
         public const string Bicycle = "town04.bicycle";
+
+        /// <summary>7番道路の釣り人から釣り竿をもらった。ここから水に向いて A で釣れる</summary>
+        public const string FishingRod = "town04.fishingRod";
     }
 }
