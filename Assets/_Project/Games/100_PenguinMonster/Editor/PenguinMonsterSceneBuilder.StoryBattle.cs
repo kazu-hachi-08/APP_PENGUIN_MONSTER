@@ -72,12 +72,13 @@ namespace PenguinMonster.Editor
         }
 
         private const int BagEmptyFontSize = 40;
-        // バッグ: 上に「タマゴ / 薬」のタブ、6枠ずつのページ、下に ← 戻る →。
+        // バッグ: 上に「タマゴ / 薬 / 持ち物」のタブ、6枠ずつのページ、下に ← 戻る →。
         // 窓は交代の画面と同じ大きさのまま、タブの1行ぶん枠を低くして収める
         private const int BagPageSize = 6;
-        private static readonly string[] BagPocketLabels = { "タマゴ", "薬" };
+        private static readonly string[] BagPocketLabels = { "タマゴ", "薬", "持ち物" };
         private static readonly Vector2 BagSlotSize = new Vector2(760f, 96f);
-        private static readonly Vector2 BagTabSize = new Vector2(300f, 80f);
+        // 3つのタブが間を空けて枠の幅（BagSlotSize.x）に収まる幅
+        private static readonly Vector2 BagTabSize = new Vector2(240f, 80f);
         private static readonly Vector2 BagPageButtonSize = new Vector2(120f, 80f);
         private const float BagFooterHeight = 110f;
 

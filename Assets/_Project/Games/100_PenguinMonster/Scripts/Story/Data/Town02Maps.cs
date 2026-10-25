@@ -89,7 +89,10 @@ namespace PenguinMonster.Story
                         new EncounterSlot(Town01Species.Yamame, 11, 14, 10),
                         new EncounterSlot(Town01Species.Ishikoro, 11, 14, 10),
                         new EncounterSlot(Town02Species.Yutanpo, 11, 14, 5),
-                        new EncounterSlot(Town01Species.Omochi, 11, 14, 5)));
+                        new EncounterSlot(Town01Species.Omochi, 11, 14, 5)))
+                .WithFishing(EncounterTable.Fishing(
+                    new EncounterSlot(Town02Species.Wakasagi, 10, 13, 70),
+                    new EncounterSlot(Town01Species.Yamame, 10, 13, 30)));
         }
 
         // ---- カガミコ町（26x22）。真ん中に凍った湖。上の段に道場・ぬくもり小屋・よろず屋、左下に家 ----
@@ -150,7 +153,10 @@ namespace PenguinMonster.Story
                         new EncounterSlot(Town02Species.Wakasagi, 11, 14, 40),
                         new EncounterSlot(Town02Species.Hasuha, 11, 14, 40),
                         new EncounterSlot(Town01Species.Yamame, 11, 14, 15),
-                        new EncounterSlot(Town02Species.Tsukiakari, 11, 14, 5)));
+                        new EncounterSlot(Town02Species.Tsukiakari, 11, 14, 5)))
+                .WithFishing(EncounterTable.Fishing(
+                    new EncounterSlot(Town02Species.Wakasagi, 11, 14, 60),
+                    new EncounterSlot(Town02Species.Hasuha, 11, 14, 40)));
         }
 
         // ---- 4番道路（30x20）。行き止まり。東の奥は木で仕切った細長い深い草むらで、入口は1か所 ----

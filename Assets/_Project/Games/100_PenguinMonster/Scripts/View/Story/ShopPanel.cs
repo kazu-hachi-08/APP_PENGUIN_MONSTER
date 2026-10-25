@@ -90,7 +90,7 @@ namespace PenguinMonster.View.Story
 
         private void Refresh()
         {
-            _shown = _selling ? _state.Bag.Items() : new List<StoryItem>(_goods);
+            _shown = _selling ? _state.Bag.Items().FindAll(item => StoryItems.Get(item).CanSell) : new List<StoryItem>(_goods);
             // 売って道具が無くなると最後のページが消えることがあるので、ページを詰める
             _page = Mathf.Min(_page, PageCount - 1);
             for (int i = 0; i < _slotButtons.Length; i++)

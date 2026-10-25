@@ -43,6 +43,12 @@ namespace PenguinMonster.Story
             }
         }
 
+        /// <summary>水の出現表。1回釣るごとに StoryBalance.FishBitePercent の確率でかかる（どの水でも同じ確率にする）</summary>
+        public static EncounterTable Fishing(params EncounterSlot[] slots)
+        {
+            return new EncounterTable(StoryBalance.FishBitePercent, slots);
+        }
+
         /// <summary>1歩ぶんの判定。出会わなければ null、出会えば野生の子（技は覚える技の表から決める）</summary>
         public OwnedMonster Roll(Random random)
         {

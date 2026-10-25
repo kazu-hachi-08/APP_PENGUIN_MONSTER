@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace PenguinMonster.View.Story
 {
     /// <summary>
-    /// フィールドの操作。PC は矢印・WASD・Z（A）/ X（B）・Shift（走る）、タッチの端末は画面の十字キーと A / B・走る。
+    /// フィールドの操作。PC は矢印・WASD・Z（A）/ X（B）・Shift（走る）・C（自転車）、タッチの端末は画面の十字キーと A / B・走る・自転車。
     /// 画面のボタンはタッチの端末のときだけ出す（PC では景色を隠さないように）
     /// </summary>
     public class FieldInput : MonoBehaviour
@@ -25,12 +25,19 @@ namespace PenguinMonster.View.Story
         [SerializeField] private Image _runImage;
         [SerializeField] private Color _runOffColor = new Color(0.45f, 0.6f, 0.85f, 0.8f);
         [SerializeField] private Color _runOnColor = new Color(1f, 0.6f, 0.2f, 0.9f);
+        [Tooltip("自転車の乗る / 降りる。自転車を持つまで・建物の中では隠す")]
+        [SerializeField] private VirtualButton _bike;
+        [SerializeField] private Image _bikeImage;
+        [SerializeField] private Color _bikeOffColor = new Color(0.45f, 0.6f, 0.85f, 0.8f);
+        [SerializeField] private Color _bikeOnColor = new Color(0.3f, 0.8f, 0.4f, 0.9f);
 
         private bool _runToggleQueued;
+        private bool _bikeToggleQueued;
 
         private void OnEnable()
         {
             _runToggleQueued = false;
+            _bikeToggleQueued = false;
             SetPadVisible(true);
         }
 
@@ -77,6 +84,14 @@ namespace PenguinMonster.View.Story
             return pressed;
         }
 
+        /// <summary>前に見てから自転車の切り替えが押されたか。見たら忘れる</summary>
+        public bool ConsumeBikeToggle()
+        {
+            bool pressed = _bikeToggleQueued;
+            _bikeToggleQueued = false;
+            return pressed;
+        }
+
         private void Update()
         {
             // 1歩の途中（進行役が入力を見ていない間）に押しても取りこぼさないよう、ここで覚えておく
@@ -85,6 +100,10 @@ namespace PenguinMonster.View.Story
             if (shift || IsActiveDown(_run))
             {
                 _runToggleQueued = true;
+            }
+            if ((Keyboard.current?.cKey.wasPressedThisFrame ?? false) || IsActiveDown(_bike))
+            {
+                _bikeToggleQueued = true;
             }
         }
 
@@ -98,6 +117,18 @@ namespace PenguinMonster.View.Story
             }
             _run.gameObject.SetActive(hasShoes);
             _runImage.color = isOn ? _runOnColor : _runOffColor;
+        }
+
+        /// <summary>自転車ボタンの出し入れと色。十字キーごと隠れている間（PC・会話中）は見えない</summary>
+        public void ShowBike(bool canRide, bool isOn)
+        {
+            if (_bike == null)
+            {
+                // シーンを作り直す前（ボタンがまだ無い）でも歩けるように
+                return;
+            }
+            _bike.gameObject.SetActive(canRide);
+            _bikeImage.color = isOn ? _bikeOnColor : _bikeOffColor;
         }
 
         private static bool IsActiveDown(VirtualButton button)

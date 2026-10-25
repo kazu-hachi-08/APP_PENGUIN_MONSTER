@@ -16,8 +16,9 @@ namespace PenguinMonster.Editor
     /// </summary>
     public static partial class PenguinMonsterSceneBuilder
     {
-        // 主人公と村の人はマップのタイルより手前に描く
-        private const int HeroSortingOrder = 1;
+        // 主人公と村の人はマップのタイルより手前に描く。タイル（0）の上に、下り坂の風の線（1）、その上に主人公と村の人（2）
+        private const int WindSortingOrder = 1;
+        private const int HeroSortingOrder = 2;
 
         // 十字キーは左下、A / B は右下（ダイパの手の位置。右手の親指で A を押しやすいよう A を外側の上に置く）
         private static readonly Vector2 PadCenter = new Vector2(300f, 300f);
@@ -37,6 +38,9 @@ namespace PenguinMonster.Editor
         private const int RunFontSize = 36;
         // ON は十字キーと違う色にして、走っているのがひと目でわかるようにする
         private static readonly Color RunOnColor = new Color(1f, 0.6f, 0.2f, 0.9f);
+        // 自転車の切り替えは「走る」と左右対称の、十字キーの左上の空き。乗っている間は緑にする
+        private static readonly Vector2 BikeButtonPosition = PadCenter + new Vector2(-PadSpacing, PadSpacing);
+        private static readonly Color BikeOnColor = new Color(0.3f, 0.8f, 0.4f, 0.9f);
 
         private static FieldController BuildStoryField(Camera camera, FieldInput input, FadeController fade, FieldEventPlayer events,
             BattleController battle)
@@ -104,9 +108,14 @@ namespace PenguinMonster.Editor
             hero.transform.SetParent(parent, false);
             var renderer = hero.AddComponent<SpriteRenderer>();
             renderer.sortingOrder = HeroSortingOrder;
+            var wind = new GameObject("Wind");
+            wind.transform.SetParent(hero.transform, false);
+            var windRenderer = wind.AddComponent<SpriteRenderer>();
+            windRenderer.sortingOrder = WindSortingOrder;
             var avatar = hero.AddComponent<FieldAvatar>();
             var so = new SerializedObject(avatar);
             so.FindProperty("_renderer").objectReferenceValue = renderer;
+            so.FindProperty("_wind").objectReferenceValue = windRenderer;
             so.ApplyModifiedProperties();
             return avatar;
         }
@@ -145,6 +154,13 @@ namespace PenguinMonster.Editor
             so.FindProperty("_runOffColor").colorValue = PadColor;
             so.FindProperty("_runOnColor").colorValue = RunOnColor;
             run.gameObject.SetActive(false);
+            var bike = CreatePadButton(touch, "Bike", "自転車", Vector2.zero, BikeButtonPosition, RunButtonSize, PadColor);
+            bike.GetComponentInChildren<UnityEngine.UI.Text>().fontSize = RunFontSize;
+            so.FindProperty("_bike").objectReferenceValue = bike;
+            so.FindProperty("_bikeImage").objectReferenceValue = bike.GetComponent<UnityEngine.UI.Image>();
+            so.FindProperty("_bikeOffColor").colorValue = PadColor;
+            so.FindProperty("_bikeOnColor").colorValue = BikeOnColor;
+            bike.gameObject.SetActive(false);
             so.ApplyModifiedProperties();
 
             root.SetActive(false);

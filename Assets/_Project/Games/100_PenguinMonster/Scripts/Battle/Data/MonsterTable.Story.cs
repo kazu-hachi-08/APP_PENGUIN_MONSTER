@@ -7,7 +7,7 @@ namespace PenguinMonster.Battle
     /// <summary>
     /// ストーリーの子（No.151〜）。ドラフトには出さないので All とは別の一覧にする。
     /// 種族値の合計は 進化前（Young）250〜330 / 最後の進化 425〜530 / 途中の段はその間。
-    /// ここの技は図鑑に出す代表の4つで、実際に覚える技はストーリーの定義表（Town01Species・Town02Species・Town03Species）の覚える技の表で決まる
+    /// ここの技は図鑑に出す代表の4つで、実際に覚える技はストーリーの定義表（Town01Species〜Town04Species）の覚える技の表で決まる
     /// </summary>
     public static partial class MonsterTable
     {
@@ -228,6 +228,86 @@ namespace PenguinMonster.Battle
             // 6番道路の奥の とてもまれな不思議な子（進化しない）
             Monster(240, "セントエルモペン", new[] { Thunder, Aurora }, new Stats(65, 50, 65, 105, 85, 90),
                 new[] { SparkleLaser, Discharge, AuroraWave, ChargeDance }, Ability.Prankster),
+
+            // ---- 241〜270（区切り4: 7番道路・カザハナ町・風花大橋。風の町） ----
+            Monster(241, "ソヨカゼペン", new[] { Bird }, new Stats(40, 40, 35, 50, 35, 60),
+                new[] { Peck, Growl, DoublePeck, Headwind }, Ability.Tailwind, MonsterRank.Young),
+            Monster(242, "オイカゼペン", new[] { Bird }, new Stats(58, 55, 50, 70, 50, 80),
+                new[] { WindCutter, Headwind, PeckDrain, Whirlwind }, Ability.Tailwind),
+            Monster(243, "コガラシペン", new[] { Bird }, new Stats(78, 75, 70, 95, 70, 105),
+                new[] { GaleFeather, WindCutter, NorthWindCall, PeckDrain }, Ability.Tailwind),
+            // 鳥の道場の対策になる氷の子。風で育つ霧氷
+            Monster(244, "ミゾレペン", new[] { Ice }, new Stats(50, 45, 45, 55, 50, 50),
+                new[] { PowderSnow, SnowPellet, ColdBreath, IceStep }, Ability.SnowCloud, MonsterRank.Young),
+            Monster(245, "ムヒョウペン", new[] { Ice }, new Stats(80, 85, 85, 95, 80, 60),
+                new[] { BlizzardBreath, IcicleBeak, FrostKiss, IceStep }, Ability.SnowCloud),
+            // 鳥の道場の対策になる岩の子（7番道路の岩場）
+            Monster(246, "ガレバペン", new[] { Rock }, new Stats(55, 65, 70, 20, 30, 40),
+                new[] { Tackle, PebbleShot, RockThrow, SandSmoke }, Ability.SpikySkin, MonsterRank.Young),
+            Monster(247, "ダンガイペン", new[] { Rock }, new Stats(85, 115, 110, 40, 60, 70),
+                new[] { CliffBreak, Boulder, RockSkin, RockHeadbutt }, Ability.SpikySkin),
+            // 釣りの子（7番道路の池・大橋の下）
+            Monster(248, "ハゼペン", new[] { Sea }, new Stats(45, 50, 45, 40, 40, 60),
+                new[] { WaterGun, DiveJet, BubbleSpit, SprayBurst }, Ability.RainSurf, MonsterRank.Young),
+            Monster(249, "スズキペン", new[] { Sea }, new Stats(80, 95, 75, 65, 70, 95),
+                new[] { Whirlpool, SeaGun, DiveJet, RainDance }, Ability.RainSurf),
+            Monster(250, "コマイペン", new[] { Ice, Sea }, new Stats(50, 45, 50, 50, 45, 45),
+                new[] { WaterGun, PowderSnow, BubbleSpit, ColdBreath }, Ability.ThickFat, MonsterRank.Young),
+            Monster(251, "マダラペン", new[] { Ice, Sea }, new Stats(95, 80, 85, 85, 85, 60),
+                new[] { BigWave, IcicleBeak, BlizzardBreath, SeaGun }, Ability.ThickFat),
+            Monster(252, "ヨモギペン", new[] { Moss }, new Stats(50, 45, 50, 55, 55, 40),
+                new[] { MossPellet, Fluff, SeedBarrage, PoisonMoss }, Ability.PoisonSlime, MonsterRank.Young),
+            // 風になびくすすき。苔の子だが風の技を覚える
+            Monster(253, "ススキペン", new[] { Moss }, new Stats(75, 70, 75, 95, 90, 85),
+                new[] { MossCannon, MossDrain, Whirlwind, MossArmor }, Ability.PoisonSlime),
+            // 風船 → 気球。HP が多く、満タンの間は硬い
+            Monster(254, "フウセンペン", new[] { MonsterType.Normal }, new Stats(70, 35, 35, 45, 45, 30),
+                new[] { Pound, Fluff, BlankStare, ShrillVoice }, Ability.Multiscale, MonsterRank.Young),
+            Monster(255, "キキュウペン", new[] { MonsterType.Normal }, new Stats(120, 60, 65, 80, 75, 50),
+                new[] { Shout, ShrillVoice, FeatherWrap, Whirlwind }, Ability.Multiscale),
+            // 7番道路の奥の深い草むらの子
+            Monster(256, "ヨカゼペン", new[] { Dark }, new Stats(45, 45, 40, 55, 40, 70),
+                new[] { Pester, Sneak, Whirlwind, SeeThrough }, Ability.Tailwind, MonsterRank.Young),
+            Monster(257, "ヨアラシペン", new[] { Dark }, new Stats(75, 70, 65, 100, 75, 105),
+                new[] { PolarNight, SeeThrough, WindCutter, Scheme }, Ability.Tailwind),
+            // 火打ち石 → 風にのぼる狼煙
+            Monster(258, "ヒウチペン", new[] { Fire }, new Stats(45, 55, 50, 40, 40, 55),
+                new[] { Ember, RockThrow, WispFlame, FlareUp }, Ability.Momentum, MonsterRank.Young),
+            Monster(259, "ノロシペン", new[] { Fire }, new Stats(80, 100, 75, 90, 70, 80),
+                new[] { FlameRush, CampfireBreath, FlameDive, SandSmoke }, Ability.Momentum),
+            // 大橋の休憩所の草むらの子
+            Monster(260, "ウミネコペン", new[] { Bird, MonsterType.Normal }, new Stats(45, 50, 40, 40, 40, 60),
+                new[] { Peck, Growl, ShrillVoice, DoublePeck }, Ability.HardFeathers, MonsterRank.Young),
+            Monster(261, "オオカモメペン", new[] { Bird, MonsterType.Normal }, new Stats(80, 90, 70, 65, 65, 95),
+                new[] { DiveBeak, FlapAttack, Headwind, ShrillVoice }, Ability.HardFeathers),
+            // 風に流れるシャボン玉 → 風鈴
+            Monster(262, "シャボンペン", new[] { Aurora }, new Stats(45, 30, 40, 65, 60, 50),
+                new[] { Twinkle, BubbleSpit, QuietPrayer, ShootingStar }, Ability.Prankster, MonsterRank.Young),
+            Monster(263, "フウリンペン", new[] { Aurora }, new Stats(75, 50, 70, 110, 100, 85),
+                new[] { SparkleLaser, AuroraWave, ShrillVoice, AuroraHeal }, Ability.Prankster),
+            // 風車 → 風力発電
+            Monster(264, "カザグルマペン", new[] { Thunder }, new Stats(45, 40, 45, 60, 45, 65),
+                new[] { StaticShock, ZapJab, Whirlwind, ChargeDance }, Ability.StaticBody, MonsterRank.Young),
+            Monster(265, "フウシャペン", new[] { Thunder }, new Stats(80, 65, 85, 105, 85, 75),
+                new[] { Discharge, WindCutter, ChargeDance, StormDrop }, Ability.StaticBody),
+
+            // 道場主ハヤテの切り札（野生では出ない）。道場では Lv32 の進化前で出る。向かい風で特攻を下げながら素早さを積む
+            Monster(266, "ツムジペン", new[] { Bird }, new Stats(50, 50, 50, 65, 50, 65),
+                new[] { Headwind, WindCutter, NorthWindCall, FlapAttack }, Ability.Tailwind, MonsterRank.Young),
+            Monster(267, "タツマキペン", new[] { Bird }, new Stats(80, 85, 75, 105, 80, 100),
+                new[] { GaleFeather, WindCutter, NorthWindCall, Headwind }, Ability.Tailwind),
+
+            // 大橋の草むらの とてもまれな子（進化しない）。大橋の塔の避雷針にとまる
+            Monster(268, "ヒライシンペン", new[] { Bird, Thunder }, new Stats(70, 85, 70, 90, 70, 95),
+                new[] { SparkBeak, FlapAttack, Discharge, DiveBeak }, Ability.StaticBody),
+
+            // 大橋の下で とてもまれに釣れる「池のぬし」（進化しない）
+            Monster(269, "オオナマズペン", new[] { Sea }, new Stats(110, 90, 85, 70, 75, 40),
+                new[] { Whirlpool, SeaGun, Boulder, RainDance }, Ability.Intimidate),
+
+            // 隠しコマンドでだけ会える虹の羽の子（進化しない）。珍しさ重視で、最後の進化の子より強くしない（合計 470）
+            Monster(270, "ニジバネペン", new[] { Bird, Aurora }, new Stats(70, 70, 70, 90, 80, 90),
+                new[] { WindCutter, AuroraWave, Headwind, AuroraHeal }, Ability.Tailwind),
         };
 
         private static IReadOnlyList<MonsterDefinition> _dex;

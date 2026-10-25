@@ -29,7 +29,8 @@ namespace PenguinMonster.Editor
         private const float PartyListSpacing = 6f;
         // 文が枠の右の角丸に触れないよう空ける（あずかり箱も同じ）
         private const float SlotTextRightPadding = 16f;
-        private static readonly Vector2 PartyActionsSize = new Vector2(440f, 500f);
+        // 選択肢6つ（100 x 6 + 間 12 x 5 + 上下の余白 12 x 2）と枠の縁が収まる高さ。一覧（PartyListSize）より低くする
+        private static readonly Vector2 PartyActionsSize = new Vector2(440f, 720f);
         private static readonly Vector2 PartyActionButtonSize = new Vector2(380f, 100f);
         private const float PartyHintHeight = 110f;
         private const float PartyHintBottom = 16f;
@@ -119,6 +120,8 @@ namespace PenguinMonster.Editor
             var detailButton = CreateButton(actionsColumn, "Btn_Detail", "詳しく 見る", PartyActionButtonSize, SlotColor);
             var swapButton = CreateButton(actionsColumn, "Btn_Swap", "並べ替え", PartyActionButtonSize, SlotColor);
             var itemButton = CreateButton(actionsColumn, "Btn_Item", "道具を 使う", PartyActionButtonSize, BagColor);
+            var giveButton = CreateButton(actionsColumn, "Btn_Give", "持たせる", PartyActionButtonSize, BagColor);
+            var takeButton = CreateButton(actionsColumn, "Btn_Take", "外す", PartyActionButtonSize, BagColor);
             var actionsBack = CreateButton(actionsColumn, "Btn_Back", "戻る", PartyActionButtonSize, BackColor);
 
             var detail = CreateDraftDetail(safe, out var detailClose);
@@ -138,6 +141,8 @@ namespace PenguinMonster.Editor
             so.FindProperty("_detailButton").objectReferenceValue = detailButton.GetComponent<Button>();
             so.FindProperty("_swapButton").objectReferenceValue = swapButton.GetComponent<Button>();
             so.FindProperty("_itemButton").objectReferenceValue = itemButton.GetComponent<Button>();
+            so.FindProperty("_giveButton").objectReferenceValue = giveButton.GetComponent<Button>();
+            so.FindProperty("_takeButton").objectReferenceValue = takeButton.GetComponent<Button>();
             so.FindProperty("_actionsBackButton").objectReferenceValue = actionsBack.GetComponent<Button>();
             so.FindProperty("_detail").objectReferenceValue = detail;
             so.FindProperty("_detailCloseButton").objectReferenceValue = detailClose;

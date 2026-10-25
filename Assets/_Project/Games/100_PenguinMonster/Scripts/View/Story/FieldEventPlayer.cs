@@ -14,6 +14,10 @@ namespace PenguinMonster.View.Story
     public class FieldEventPlayer : MonoBehaviour
     {
         private const string ConfirmStarterFormat = "{0}に しますか？";
+        private const string FishWaitText = "……";
+        private const string FishBiteText = "！ 釣れた！";
+        private const string FishMissText = "釣れなかった……";
+        private const string NothingToFishText = "何も 釣れそうに ない";
 
         [SerializeField] private MessageWindow _window;
         [SerializeField] private YesNoWindow _yesNo;
@@ -23,6 +27,8 @@ namespace PenguinMonster.View.Story
         [Tooltip("よろず屋・あずかり箱の画面。会話窓より奥に置き、結果の文は会話窓に出す")]
         [SerializeField] private ShopPanel _shop;
         [SerializeField] private BoxPanel _box;
+        [Tooltip("釣り竿を投げてから、かかったか分かるまでの秒数（A で飛ばせない。待つ間がおもしろさなので）")]
+        [SerializeField] private float _fishWaitSeconds = 1.2f;
 
         private Action _beforeReturn;
 
@@ -68,6 +74,29 @@ namespace PenguinMonster.View.Story
             ShowLayer();
             yield return _window.Play(message);
             gameObject.SetActive(false);
+        }
+
+        /// <summary>釣りの文。「……」と少し待ってから、かかった・外れたを見せる。かかったときのバトルは呼ぶ側が始める</summary>
+        public IEnumerator Fish(FishResult result)
+        {
+            ShowLayer();
+            if (result == FishResult.NothingHere)
+            {
+                yield return _window.Play(NothingToFishText);
+            }
+            else
+            {
+                yield return _window.Type(FishWaitText);
+                yield return new WaitForSeconds(_fishWaitSeconds);
+                bool bite = result == FishResult.Bite;
+                if (bite)
+                {
+                    BattleSounds.Play(BattleSound.Status);
+                }
+                yield return _window.Play(bite ? FishBiteText : FishMissText);
+            }
+            gameObject.SetActive(false);
+            _input.SetPadVisible(true);
         }
 
         /// <summary>会話の層を出す（十字キーを隠し、前に残った「はい / いいえ」も消す）</summary>
@@ -156,7 +185,14 @@ namespace PenguinMonster.View.Story
             gameObject.SetActive(false);
             var foes = new List<OwnedMonster> { OwnedMonster.Create(step.Species, step.Level) };
             yield return _battles.Fight(state, foes, null, canLose: false, random);
-            runner.FinishWildBattle(_battles.PlayerWon || _battles.Caught);
+            if (step.CatchOnly)
+            {
+                runner.FinishCatchOnlyBattle(_battles.Caught, _battles.BlackedOut);
+            }
+            else
+            {
+                runner.FinishWildBattle(_battles.PlayerWon || _battles.Caught);
+            }
             yield return AfterBattle();
         }
 

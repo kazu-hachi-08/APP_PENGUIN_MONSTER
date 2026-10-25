@@ -12,7 +12,7 @@ namespace PenguinMonster.View.Story
     /// 右向きは左向きの左右反転。歩きのコマも反転すると、もう片方の足を出した絵になる。
     /// 村の人も同じ形の色違いで描く（NpcArt）
     /// </summary>
-    public static class HeroArt
+    public static partial class HeroArt
     {
         public const int Size = 16;
 
@@ -31,6 +31,9 @@ namespace PenguinMonster.View.Story
             { 'b', new Color32(64, 120, 210, 255) },
             { 'B', new Color32(40, 80, 160, 255) },
             { 'k', new Color32(70, 60, 60, 255) },
+            // 自転車（HeroArt.Bicycle）: g ハンドル / f 車体
+            { 'g', new Color32(170, 176, 188, 255) },
+            { 'f', new Color32(60, 176, 96, 255) },
         };
 
         private static readonly string[] Head =

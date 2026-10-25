@@ -73,7 +73,8 @@ namespace PenguinMonster.Story
                 Inside(LabDoor, Lab, LabArrival),
                 new Warp(NorthExit, StepFrom(Route01, Route01South, Direction.Up)))
                 .WithSign(ExitSign, "この先 1番道路", "1番道路を 抜けると ツララ町")
-                .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村");
+                .WithSign(VillageSign, "ここは ハツユキ村", "雪の 降る 静かな 村")
+                .WithFishing(EncounterTable.Fishing(new EncounterSlot(Town01Species.Yamame, 3, 5, 100)));
         }
 
         // ---- 家・研究所・小屋・店の中 ----
@@ -95,7 +96,7 @@ namespace PenguinMonster.Story
                 "W______W",
                 "WWWDWWWW",
             };
-            return new FieldMap(id, rows, Outside(HouseExit, outsideMap, outsideDoor));
+            return new FieldMap(id, rows, Outside(HouseExit, outsideMap, outsideDoor)).AsIndoors();
         }
 
         private static FieldMap CreateLab()
@@ -111,7 +112,7 @@ namespace PenguinMonster.Story
                 "W________W",
                 "WWWWDWWWWW",
             };
-            return new FieldMap(Lab, rows, Outside(LabExit, Village, LabDoor));
+            return new FieldMap(Lab, rows, Outside(LabExit, Village, LabDoor)).AsIndoors();
         }
 
         // ---- 1番道路（16x30）。西に川が流れ、川べりは深い草むら ----
@@ -165,7 +166,8 @@ namespace PenguinMonster.Story
                     new EncounterTable(EncounterPercent,
                         new EncounterSlot(Town01Species.Yamame, 3, 5, 50),
                         new EncounterSlot(Town01Species.Kogara, 3, 5, 30),
-                        new EncounterSlot(Town01Species.Omochi, 3, 5, 20)));
+                        new EncounterSlot(Town01Species.Omochi, 3, 5, 20)))
+                .WithFishing(EncounterTable.Fishing(new EncounterSlot(Town01Species.Yamame, 3, 5, 100)));
         }
 
         // ---- ツララ町（24x20）。道場・ぬくもり小屋・よろず屋・家 ----
@@ -211,7 +213,8 @@ namespace PenguinMonster.Story
                 Inside(ShopDoor, Shop, HouseArrival))
                 .WithSign(new GridPos(3, 9), "ここは ツララ町", "つららの 下がる 雪国の 町")
                 .WithSign(new GridPos(10, 6), "ツララ町 道場", "岩のように 固い 守りの 道場")
-                .WithSign(new GridPos(7, 14), "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）");
+                .WithSign(new GridPos(7, 14), "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）")
+                .WithFishing(EncounterTable.Fishing(new EncounterSlot(Town01Species.Yamame, 5, 8, 100)));
         }
 
         // ---- 道場（12x14） ----
@@ -239,7 +242,7 @@ namespace PenguinMonster.Story
                 "W__________W",
                 "WWWWWDWWWWWW",
             };
-            return new FieldMap(id, rows, Outside(GymExit, outsideMap, outsideDoor));
+            return new FieldMap(id, rows, Outside(GymExit, outsideMap, outsideDoor)).AsIndoors();
         }
 
         // ---- 2番道路（30x24）。雪の林。東の奥は暗い林で深い草むら。南東の奥の東の端から 3番道路へ ----

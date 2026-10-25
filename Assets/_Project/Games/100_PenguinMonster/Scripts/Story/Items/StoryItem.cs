@@ -6,7 +6,7 @@ namespace PenguinMonster.Story
 {
     /// <summary>
     /// バッグに入る道具。バトルの持ち物（HeldItem）とは別物。
-    /// 並びはバッグの並び（捕獲タマゴ → 回復 → 状態異常を治すもの）。
+    /// 並びはバッグの並び（捕獲タマゴ → 回復 → 状態異常を治すもの → 持たせる道具）。
     /// 記録には名前で入るので途中に足してよいが、名前は変えない・消さない（古い記録が読めなくなる）
     /// </summary>
     public enum StoryItem
@@ -22,9 +22,15 @@ namespace PenguinMonster.Story
         Antidote,
         ParalyzeHeal,
         Awakening,
+        // 持たせる道具（区切り4）。持たせるとバトルの持ち物（HeldItem）として働く
+        HeldDriedFish,
+        HeldSquidSnack,
+        HeldFreshKelp,
+        HeldBraveFeather,
+        HeldWiseFeather,
     }
 
-    /// <summary>道具1種類の中身。回復の量・治す状態異常・値段、捕獲タマゴなら捕まえやすさの倍率</summary>
+    /// <summary>道具1種類の中身。回復の量・治す状態異常・値段、捕獲タマゴなら捕まえやすさの倍率、持たせる道具なら持ち物</summary>
     public sealed class StoryItemDefinition
     {
         private static readonly StatusCondition[] NoCures = new StatusCondition[0];
@@ -44,10 +50,15 @@ namespace PenguinMonster.Story
         public MonsterType[] BonusTypes { get; private set; } = NoTypes;
         /// <summary>投げるときのタマゴの見た目</summary>
         public EggKind Egg { get; private set; }
+        /// <summary>持たせたときのバトルの持ち物。None なら持たせる道具ではない</summary>
+        public HeldItem Held { get; private set; }
 
         public bool IsCaptureEgg => CatchPercent > 0;
         /// <summary>手持ちの子に使う道具（回復・状態異常を治す）</summary>
         public bool IsMedicine => HealAmount > 0 || Cures.Length > 0;
+        public bool IsHeldItem => Held != HeldItem.None;
+        /// <summary>値段の無い道具（1つずつしか手に入らない持たせる道具）は売らせない。0円で手放して取り直せなくなるため</summary>
+        public bool CanSell => Price > 0;
         public int SellPrice => Price / StoryBalance.SellPriceDivisor;
 
         public StoryItemDefinition(StoryItem item, string name, string description, int price, int healAmount = 0,
@@ -71,6 +82,12 @@ namespace PenguinMonster.Story
                 Egg = egg,
                 BonusTypes = bonusTypes ?? NoTypes,
             };
+        }
+
+        /// <summary>持たせる道具の定義。名前・説明はバトルの持ち物と同じにする（バトル中の文と揃えるため）。よろず屋では扱わない</summary>
+        public static StoryItemDefinition HeldItemOf(StoryItem item, HeldItem held)
+        {
+            return new StoryItemDefinition(item, held.ToJapanese(), held.Description(), 0) { Held = held };
         }
 
         /// <summary>
@@ -131,11 +148,31 @@ namespace PenguinMonster.Story
             new StoryItemDefinition(StoryItem.Antidote, "毒消し", "毒を 治す", 100, 0, StatusCondition.Poison, StatusCondition.BadPoison),
             new StoryItemDefinition(StoryItem.ParalyzeHeal, "麻痺治し", "麻痺を 治す", 200, 0, StatusCondition.Paralysis),
             new StoryItemDefinition(StoryItem.Awakening, "目覚まし", "眠りを 覚ます", 250, 0, StatusCondition.Sleep),
+            StoryItemDefinition.HeldItemOf(StoryItem.HeldDriedFish, HeldItem.StarFish),
+            StoryItemDefinition.HeldItemOf(StoryItem.HeldSquidSnack, HeldItem.SquidSnack),
+            StoryItemDefinition.HeldItemOf(StoryItem.HeldFreshKelp, HeldItem.FreshKelp),
+            StoryItemDefinition.HeldItemOf(StoryItem.HeldBraveFeather, HeldItem.BraveFeather),
+            StoryItemDefinition.HeldItemOf(StoryItem.HeldWiseFeather, HeldItem.WiseFeather),
         };
 
         public static StoryItemDefinition Get(StoryItem item) => All[(int)item];
 
         public static int Count => All.Length;
+
+        /// <summary>持ち物をバッグの道具に戻すとき。ストーリーの道具に無い持ち物なら false</summary>
+        public static bool TryFromHeld(HeldItem held, out StoryItem item)
+        {
+            foreach (var definition in All)
+            {
+                if (definition.IsHeldItem && definition.Held == held)
+                {
+                    item = definition.Item;
+                    return true;
+                }
+            }
+            item = default;
+            return false;
+        }
 
         /// <summary>定義の並び（テストで StoryItem と同じ並びか確かめるため）</summary>
         public static IReadOnlyList<StoryItemDefinition> Definitions => All;

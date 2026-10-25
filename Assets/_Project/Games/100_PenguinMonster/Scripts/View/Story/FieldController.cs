@@ -8,11 +8,12 @@ namespace PenguinMonster.View.Story
 {
     /// <summary>
     /// フィールドの進行役。十字キーで1マスずつ歩き、出入口では暗転してマップを移る。
-    /// A で向いている先の人・看板を調べ、台本を FieldEventPlayer で見せる。草むらでは1歩ごとに野生に出会い、StoryBattleScreen で戦う。
+    /// A で向いている先の人・看板を調べ（水なら釣り竿で釣る。FieldController.Fishing）、台本を FieldEventPlayer で見せる。草むらでは1歩ごとに野生に出会い、StoryBattleScreen で戦う。
+    /// 自転車・大橋の下り坂・展望マスは FieldController.Bicycle。
     /// 全滅したら最後に回復した場所へ戻る。B でメニュー（FieldMenu）を開き、「やめる」で はい と答えたら Run を抜ける（タイトルへ戻る）。
     /// マップを移ったとき・野生とのバトルの後・台本の後に自動で記録する（アプリを閉じられても進み具合を失わないように）
     /// </summary>
-    public class FieldController : MonoBehaviour
+    public partial class FieldController : MonoBehaviour
     {
         [SerializeField] private FieldMapView _mapView;
         [SerializeField] private FieldAvatar _avatar;
@@ -45,7 +46,7 @@ namespace PenguinMonster.View.Story
             _player = new FieldPlayer(world, start, _people);
             gameObject.SetActive(true);
             _input.gameObject.SetActive(true);
-            ShowCurrentMap();
+            ArriveOnMap();
             if (opening != null)
             {
                 // 呼ぶ側の暗転が明けてから流す（真っ暗な中で文が進まないように）
@@ -61,9 +62,22 @@ namespace PenguinMonster.View.Story
                 {
                     RunningShoes.Toggle(_state.Flags);
                 }
+                if (_input.ConsumeBikeToggle())
+                {
+                    Bicycle.Toggle(_state.Flags, _player.Map);
+                }
                 _input.ShowRun(RunningShoes.Has(_state.Flags), RunningShoes.IsOn(_state.Flags));
-                var direction = _input.HeldDirection;
-                if (_input.IsBDown)
+                ShowBicycle();
+                var held = _input.HeldDirection;
+                // 下り坂の上では、十字キーを押していなくても東へ進む
+                var direction = _player.NextStep(held);
+                if (_input.IsBDown && _player.IsGazing)
+                {
+                    // 眺めている間の B は、メニューではなく眺めるのをやめる
+                    _player.StopGazing();
+                    yield return null;
+                }
+                else if (_input.IsBDown)
                 {
                     yield return _menu.Open(_state, _player.Spot);
                     if (_menu.QuitRequested)
@@ -76,6 +90,10 @@ namespace PenguinMonster.View.Story
                 else if (_input.IsADown)
                 {
                     yield return Inspect();
+                }
+                else if (_player.IsGazing)
+                {
+                    yield return TurnWhileGazing(held);
                 }
                 else if (direction.HasValue)
                 {
@@ -98,6 +116,8 @@ namespace PenguinMonster.View.Story
 
         private IEnumerator Step(Direction direction)
         {
+            // 坂かどうかは、動く前の場所で決まる
+            var slope = _player.SlopeOf(direction);
             if (_player.Step(direction) == StepResult.Blocked)
             {
                 // 壁に向かって押している間は向きだけ変えて、次のフレームでまた入力を見る
@@ -106,7 +126,7 @@ namespace PenguinMonster.View.Story
                 yield break;
             }
 
-            yield return _avatar.Walk(_mapView.FeetPosition(_player.Position), direction, PlayerStepSeconds);
+            yield return _avatar.Walk(_mapView.FeetPosition(_player.Position), direction, StepSeconds(slope), windy: slope == Slope.Down);
             var warp = _player.WarpHere;
             if (warp != null)
             {
@@ -124,11 +144,13 @@ namespace PenguinMonster.View.Story
             if (wild != null)
             {
                 yield return FightWild(wild);
+                yield break;
+            }
+            if (_player.IsOnLookout)
+            {
+                yield return StartGazing();
             }
         }
-
-        /// <summary>建物の中・草むらでも走れる（どこでも同じ速さにする）</summary>
-        private float PlayerStepSeconds => RunningShoes.IsOn(_state.Flags) ? _runStepSeconds : _stepSeconds;
 
         private IEnumerator FightWild(OwnedMonster wild)
         {
@@ -145,20 +167,19 @@ namespace PenguinMonster.View.Story
             if (blackedOut)
             {
                 _player.MoveTo(_state.BlackOut());
-                ShowCurrentMap();
+                ArriveOnMap();
             }
             _input.SetPadVisible(true);
             yield return _battles.ReturnToField();
         }
 
-        /// <summary>向いている先の人・看板の台本を流す。人は話しかけた側を向く</summary>
+        /// <summary>向いている先の人・看板の台本を流す。人は話しかけた側を向く。どちらも無く水に向いていれば釣る</summary>
         private IEnumerator Inspect()
         {
             var script = _player.ScriptAhead();
             if (script == null)
             {
-                // 何も無い所で A を押したときも1フレーム進める（同じフレームの A をまた見て止まらないように）
-                yield return null;
+                yield return Fish();
                 yield break;
             }
             var person = _player.PersonAhead;
@@ -218,7 +239,7 @@ namespace PenguinMonster.View.Story
         {
             yield return _fade.FadeOutCoroutine(_doorFadeSeconds);
             _player.Enter(warp);
-            ShowCurrentMap();
+            ArriveOnMap();
             AutoSave();
             yield return _fade.FadeInCoroutine(_doorFadeSeconds);
             var greeter = _player.GreeterHere();
@@ -246,10 +267,19 @@ namespace PenguinMonster.View.Story
             StorySaveStore.Save(StorySave.Capture(_state, _player.Spot));
         }
 
+        /// <summary>別のマップへ移った（歩き始め・扉・全滅して戻った）。建物の中なら自転車を降り、自転車の道なら乗ってから見せる</summary>
+        private void ArriveOnMap()
+        {
+            Bicycle.GetOffIfIndoors(_state.Flags, _player.Map);
+            Bicycle.GetOnIfBikeRoad(_state.Flags, _player.Map);
+            ShowCurrentMap();
+        }
+
         private void ShowCurrentMap()
         {
             _mapView.Draw(_player.Map);
             DrawPeople();
+            _avatar.SetRiding(Bicycle.IsOn(_state.Flags));
             _avatar.Place(_mapView.FeetPosition(_player.Position), _player.Facing);
             _camera.Follow(_avatar.transform, _player.Map.Width, _player.Map.Height);
             PlayMapMusic();

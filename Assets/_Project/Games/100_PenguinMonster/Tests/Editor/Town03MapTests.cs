@@ -175,7 +175,9 @@ namespace PenguinMonster.Story.Tests
         public void Clerk_SellsEveryItem_AndOlderShopsStayTheSame()
         {
             var shop = PlayerAt(Town03Maps.Shop, new GridPos(3, 2), Direction.Up).ScriptAhead().Single(step => step.Kind == EventStepKind.Shop);
-            CollectionAssert.AreEqual(System.Enum.GetValues(typeof(StoryItem)), shop.ShopItems.ToArray());
+            // 持たせる道具（区切り4）は売らないので、売れる道具だけを比べる
+            var sellable = System.Enum.GetValues(typeof(StoryItem)).Cast<StoryItem>().Where(item => StoryItems.Get(item).CanSell);
+            CollectionAssert.AreEqual(sellable.ToArray(), shop.ShopItems.ToArray());
 
             // 区切り1・2の店には新しいタマゴは並ばない（PLAN_STORY_TOWN03.md §3.1）
             foreach (var oldShop in new[] { Town01Maps.Shop, Town02Maps.Shop })
@@ -200,12 +202,13 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
-        public void Route07Sign_SaysToBeContinued()
+        public void Route07Sign_NoLongerSaysToBeContinued()
         {
+            // 区切り4で北が 7番道路の出口になり、看板は道の横に「この先 7番道路」だけ残す
             var sign = _world.Get(Town03Maps.Town).SignAt(Town03Maps.Route07Sign);
 
+            Assert.AreEqual(1, sign.Count);
             StringAssert.Contains("7番道路", sign[0]);
-            StringAssert.Contains("次の 更新", sign[1]);
         }
 
         [Test]

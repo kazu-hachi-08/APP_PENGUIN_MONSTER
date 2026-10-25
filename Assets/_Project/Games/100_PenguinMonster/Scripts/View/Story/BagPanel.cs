@@ -11,16 +11,18 @@ namespace PenguinMonster.View.Story
     {
         Eggs,
         Medicine,
+        Held,
     }
 
     /// <summary>
-    /// バッグの一覧。上の「タマゴ / 薬」のタブで分け、持っている道具だけを1ページずつ並べる（道具が増えても枠に入るように）。
-    /// 押せるかどうかは呼ぶ側が決める（バトル中・フィールドで使える道具が違うため）。バトルとフィールドのメニューで使い回す
+    /// バッグの一覧。上の「タマゴ / 薬 / 持ち物」のタブで分け、持っている道具だけを1ページずつ並べる（道具が増えても枠に入るように）。
+    /// 押せるかどうかは呼ぶ側が決める（バトル中・フィールドで使える道具が違うため）。バトルとフィールドのメニューで使い回す。
+    /// バトルでは持たせ替えができないので、持ち物のタブは出さない
     /// </summary>
     public class BagPanel : MonoBehaviour
     {
         private const int DescriptionSize = 28;
-        private static readonly string[] EmptyMessages = { "タマゴを 持っていない", "薬を 持っていない" };
+        private static readonly string[] EmptyMessages = { "タマゴを 持っていない", "薬を 持っていない", "持ち物を 持っていない" };
 
         [Tooltip("BagPocket の順に1つずつ")]
         [SerializeField] private Button[] _pocketTabs;
@@ -81,8 +83,11 @@ namespace PenguinMonster.View.Story
 
         /// <param name="pocket">最初に開くタブ（バトルはタマゴ、フィールドは薬）</param>
         /// <param name="canUse">押せる道具。null なら全部押せる</param>
-        public void Show(Bag bag, BagPocket pocket, Func<StoryItem, bool> canUse, Action<StoryItem> onSelect, Action onBack)
+        /// <param name="showHeld">持ち物のタブを出す（バトルでは false）</param>
+        public void Show(Bag bag, BagPocket pocket, Func<StoryItem, bool> canUse, Action<StoryItem> onSelect, Action onBack,
+            bool showHeld = true)
         {
+            _pocketTabs[(int)BagPocket.Held].gameObject.SetActive(showHeld);
             _bag = bag;
             _canUse = canUse;
             _onSelect = onSelect;
@@ -98,7 +103,12 @@ namespace PenguinMonster.View.Story
 
         private static BagPocket PocketOf(StoryItem item)
         {
-            return StoryItems.Get(item).IsCaptureEgg ? BagPocket.Eggs : BagPocket.Medicine;
+            var definition = StoryItems.Get(item);
+            if (definition.IsCaptureEgg)
+            {
+                return BagPocket.Eggs;
+            }
+            return definition.IsHeldItem ? BagPocket.Held : BagPocket.Medicine;
         }
 
         private void Open(BagPocket pocket)

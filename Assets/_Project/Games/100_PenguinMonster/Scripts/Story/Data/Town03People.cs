@@ -11,6 +11,13 @@ namespace PenguinMonster.Story
         private const int FoundPotions = 2;
         private const int FoundGreatEggs = 2;
 
+        /// <summary>新しいタマゴ6種を並べた品ぞろえ。区切り1・2の店は基本の5種のまま、区切り4の店もこれと同じ</summary>
+        internal static readonly StoryItem[] ShopItems =
+        {
+            StoryItem.CaptureEgg, StoryItem.GreatEgg, StoryItem.UltraEgg, StoryItem.NetEgg, StoryItem.NightEgg,
+            StoryItem.HeavyEgg, StoryItem.SkyEgg, StoryItem.Potion, StoryItem.Antidote, StoryItem.ParalyzeHeal, StoryItem.Awakening,
+        };
+
         /// <summary>カガミコ町の北の出口の手前。サエに勝つまで門下生がここに立つ</summary>
         public static readonly FieldSpot DiscipleAtKagamikoNorth =
             Town01Maps.StepFrom(Town02Maps.Town, Town02Maps.Route05Exit, Direction.Down);
@@ -21,10 +28,7 @@ namespace PenguinMonster.Story
             {
                 KagamikoNorthDisciple(),
                 Town01People.HutKeeper("yukiokoshiHutKeeper", Town03Maps.WarmHut),
-                // 新しいタマゴ6種を並べる。他の町の店は基本の5種のまま
-                Town01People.Clerk("yukiokoshiClerk", Town03Maps.Shop,
-                    StoryItem.CaptureEgg, StoryItem.GreatEgg, StoryItem.UltraEgg, StoryItem.NetEgg, StoryItem.NightEgg,
-                    StoryItem.HeavyEgg, StoryItem.SkyEgg, StoryItem.Potion, StoryItem.Antidote, StoryItem.ParalyzeHeal, StoryItem.Awakening),
+                Town01People.Clerk("yukiokoshiClerk", Town03Maps.Shop, ShopItems),
                 Town01People.DroppedItem(Town03Flags.ItemPrefix, "route05Potion",
                     new FieldSpot(Town03Maps.Route05, new GridPos(18, 13), Direction.Down), StoryItem.Potion, FoundPotions),
                 Town01People.DroppedItem(Town03Flags.ItemPrefix, "route06GreatEggs",

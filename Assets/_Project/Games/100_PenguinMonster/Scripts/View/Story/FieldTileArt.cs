@@ -10,7 +10,7 @@ namespace PenguinMonster.View.Story
     /// フィールドのタイル（16x16 のドット絵）をマスの種類ごとにコードで描き、使い回す。
     /// 1マス＝1ワールド単位になるよう、絵の幅をそのまま pixelsPerUnit にする（PixelCanvas.ToSprite）
     /// </summary>
-    public static class FieldTileArt
+    public static partial class FieldTileArt
     {
         private const int Size = 16;
 
@@ -75,6 +75,10 @@ namespace PenguinMonster.View.Story
                 case TileKind.Door: PaintDoor(canvas); break;
                 case TileKind.Floor: PaintFloor(canvas); break;
                 case TileKind.Sign: PaintSign(canvas); break;
+                case TileKind.Bridge: PaintBridge(canvas); break;
+                case TileKind.Railing: PaintRailing(canvas); break;
+                case TileKind.Downhill: PaintDownhill(canvas); break;
+                case TileKind.Lookout: PaintLookout(canvas); break;
                 default: PaintSnow(canvas); break;
             }
             return canvas;

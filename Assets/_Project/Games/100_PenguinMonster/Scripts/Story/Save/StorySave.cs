@@ -72,7 +72,10 @@ namespace PenguinMonster.Story
             AddAll(data.SeenNos, no => state.SeenNos.Add(no));
             AddAll(data.CaughtNos, no => state.CaughtNos.Add(no));
             AddAll(data.Badges, badge => state.Badges.Add(badge));
-            return new RestoredStory(state, ToSpot(data.Position, world, home));
+            var position = ToSpot(data.Position, world, home);
+            // 建物の中では乗れないので、乗ったまま記録されていても降りた状態で始める
+            Bicycle.GetOffIfIndoors(state.Flags, world.Get(position.MapId));
+            return new RestoredStory(state, position);
         }
 
         private static SpotSave ToSave(FieldSpot spot)

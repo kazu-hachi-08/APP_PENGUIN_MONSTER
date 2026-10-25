@@ -4,7 +4,7 @@ namespace PenguinMonster.Story
 {
     /// <summary>
     /// マップ。カガミコ町の北 → 5番道路（北）→ ユキオコシ町、町の東から 6番道路（行き止まり）。
-    /// 6番道路の奥に発電所。町の北は 7番道路の看板で止まる。文字は Town01Maps と同じ。
+    /// 6番道路の奥に発電所。町の北から 7番道路（区切り4）。文字は Town01Maps と同じ。
     /// マップ ID は記録に入るので、一度出したら名前を変えないこと
     /// </summary>
     public static class Town03Maps
@@ -100,15 +100,20 @@ namespace PenguinMonster.Story
         private static readonly GridPos TownHouseDoor = new GridPos(19, 5);
         private static readonly GridPos WarmHutDoor = new GridPos(16, 17);
         private static readonly GridPos ShopDoor = new GridPos(21, 17);
-        /// <summary>北の出口（7番道路）は看板で止まる。看板の上の道は、道が先へ続いて見えるように残す</summary>
-        public static readonly GridPos Route07Sign = new GridPos(12, 1);
+        /// <summary>北の出口（7番道路）。ライゾウに勝つまで門下生が手前でふさぐ</summary>
+        public static readonly GridPos Route07Exit = new GridPos(12, 0);
+        /// <summary>
+        /// 北の出口の横の看板。区切り3までは出口の上にあって道をふさいでいたので、区切り4で道の横へずらした
+        /// （区切り3の終わりに看板の前で記録した人も、そのまま上へ進める）
+        /// </summary>
+        public static readonly GridPos Route07Sign = new GridPos(13, 1);
 
         private static FieldMap CreateTown()
         {
             var rows = new[]
             {
                 "TTTTTTTTTTTT=TTTTTTTTTTTTT",
-                "T...........S............T",
+                "T...........=S...........T",
                 "T.RRRRRRRR..=.....RRRR...T",
                 "T.RRRRRRRR..=.....RRRR...T",
                 "T.RRRRRRRR..=.....RRRR...T",
@@ -133,11 +138,12 @@ namespace PenguinMonster.Story
             return new FieldMap(Town, rows,
                 new Warp(TownSouth, Town01Maps.StepFrom(Route05, Route05North, Direction.Down)),
                 new Warp(TownEast, Town01Maps.StepFrom(Route06, Route06West, Direction.Right)),
+                new Warp(Route07Exit, Town01Maps.StepFrom(Town04Maps.Route07, Town04Maps.Route07South, Direction.Up)),
                 Town01Maps.Inside(GymDoor, Gym, Town01Maps.GymArrival),
                 Town01Maps.Inside(TownHouseDoor, TownHouse, Town01Maps.HouseArrival),
                 Town01Maps.Inside(WarmHutDoor, WarmHut, Town01Maps.HouseArrival),
                 Town01Maps.Inside(ShopDoor, Shop, Town01Maps.HouseArrival))
-                .WithSign(Route07Sign, "この先 7番道路", "続きは 次の 更新で！")
+                .WithSign(Route07Sign, "この先 7番道路")
                 .WithSign(new GridPos(9, 6), "ユキオコシ町 道場", "雷鳴の とどろく 雷の 道場")
                 .WithSign(new GridPos(18, 18), "左: ぬくもり小屋（ペンモンの 回復・あずかり箱）", "右: よろず屋（道具の 売り買い）")
                 .WithSign(new GridPos(20, 11), "ここは ユキオコシ町", "冬の 雷 「雪起こし」が 鳴り響く 町");
@@ -193,7 +199,10 @@ namespace PenguinMonster.Story
                         new EncounterSlot(Town03Species.Yukiakari, 19, 22, 9),
                         new EncounterSlot(Town03Species.SaintElmo, 19, 22, 1),
                         new EncounterSlot(Town02Species.Wakasagi, 19, 22, 15),
-                        new EncounterSlot(Town02Species.Itachi, 19, 22, 15)));
+                        new EncounterSlot(Town02Species.Itachi, 19, 22, 15)))
+                .WithFishing(EncounterTable.Fishing(
+                    new EncounterSlot(Town03Species.Hatahata, 18, 21, 70),
+                    new EncounterSlot(Town02Species.Wakasagi, 18, 21, 30)));
         }
 
         // ---- 発電所（12x10）。建物の中。並んだ機械（壁）の間を通って奥へ。野生は出ない ----
@@ -215,7 +224,7 @@ namespace PenguinMonster.Story
                 "W__________W",
                 "WWWWWDWWWWWW",
             };
-            return new FieldMap(PowerPlant, rows, Town01Maps.Outside(PowerPlantExit, Route06, PowerPlantDoor));
+            return new FieldMap(PowerPlant, rows, Town01Maps.Outside(PowerPlantExit, Route06, PowerPlantDoor)).AsIndoors();
         }
     }
 }

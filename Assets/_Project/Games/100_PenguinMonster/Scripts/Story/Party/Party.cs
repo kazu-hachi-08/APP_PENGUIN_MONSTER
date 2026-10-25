@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using PenguinMonster.Battle;
 
 namespace PenguinMonster.Story
 {
@@ -70,6 +71,39 @@ namespace PenguinMonster.Story
             var before = _members[index];
             _members[index] = monster;
             return before;
+        }
+
+        /// <summary>
+        /// バッグの持たせる道具を持たせる。もう持っていたら入れ替えて、前の道具はバッグへ戻す。
+        /// 持たせる道具でない・バッグに無い・前の道具をバッグへ戻せないなら何もせず false
+        /// </summary>
+        public bool GiveItem(int index, StoryItem item, Bag bag)
+        {
+            var member = _members[index];
+            if (!StoryItems.Get(item).IsHeldItem || !bag.Has(item))
+            {
+                return false;
+            }
+            if (member.Item != HeldItem.None && !TakeItem(index, bag))
+            {
+                return false;
+            }
+            bag.Remove(item);
+            member.Item = StoryItems.Get(item).Held;
+            return true;
+        }
+
+        /// <summary>持ち物を外してバッグへ戻す。持っていない・ストーリーの道具に無い持ち物なら false（消さないため外さない）</summary>
+        public bool TakeItem(int index, Bag bag)
+        {
+            var member = _members[index];
+            if (!StoryItems.TryFromHeld(member.Item, out var item))
+            {
+                return false;
+            }
+            bag.Add(item);
+            member.Item = HeldItem.None;
+            return true;
         }
 
         /// <summary>手持ちに足す。いっぱいなら足さずに false</summary>
