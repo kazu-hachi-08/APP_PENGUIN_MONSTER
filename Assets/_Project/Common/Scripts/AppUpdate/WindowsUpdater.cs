@@ -16,6 +16,8 @@ namespace PenguinMonster.Common.AppUpdate
         private const string VersionFileName = "version.txt";
         private const string ScriptFileName = "update.ps1";
         private const int TimeoutSeconds = 10;
+        // ヘッダーには ASCII しか入らないので、日本語の productName（ペンモン）は使えない
+        private const string UserAgent = "PenguinMonster";
 
         [Serializable]
         private class Release
@@ -47,7 +49,7 @@ namespace PenguinMonster.Common.AppUpdate
             using var request = UnityWebRequest.Get(latestReleaseApi);
             request.timeout = TimeoutSeconds;
             // GitHub の API は User-Agent が無いと断る
-            request.SetRequestHeader("User-Agent", Application.productName);
+            request.SetRequestHeader("User-Agent", UserAgent);
             yield return request.SendWebRequest();
 
             string latest = request.result == UnityWebRequest.Result.Success
