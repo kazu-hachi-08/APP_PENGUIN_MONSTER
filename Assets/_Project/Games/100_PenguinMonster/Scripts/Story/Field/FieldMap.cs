@@ -46,6 +46,8 @@ namespace PenguinMonster.Story
         public EncounterTable FishingEncounters { get; private set; }
         /// <summary>建物の中（家・店・道場など）。自転車に乗れない</summary>
         public bool IsIndoors { get; private set; }
+        /// <summary>自転車の道（風花大橋）。自転車を持っていれば、入ったときに自動で乗る</summary>
+        public bool IsBikeRoad { get; private set; }
 
         public FieldMap(string id, string[] rows, params Warp[] warps)
         {
@@ -121,6 +123,13 @@ namespace PenguinMonster.Story
         public FieldMap AsIndoors()
         {
             IsIndoors = true;
+            return this;
+        }
+
+        /// <summary>自転車の道の印を付ける。表と続けて書けるよう、自分を返す</summary>
+        public FieldMap AsBikeRoad()
+        {
+            IsBikeRoad = true;
             return this;
         }
 

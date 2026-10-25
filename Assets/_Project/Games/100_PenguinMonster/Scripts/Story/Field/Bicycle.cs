@@ -44,5 +44,14 @@ namespace PenguinMonster.Story
                 flags.Clear(OnFlag);
             }
         }
+
+        /// <summary>自転車の道（関所の先の大橋）に入ったら、持っていれば乗る（乗り換えの手間を省く）</summary>
+        public static void GetOnIfBikeRoad(StoryFlags flags, FieldMap map)
+        {
+            if (map.IsBikeRoad && Has(flags))
+            {
+                flags.Set(OnFlag);
+            }
+        }
     }
 }

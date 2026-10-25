@@ -117,6 +117,23 @@ namespace PenguinMonster.Story.Tests
             Assert.IsTrue(Bicycle.Has(flags));
         }
 
+        [Test]
+        public void GetOnIfBikeRoad_OnlyWithBicycleOnBikeRoad()
+        {
+            var road = new FieldMap("Road", new[] { "##" }).AsBikeRoad();
+            var flags = new StoryFlags();
+
+            Bicycle.GetOnIfBikeRoad(flags, road);
+            Assert.IsFalse(flags.Has(Bicycle.OnFlag), "自転車が無いと乗らない");
+
+            Bicycle.Give(flags);
+            Bicycle.GetOnIfBikeRoad(flags, CreateWorld().Get(Bridge));
+            Assert.IsFalse(Bicycle.IsOn(flags), "自転車の道でなければ乗らない");
+
+            Bicycle.GetOnIfBikeRoad(flags, road);
+            Assert.IsTrue(Bicycle.IsOn(flags));
+        }
+
         [TestCase(Town01Maps.PlayerHouse)]
         [TestCase(Town01Maps.Lab)]
         [TestCase(Town01Maps.WarmHut)]

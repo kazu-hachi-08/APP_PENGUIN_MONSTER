@@ -267,10 +267,11 @@ namespace PenguinMonster.View.Story
             StorySaveStore.Save(StorySave.Capture(_state, _player.Spot));
         }
 
-        /// <summary>別のマップへ移った（歩き始め・扉・全滅して戻った）。建物の中なら自転車を降りてから見せる</summary>
+        /// <summary>別のマップへ移った（歩き始め・扉・全滅して戻った）。建物の中なら自転車を降り、自転車の道なら乗ってから見せる</summary>
         private void ArriveOnMap()
         {
             Bicycle.GetOffIfIndoors(_state.Flags, _player.Map);
+            Bicycle.GetOnIfBikeRoad(_state.Flags, _player.Map);
             ShowCurrentMap();
         }
 

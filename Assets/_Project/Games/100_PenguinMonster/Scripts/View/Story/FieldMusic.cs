@@ -19,10 +19,13 @@ namespace PenguinMonster.View.Story
                 case Town03Maps.Route05:
                 case Town03Maps.Route06:
                 case Town03Maps.PowerPlant:
+                case Town04Maps.Route07:
+                case Town04Maps.Bridge:
                     return MusicTrack.Route;
                 case Town01Maps.Gym:
                 case Town02Maps.Gym:
                 case Town03Maps.Gym:
+                case Town04Maps.Gym:
                     return MusicTrack.Gym;
                 default:
                     return MusicTrack.Village;

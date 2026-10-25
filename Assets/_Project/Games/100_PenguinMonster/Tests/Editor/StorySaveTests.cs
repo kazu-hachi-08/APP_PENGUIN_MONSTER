@@ -391,6 +391,24 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
+        public void Load_Town03EndSave_CanWalkOnToRoute07()
+        {
+            // 区切り3の終わりで記録した人が、区切り4を足した版でそのまま 7番道路へ進めること（PLAN_STORY_TOWN04.md §9）。
+            // 看板が立っていたマスは道になり、看板は横へずれている
+            var restored = FromJson(Town03EndJson);
+            var people = new FieldPeople(StoryWorld.People(), restored.State.Flags);
+            var player = new FieldPlayer(_world, restored.Position, people);
+
+            for (int i = 0; i < 2; i++)
+            {
+                Assert.AreEqual(StepResult.Moved, player.Step(Direction.Up), $"{player.Position}");
+            }
+            player.Enter(player.WarpHere);
+
+            Assert.AreEqual(Town04Maps.Route07, player.Map.Id);
+        }
+
+        [Test]
         public void StoryWorld_HasEveryTown02Map()
         {
             foreach (var map in Town02Maps.CreateMaps())

@@ -92,10 +92,11 @@ namespace PenguinMonster.Story
                     EventStep.Say("ぬうっ…… わしの 雷を 受けきるとは！"),
                     EventStep.Say("見事だ！ これを 持って いけ！"),
                     EventStep.GiveBadge(Town03Trainers.BadgeId, Town03Trainers.BadgeDisplayName),
-                    EventStep.Say("次の 道場は 町の 北の 7番道路の 先だ")),
+                    EventStep.Say("次の 道場は 町の 北の 7番道路を 抜けた 先、カザハナ町だ")),
                 NpcPlacement.Always(GymLeaderSpot,
                     EventStep.Say("ガハハ！ また 腕を 上げたら 相手を してやる！"),
-                    EventStep.Say("町の 北の 出口から 7番道路へ 進むと いい")));
+                    EventStep.Say("町の 北の 出口から 7番道路へ 進むと いい"),
+                    EventStep.Say("カザハナ町の ハヤテは 風の ように 速いぞ！ ガハハ！")));
         }
     }
 }

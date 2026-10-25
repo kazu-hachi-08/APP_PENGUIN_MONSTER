@@ -202,12 +202,13 @@ namespace PenguinMonster.Story.Tests
         }
 
         [Test]
-        public void Route07Sign_SaysToBeContinued()
+        public void Route07Sign_NoLongerSaysToBeContinued()
         {
+            // 区切り4で北が 7番道路の出口になり、看板は道の横に「この先 7番道路」だけ残す
             var sign = _world.Get(Town03Maps.Town).SignAt(Town03Maps.Route07Sign);
 
+            Assert.AreEqual(1, sign.Count);
             StringAssert.Contains("7番道路", sign[0]);
-            StringAssert.Contains("次の 更新", sign[1]);
         }
 
         [Test]
