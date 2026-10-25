@@ -26,7 +26,10 @@ namespace PenguinMonster.Story
         Storage,
         /// <summary>羽章をもらう（Flag の名前で StoryState.Badges に足す）。「〇〇を もらった！」を出す</summary>
         GiveBadge,
-        /// <summary>野生のペンモン（Species・Level）と戦う。タマゴも投げられ、逃げられる。倒すか捕まえたときだけ台本を続ける</summary>
+        /// <summary>
+        /// 野生のペンモン（Species・Level）と戦う。タマゴも投げられ、逃げられる。倒すか捕まえたときだけ台本を続ける。
+        /// CatchOnly なら捕まえたときだけ続け、倒した・逃げたときは OnNo を流す
+        /// </summary>
         WildBattle,
     }
 
@@ -49,12 +52,14 @@ namespace PenguinMonster.Story
         public IReadOnlyList<StorySpecies> Choices { get; }
         /// <summary>Give / ChooseStarter でもらう子のレベル。WildBattle では野生の子のレベル</summary>
         public int Level { get; }
-        /// <summary>Ask でいいえを選んだときに流す台本</summary>
+        /// <summary>Ask でいいえを選んだとき / CatchOnly の WildBattle で捕まえずに終わったときに流す台本</summary>
         public IReadOnlyList<EventStep> OnNo { get; }
         /// <summary>Battle の相手</summary>
         public TrainerDefinition Trainer { get; }
         /// <summary>Battle で負けても台本を続ける（最初のライバル戦。本家と同じく負けても話が進む）</summary>
         public bool CanLose { get; }
+        /// <summary>WildBattle で、捕まえたときだけ台本を続ける（虹の羽の子。倒しても続きは流さない）</summary>
+        public bool CatchOnly { get; }
         /// <summary>Heal で全滅したときの戻り先にする場所</summary>
         public FieldSpot HealSpot { get; }
         /// <summary>GiveItem でもらう道具</summary>
@@ -69,7 +74,7 @@ namespace PenguinMonster.Story
         private EventStep(EventStepKind kind, string text = null, string flag = null, StorySpecies species = null,
             IReadOnlyList<StorySpecies> choices = null, int level = 0, IReadOnlyList<EventStep> onNo = null,
             TrainerDefinition trainer = null, bool canLose = false, FieldSpot healSpot = default, StoryItem item = default,
-            int count = 0, IReadOnlyList<StoryItem> shopItems = null, bool found = false)
+            int count = 0, IReadOnlyList<StoryItem> shopItems = null, bool found = false, bool catchOnly = false)
         {
             Kind = kind;
             Text = text;
@@ -85,6 +90,7 @@ namespace PenguinMonster.Story
             Count = count;
             ShopItems = shopItems;
             Found = found;
+            CatchOnly = catchOnly;
         }
 
         public static EventStep Say(string text) => new EventStep(EventStepKind.Say, text);
@@ -113,6 +119,12 @@ namespace PenguinMonster.Story
         public static EventStep WildBattle(StorySpecies species, int level)
         {
             return new EventStep(EventStepKind.WildBattle, species: species, level: level);
+        }
+
+        /// <summary>捕まえたときだけ続ける野生の子（隠しコマンドの子）。倒した・逃げたときは onEscape を流して終わる</summary>
+        public static EventStep CatchOnlyBattle(StorySpecies species, int level, params EventStep[] onEscape)
+        {
+            return new EventStep(EventStepKind.WildBattle, species: species, level: level, onNo: onEscape, catchOnly: true);
         }
 
         /// <param name="returnSpot">これから全滅したときに戻る場所</param>

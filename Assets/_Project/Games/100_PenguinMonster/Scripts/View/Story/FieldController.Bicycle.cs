@@ -10,8 +10,6 @@ namespace PenguinMonster.View.Story
     public partial class FieldController
     {
         private static readonly string[] GazeLines = { "いい 眺めだ……" };
-        // 虹の羽の子（No.270）が出来るまでの仮の文。区切り4のフェーズ7で、虹の羽の子との野生のバトルに替える
-        private static readonly string[] RainbowLines = { "空の 向こうが 虹色に 光った！" };
 
         [Tooltip("自転車の1マスの秒数（歩きの3倍の速さ）")]
         [SerializeField] private float _bikeStepSeconds = 0.09f;
@@ -55,7 +53,7 @@ namespace PenguinMonster.View.Story
             _lastGazeHeld = _input.HeldDirection;
         }
 
-        /// <summary>眺めている間の十字キー。動かずに向きだけ変え、隠しコマンドが通ったら空が光る</summary>
+        /// <summary>眺めている間の十字キー。動かずに向きだけ変え、隠しコマンドが通ったら虹の羽の子が舞い降りる（捕まえた後は何も起きない）</summary>
         private IEnumerator TurnWhileGazing(Direction? held)
         {
             bool pressed = held.HasValue && held != _lastGazeHeld;
@@ -66,10 +64,10 @@ namespace PenguinMonster.View.Story
                 yield break;
             }
             _avatar.Face(held.Value);
-            if (_player.TurnWhileGazing(held.Value))
+            if (_player.TurnWhileGazing(held.Value) && Town04People.RainbowAppears(_state.Flags))
             {
                 _player.StopGazing();
-                yield return PlayScript(EventStep.Lines(RainbowLines));
+                yield return PlayScript(Town04People.RainbowScript);
                 yield break;
             }
             yield return null;

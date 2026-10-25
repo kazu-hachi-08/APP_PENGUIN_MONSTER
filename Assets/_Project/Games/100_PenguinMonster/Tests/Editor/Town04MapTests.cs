@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace PenguinMonster.Story.Tests
 {
-    /// <summary>区切り4のマップのつながり・出口をふさぐ人・大橋・出現表・仮の人（PLAN_STORY_TOWN04.md フェーズ6）</summary>
+    /// <summary>区切り4のマップのつながり・出口をふさぐ人・大橋・出現表（PLAN_STORY_TOWN04.md フェーズ6。人・出来事は Town04StoryTests）</summary>
     public class Town04MapTests
     {
         private StoryState _state;
@@ -214,19 +214,6 @@ namespace PenguinMonster.Story.Tests
         {
             return PlayerAt(shopMapId, new GridPos(3, 2), Direction.Up).ScriptAhead()
                 .Single(step => step.Kind == EventStepKind.Shop).ShopItems.ToArray();
-        }
-
-        [Test]
-        public void TemporaryPeople_GiveRodAndBicycleOnce()
-        {
-            var angler = Town04People.AnglerSpot.Position + Direction.Down.Offset();
-            RunToEnd(PlayerAt(Town04Maps.Route07, angler, Direction.Up).ScriptAhead());
-            Assert.IsTrue(FishingRod.Has(_state.Flags));
-
-            RunToEnd(PlayerAt(Town04Maps.BikeShop, new GridPos(3, 2), Direction.Up).ScriptAhead());
-            Assert.IsTrue(Bicycle.Has(_state.Flags));
-            Assert.IsFalse(PlayerAt(Town04Maps.BikeShop, new GridPos(3, 2), Direction.Up).ScriptAhead()
-                .Any(step => step.Kind == EventStepKind.SetFlag));
         }
 
         [Test]

@@ -5,7 +5,7 @@ namespace PenguinMonster.Story
 {
     /// <summary>
     /// 台本を1行ずつ進める。画面に出す行（Say / Ask / Give / GiveItem / GiveBadge / ChooseStarter / Battle / WildBattle / Heal / Shop / Storage）で止まり、View が見せ終えたら
-    /// Advance / Answer / Choose / FinishBattle / FinishWildBattle で先へ送る。フラグ・手持ち・お金・回復はここで行い、View は表示だけを受け持つ
+    /// Advance / Answer / Choose / FinishBattle / FinishWildBattle / FinishCatchOnlyBattle で先へ送る。フラグ・手持ち・お金・回復はここで行い、View は表示だけを受け持つ
     /// </summary>
     public sealed class EventRunner
     {
@@ -115,6 +115,24 @@ namespace PenguinMonster.Story
                 return;
             }
             Next();
+        }
+
+        /// <summary>
+        /// CatchOnly の WildBattle の決着。捕まえたら続ける。倒した・逃げたときは残りの台本の代わりに OnNo を流し、
+        /// 負けたときは何も流さずに終わる（全滅して戻すのは View が行う）
+        /// </summary>
+        public void FinishCatchOnlyBattle(bool caught, bool lost)
+        {
+            Expect(EventStepKind.WildBattle);
+            if (caught)
+            {
+                Next();
+                return;
+            }
+            var onEscape = lost ? new List<EventStep>() : new List<EventStep>(Current.OnNo);
+            _steps.RemoveRange(_index, _steps.Count - _index);
+            _steps.AddRange(onEscape);
+            RunUntilShown();
         }
 
         private void Next()

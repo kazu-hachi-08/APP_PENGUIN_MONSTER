@@ -185,7 +185,14 @@ namespace PenguinMonster.View.Story
             gameObject.SetActive(false);
             var foes = new List<OwnedMonster> { OwnedMonster.Create(step.Species, step.Level) };
             yield return _battles.Fight(state, foes, null, canLose: false, random);
-            runner.FinishWildBattle(_battles.PlayerWon || _battles.Caught);
+            if (step.CatchOnly)
+            {
+                runner.FinishCatchOnlyBattle(_battles.Caught, _battles.BlackedOut);
+            }
+            else
+            {
+                runner.FinishWildBattle(_battles.PlayerWon || _battles.Caught);
+            }
             yield return AfterBattle();
         }
 
