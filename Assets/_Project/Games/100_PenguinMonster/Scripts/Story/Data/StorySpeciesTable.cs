@@ -7,6 +7,7 @@ namespace PenguinMonster.Story
     public static class StorySpeciesTable
     {
         /// <summary>No から種を引く。どの区切りにも無ければ null</summary>
-        public static StorySpecies ByNo(int no) => Town01Species.ByNo(no) ?? Town02Species.ByNo(no) ?? Town03Species.ByNo(no);
+        public static StorySpecies ByNo(int no) => Town01Species.ByNo(no) ?? Town02Species.ByNo(no) ?? Town03Species.ByNo(no)
+            ?? Town04Species.ByNo(no);
     }
 }
