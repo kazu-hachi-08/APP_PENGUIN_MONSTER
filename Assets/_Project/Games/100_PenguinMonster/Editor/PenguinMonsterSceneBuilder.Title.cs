@@ -116,9 +116,23 @@ namespace PenguinMonster.Editor
             SetArray(so.FindProperty("_mascots"), mascots);
             so.FindProperty("_bestText").objectReferenceValue = best;
             so.ApplyModifiedProperties();
+            AddUpdateNotice(back.gameObject);
 
             back.gameObject.SetActive(false);
             return panel;
+        }
+
+        /// <summary>
+        /// Windows 版の「新しい版が あります」。タイトルの子の最後に置いてメニューより手前に出し、
+        /// タイトルを離れたら一緒に消えるようにする
+        /// </summary>
+        private static void AddUpdateNotice(GameObject title)
+        {
+            var dialog = CreateConfirmDialog(title.transform);
+            var notice = title.AddComponent<UpdateNotice>();
+            var so = new SerializedObject(notice);
+            so.FindProperty("_dialog").objectReferenceValue = dialog;
+            so.ApplyModifiedProperties();
         }
 
         private static void CreateTitleLogo(Transform parent)
