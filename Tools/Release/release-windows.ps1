@@ -1,4 +1,5 @@
 ﻿# Windowsビルドをzip化し、GitHub Releasesに公開する。
+# zip には version.txt と Windows/ の更新用スクリプトを入れるので、配った版は次から自動で更新できる（Windows/update.ps1）。
 #
 # 使い方（リポジトリのルートで実行）:
 #   .\Tools\Release\release-windows.ps1                  # テスト版（test-20260927-1530 のような日時タグ。releases/latest がこれを指す）
@@ -12,7 +13,7 @@
 
 param(
     [string]$Version,
-    [string]$Notes = "zipを展開して exe を起動してください。`n初回に「WindowsによってPCが保護されました」と出たら「詳細情報 → 実行」で起動できます。",
+    [string]$Notes = "zipを展開して exe を起動してください。`n初回に「WindowsによってPCが保護されました」と出たら「詳細情報 → 実行」で起動できます。`n新しい版が出たら、タイトル画面の「更新する」（または PenguinMonster_Start.bat から起動）で自動で入れ替わります。",
     [string]$BuildDir = "Builds/Windows",
     [string]$ZipBaseName = "APP_PENGUIN_MONSTER_Windows"
 )
@@ -31,6 +32,11 @@ $zipPath = Join-Path $repoRoot "Builds/${ZipBaseName}_$Version.zip"
 if (-not (Get-ChildItem -Path $buildPath -Filter *.exe -ErrorAction SilentlyContinue)) {
     Write-Error "$buildPath に exe がありません。先にUnityで Windows ビルドを出力してください。"
 }
+
+# 自動更新（Windows/update.ps1）は version.txt と最新のタグを比べるので、公開する版の名前をビルドに入れる。
+# 更新用のスクリプトと起動用 bat も一緒に配る
+Set-Content -Path (Join-Path $buildPath "version.txt") -Value $Version -Encoding Ascii
+Copy-Item (Join-Path $PSScriptRoot "Windows/*") $buildPath -Force
 
 # *_DoNotShip / *_ButDontShipItWithYourGame はデバッグ用で配布不要（Unity自身がそう命名している）
 # .で始まるフォルダ（DLした配布物を展開した .Release など）はビルド成果物ではない。
